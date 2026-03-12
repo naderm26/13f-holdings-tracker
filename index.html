@@ -26,297 +26,89 @@
       color: var(--text);
       font-family: var(--sans);
       min-height: 100vh;
-      padding: 0;
     }
 
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
       padding: 2rem 3rem;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
     }
 
-    .header-left h1 {
+    header h1 {
       font-size: 1.1rem;
       font-weight: 500;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: var(--text);
     }
-
-    .header-right {
-      display: flex;
-      gap: 2.5rem;
-    }
-
-    .stat { text-align: right; }
-
-    .stat-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .stat-value {
-      font-family: var(--mono);
-      font-size: 1.4rem;
-      font-weight: 500;
-      color: var(--text);
-      margin-top: 0.15rem;
-    }
-
-    .stat-value.green { color: var(--accent); }
 
     main {
-      padding: 2.5rem 3rem;
-      max-width: 1100px;
-      margin: 0 auto;
+      max-width: 600px;
+      margin: 4rem auto;
+      padding: 0 2rem;
     }
 
-    .section-label {
-      font-size: 1.4rem;
-      letter-spacing: 0.02em;
-      color: var(--text);
-      font-weight: 500;
-      margin-bottom: 0.4rem;
-    }
-
-    .period-line {
-      font-family: var(--mono);
-      font-size: 0.75rem;
+    .label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
       color: var(--muted);
+      font-weight: 500;
       margin-bottom: 1.25rem;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--surface);
+    .fund-list {
+      list-style: none;
       border: 1px solid var(--border);
       border-radius: 6px;
       overflow: hidden;
+      background: var(--surface);
     }
 
-    thead tr {
-      background: var(--bg);
+    .fund-list li {
       border-bottom: 1px solid var(--border);
     }
 
-    th {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
+    .fund-list li:last-child {
+      border-bottom: none;
+    }
+
+    .fund-list a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.1rem 1.5rem;
+      text-decoration: none;
+      color: var(--text);
+      font-size: 0.95rem;
       font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .fund-list a:hover {
+      background: var(--accent-light);
+    }
+
+    .fund-list a::after {
+      content: "→";
+      font-family: var(--mono);
       color: var(--muted);
-      padding: 0.85rem 1.25rem;
-      text-align: left;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-    }
-
-    th:hover { color: var(--text); }
-    th.num, td.num { text-align: center; }
-
-    td {
-      padding: 0.9rem 1.25rem;
-      font-size: 0.875rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: var(--accent-light); }
-
-    .company-name { font-weight: 500; color: var(--text); }
-
-    .cusip {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 0.15rem;
-    }
-
-    td.num {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--text);
-    }
-
-    .weight-pct {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--text);
-      text-align: center;
-    }
-
-    .loading, .error {
-      text-align: center;
-      padding: 4rem;
-      font-family: var(--mono);
       font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .error { color: #c0392b; }
-
-    @media (max-width: 640px) {
-      header, main { padding: 1.5rem; }
-      .header-right { gap: 1.5rem; }
-      .stat-value { font-size: 1.1rem; }
-      th, td { padding: 0.75rem 0.9rem; }
     }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-left">
-    <h1>13F Holdings Tracker</h1>
-  </div>
-  <div class="header-right">
-    <div class="stat">
-      <div class="stat-label">Portfolio Value</div>
-      <div class="stat-value green" id="total-value">—</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Positions</div>
-      <div class="stat-value" id="total-positions">—</div>
-    </div>
-  </div>
+  <h1>13F Holdings Tracker</h1>
 </header>
 
 <main>
-  <div class="section-label">Pershing Square Capital Management</div>
-  <div class="period-line" id="period">Loading...</div>
-  <div id="table-container">
-    <div class="loading">Fetching holdings data...</div>
-  </div>
+  <div class="label">Select a Fund</div>
+  <ul class="fund-list">
+    <li><a href="fund.html?fund=pershing">Pershing Square Capital Management</a></li>
+    <li><a href="fund.html?fund=duquesne">Duquesne Family Office LLC</a></li>
+  </ul>
 </main>
 
-<script>
-  const GITHUB_USER = "naderm26";
-  const GITHUB_REPO = "13f-holdings-tracker";
-  const CSV_FILE    = "pershing_latest_13f.csv";
-  const csvUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${CSV_FILE}`;
-
-  let allRows = [];
-  let sortCol = 3;
-  let sortAsc = false;
-
-  async function loadData() {
-    try {
-      const res = await fetch(csvUrl);
-      if (!res.ok) throw new Error("Could not fetch CSV (status " + res.status + ")");
-      const text = await res.text();
-      const lines = text.trim().split("\n");
-
-      allRows = lines.slice(1).map(line => {
-        const cols = line.split(",");
-        return {
-          company:    cols[0]?.trim() || "",
-          cusip:      cols[1]?.trim() || "",
-          shares:     parseInt(cols[2]) || 0,
-          value:      parseInt(cols[3]) || 0,
-          discretion: cols[4]?.trim() || ""
-        };
-      });
-
-      const totalValue = allRows.reduce((s, r) => s + r.value, 0);
-
-      document.getElementById("total-value").textContent =
-        "$" + totalValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
-      document.getElementById("total-positions").textContent = allRows.length;
-
-      renderTable(totalValue);
-    } catch (e) {
-      document.getElementById("table-container").innerHTML =
-        `<div class="error">Failed to load data: ${e.message}</div>`;
-    }
-  }
-
-  function renderTable(totalValue) {
-    const keys = ["company", "cusip", "shares", "value", "discretion"];
-    const sorted = [...allRows].sort((a, b) => {
-      const key = keys[sortCol];
-      const av = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
-      const bv = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
-      return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
-    });
-
-    const tv = totalValue || allRows.reduce((s, r) => s + r.value, 0);
-
-    const rows = sorted.map(r => {
-      const pct      = tv > 0 ? ((r.value / tv) * 100).toFixed(1) : "0.0";
-      const barW     = Math.min(100, Math.round((r.value / tv) * 100));
-      const price    = r.shares > 0 ? r.value / r.shares : 0;
-      const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const valueStr = "$" + r.value.toLocaleString("en-US", { maximumFractionDigits: 0 });
-
-      return `
-        <tr>
-          <td>
-            <div class="company-name">${r.company}</div>
-            <div class="cusip">${r.cusip}</div>
-          </td>
-          <td class="num"><span class="weight-pct">${pct}%</span></td>
-          <td class="num">${r.shares.toLocaleString()}</td>
-          <td class="num">${priceStr}</td>
-          <td class="num">${valueStr}</td>
-        </tr>`;
-    }).join("");
-
-    function arrow(i) {
-      return sortCol === i ? (sortAsc ? " ↑" : " ↓") : "";
-    }
-
-    document.getElementById("table-container").innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th onclick="sort(0)">Company${arrow(0)}</th>
-            <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
-            <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="num">Reported Price</th>
-            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>`;
-  }
-
-  function sort(col) {
-    if (sortCol === col) sortAsc = !sortAsc;
-    else { sortCol = col; sortAsc = false; }
-    renderTable();
-  }
-
-  async function fetchPeriod() {
-    try {
-      const res  = await fetch("https://data.sec.gov/submissions/CIK0001336528.json");
-      const data = await res.json();
-      const filings = data.filings.recent;
-      for (let i = 0; i < filings.form.length; i++) {
-        if (filings.form[i] === "13F-HR") {
-          const d = new Date(filings.reportDate[i] + "T00:00:00");
-          const formatted = d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-          document.getElementById("period").textContent = `Holdings as of ${formatted}`;
-          break;
-        }
-      }
-    } catch(e) {
-      document.getElementById("period").textContent = "Holdings data";
-    }
-  }
-
-  loadData();
-  fetchPeriod();
-</script>
 </body>
 </html>
