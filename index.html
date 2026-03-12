@@ -1,1 +1,354 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>13F Holdings Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f6f3;
+      --surface: #ffffff;
+      --border: #e8e6e1;
+      --text: #1a1917;
+      --muted: #8a8780;
+      --accent: #2d5a3d;
+      --accent-light: #eef4f0;
+      --mono: 'DM Mono', monospace;
+      --sans: 'DM Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 3rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-left h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .header-left p {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+      letter-spacing: 0.03em;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 2.5rem;
+    }
+
+    .stat {
+      text-align: right;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-top: 0.15rem;
+    }
+
+    .stat-value.green {
+      color: var(--accent);
+    }
+
+    main {
+      padding: 2.5rem 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    thead tr {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      color: var(--muted);
+      padding: 0.85rem 1.25rem;
+      text-align: left;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    th:hover { color: var(--text); }
+
+    th.num, td.num { text-align: right; }
+
+    td {
+      padding: 0.9rem 1.25rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: var(--accent-light); }
+
+    .company-name {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .cusip {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
+    }
+
+    td.num {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--text);
+    }
+
+    .weight-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      justify-content: flex-end;
+    }
+
+    .weight-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      width: 60px;
+      overflow: hidden;
+    }
+
+    .weight-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    .weight-pct {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--text);
+      min-width: 3.5rem;
+      text-align: right;
+    }
+
+    .loading, .error {
+      text-align: center;
+      padding: 4rem;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .error { color: #c0392b; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 640px) {
+      header, main { padding: 1.5rem; }
+      .header-right { gap: 1.5rem; }
+      .stat-value { font-size: 1.1rem; }
+      th, td { padding: 0.75rem 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>13F Holdings Tracker</h1>
+    <p id="period">Loading...</p>
+  </div>
+  <div class="header-right">
+    <div class="stat">
+      <div class="stat-label">Portfolio Value</div>
+      <div class="stat-value green" id="total-value">—</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Positions</div>
+      <div class="stat-value" id="total-positions">—</div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="section-label">Pershing Square Capital Management — All Holdings</div>
+  <div id="table-container">
+    <div class="loading">Fetching holdings data...</div>
+  </div>
+</main>
+
+<footer>Data sourced from SEC EDGAR · 13F-HR filings · Values in USD thousands</footer>
+
+<script>
+  // UPDATE THIS to your actual GitHub username and repo
+  const GITHUB_USER = "naderm26";
+  const GITHUB_REPO = "13f-holdings-tracker";
+  const CSV_FILE    = "pershing_latest_13f.csv";
+
+  const csvUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${CSV_FILE}`;
+
+  let allRows = [];
+  let sortCol = 3; // default sort by Value
+  let sortAsc = false;
+
+  async function loadData() {
+    try {
+      const res = await fetch(csvUrl);
+      if (!res.ok) throw new Error("Could not fetch CSV");
+      const text = await res.text();
+      const lines = text.trim().split("\n");
+      const headers = lines[0].split(",");
+
+      allRows = lines.slice(1).map(line => {
+        const cols = line.split(",");
+        return {
+          company:    cols[0]?.trim() || "",
+          cusip:      cols[1]?.trim() || "",
+          shares:     parseInt(cols[2]) || 0,
+          value:      parseInt(cols[3]) || 0,
+          discretion: cols[4]?.trim() || ""
+        };
+      });
+
+      const totalValue = allRows.reduce((s, r) => s + r.value, 0);
+
+      document.getElementById("total-value").textContent =
+        "$" + (totalValue / 1000).toLocaleString("en-US", {maximumFractionDigits: 0}) + "M";
+      document.getElementById("total-positions").textContent = allRows.length;
+      document.getElementById("period").textContent =
+        `As reported to SEC EDGAR · ${allRows.length} positions`;
+
+      renderTable(totalValue);
+    } catch (e) {
+      document.getElementById("table-container").innerHTML =
+        `<div class="error">Failed to load data: ${e.message}</div>`;
+    }
+  }
+
+  function renderTable(totalValue) {
+    const sorted = [...allRows].sort((a, b) => {
+      const cols = ["company","cusip","shares","value","discretion"];
+      const key = cols[sortCol];
+      const av = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
+      const bv = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
+      return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    });
+
+    const tv = totalValue || allRows.reduce((s, r) => s + r.value, 0);
+
+    const rows = sorted.map(r => {
+      const pct = tv > 0 ? ((r.value / tv) * 100).toFixed(1) : "0.0";
+      const barW = Math.round((r.value / tv) * 100);
+      return `
+        <tr>
+          <td>
+            <div class="company-name">${r.company}</div>
+            <div class="cusip">${r.cusip}</div>
+          </td>
+          <td class="num">${r.shares.toLocaleString()}</td>
+          <td class="num">$${r.value.toLocaleString()}</td>
+          <td class="num">
+            <div class="weight-bar-wrap">
+              <div class="weight-bar"><div class="weight-bar-fill" style="width:${barW}%"></div></div>
+              <span class="weight-pct">${pct}%</span>
+            </div>
+          </td>
+        </tr>`;
+    }).join("");
+
+    const arrows = ["↑","↓"];
+    function arrow(i) {
+      return sortCol === i ? (sortAsc ? " ↑" : " ↓") : "";
+    }
+
+    document.getElementById("table-container").innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sort(0)">Company${arrow(0)}</th>
+            <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
+            <th class="num" onclick="sort(3)">Value ($000s)${arrow(3)}</th>
+            <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  function sort(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = false; }
+    renderTable();
+  }
+
+  loadData();
+</script>
+</body>
+</html>
+
