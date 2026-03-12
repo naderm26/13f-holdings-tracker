@@ -1,6 +1,5 @@
 import urllib.request
 import json
-import xml.etree.ElementTree as ET
 
 FUNDS = [
     {
@@ -21,8 +20,7 @@ def fetch_latest_13f(fund):
     cik = fund["cik"]
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     req = urllib.request.Request(url, headers=HEADERS)
-    response = urllib.request.urlopen(req)
-    data = json.loads(response.read())
+    data = json.loads(urllib.request.urlopen(req).read())
 
     filings = data["filings"]["recent"]
     for i, form in enumerate(filings["form"]):
@@ -34,10 +32,29 @@ def fetch_latest_13f(fund):
     accession = accession_raw.replace("-", "")
     print(f"{fund['name']}: {accession_raw} | Period: {period}")
 
+    # Fetch the filing index to find the correct infotable filename
+    index_url = (
+        f"https://www.sec.gov/Archives/edgar/data/{cik.lstrip('0')}/"
+        f"{accession}/{accession_raw}-index.json"
+    )
+    req_idx = urllib.request.Request(index_url, headers=HEADERS)
+    index_data = json.loads(urllib.request.urlopen(req_idx).read())
+
+    # Find the infotable file
+    info_file = None
+    for item in index_data.get("documents", []):
+        if "infotable" in item.get("name", "").lower():
+            info_file = item["name"]
+            break
+
+    if not info_file:
+        raise Exception(f"Could not find infotable file for {fund['name']}")
+
     info_url = (
         f"https://www.sec.gov/Archives/edgar/data/{cik.lstrip('0')}/"
-        f"{accession}/infotable.xml"
+        f"{accession}/{info_file}"
     )
+    print(f"Fetching: {info_url}")
     req2 = urllib.request.Request(info_url, headers=HEADERS)
     xml_data = urllib.request.urlopen(req2).read().decode("utf-8")
 
