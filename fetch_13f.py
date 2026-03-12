@@ -33,22 +33,23 @@ def fetch_latest_13f(fund):
     cik_stripped = cik.lstrip("0")
     print(f"{fund['name']}: {accession_raw} | Period: {period}")
 
-    # Use EDGAR's filing index JSON
-    index_url = f"https://data.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/{accession_raw}-index.json"
+    # Fetch the filing index JSON
+    index_url = f"https://www.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/index.json"
     req_idx = urllib.request.Request(index_url, headers=HEADERS)
     index_data = json.loads(urllib.request.urlopen(req_idx).read())
 
-    # Find the information table XML file
+    # Find the information table XML
     info_file = None
-    for item in index_data.get("documents", []):
-        doc_type = item.get("type", "").upper()
+    for item in index_data.get("directory", {}).get("item", []):
         name = item.get("name", "").lower()
-        if doc_type == "INFORMATION TABLE" or "table" in name or "infotable" in name:
+        if "infotable" in name or "informationtable" in name:
             info_file = item["name"]
             break
 
     if not info_file:
-        raise Exception(f"Could not find infotable for {fund['name']}. Files: {[d['name'] for d in index_data.get('documents', [])]}")
+        # Print available files to help debug
+        files = [i["name"] for i in index_data.get("directory", {}).get("item", [])]
+        raise Exception(f"Could not find infotable. Available files: {files}")
 
     info_url = f"https://www.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/{info_file}"
     print(f"Fetching: {info_file}")
