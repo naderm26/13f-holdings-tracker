@@ -1,4 +1,4 @@
-name: Fetch 13F
+name: Fetch 13F v2
 
 on:
   workflow_dispatch:
