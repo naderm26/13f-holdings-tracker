@@ -1,15 +1,17 @@
 name: Fetch 13F
 
 on:
-  workflow_dispatch:  # manual trigger button
+  workflow_dispatch:
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Run fetch script
         run: python fetch_13f.py
+
       - name: Commit results
         run: |
           git config user.email "nadermassoudi@aol.com"
@@ -17,27 +19,3 @@ jobs:
           git add pershing_latest_13f.xml
           git diff --staged --quiet || git commit -m "Update Pershing 13F data"
           git push
-```
-
-2. Go back to github.com → your repo → **Actions** tab → tap **Fetch 13F** → **Run workflow**
-
-It'll fetch the data, run the script, and commit `pershing_latest_13f.xml` right into your repo. ✅
-
----
-
-**Option B — Replit (easier to see output interactively)**
-
-1. Go to [replit.com](https://replit.com), sign in
-2. **Create Repl** → Python → paste the script
-3. Hit **Run** — you'll see the holdings printed live
-4. Download the XML and manually upload to your GitHub repo
-
----
-
-### What you'll end up with in your repo
-```
-13f-holdings-tracker/
-├── README.md
-├── fetch_13f.py
-├── pershing_latest_13f.xml      ← raw holdings data
-└── .github/workflows/fetch.yml  ← automation
