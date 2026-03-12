@@ -9,7 +9,7 @@ root = tree.getroot()
 with open("pershing_latest_13f.csv", "w", newline="") as f:
     writer = csv.writer(f)
     # Header row
-    writer.writerow(["Company", "CUSIP", "Shares", "Value ($000s)", "Discretion"])
+    writer.writerow(["Company", "CUSIP", "Shares", "Value", "Discretion"])
 
     for entry in root.findall(".//{*}infoTable"):
         name      = entry.findtext("{*}nameOfIssuer", default="").strip()
