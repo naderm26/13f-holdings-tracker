@@ -1,0 +1,26 @@
+name: Fetch 13F
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run fetch and parse scripts
+        run: |
+          python fetch_13f.py
+          python parse_13f.py
+
+     - name: Commit results
+        run: |
+          git config user.email "nadermassoudi@aol.com"
+          git config user.name "GitHub Actions"
+          git add pershing_latest_13f.xml pershing_latest_13f.csv duquesne_latest_13f.xml duquesne_latest_13f.csv
+          git diff --staged --quiet || git commit -m "Update 13F data"
+          git push --force
