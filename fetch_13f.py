@@ -33,34 +33,27 @@ def fetch_latest_13f(fund):
     cik_stripped = cik.lstrip("0")
     print(f"{fund['name']}: {accession_raw} | Period: {period}")
 
-    base_url = f"https://www.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}"
+    # Use EDGAR's filing index JSON
+    index_url = f"https://data.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/{accession_raw}-index.json"
+    req_idx = urllib.request.Request(index_url, headers=HEADERS)
+    index_data = json.loads(urllib.request.urlopen(req_idx).read())
 
-    # Try common infotable filenames
-    candidates = ["infotable.xml", "form13fInfoTable.xml", "informationtable.xml"]
-    xml_data = None
-    for filename in candidates:
-        try:
-            req2 = urllib.request.Request(f"{base_url}/{filename}", headers=HEADERS)
-            xml_data = urllib.request.urlopen(req2).read().decode("utf-8")
-            print(f"Found: {filename}")
+    # Find the information table XML file
+    info_file = None
+    for item in index_data.get("documents", []):
+        doc_type = item.get("type", "").upper()
+        name = item.get("name", "").lower()
+        if doc_type == "INFORMATION TABLE" or "table" in name or "infotable" in name:
+            info_file = item["name"]
             break
-        except Exception:
-            continue
 
-    if not xml_data:
-        # Fall back: parse the index page to find it
-        index_url = f"{base_url}/{accession_raw}-index.htm"
-        req_idx = urllib.request.Request(index_url, headers=HEADERS)
-        html = urllib.request.urlopen(req_idx).read().decode("utf-8")
-        # Find any xml file that looks like an info table
-        import re
-        matches = re.findall(r'href="([^"]*(?:info|table)[^"]*\.xml)"', html, re.IGNORECASE)
-        if not matches:
-            raise Exception(f"Could not find infotable for {fund['name']}")
-        filename = matches[0].split("/")[-1]
-        req2 = urllib.request.Request(f"{base_url}/{filename}", headers=HEADERS)
-        xml_data = urllib.request.urlopen(req2).read().decode("utf-8")
-        print(f"Found via index: {filename}")
+    if not info_file:
+        raise Exception(f"Could not find infotable for {fund['name']}. Files: {[d['name'] for d in index_data.get('documents', [])]}")
+
+    info_url = f"https://www.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/{info_file}"
+    print(f"Fetching: {info_file}")
+    req2 = urllib.request.Request(info_url, headers=HEADERS)
+    xml_data = urllib.request.urlopen(req2).read().decode("utf-8")
 
     with open(fund["output_xml"], "w") as f:
         f.write(xml_data)
