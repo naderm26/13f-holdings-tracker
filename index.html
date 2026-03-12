@@ -48,22 +48,12 @@
       color: var(--text);
     }
 
-    .header-left p {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 0.25rem;
-      letter-spacing: 0.03em;
-    }
-
     .header-right {
       display: flex;
       gap: 2.5rem;
     }
 
-    .stat {
-      text-align: right;
-    }
+    .stat { text-align: right; }
 
     .stat-label {
       font-size: 0.7rem;
@@ -81,9 +71,7 @@
       margin-top: 0.15rem;
     }
 
-    .stat-value.green {
-      color: var(--accent);
-    }
+    .stat-value.green { color: var(--accent); }
 
     main {
       padding: 2.5rem 3rem;
@@ -97,7 +85,14 @@
       letter-spacing: 0.12em;
       color: var(--muted);
       font-weight: 500;
-      margin-bottom: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .period-line {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
     }
 
     table {
@@ -128,7 +123,6 @@
     }
 
     th:hover { color: var(--text); }
-
     th.num, td.num { text-align: right; }
 
     td {
@@ -139,13 +133,9 @@
     }
 
     tr:last-child td { border-bottom: none; }
-
     tr:hover td { background: var(--accent-light); }
 
-    .company-name {
-      font-weight: 500;
-      color: var(--text);
-    }
+    .company-name { font-weight: 500; color: var(--text); }
 
     .cusip {
       font-family: var(--mono);
@@ -228,25 +218,134 @@
 
 <main>
   <div class="section-label">Pershing Square Capital Management — All Holdings</div>
-  <div id="period" style="font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 1.25rem; margin-top: -0.5rem;">Loading...</div>
+  <div class="period-line" id="period">Loading...</div>
   <div id="table-container">
     <div class="loading">Fetching holdings data...</div>
   </div>
 </main>
 
+<script>
+  const GITHUB_USER = "naderm26";
+  const GITHUB_REPO = "13f-holdings-tracker";
+  const CSV_FILE    = "pershing_latest_13f.csv";
+  const csvUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${CSV_FILE}`;
 
-<<script>
-  const csvUrl = `https://raw.githubusercontent.com/naderm26/13f-holdings-tracker/main/pershing_latest_13f.csv`;
+  let allRows = [];
+  let sortCol = 3;
+  let sortAsc = false;
 
-  fetch(csvUrl)
-    .then(res => {
-      console.log("Status:", res.status);
-      return res.text();
-    })
-    .then(text => {
-      console.log("First 500 chars:", text.substring(0, 500));
-    })
-    .catch(err => {
-      console.error("Fetch error:", err);
+  async function loadData() {
+    try {
+      const res = await fetch(csvUrl);
+      if (!res.ok) throw new Error("Could not fetch CSV (status " + res.status + ")");
+      const text = await res.text();
+      const lines = text.trim().split("\n");
+
+      allRows = lines.slice(1).map(line => {
+        const cols = line.split(",");
+        return {
+          company:    cols[0]?.trim() || "",
+          cusip:      cols[1]?.trim() || "",
+          shares:     parseInt(cols[2]) || 0,
+          value:      parseInt(cols[3]) || 0,
+          discretion: cols[4]?.trim() || ""
+        };
+      });
+
+      const totalValue = allRows.reduce((s, r) => s + r.value, 0);
+
+      document.getElementById("total-value").textContent =
+        "$" + totalValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      document.getElementById("total-positions").textContent = allRows.length;
+
+      renderTable(totalValue);
+    } catch (e) {
+      document.getElementById("table-container").innerHTML =
+        `<div class="error">Failed to load data: ${e.message}</div>`;
+    }
+  }
+
+  function renderTable(totalValue) {
+    const keys = ["company", "cusip", "shares", "value", "discretion"];
+    const sorted = [...allRows].sort((a, b) => {
+      const key = keys[sortCol];
+      const av = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
+      const bv = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
+      return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
     });
+
+    const tv = totalValue || allRows.reduce((s, r) => s + r.value, 0);
+
+    const rows = sorted.map(r => {
+      const pct      = tv > 0 ? ((r.value / tv) * 100).toFixed(1) : "0.0";
+      const barW     = Math.min(100, Math.round((r.value / tv) * 100));
+      const price    = r.shares > 0 ? r.value / r.shares : 0;
+      const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const valueStr = "$" + r.value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+
+      return `
+        <tr>
+          <td>
+            <div class="company-name">${r.company}</div>
+            <div class="cusip">${r.cusip}</div>
+          </td>
+          <td class="num">
+            <div class="weight-bar-wrap">
+              <div class="weight-bar"><div class="weight-bar-fill" style="width:${barW}%"></div></div>
+              <span class="weight-pct">${pct}%</span>
+            </div>
+          </td>
+          <td class="num">${r.shares.toLocaleString()}</td>
+          <td class="num">${priceStr}</td>
+          <td class="num">${valueStr}</td>
+        </tr>`;
+    }).join("");
+
+    function arrow(i) {
+      return sortCol === i ? (sortAsc ? " ↑" : " ↓") : "";
+    }
+
+    document.getElementById("table-container").innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sort(0)">Company${arrow(0)}</th>
+            <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
+            <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
+            <th class="num">Reported Price</th>
+            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  function sort(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = false; }
+    renderTable();
+  }
+
+  async function fetchPeriod() {
+    try {
+      const res  = await fetch("https://data.sec.gov/submissions/CIK0001336528.json");
+      const data = await res.json();
+      const filings = data.filings.recent;
+      for (let i = 0; i < filings.form.length; i++) {
+        if (filings.form[i] === "13F-HR") {
+          const d = new Date(filings.reportDate[i] + "T00:00:00");
+          const formatted = d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+          document.getElementById("period").textContent = `Holdings as of ${formatted}`;
+          break;
+        }
+      }
+    } catch(e) {
+      document.getElementById("period").textContent = "Holdings data";
+    }
+  }
+
+  loadData();
+  fetchPeriod();
 </script>
+</body>
+</html>
