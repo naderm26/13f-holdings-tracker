@@ -19,7 +19,8 @@ HEADERS = {"User-Agent": "nadermassoudi@aol.com"}
 def fetch_latest_13f(fund):
     cik = fund["cik"]
     cik_stripped = str(int(cik))  # removes leading zeros: "0001336528" -> "1336528"
-
+print(f"CIK stripped: {cik_stripped}")
+print(f"Accession: {accession}")
     url = f"https://data.sec.gov/submissions/CIK{cik}.json"
     req = urllib.request.Request(url, headers=HEADERS)
     data = json.loads(urllib.request.urlopen(req).read())
