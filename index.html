@@ -80,10 +80,9 @@
     }
 
     .section-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
+      font-size: 1.4rem;
+      letter-spacing: 0.02em;
+      color: var(--text);
       font-weight: 500;
       margin-bottom: 0.4rem;
     }
@@ -123,7 +122,7 @@
     }
 
     th:hover { color: var(--text); }
-    th.num, td.num { text-align: right; }
+    th.num, td.num { text-align: center; }
 
     td {
       padding: 0.9rem 1.25rem;
@@ -150,34 +149,11 @@
       color: var(--text);
     }
 
-    .weight-bar-wrap {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      justify-content: flex-end;
-    }
-
-    .weight-bar {
-      height: 3px;
-      background: var(--border);
-      border-radius: 2px;
-      width: 60px;
-      overflow: hidden;
-    }
-
-    .weight-bar-fill {
-      height: 100%;
-      background: var(--accent);
-      border-radius: 2px;
-      transition: width 0.4s ease;
-    }
-
     .weight-pct {
       font-family: var(--mono);
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       color: var(--text);
-      min-width: 3.5rem;
-      text-align: right;
+      text-align: center;
     }
 
     .loading, .error {
@@ -217,7 +193,7 @@
 </header>
 
 <main>
-  <div class="section-label">Pershing Square Capital Management — All Holdings</div>
+  <div class="section-label">Pershing Square Capital Management</div>
   <div class="period-line" id="period">Loading...</div>
   <div id="table-container">
     <div class="loading">Fetching holdings data...</div>
@@ -289,12 +265,7 @@
             <div class="company-name">${r.company}</div>
             <div class="cusip">${r.cusip}</div>
           </td>
-          <td class="num">
-            <div class="weight-bar-wrap">
-              <div class="weight-bar"><div class="weight-bar-fill" style="width:${barW}%"></div></div>
-              <span class="weight-pct">${pct}%</span>
-            </div>
-          </td>
+          <td class="num"><span class="weight-pct">${pct}%</span></td>
           <td class="num">${r.shares.toLocaleString()}</td>
           <td class="num">${priceStr}</td>
           <td class="num">${valueStr}</td>
