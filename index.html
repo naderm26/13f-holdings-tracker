@@ -200,15 +200,6 @@
 
     .error { color: #c0392b; }
 
-    footer {
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.72rem;
-      font-family: var(--mono);
-      color: var(--muted);
-      letter-spacing: 0.03em;
-    }
-
     @media (max-width: 640px) {
       header, main { padding: 1.5rem; }
       .header-right { gap: 1.5rem; }
@@ -222,7 +213,6 @@
 <header>
   <div class="header-left">
     <h1>13F Holdings Tracker</h1>
-    <p id="period">Loading...</p>
   </div>
   <div class="header-right">
     <div class="stat">
@@ -238,12 +228,12 @@
 
 <main>
   <div class="section-label">Pershing Square Capital Management — All Holdings</div>
+  <div id="period" style="font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 1.25rem; margin-top: -0.5rem;">Loading...</div>
   <div id="table-container">
     <div class="loading">Fetching holdings data...</div>
   </div>
 </main>
 
-<footer>Data sourced from SEC EDGAR · 13F-HR filings · Values in USD thousands</footer>
 
 <script>
   // UPDATE THIS to your actual GitHub username and repo
@@ -278,11 +268,14 @@
 
       const totalValue = allRows.reduce((s, r) => s + r.value, 0);
 
+      // Try to extract period from CSV filename or use today as fallback
+      // We'll derive it from the data itself — use a placeholder updated via GitHub Actions
+      const periodEl = document.getElementById("period");
+      periodEl.textContent = "Holdings as of Q3 2024"; // updated below if available
+
       document.getElementById("total-value").textContent =
-        "$" + (totalValue / 1000).toLocaleString("en-US", {maximumFractionDigits: 0}) + "M";
+        "$" + (totalValue * 1000).toLocaleString("en-US", {maximumFractionDigits: 0});
       document.getElementById("total-positions").textContent = allRows.length;
-      document.getElementById("period").textContent =
-        `As reported to SEC EDGAR · ${allRows.length} positions`;
 
       renderTable(totalValue);
     } catch (e) {
@@ -305,24 +298,29 @@
     const rows = sorted.map(r => {
       const pct = tv > 0 ? ((r.value / tv) * 100).toFixed(1) : "0.0";
       const barW = Math.round((r.value / tv) * 100);
+      // value is in $000s, shares is actual count
+      // reported price = (value * 1000) / shares
+      const price = r.shares > 0 ? (r.value * 1000) / r.shares : 0;
+      const priceStr = "$" + price.toLocaleString("en-US", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      const valueStr = "$" + (r.value * 1000).toLocaleString("en-US", {maximumFractionDigits: 0});
       return `
         <tr>
           <td>
             <div class="company-name">${r.company}</div>
             <div class="cusip">${r.cusip}</div>
           </td>
-          <td class="num">${r.shares.toLocaleString()}</td>
-          <td class="num">$${r.value.toLocaleString()}</td>
           <td class="num">
             <div class="weight-bar-wrap">
               <div class="weight-bar"><div class="weight-bar-fill" style="width:${barW}%"></div></div>
               <span class="weight-pct">${pct}%</span>
             </div>
           </td>
+          <td class="num">${r.shares.toLocaleString()}</td>
+          <td class="num">${priceStr}</td>
+          <td class="num">${valueStr}</td>
         </tr>`;
     }).join("");
 
-    const arrows = ["↑","↓"];
     function arrow(i) {
       return sortCol === i ? (sortAsc ? " ↑" : " ↓") : "";
     }
@@ -332,9 +330,10 @@
         <thead>
           <tr>
             <th onclick="sort(0)">Company${arrow(0)}</th>
-            <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="num" onclick="sort(3)">Value ($000s)${arrow(3)}</th>
             <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
+            <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
+            <th class="num" onclick="sort(3)">Reported Price</th>
+            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -347,8 +346,27 @@
     renderTable();
   }
 
+  const EDGAR_URL = `https://data.sec.gov/submissions/CIK0001336528.json`;
+
+  async function fetchPeriod() {
+    try {
+      const res = await fetch(EDGAR_URL, { headers: { "User-Agent": "nadermassoudi@aol.com" }});
+      const data = await res.json();
+      const filings = data.filings.recent;
+      for (let i = 0; i < filings.form.length; i++) {
+        if (filings.form[i] === "13F-HR") {
+          const d = new Date(filings.reportDate[i]);
+          const formatted = d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+          document.getElementById("period").textContent = `Holdings as of ${formatted}`;
+          break;
+        }
+      }
+    } catch(e) {
+      // silently fail, placeholder text remains
+    }
+  }
+
   loadData();
 </script>
 </body>
 </html>
-
