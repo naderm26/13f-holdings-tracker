@@ -89,21 +89,22 @@
 <script>
   const GITHUB_USER = "naderm26";
   const GITHUB_REPO = "13f-holdings-tracker";
-  const BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main`;
+  const API = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents`;
+  const RAW_HEADERS = { "Accept": "application/vnd.github.v3.raw" };
 
   const params = new URLSearchParams(window.location.search);
   const fundId = params.get("fund") || "pershing";
 
-  // Global state — set once funds.json is loaded
-  let FUND_CONFIG    = null;
-  let quarters       = [];
-  let csvCache       = {};
-  let activeQ        = null;
-  let sortCol        = 3;
-  let sortAsc        = false;
+  let FUND_CONFIG = null;
+  let allQuarters = [];   // up to 8 quarters (for comparison data)
+  let showQuarters = [];  // only 4 most recent (for tab buttons)
+  let csvCache    = {};
+  let activeQ     = null;
+  let sortCol     = 3;
+  let sortAsc     = false;
 
-  // ── Bootstrap ────────────────────────────────────────────────
-  fetch(`${BASE}/funds.json`)
+  // ── Bootstrap ─────────────────────────────────────────────────
+  fetch(`${API}/funds.json`, { headers: RAW_HEADERS })
     .then(r => r.json())
     .then(funds => {
       const f = funds.find(x => x.id === fundId);
@@ -116,11 +117,14 @@
       document.getElementById("fund-name").textContent = f.name;
       document.title = f.name + " — 13F Holdings";
       loadQuarters();
+    })
+    .catch(e => {
+      document.getElementById("table-container").innerHTML =
+        `<div class="error">Failed to load fund config: ${e.message}</div>`;
     });
 
   // ── Quarter discovery ─────────────────────────────────────────
   async function loadQuarters() {
-    // Start from Q4 of last year and work backwards to find available quarters
     const now  = new Date();
     let year   = now.getFullYear();
     let q      = Math.ceil((now.getMonth() + 1) / 3) - 1;
@@ -136,7 +140,7 @@
     const found = [];
     for (const label of candidates) {
       try {
-        const r = await fetch(`${BASE}/data/${fundId}_${label}.csv`);
+        const r = await fetch(`${API}/data/${fundId}_${label}.csv`, { headers: RAW_HEADERS });
         if (r.ok) found.push(label);
         if (found.length === 8) break;
       } catch { /* skip */ }
@@ -148,22 +152,27 @@
       return;
     }
 
-    quarters = found;
-    activeQ  = found[0];
+    allQuarters  = found;           // up to 8, used for comparison lookups
+    showQuarters = found.slice(0, 4); // only 4 shown as tabs
+    activeQ      = showQuarters[0];
 
-    document.getElementById("quarter-selector").innerHTML = found.map(q =>
+    // Render only 4 quarter buttons
+    document.getElementById("quarter-selector").innerHTML = showQuarters.map(q =>
       `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
     ).join("");
 
     await loadCSV(activeQ);
+    const idx = allQuarters.indexOf(activeQ);
+    if (idx + 1 < allQuarters.length) await loadCSV(allQuarters[idx + 1]);
+    if (idx + 4 < allQuarters.length) await loadCSV(allQuarters[idx + 4]);
     renderTable();
   }
 
   // ── CSV loader ────────────────────────────────────────────────
   async function loadCSV(label) {
     if (csvCache[label]) return;
-    const r    = await fetch(`${BASE}/data/${fundId}_${label}.csv`);
-    const text = await r.text();
+    const r     = await fetch(`${API}/data/${fundId}_${label}.csv`, { headers: RAW_HEADERS });
+    const text  = await r.text();
     const lines = text.trim().split("\n");
     csvCache[label] = lines.slice(1).map(line => {
       const cols = line.split(",");
@@ -184,9 +193,9 @@
       b.classList.toggle("active", b.textContent === q)
     );
     await loadCSV(q);
-    const idx = quarters.indexOf(q);
-    if (idx + 1 < quarters.length) await loadCSV(quarters[idx + 1]);
-    if (idx + 4 < quarters.length) await loadCSV(quarters[idx + 4]);
+    const idx = allQuarters.indexOf(q);
+    if (idx + 1 < allQuarters.length) await loadCSV(allQuarters[idx + 1]);
+    if (idx + 4 < allQuarters.length) await loadCSV(allQuarters[idx + 4]);
     renderTable();
   }
 
@@ -216,11 +225,11 @@
 
   // ── Render ────────────────────────────────────────────────────
   function renderTable() {
-    const mult   = (FUND_CONFIG && FUND_CONFIG.value_multiplier) ? FUND_CONFIG.value_multiplier : 1;
-    const rows   = csvCache[activeQ] || [];
-    const idx    = quarters.indexOf(activeQ);
-    const prev1  = idx + 1 < quarters.length ? csvCache[quarters[idx + 1]] : null;
-    const prev4  = idx + 4 < quarters.length ? csvCache[quarters[idx + 4]] : null;
+    const mult  = (FUND_CONFIG && FUND_CONFIG.value_multiplier) ? FUND_CONFIG.value_multiplier : 1;
+    const rows  = csvCache[activeQ] || [];
+    const idx   = allQuarters.indexOf(activeQ);
+    const prev1 = idx + 1 < allQuarters.length ? csvCache[allQuarters[idx + 1]] : null;
+    const prev4 = idx + 4 < allQuarters.length ? csvCache[allQuarters[idx + 4]] : null;
 
     const tv = rows.reduce((s, r) => s + r.value, 0) * mult;
 
