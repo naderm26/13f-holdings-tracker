@@ -91,43 +91,40 @@
   const GITHUB_REPO = "13f-holdings-tracker";
   const BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main`;
 
-  const params  = new URLSearchParams(window.location.search);
-  const fundId  = params.get("fund") || "pershing";
+  const params = new URLSearchParams(window.location.search);
+  const fundId = params.get("fund") || "pershing";
 
-  let fundName  = fundId;
-  let valueMultiplier = 1;
-  let quarters  = [];       // sorted descending e.g. ["2025Q4","2025Q3","2025Q2","2025Q1"]
-  let csvCache  = {};       // { "2025Q4": [{company,cusip,shares,value},...] }
-  let activeQ   = null;
-  let sortCol   = 3;
-  let sortAsc   = false;
+  // Global state — set once funds.json is loaded
+  let FUND_CONFIG    = null;
+  let quarters       = [];
+  let csvCache       = {};
+  let activeQ        = null;
+  let sortCol        = 3;
+  let sortAsc        = false;
 
-  // Load funds.json to get display name
+  // ── Bootstrap ────────────────────────────────────────────────
   fetch(`${BASE}/funds.json`)
     .then(r => r.json())
     .then(funds => {
       const f = funds.find(x => x.id === fundId);
-      if (f) {
-        fundName = f.name;
-        valueMultiplier = f.value_multiplier || 1;
-        document.getElementById("fund-name").textContent = f.name;
-        document.title = f.name + " — 13F Holdings";
-        loadQuarters(f);
+      if (!f) {
+        document.getElementById("table-container").innerHTML =
+          `<div class="error">Fund "${fundId}" not found in funds.json</div>`;
+        return;
       }
+      FUND_CONFIG = f;
+      document.getElementById("fund-name").textContent = f.name;
+      document.title = f.name + " — 13F Holdings";
+      loadQuarters();
     });
 
-  function quarterToDate(q) {
-    // "2025Q4" -> "December 31, 2025"
-    const [year, qn] = q.split("Q");
-    const ends = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
-    return `${ends[qn]}, ${year}`;
-  }
-
-  async function loadQuarters(fund) {
-    // Try to find available quarters by attempting to fetch up to 8 possible quarters
-    const now = new Date();
-    let year = now.getFullYear();
-    let q = Math.ceil((now.getMonth() + 1) / 3);
+  // ── Quarter discovery ─────────────────────────────────────────
+  async function loadQuarters() {
+    // Start from Q4 of last year and work backwards to find available quarters
+    const now  = new Date();
+    let year   = now.getFullYear();
+    let q      = Math.ceil((now.getMonth() + 1) / 3) - 1;
+    if (q === 0) { q = 4; year--; }
 
     const candidates = [];
     for (let i = 0; i < 12; i++) {
@@ -138,9 +135,8 @@
 
     const found = [];
     for (const label of candidates) {
-      const url = `${BASE}/data/${fund.id}_${label}.csv`;
       try {
-        const r = await fetch(url);
+        const r = await fetch(`${BASE}/data/${fundId}_${label}.csv`);
         if (r.ok) found.push(label);
         if (found.length === 8) break;
       } catch { /* skip */ }
@@ -155,9 +151,7 @@
     quarters = found;
     activeQ  = found[0];
 
-    // Render quarter buttons
-    const sel = document.getElementById("quarter-selector");
-    sel.innerHTML = found.map(q =>
+    document.getElementById("quarter-selector").innerHTML = found.map(q =>
       `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
     ).join("");
 
@@ -165,10 +159,10 @@
     renderTable();
   }
 
+  // ── CSV loader ────────────────────────────────────────────────
   async function loadCSV(label) {
     if (csvCache[label]) return;
-    const url = `${BASE}/data/${fundId}_${label}.csv`;
-    const r   = await fetch(url);
+    const r    = await fetch(`${BASE}/data/${fundId}_${label}.csv`);
     const text = await r.text();
     const lines = text.trim().split("\n");
     csvCache[label] = lines.slice(1).map(line => {
@@ -183,23 +177,30 @@
     });
   }
 
+  // ── Quarter switcher ──────────────────────────────────────────
   async function switchQuarter(q) {
     activeQ = q;
-    document.querySelectorAll(".q-btn").forEach(b => {
-      b.classList.toggle("active", b.textContent === q);
-    });
+    document.querySelectorAll(".q-btn").forEach(b =>
+      b.classList.toggle("active", b.textContent === q)
+    );
     await loadCSV(q);
-    // preload adjacent quarters for comparison
     const idx = quarters.indexOf(q);
     if (idx + 1 < quarters.length) await loadCSV(quarters[idx + 1]);
-    if (idx + 3 < quarters.length) await loadCSV(quarters[idx + 3]);
+    if (idx + 4 < quarters.length) await loadCSV(quarters[idx + 4]);
     renderTable();
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function quarterToDate(q) {
+    const [year, qn] = q.split("Q");
+    const ends = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
+    return `${ends[qn]}, ${year}`;
   }
 
   function getChange(currentShares, oldRows, cusip) {
     if (!oldRows) return null;
     const old = oldRows.find(r => r.cusip === cusip);
-    if (!old) return "NEW";
+    if (!old)   return "NEW";
     if (currentShares === 0) return "EXITED";
     return ((currentShares - old.shares) / old.shares) * 100;
   }
@@ -213,17 +214,21 @@
     return `<span class="chg ${cls}">${sign}${val.toFixed(1)}%</span>`;
   }
 
+  // ── Render ────────────────────────────────────────────────────
   function renderTable() {
+    const mult   = (FUND_CONFIG && FUND_CONFIG.value_multiplier) ? FUND_CONFIG.value_multiplier : 1;
     const rows   = csvCache[activeQ] || [];
     const idx    = quarters.indexOf(activeQ);
     const prev1  = idx + 1 < quarters.length ? csvCache[quarters[idx + 1]] : null;
-    const prev4  = idx + 3 < quarters.length ? csvCache[quarters[idx + 3]] : null;
+    const prev4  = idx + 4 < quarters.length ? csvCache[quarters[idx + 4]] : null;
 
-    const tv = rows.reduce((s, r) => s + r.value, 0);
+    const tv = rows.reduce((s, r) => s + r.value, 0) * mult;
+
     document.getElementById("total-value").textContent =
-      "$" + (tv * valueMultiplier).toLocaleString("en-US", { maximumFractionDigits: 0 });
+      "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
     document.getElementById("total-positions").textContent = rows.length;
-    document.getElementById("period").textContent = `Holdings as of ${quarterToDate(activeQ)}`;
+    document.getElementById("period").textContent =
+      `Holdings as of ${quarterToDate(activeQ)}`;
 
     const keys = ["company", "cusip", "shares", "value", "discretion"];
     const sorted = [...rows].sort((a, b) => {
@@ -236,10 +241,11 @@
     function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
     const rowsHtml = sorted.map(r => {
-      const pct      = tv > 0 ? ((r.value * valueMultiplier / (tv * valueMultiplier)) * 100).toFixed(1) : "0.0";
-      const price    = r.shares > 0 ? (r.value * valueMultiplier) / r.shares : 0;
+      const adjValue = r.value * mult;
+      const pct      = tv > 0 ? ((adjValue / tv) * 100).toFixed(1) : "0.0";
+      const price    = r.shares > 0 ? adjValue / r.shares : 0;
       const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const valueStr = "$" + (r.value * valueMultiplier).toLocaleString("en-US", { maximumFractionDigits: 0 });
+      const valueStr = "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
       const chg1     = getChange(r.shares, prev1, r.cusip);
       const chg4     = getChange(r.shares, prev4, r.cusip);
       return `
