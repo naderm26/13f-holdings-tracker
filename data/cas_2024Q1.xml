@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<informationTable xsi:schemaLocation="http://www.sec.gov/edgar/document/thirteenf/informationtable eis_13FDocument.xsd"
+	xmlns="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:n1="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<infoTable>
+		<nameOfIssuer>CAPITAL ONE FINL CORP</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>14040H105</cusip>
+		<value>96071570</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>645252</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>645252</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>CARDLYTICS INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>14161W105</cusip>
+		<value>92354565</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>6373676</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>6373676</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>CARVANA CO</nameOfIssuer>
+		<titleOfClass>CL A</titleOfClass>
+		<cusip>146869102</cusip>
+		<value>574130892</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>6530894</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>6530894</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>HILTON GRAND VACATIONS INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>43283X105</cusip>
+		<value>304346866</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>6446661</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>6446661</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>WORLD ACCEP CORPORATION</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>981419104</cusip>
+		<value>49027017</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>338164</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>338164</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+</informationTable>

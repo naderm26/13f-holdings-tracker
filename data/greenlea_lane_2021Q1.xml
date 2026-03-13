@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<informationTable xsi:schemaLocation="http://www.sec.gov/edgar/document/thirteenf/informationtable eis_13FDocument.xsd"
+	xmlns="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:n1="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<infoTable>
+		<nameOfIssuer>ALPHABET INC</nameOfIssuer>
+		<titleOfClass>CAP STK CL A</titleOfClass>
+		<cusip>02079K305</cusip>
+		<value>20871</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>10119</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>5719</Sole>
+			<Shared>0</Shared>
+			<None>4400</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>AMAZON COM INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>023135106</cusip>
+		<value>22117</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>7148</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>4038</Sole>
+			<Shared>0</Shared>
+			<None>3110</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>BROOKFIELD ASSET MGMT INC</nameOfIssuer>
+		<titleOfClass>CL A LTD VT SH</titleOfClass>
+		<cusip>112585104</cusip>
+		<value>43909</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>986706</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>557136</Sole>
+			<Shared>0</Shared>
+			<None>429570</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>HUBSPOT INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>443573100</cusip>
+		<value>29723</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>65440</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>36950</Sole>
+			<Shared>0</Shared>
+			<None>28490</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>NETFLIX INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>64110L106</cusip>
+		<value>18401</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>35273</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>19913</Sole>
+			<Shared>0</Shared>
+			<None>15360</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>SALESFORCE COM INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>79466L302</cusip>
+		<value>42658</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>201338</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>113668</Sole>
+			<Shared>0</Shared>
+			<None>87670</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>SLACK TECHNOLOGIES INC</nameOfIssuer>
+		<titleOfClass>COM CL A</titleOfClass>
+		<cusip>83088V102</cusip>
+		<value>15081</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>371182</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>209581</Sole>
+			<Shared>0</Shared>
+			<None>161601</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>SPOTIFY TECHNOLOGY S A</nameOfIssuer>
+		<titleOfClass>SHS</titleOfClass>
+		<cusip>L8681T102</cusip>
+		<value>14705</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>54878</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>31013</Sole>
+			<Shared>0</Shared>
+			<None>23865</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>TRUPANION INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>898202106</cusip>
+		<value>31131</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>408500</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>221735</Sole>
+			<Shared>0</Shared>
+			<None>186765</None>
+		</votingAuthority>
+	</infoTable>
+</informationTable>

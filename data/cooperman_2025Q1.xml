@@ -1,0 +1,643 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<informationTable xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.sec.gov/edgar/document/thirteenf/informationtable">
+    <infoTable>
+        <nameOfIssuer>ALPHABET INC</nameOfIssuer>
+        <titleOfClass>CAP STK CL A</titleOfClass>
+        <cusip>02079K305</cusip>
+        <value>100516000</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>650000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>650000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>APOLLO GLOBAL MANAGEMENT INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>03769M106</cusip>
+        <value>189935780</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>1387000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>1387000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ASHLAND INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>044186104</cusip>
+        <value>100446213</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>1694151</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>1694151</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>BARINGS BDC INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>06759L103</cusip>
+        <value>25214</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>2643</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>2643</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>DIAMEDICA THERAPEUTICS INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>25253X207</cusip>
+        <value>6158750</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>1625000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>1625000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ELEVANCE HEALTH INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>036752103</cusip>
+        <value>121092864</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>278400</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>278400</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ENERGY TRANSFER LP</nameOfIssuer>
+        <titleOfClass>COM UT LTD PTN</titleOfClass>
+        <cusip>29273V100</cusip>
+        <value>241670000</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>13000000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>13000000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ENTERPRISE PRODUCTS PARTNERS</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>293792107</cusip>
+        <value>40679005</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>1191535</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>1191535</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>FIDELIS INSURANCE HOLDINGS L</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>G3398L118</cusip>
+        <value>77756404</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>4799778</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>4799778</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>FINANCE OF AMERICA COS INC</nameOfIssuer>
+        <titleOfClass>CL A</titleOfClass>
+        <cusip>31738L206</cusip>
+        <value>25558496</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>1202187</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>1202187</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>FISERV INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>337738108</cusip>
+        <value>83915400</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>380000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>380000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>FRANKLIN TEMPLETON ETF TR</nameOfIssuer>
+        <titleOfClass>FTSE CANADA</titleOfClass>
+        <cusip>35473P827</cusip>
+        <value>213981</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>5750</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>5750</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>GANNETT CO INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>36472T109</cusip>
+        <value>14730908</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>5097200</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>5097200</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ISHARES TR</nameOfIssuer>
+        <titleOfClass>CORE MSCI EURO</titleOfClass>
+        <cusip>46434V738</cusip>
+        <value>2309038</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>38388</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>38388</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ISHARES INC</nameOfIssuer>
+        <titleOfClass>MSCI CDA ETF</titleOfClass>
+        <cusip>464286509</cusip>
+        <value>510638</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>12531</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>12531</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ISHARES TR</nameOfIssuer>
+        <titleOfClass>MSCI EAFE ETF</titleOfClass>
+        <cusip>464287465</cusip>
+        <value>4695634</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>57453</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>57453</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ISHARES INC</nameOfIssuer>
+        <titleOfClass>MSCI JPN ETF</titleOfClass>
+        <cusip>46434G822</cusip>
+        <value>980751</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>14305</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>14305</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ISHARES TR</nameOfIssuer>
+        <titleOfClass>MSCI PAC JP ETF</titleOfClass>
+        <cusip>464286665</cusip>
+        <value>335601</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>7610</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>7610</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>KBR INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>48242W106</cusip>
+        <value>83680800</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>1680000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>1680000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>LAS VEGAS SANDS CORP</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>517834107</cusip>
+        <value>57945000</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>1500000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>1500000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>LITHIA MOTORS INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>536797103</cusip>
+        <value>93228891</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>317602</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>317602</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>MADISON SQUARE GARDEN SPORTS</nameOfIssuer>
+        <titleOfClass>CL A</titleOfClass>
+        <cusip>55825T103</cusip>
+        <value>3894400</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>20000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>20000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>MANCHESTER UNITED PLC</nameOfIssuer>
+        <titleOfClass>ORD CL A</titleOfClass>
+        <cusip>G5784H106</cusip>
+        <value>37172157</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>2839737</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>2839737</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>MICROSOFT CORP</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>594918104</cusip>
+        <value>39680600</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>105705</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>105705</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>MIRION TECHNOLOGIES INC</nameOfIssuer>
+        <titleOfClass>COM CL A</titleOfClass>
+        <cusip>60471A101</cusip>
+        <value>101862500</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>7025000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>7025000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>MOTOROLA SOLUTIONS INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>620076307</cusip>
+        <value>48159100</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>110000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>110000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>MP MATERIALS CORP</nameOfIssuer>
+        <titleOfClass>COM CL A</titleOfClass>
+        <cusip>553368101</cusip>
+        <value>87876000</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>3600000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>3600000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>MR COOPER GROUP INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>62482R107</cusip>
+        <value>342127760</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>2860600</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>2860600</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>ONEMAIN HOLDINGS INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>68268W103</cusip>
+        <value>43454320</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>889000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>889000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>REGAL REXNORD CORP</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>758750103</cusip>
+        <value>82628459</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>725766</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>725766</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>SEA LTD</nameOfIssuer>
+        <titleOfClass>SPONSORD ADS</titleOfClass>
+        <cusip>81141R100</cusip>
+        <value>42547308</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>326058</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>326058</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>SUNOCO LP</nameOfIssuer>
+        <titleOfClass>COM UT REP LP</titleOfClass>
+        <cusip>86765K109</cusip>
+        <value>16547100</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>285000</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>285000</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>SUNOPTA INC</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>8676EP108</cusip>
+        <value>29633029</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>6097331</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>6097331</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>THE CIGNA GROUP</nameOfIssuer>
+        <titleOfClass>COM</titleOfClass>
+        <cusip>125523100</cusip>
+        <value>79175495</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>240655</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>240655</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>VANGUARD INTL EQUITY INDEX F</nameOfIssuer>
+        <titleOfClass>FTSE EUROPE ETF</titleOfClass>
+        <cusip>922042874</cusip>
+        <value>1733696</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>24693</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>24693</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>VANGUARD SCOTTSDALE FDS</nameOfIssuer>
+        <titleOfClass>INTER TERM TREAS</titleOfClass>
+        <cusip>92206C706</cusip>
+        <value>1486663</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>25028</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>25028</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>VANGUARD INDEX FDS</nameOfIssuer>
+        <titleOfClass>S&amp;P 500 ETF SHS</titleOfClass>
+        <cusip>922908363</cusip>
+        <value>22402879</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>43593</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>43593</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>VANGUARD MUN BD FDS</nameOfIssuer>
+        <titleOfClass>TAX EXEMPT BD</titleOfClass>
+        <cusip>922907746</cusip>
+        <value>638907</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>12876</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>12876</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>VERTIV HOLDINGS CO-A</nameOfIssuer>
+        <titleOfClass>COM CL A</titleOfClass>
+        <cusip>92537N108</cusip>
+        <value>155792366</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>2157789</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>2157789</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+    <infoTable>
+        <nameOfIssuer>WILLSCOT HOLDINGS CORP</nameOfIssuer>
+        <titleOfClass>COM CL A</titleOfClass>
+        <cusip>971378104</cusip>
+        <value>112062245</value>
+        <shrsOrPrnAmt>
+            <sshPrnamt>4031016</sshPrnamt>
+            <sshPrnamtType>SH</sshPrnamtType>
+        </shrsOrPrnAmt>
+        <investmentDiscretion>SOLE</investmentDiscretion>
+        <votingAuthority>
+            <Sole>4031016</Sole>
+            <Shared>0</Shared>
+            <None>0</None>
+        </votingAuthority>
+    </infoTable>
+</informationTable>

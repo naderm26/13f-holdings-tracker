@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<informationTable xsi:schemaLocation="http://www.sec.gov/edgar/document/thirteenf/informationtable eis_13FDocument.xsd"
+	xmlns="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:n1="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<infoTable>
+		<nameOfIssuer>CAPITAL ONE FINL CORP</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>14040H105</cusip>
+		<value>143795286</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>806389</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>806389</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>CARDLYTICS INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>14161W105</cusip>
+		<value>23628656</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>6368910</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>6368910</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>CARVANA CO</nameOfIssuer>
+		<titleOfClass>CL A</titleOfClass>
+		<cusip>146869102</cusip>
+		<value>1296988798</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>6377797</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>6377797</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>HILTON GRAND VACATIONS INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>43283X105</cusip>
+		<value>252876799</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>6492344</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>6492344</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+</informationTable>
