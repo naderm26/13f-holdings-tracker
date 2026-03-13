@@ -16,7 +16,7 @@ jobs:
 
       - name: Run fetch and parse scripts
         run: |
-          python fetch_data.py
+          python fetch_13f.py
           python parse_13f.py
 
       - name: Commit results
