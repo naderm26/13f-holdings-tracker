@@ -1,25 +1,16 @@
 import xml.etree.ElementTree as ET
 import csv
+import os
+import glob
+import json
 
-FUNDS = [
-    {
-        "input_xml":  "pershing_latest_13f.xml",
-        "output_csv": "pershing_latest_13f.csv"
-    },
-    {
-        "input_xml":  "duquesne_latest_13f.xml",
-        "output_csv": "duquesne_latest_13f.csv"
-    }
-]
-
-def parse_fund(fund):
-    tree = ET.parse(fund["input_xml"])
+def parse_xml(xml_file, csv_file):
+    tree = ET.parse(xml_file)
     root = tree.getroot()
 
-    with open(fund["output_csv"], "w", newline="") as f:
+    with open(csv_file, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["Company", "CUSIP", "Shares", "Value", "Discretion"])
-
         for entry in root.findall(".//{*}infoTable"):
             name       = entry.findtext("{*}nameOfIssuer", default="").strip()
             cusip      = entry.findtext("{*}cusip", default="").strip()
@@ -28,7 +19,21 @@ def parse_fund(fund):
             discretion = entry.findtext("{*}investmentDiscretion", default="").strip()
             writer.writerow([name, cusip, int(shares), int(value), discretion])
 
-    print(f"Saved to {fund['output_csv']}")
+    print(f"  Parsed {xml_file} -> {csv_file}")
 
-for fund in FUNDS:
-    parse_fund(fund)
+with open("funds.json") as f:
+    funds = json.load(f)
+
+os.makedirs("data", exist_ok=True)
+
+for fund in funds:
+    fund_id = fund["id"]
+    xml_files = sorted(glob.glob(f"data/{fund_id}_*.xml"), reverse=True)
+    for xml_file in xml_files:
+        csv_file = xml_file.replace(".xml", ".csv")
+        if not os.path.exists(csv_file):
+            parse_xml(xml_file, csv_file)
+        else:
+            print(f"  {csv_file} already exists, skipping")
+
+print("\nDone parsing all funds.")
