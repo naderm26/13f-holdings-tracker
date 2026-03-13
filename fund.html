@@ -95,6 +95,7 @@
   const fundId  = params.get("fund") || "pershing";
 
   let fundName  = fundId;
+  let valueMultiplier = 1;
   let quarters  = [];       // sorted descending e.g. ["2025Q4","2025Q3","2025Q2","2025Q1"]
   let csvCache  = {};       // { "2025Q4": [{company,cusip,shares,value},...] }
   let activeQ   = null;
@@ -108,6 +109,7 @@
       const f = funds.find(x => x.id === fundId);
       if (f) {
         fundName = f.name;
+        valueMultiplier = f.value_multiplier || 1;
         document.getElementById("fund-name").textContent = f.name;
         document.title = f.name + " — 13F Holdings";
         loadQuarters(f);
@@ -128,7 +130,7 @@
     let q = Math.ceil((now.getMonth() + 1) / 3);
 
     const candidates = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 12; i++) {
       candidates.push(`${year}Q${q}`);
       q--;
       if (q === 0) { q = 4; year--; }
@@ -140,7 +142,7 @@
       try {
         const r = await fetch(url);
         if (r.ok) found.push(label);
-        if (found.length === 4) break;
+        if (found.length === 8) break;
       } catch { /* skip */ }
     }
 
@@ -219,7 +221,7 @@
 
     const tv = rows.reduce((s, r) => s + r.value, 0);
     document.getElementById("total-value").textContent =
-      "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      "$" + (tv * valueMultiplier).toLocaleString("en-US", { maximumFractionDigits: 0 });
     document.getElementById("total-positions").textContent = rows.length;
     document.getElementById("period").textContent = `Holdings as of ${quarterToDate(activeQ)}`;
 
@@ -234,10 +236,10 @@
     function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
     const rowsHtml = sorted.map(r => {
-      const pct      = tv > 0 ? ((r.value / tv) * 100).toFixed(1) : "0.0";
-      const price    = r.shares > 0 ? r.value / r.shares : 0;
+      const pct      = tv > 0 ? ((r.value * valueMultiplier / (tv * valueMultiplier)) * 100).toFixed(1) : "0.0";
+      const price    = r.shares > 0 ? (r.value * valueMultiplier) / r.shares : 0;
       const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const valueStr = "$" + r.value.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      const valueStr = "$" + (r.value * valueMultiplier).toLocaleString("en-US", { maximumFractionDigits: 0 });
       const chg1     = getChange(r.shares, prev1, r.cusip);
       const chg4     = getChange(r.shares, prev4, r.cusip);
       return `
@@ -261,8 +263,8 @@
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
             <th class="num">Reported Price</th>
             <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
-            <th class="num">vs Prior Quarter</th>
-            <th class="num">vs Prior Year</th>
+            <th class="num">Shares vs Prior Quarter</th>
+            <th class="num">Shares vs Prior Year</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
