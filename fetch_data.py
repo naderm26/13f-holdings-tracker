@@ -51,7 +51,7 @@ def fetch_fund(fund):
                 "accession_raw": filings["accessionNumber"][i],
                 "period": filings["reportDate"][i]
             })
-        if len(collected) == 4:
+        if len(collected) == 8:
             break
 
     os.makedirs("data", exist_ok=True)
