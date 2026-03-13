@@ -7,6 +7,7 @@
   {
     "id": "duquesne",
     "name": "Duquesne Family Office LLC",
-    "cik": "0001536411"
+    "cik": "0001536411",
+    "value_multiplier": 1000
   }
 ]
