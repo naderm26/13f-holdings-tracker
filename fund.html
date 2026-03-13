@@ -2,190 +2,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>13F Holdings Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #f7f6f3;
-      --surface: #ffffff;
-      --border: #e8e6e1;
-      --text: #1a1917;
-      --muted: #8a8780;
-      --accent: #2d5a3d;
-      --accent-light: #eef4f0;
-      --mono: 'DM Mono', monospace;
-      --sans: 'DM Sans', sans-serif;
+      --bg: #f7f6f3; --surface: #ffffff; --border: #e8e6e1;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--sans);
-      min-height: 100vh;
-      padding: 0;
-    }
-
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
     header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 2rem 3rem;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 1rem;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 2rem 3rem; display: flex; align-items: flex-end;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
-
-    .header-left h1 {
-      font-size: 1.1rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--text);
-    }
-
-    .back-link {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      text-decoration: none;
-      letter-spacing: 0.03em;
-    }
-
+    .header-left h1 { font-size: 1.1rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
+    .back-link { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-decoration: none; display: block; margin-bottom: 0.4rem; }
     .back-link:hover { color: var(--text); }
-
-    .header-right {
-      display: flex;
-      gap: 2.5rem;
-    }
-
+    .header-right { display: flex; gap: 2.5rem; }
     .stat { text-align: right; }
-
-    .stat-label {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    .stat-value {
-      font-family: var(--mono);
-      font-size: 1.4rem;
-      font-weight: 500;
-      color: var(--text);
-      margin-top: 0.15rem;
-    }
-
+    .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+    .stat-value { font-family: var(--mono); font-size: 1.4rem; font-weight: 500; color: var(--text); margin-top: 0.15rem; }
     .stat-value.green { color: var(--accent); }
-
-    main {
-      padding: 2.5rem 3rem;
-      max-width: 1100px;
-      margin: 0 auto;
+    main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
+    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+    .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .q-btn {
+      font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 4px; background: var(--surface);
+      color: var(--muted); cursor: pointer; transition: all 0.15s;
     }
-
-    .section-label {
-      font-size: 1.4rem;
-      letter-spacing: 0.02em;
-      color: var(--text);
-      font-weight: 500;
-      margin-bottom: 0.4rem;
-    }
-
-    .period-line {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-bottom: 1.25rem;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      overflow: hidden;
-    }
-
-    thead tr {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-
-    th {
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-weight: 500;
-      color: var(--muted);
-      padding: 0.85rem 1.25rem;
-      text-align: left;
-      cursor: pointer;
-      user-select: none;
-      white-space: nowrap;
-    }
-
+    .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; color: var(--muted); padding: 0.85rem 1.25rem; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; }
     th:hover { color: var(--text); }
     th.num, td.num { text-align: center; }
-
-    td {
-      padding: 0.9rem 1.25rem;
-      font-size: 0.875rem;
-      border-bottom: 1px solid var(--border);
-      vertical-align: middle;
-    }
-
+    td { padding: 0.9rem 1.25rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
-
     .company-name { font-weight: 500; color: var(--text); }
-
-    .cusip {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 0.15rem;
-    }
-
-    td.num {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--text);
-    }
-
-    .weight-pct {
-      font-family: var(--mono);
-      font-size: 0.82rem;
-      color: var(--text);
-      text-align: center;
-    }
-
-    .loading, .error {
-      text-align: center;
-      padding: 4rem;
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
+    .cusip { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; }
+    .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .chg.pos { color: var(--green); }
+    .chg.neg { color: var(--red); }
+    .chg.new { color: var(--green); font-size: 0.72rem; letter-spacing: 0.05em; }
+    .chg.exited { color: var(--red); font-size: 0.72rem; letter-spacing: 0.05em; }
+    .chg.na { color: var(--muted); }
+    .loading, .error { text-align: center; padding: 4rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
     .error { color: #c0392b; }
-
-    @media (max-width: 640px) {
-      header, main { padding: 1.5rem; }
-      .header-right { gap: 1.5rem; }
-      .stat-value { font-size: 1.1rem; }
-      th, td { padding: 0.75rem 0.9rem; }
-    }
+    @media (max-width: 640px) { header, main { padding: 1.5rem; } .header-right { gap: 1.5rem; } }
   </style>
 </head>
 <body>
-
 <header>
   <div class="header-left">
     <a class="back-link" href="index.html">← All Funds</a>
@@ -206,105 +82,175 @@
 <main>
   <div class="section-label" id="fund-name">Loading...</div>
   <div class="period-line" id="period">Loading...</div>
-  <div id="table-container">
-    <div class="loading">Fetching holdings data...</div>
-  </div>
+  <div class="quarter-selector" id="quarter-selector"></div>
+  <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
 </main>
 
 <script>
   const GITHUB_USER = "naderm26";
   const GITHUB_REPO = "13f-holdings-tracker";
+  const BASE = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main`;
 
-  const FUNDS = {
-    pershing: {
-      name: "Pershing Square Capital Management",
-      csv:  "pershing_latest_13f.csv",
-      cik:  "CIK0001336528"
-    },
-    duquesne: {
-      name: "Duquesne Family Office LLC",
-      csv:  "duquesne_latest_13f.csv",
-      cik:  "CIK0001536411"
-    }
-  };
+  const params  = new URLSearchParams(window.location.search);
+  const fundId  = params.get("fund") || "pershing";
 
-  // Read ?fund= from URL
-  const params = new URLSearchParams(window.location.search);
-  const fundKey = params.get("fund") || "pershing";
-  const fund = FUNDS[fundKey] || FUNDS.pershing;
+  let fundName  = fundId;
+  let quarters  = [];       // sorted descending e.g. ["2025Q4","2025Q3","2025Q2","2025Q1"]
+  let csvCache  = {};       // { "2025Q4": [{company,cusip,shares,value},...] }
+  let activeQ   = null;
+  let sortCol   = 3;
+  let sortAsc   = false;
 
-  document.title = fund.name + " — 13F Holdings";
-  document.getElementById("fund-name").textContent = fund.name;
+  // Load funds.json to get display name
+  fetch(`${BASE}/funds.json`)
+    .then(r => r.json())
+    .then(funds => {
+      const f = funds.find(x => x.id === fundId);
+      if (f) {
+        fundName = f.name;
+        document.getElementById("fund-name").textContent = f.name;
+        document.title = f.name + " — 13F Holdings";
+        loadQuarters(f);
+      }
+    });
 
-  const csvUrl = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/${fund.csv}`;
-
-  let allRows = [];
-  let sortCol = 3;
-  let sortAsc = false;
-
-  async function loadData() {
-    try {
-      const res = await fetch(csvUrl);
-      if (!res.ok) throw new Error("Could not fetch CSV (status " + res.status + ")");
-      const text = await res.text();
-      const lines = text.trim().split("\n");
-
-      allRows = lines.slice(1).map(line => {
-        const cols = line.split(",");
-        return {
-          company:    cols[0]?.trim() || "",
-          cusip:      cols[1]?.trim() || "",
-          shares:     parseInt(cols[2]) || 0,
-          value:      parseInt(cols[3]) || 0,
-          discretion: cols[4]?.trim() || ""
-        };
-      });
-
-      const totalValue = allRows.reduce((s, r) => s + r.value, 0);
-      document.getElementById("total-value").textContent =
-        "$" + totalValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
-      document.getElementById("total-positions").textContent = allRows.length;
-
-      renderTable(totalValue);
-    } catch (e) {
-      document.getElementById("table-container").innerHTML =
-        `<div class="error">Failed to load data: ${e.message}</div>`;
-    }
+  function quarterToDate(q) {
+    // "2025Q4" -> "December 31, 2025"
+    const [year, qn] = q.split("Q");
+    const ends = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
+    return `${ends[qn]}, ${year}`;
   }
 
-  function renderTable(totalValue) {
+  async function loadQuarters(fund) {
+    // Try to find available quarters by attempting to fetch up to 8 possible quarters
+    const now = new Date();
+    let year = now.getFullYear();
+    let q = Math.ceil((now.getMonth() + 1) / 3);
+
+    const candidates = [];
+    for (let i = 0; i < 8; i++) {
+      candidates.push(`${year}Q${q}`);
+      q--;
+      if (q === 0) { q = 4; year--; }
+    }
+
+    const found = [];
+    for (const label of candidates) {
+      const url = `${BASE}/data/${fund.id}_${label}.csv`;
+      try {
+        const r = await fetch(url);
+        if (r.ok) found.push(label);
+        if (found.length === 4) break;
+      } catch { /* skip */ }
+    }
+
+    if (found.length === 0) {
+      document.getElementById("table-container").innerHTML =
+        `<div class="error">No data found. Run the workflow to fetch holdings.</div>`;
+      return;
+    }
+
+    quarters = found;
+    activeQ  = found[0];
+
+    // Render quarter buttons
+    const sel = document.getElementById("quarter-selector");
+    sel.innerHTML = found.map(q =>
+      `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
+    ).join("");
+
+    await loadCSV(activeQ);
+    renderTable();
+  }
+
+  async function loadCSV(label) {
+    if (csvCache[label]) return;
+    const url = `${BASE}/data/${fundId}_${label}.csv`;
+    const r   = await fetch(url);
+    const text = await r.text();
+    const lines = text.trim().split("\n");
+    csvCache[label] = lines.slice(1).map(line => {
+      const cols = line.split(",");
+      return {
+        company:    cols[0]?.trim() || "",
+        cusip:      cols[1]?.trim() || "",
+        shares:     parseInt(cols[2]) || 0,
+        value:      parseInt(cols[3]) || 0,
+        discretion: cols[4]?.trim() || ""
+      };
+    });
+  }
+
+  async function switchQuarter(q) {
+    activeQ = q;
+    document.querySelectorAll(".q-btn").forEach(b => {
+      b.classList.toggle("active", b.textContent === q);
+    });
+    await loadCSV(q);
+    // preload adjacent quarters for comparison
+    const idx = quarters.indexOf(q);
+    if (idx + 1 < quarters.length) await loadCSV(quarters[idx + 1]);
+    if (idx + 3 < quarters.length) await loadCSV(quarters[idx + 3]);
+    renderTable();
+  }
+
+  function getChange(currentShares, oldRows, cusip) {
+    if (!oldRows) return null;
+    const old = oldRows.find(r => r.cusip === cusip);
+    if (!old) return "NEW";
+    if (currentShares === 0) return "EXITED";
+    return ((currentShares - old.shares) / old.shares) * 100;
+  }
+
+  function fmtChg(val) {
+    if (val === null)     return `<span class="chg na">—</span>`;
+    if (val === "NEW")    return `<span class="chg new">NEW</span>`;
+    if (val === "EXITED") return `<span class="chg exited">EXITED</span>`;
+    const sign = val >= 0 ? "+" : "";
+    const cls  = val >= 0 ? "pos" : "neg";
+    return `<span class="chg ${cls}">${sign}${val.toFixed(1)}%</span>`;
+  }
+
+  function renderTable() {
+    const rows   = csvCache[activeQ] || [];
+    const idx    = quarters.indexOf(activeQ);
+    const prev1  = idx + 1 < quarters.length ? csvCache[quarters[idx + 1]] : null;
+    const prev4  = idx + 3 < quarters.length ? csvCache[quarters[idx + 3]] : null;
+
+    const tv = rows.reduce((s, r) => s + r.value, 0);
+    document.getElementById("total-value").textContent =
+      "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
+    document.getElementById("total-positions").textContent = rows.length;
+    document.getElementById("period").textContent = `Holdings as of ${quarterToDate(activeQ)}`;
+
     const keys = ["company", "cusip", "shares", "value", "discretion"];
-    const sorted = [...allRows].sort((a, b) => {
+    const sorted = [...rows].sort((a, b) => {
       const key = keys[sortCol];
       const av = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
       const bv = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
       return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
     });
 
-    const tv = totalValue || allRows.reduce((s, r) => s + r.value, 0);
+    function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
-    const rows = sorted.map(r => {
+    const rowsHtml = sorted.map(r => {
       const pct      = tv > 0 ? ((r.value / tv) * 100).toFixed(1) : "0.0";
       const price    = r.shares > 0 ? r.value / r.shares : 0;
       const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const valueStr = "$" + r.value.toLocaleString("en-US", { maximumFractionDigits: 0 });
-
+      const chg1     = getChange(r.shares, prev1, r.cusip);
+      const chg4     = getChange(r.shares, prev4, r.cusip);
       return `
         <tr>
-          <td>
-            <div class="company-name">${r.company}</div>
-            <div class="cusip">${r.cusip}</div>
-          </td>
-          <td class="num"><span class="weight-pct">${pct}%</span></td>
+          <td><div class="company-name">${r.company}</div><div class="cusip">${r.cusip}</div></td>
+          <td class="num">${pct}%</td>
           <td class="num">${r.shares.toLocaleString()}</td>
           <td class="num">${priceStr}</td>
           <td class="num">${valueStr}</td>
+          <td class="num">${fmtChg(chg1)}</td>
+          <td class="num">${fmtChg(chg4)}</td>
         </tr>`;
     }).join("");
-
-    function arrow(i) {
-      return sortCol === i ? (sortAsc ? " ↑" : " ↓") : "";
-    }
 
     document.getElementById("table-container").innerHTML = `
       <table>
@@ -315,9 +261,11 @@
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
             <th class="num">Reported Price</th>
             <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
+            <th class="num">vs Prior Quarter</th>
+            <th class="num">vs Prior Year</th>
           </tr>
         </thead>
-        <tbody>${rows}</tbody>
+        <tbody>${rowsHtml}</tbody>
       </table>`;
   }
 
@@ -326,27 +274,6 @@
     else { sortCol = col; sortAsc = false; }
     renderTable();
   }
-
-  async function fetchPeriod() {
-    try {
-      const res  = await fetch(`https://data.sec.gov/submissions/${fund.cik}.json`);
-      const data = await res.json();
-      const filings = data.filings.recent;
-      for (let i = 0; i < filings.form.length; i++) {
-        if (filings.form[i] === "13F-HR") {
-          const d = new Date(filings.reportDate[i] + "T00:00:00");
-          const formatted = d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-          document.getElementById("period").textContent = `Holdings as of ${formatted}`;
-          break;
-        }
-      }
-    } catch(e) {
-      document.getElementById("period").textContent = "Holdings data";
-    }
-  }
-
-  loadData();
-  fetchPeriod();
 </script>
 </body>
 </html>
