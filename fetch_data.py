@@ -1,30 +1,47 @@
 import urllib.request
+import urllib.error
 import json
 import os
+import time
 
 HEADERS = {"User-Agent": "nadermassoudi@aol.com"}
 
-def fetch_url(url):
+def fetch_url(url, retries=4):
     req = urllib.request.Request(url, headers=HEADERS)
-    return urllib.request.urlopen(req).read()
+    for attempt in range(retries):
+        try:
+            return urllib.request.urlopen(req, timeout=30).read()
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                wait = 10 * (attempt + 1)
+                print(f"  Rate limited, waiting {wait}s...")
+                time.sleep(wait)
+            elif e.code == 404:
+                raise  # don't retry 404s
+            else:
+                print(f"  HTTP {e.code}, retrying...")
+                time.sleep(3)
+        except Exception as e:
+            print(f"  Error: {e}, retrying...")
+            time.sleep(3)
+    raise Exception(f"Failed after {retries} retries: {url}")
 
 def quarter_label(date_str):
-    # "2025-09-30" -> "2025Q3"
     year, month, _ = date_str.split("-")
     q = (int(month) - 1) // 3 + 1
     return f"{year}Q{q}"
 
-def get_infotable_filename(cik_stripped, accession, accession_raw):
+def get_infotable_filename(cik_stripped, accession):
     index_url = f"https://www.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/index.json"
     try:
         data = json.loads(fetch_url(index_url))
         for item in data.get("directory", {}).get("item", []):
             name = item.get("name", "")
             lower = name.lower()
-            if lower.endswith(".xml") and lower not in ["primary_doc.xml"]:
+            if lower.endswith(".xml") and lower != "primary_doc.xml":
                 if any(k in lower for k in ["infotable", "informationtable", "form13f", "13f"]):
                     return name
-        # fallback: return any xml that isn't primary_doc
+        # fallback: any non-primary xml
         for item in data.get("directory", {}).get("item", []):
             name = item.get("name", "")
             if name.lower().endswith(".xml") and name.lower() != "primary_doc.xml":
@@ -40,8 +57,12 @@ def fetch_fund(fund):
 
     print(f"\nFetching {fund['name']}...")
 
-    submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
-    data = json.loads(fetch_url(submissions_url))
+    try:
+        submissions_url = f"https://data.sec.gov/submissions/CIK{cik}.json"
+        data = json.loads(fetch_url(submissions_url))
+    except Exception as e:
+        print(f"  Skipping — could not load submissions: {e}")
+        return
 
     filings = data["filings"]["recent"]
     collected = []
@@ -53,6 +74,10 @@ def fetch_fund(fund):
             })
         if len(collected) == 8:
             break
+
+    if not collected:
+        print(f"  No 13F-HR filings found, skipping")
+        return
 
     os.makedirs("data", exist_ok=True)
 
@@ -67,17 +92,20 @@ def fetch_fund(fund):
             print(f"  {label} already exists, skipping")
             continue
 
-        filename = get_infotable_filename(cik_stripped, accession, accession_raw)
-        info_url = f"https://www.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/{filename}"
-        print(f"  Fetching {label}: {filename}")
-
         try:
+            filename = get_infotable_filename(cik_stripped, accession)
+            info_url = f"https://www.sec.gov/Archives/edgar/data/{cik_stripped}/{accession}/{filename}"
+            print(f"  Fetching {label}: {filename}")
             xml_data = fetch_url(info_url).decode("utf-8")
             with open(out_file, "w") as f:
                 f.write(xml_data)
             print(f"  Saved {out_file}")
         except Exception as e:
             print(f"  Failed {label}: {e}")
+
+        time.sleep(0.5)  # be polite between filings
+
+    time.sleep(1)  # pause between funds
 
 with open("funds.json") as f:
     funds = json.load(f)
