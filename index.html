@@ -2,52 +2,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>13F Holdings Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <title>13F Insider — Hedge Fund Holdings Tracker</title>
+  <meta name="description" content="Track 13F filings from the world's top hedge fund managers. See what Buffett, Ackman, Burry and others are buying and selling every quarter."/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
       --bg: #f7f6f3; --surface: #ffffff; --border: #e8e6e1;
       --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
-      --accent-light: #eef4f0;
-      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+      --accent-light: #eef4f0; --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 2rem 3rem; }
-    header h1 { font-size: 1.1rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
-    main { max-width: 600px; margin: 4rem auto; padding: 0 2rem; }
-    .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 500; margin-bottom: 1.25rem; }
-    .fund-list { list-style: none; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--surface); }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1.5rem 3rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+    .brand-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 300px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+    }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+
+    /* ── Hero ── */
+    .hero { padding: 2.5rem 3rem 0; max-width: 1300px; margin: 0 auto; }
+    .hero h2 { font-size: 1.6rem; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 0.4rem; }
+    .hero p { font-size: 0.9rem; color: var(--muted); max-width: 560px; line-height: 1.6; }
+
+    /* ── Main layout ── */
+    main { max-width: 1300px; margin: 0 auto; padding: 2rem 3rem 4rem; }
+    .columns { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; align-items: start; }
+
+    /* ── Column headers ── */
+    .col-header { margin-bottom: 0.85rem; }
+    .col-label {
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--accent); font-weight: 600;
+    }
+    .col-desc { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* ── Fund list ── */
+    .fund-list { list-style: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
     .fund-list li { border-bottom: 1px solid var(--border); }
     .fund-list li:last-child { border-bottom: none; }
-    .fund-list a { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.5rem; text-decoration: none; color: var(--text); font-size: 0.95rem; font-weight: 500; transition: background 0.15s; }
+    .fund-list a {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.85rem 1.1rem; text-decoration: none; color: var(--text);
+      font-size: 0.855rem; transition: background 0.1s;
+    }
     .fund-list a:hover { background: var(--accent-light); }
-    .fund-list a::after { content: "→"; font-family: var(--mono); color: var(--muted); font-size: 0.85rem; }
-    .loading { padding: 2rem; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+    .rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 1.4rem; text-align: right; flex-shrink: 0; }
+    .fund-info { flex: 1; min-width: 0; }
+    .fund-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .fund-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
+    .arrow { font-family: var(--mono); color: var(--border); font-size: 0.8rem; flex-shrink: 0; transition: color 0.1s; }
+    .fund-list a:hover .arrow { color: var(--accent); }
+    .loading { padding: 1.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: center; }
+
+    /* ── All funds list — scrollable ── */
+    .scrollable { max-height: 600px; overflow-y: auto; border-radius: 8px; }
+    .scrollable::-webkit-scrollbar { width: 4px; }
+    .scrollable::-webkit-scrollbar-track { background: transparent; }
+    .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
+
+    @media (max-width: 960px) {
+      .columns { grid-template-columns: 1fr 1fr; }
+      .columns > div:last-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 600px) {
+      header, .hero, main { padding-left: 1.25rem; padding-right: 1.25rem; }
+      .columns { grid-template-columns: 1fr; }
+      .columns > div:last-child { grid-column: auto; }
+      #search { width: 200px; }
+    }
   </style>
 </head>
 <body>
-<header><h1>13F Holdings Tracker</h1></header>
+
+<header>
+  <div class="brand">
+    <div class="brand-name">13F Insider</div>
+    <div class="brand-sub">Hedge Fund Holdings Tracker</div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search funds or managers..." autocomplete="off"/>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</header>
+
 <main>
-  <div class="label">Select a Fund</div>
-  <ul class="fund-list" id="fund-list">
-    <li><div class="loading">Loading funds...</div></li>
-  </ul>
+  <div class="columns">
+
+    <div>
+      <div class="col-header">
+        <div class="col-label">Most Followed</div>
+        <div class="col-desc">Managers retail investors watch closely</div>
+      </div>
+      <ul class="fund-list" id="list-popular"><li><div class="loading">Loading...</div></li></ul>
+    </div>
+
+    <div>
+      <div class="col-header">
+        <div class="col-label">All Funds</div>
+        <div class="col-desc">Complete list of tracked managers</div>
+      </div>
+      <ul class="fund-list scrollable" id="list-all"><li><div class="loading">Loading...</div></li></ul>
+    </div>
+
+  </div>
 </main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F-HR filings · Updated quarterly · 13FInsider.com
+</footer>
+
 <script>
   const GITHUB_USER = "naderm26";
   const GITHUB_REPO = "13f-holdings-tracker";
+  const API = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents`;
+  const RAW = { "Accept": "application/vnd.github.v3.raw" };
 
-  fetch(`https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/funds.json`)
-    .then(r => r.json())
-    .then(funds => {
-      const list = document.getElementById("fund-list");
-      list.innerHTML = funds.map(f =>
-        `<li><a href="fund.html?fund=${f.id}">${f.name}</a></li>`
-      ).join("");
-    });
+  // Curated popular list — retail investor favorites
+  const POPULAR_IDS = [
+    "berkshire",    // Warren Buffett
+    "pershing",     // Bill Ackman
+    "scion",        // Michael Burry
+    "duquesne",     // Stanley Druckenmiller
+    "appaloosa",    // David Tepper
+    "baupost",      // Seth Klarman
+    "third_point",  // Daniel Loeb
+    "greenlight",   // David Einhorn
+    "viking",       // Andreas Halvorsen
+    "tci",          // Chris Hohn
+  ];
+
+  let allFunds = [];
+  let top100   = [];
+
+  function truncate(name, max = 35) {
+    return name.length > max ? name.slice(0, max).trimEnd() + "…" : name;
+  }
+
+  function fmtAUM(aum) {
+    if (!aum) return "";
+    if (aum >= 1e12) return `$${(aum / 1e12).toFixed(1)}T`;
+    if (aum >= 1e9)  return `$${(aum / 1e9).toFixed(1)}B`;
+    if (aum >= 1e6)  return `$${(aum / 1e6).toFixed(0)}M`;
+    return `$${aum.toLocaleString()}`;
+  }
+
+  function fundItem(id, name, rank, meta) {
+    return `
+      <li>
+        <a href="fund.html?fund=${id}">
+          <span class="rank">${rank}.</span>
+          <span class="fund-info">
+            <span class="fund-name">${truncate(name)}</span>
+            ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
+          </span>
+          <span class="arrow">→</span>
+        </a>
+      </li>`;
+  }
+
+  async function loadData() {
+    const fundsRes = await fetch(`${API}/funds.json`, { headers: RAW });
+    allFunds = await fundsRes.json();
+    renderPopular();
+    renderAll();
+  }
+
+  function renderPopular() {
+    const el = document.getElementById("list-popular");
+    const funds = POPULAR_IDS.map(id => allFunds.find(f => f.id === id)).filter(Boolean);
+    el.innerHTML = funds.map((f, i) => fundItem(f.id, f.name, i + 1, null)).join("");
+  }
+
+  function renderAll() {
+    const el = document.getElementById("list-all");
+    el.innerHTML = allFunds.map((f, i) => fundItem(f.id, f.name, i + 1, null)).join("");
+  }
+
+  // ── Search ─────────────────────────────────────────────────────
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q || allFunds.length === 0) { searchResults.classList.remove("visible"); return; }
+    const matches = allFunds.filter(f => f.name.toLowerCase().includes(q)).slice(0, 8);
+    if (matches.length === 0) {
+      searchResults.innerHTML = `<div class="no-results">No funds found</div>`;
+    } else {
+      searchResults.innerHTML = matches.map((f, i) => `
+        <a class="search-result-item" href="fund.html?fund=${f.id}">
+          <span class="search-result-num">${i + 1}.</span>
+          <span>${f.name}</span>
+        </a>`).join("");
+    }
+    searchResults.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.classList.remove("visible");
+    }
+  });
+
+  loadData();
 </script>
 </body>
 </html>
