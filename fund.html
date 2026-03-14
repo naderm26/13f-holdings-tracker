@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -96,14 +95,13 @@
   const fundId = params.get("fund") || "pershing";
 
   let FUND_CONFIG = null;
-  let allQuarters = [];   // up to 8 quarters (for comparison data)
-  let showQuarters = [];  // only 4 most recent (for tab buttons)
+  let allQuarters = [];
+  let showQuarters = [];
   let csvCache    = {};
   let activeQ     = null;
   let sortCol     = 3;
   let sortAsc     = false;
 
-  // ── Bootstrap ─────────────────────────────────────────────────
   fetch(`${API}/funds.json`, { headers: RAW_HEADERS })
     .then(r => r.json())
     .then(funds => {
@@ -123,7 +121,6 @@
         `<div class="error">Failed to load fund config: ${e.message}</div>`;
     });
 
-  // ── Quarter discovery ─────────────────────────────────────────
   async function loadQuarters() {
     const now  = new Date();
     let year   = now.getFullYear();
@@ -152,11 +149,10 @@
       return;
     }
 
-    allQuarters  = found;           // up to 8, used for comparison lookups
-    showQuarters = found.slice(0, 4); // only 4 shown as tabs
+    allQuarters  = found;
+    showQuarters = found.slice(0, 4);
     activeQ      = showQuarters[0];
 
-    // Render only 4 quarter buttons
     document.getElementById("quarter-selector").innerHTML = showQuarters.map(q =>
       `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
     ).join("");
@@ -168,7 +164,6 @@
     renderTable();
   }
 
-  // ── CSV loader ────────────────────────────────────────────────
   async function loadCSV(label) {
     if (csvCache[label]) return;
     const r     = await fetch(`${API}/data/${fundId}_${label}.csv`, { headers: RAW_HEADERS });
@@ -186,7 +181,6 @@
     });
   }
 
-  // ── Quarter switcher ──────────────────────────────────────────
   async function switchQuarter(q) {
     activeQ = q;
     document.querySelectorAll(".q-btn").forEach(b =>
@@ -199,16 +193,15 @@
     renderTable();
   }
 
-  // ── Helpers ───────────────────────────────────────────────────
   function quarterToDate(q) {
     const [year, qn] = q.split("Q");
     const ends = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
     return `${ends[qn]}, ${year}`;
   }
 
-  function getChange(currentShares, oldRows, cusip) {
+  function getChange(currentShares, oldRows, company) {
     if (!oldRows) return null;
-    const old = oldRows.find(r => r.cusip === cusip);
+    const old = oldRows.find(r => r.company === company);
     if (!old)   return "NEW";
     if (currentShares === 0) return "EXITED";
     return ((currentShares - old.shares) / old.shares) * 100;
@@ -223,13 +216,27 @@
     return `<span class="chg ${cls}">${sign}${val.toFixed(1)}%</span>`;
   }
 
-  // ── Render ────────────────────────────────────────────────────
+  function groupByCompany(rows) {
+    const map = new Map();
+    for (const r of rows) {
+      const key = r.company;
+      if (map.has(key)) {
+        const g = map.get(key);
+        g.shares += r.shares;
+        g.value  += r.value;
+      } else {
+        map.set(key, { ...r });
+      }
+    }
+    return Array.from(map.values());
+  }
+
   function renderTable() {
     const mult  = (FUND_CONFIG && FUND_CONFIG.value_multiplier) ? FUND_CONFIG.value_multiplier : 1;
-    const rows  = csvCache[activeQ] || [];
+    const rows  = groupByCompany(csvCache[activeQ] || []);
     const idx   = allQuarters.indexOf(activeQ);
-    const prev1 = idx + 1 < allQuarters.length ? csvCache[allQuarters[idx + 1]] : null;
-    const prev4 = idx + 4 < allQuarters.length ? csvCache[allQuarters[idx + 4]] : null;
+    const prev1 = idx + 1 < allQuarters.length ? groupByCompany(csvCache[allQuarters[idx + 1]] || []) : null;
+    const prev4 = idx + 4 < allQuarters.length ? groupByCompany(csvCache[allQuarters[idx + 4]] || []) : null;
 
     const tv = rows.reduce((s, r) => s + r.value, 0) * mult;
 
@@ -255,8 +262,8 @@
       const price    = r.shares > 0 ? adjValue / r.shares : 0;
       const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const valueStr = "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
-      const chg1     = getChange(r.shares, prev1, r.cusip);
-      const chg4     = getChange(r.shares, prev4, r.cusip);
+      const chg1     = getChange(r.shares, prev1, r.company);
+      const chg4     = getChange(r.shares, prev4, r.company);
       return `
         <tr>
           <td><div class="company-name">${r.company}</div><div class="cusip">${r.cusip}</div></td>
