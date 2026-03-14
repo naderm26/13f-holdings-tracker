@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,13 +96,14 @@
   const fundId = params.get("fund") || "pershing";
 
   let FUND_CONFIG = null;
-  let allQuarters = [];
-  let showQuarters = [];
+  let allQuarters = [];   // up to 8 quarters (for comparison data)
+  let showQuarters = [];  // only 4 most recent (for tab buttons)
   let csvCache    = {};
   let activeQ     = null;
   let sortCol     = 3;
   let sortAsc     = false;
 
+  // ── Bootstrap ─────────────────────────────────────────────────
   fetch(`${API}/funds.json`, { headers: RAW_HEADERS })
     .then(r => r.json())
     .then(funds => {
@@ -121,6 +123,7 @@
         `<div class="error">Failed to load fund config: ${e.message}</div>`;
     });
 
+  // ── Quarter discovery ─────────────────────────────────────────
   async function loadQuarters() {
     const now  = new Date();
     let year   = now.getFullYear();
@@ -149,10 +152,11 @@
       return;
     }
 
-    allQuarters  = found;
-    showQuarters = found.slice(0, 4);
+    allQuarters  = found;           // up to 8, used for comparison lookups
+    showQuarters = found.slice(0, 4); // only 4 shown as tabs
     activeQ      = showQuarters[0];
 
+    // Render only 4 quarter buttons
     document.getElementById("quarter-selector").innerHTML = showQuarters.map(q =>
       `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
     ).join("");
@@ -164,6 +168,7 @@
     renderTable();
   }
 
+  // ── CSV loader ────────────────────────────────────────────────
   async function loadCSV(label) {
     if (csvCache[label]) return;
     const r     = await fetch(`${API}/data/${fundId}_${label}.csv`, { headers: RAW_HEADERS });
@@ -181,6 +186,7 @@
     });
   }
 
+  // ── Quarter switcher ──────────────────────────────────────────
   async function switchQuarter(q) {
     activeQ = q;
     document.querySelectorAll(".q-btn").forEach(b =>
@@ -193,15 +199,17 @@
     renderTable();
   }
 
+  // ── Helpers ───────────────────────────────────────────────────
   function quarterToDate(q) {
     const [year, qn] = q.split("Q");
     const ends = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
     return `${ends[qn]}, ${year}`;
   }
 
-  function getChange(currentShares, oldRows, company) {
+  function getChange(currentShares, oldRows, cusip, company) {
     if (!oldRows) return null;
-    const old = oldRows.find(r => r.company === company);
+    let old = cusip ? oldRows.find(r => r.cusip === cusip) : null;
+    if (!old) old = oldRows.find(r => r.company === company);
     if (!old)   return "NEW";
     if (currentShares === 0) return "EXITED";
     return ((currentShares - old.shares) / old.shares) * 100;
@@ -216,10 +224,11 @@
     return `<span class="chg ${cls}">${sign}${val.toFixed(1)}%</span>`;
   }
 
+  // ── Group rows by CUSIP (fall back to company name) ───────────
   function groupByCompany(rows) {
     const map = new Map();
     for (const r of rows) {
-      const key = r.company;
+      const key = r.cusip || r.company;
       if (map.has(key)) {
         const g = map.get(key);
         g.shares += r.shares;
@@ -231,6 +240,7 @@
     return Array.from(map.values());
   }
 
+  // ── Render ────────────────────────────────────────────────────
   function renderTable() {
     const mult  = (FUND_CONFIG && FUND_CONFIG.value_multiplier) ? FUND_CONFIG.value_multiplier : 1;
     const rows  = groupByCompany(csvCache[activeQ] || []);
@@ -262,8 +272,8 @@
       const price    = r.shares > 0 ? adjValue / r.shares : 0;
       const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       const valueStr = "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
-      const chg1     = getChange(r.shares, prev1, r.company);
-      const chg4     = getChange(r.shares, prev4, r.company);
+      const chg1     = getChange(r.shares, prev1, r.cusip, r.company);
+      const chg4     = getChange(r.shares, prev4, r.cusip, r.company);
       return `
         <tr>
           <td><div class="company-name">${r.company}</div><div class="cusip">${r.cusip}</div></td>
