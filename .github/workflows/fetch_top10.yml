@@ -1,0 +1,28 @@
+name: Fetch Top 10 Funds
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 1'  # Every Monday at noon UTC
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch top 10 funds
+        run: python fetch_top10.py
+
+      - name: Parse CSVs
+        run: python parse_13f.py
+
+      - name: Commit data
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/
+          git commit -m "Update top 10 fund holdings" || echo "No changes"
+          git push --force
