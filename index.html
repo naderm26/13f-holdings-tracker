@@ -152,10 +152,7 @@
 </footer>
 
 <script>
-  const GITHUB_USER = "naderm26";
-  const GITHUB_REPO = "13f-holdings-tracker";
-  const API = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents`;
-  const RAW = { "Accept": "application/vnd.github.v3.raw" };
+  const BASE = "https://naderm26.github.io/13f-holdings-tracker";
 
   // Curated popular list — retail investor favorites
   const POPULAR_IDS = [
@@ -200,13 +197,10 @@
       </li>`;
   }
 
-async function loadData() {
-    const fundsRes = await fetch(`${API}/funds.json`, { headers: RAW });
+  async function loadData() {
+    const fundsRes = await fetch(`${BASE}/funds.json`);
     const text = await fundsRes.text();
-    console.log("raw text:", text.substring(0, 200));
-    console.log("type:", typeof text);
     allFunds = JSON.parse(text);
-    console.log("allFunds:", allFunds);
     renderPopular();
     renderAll();
   }
