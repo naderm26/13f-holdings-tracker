@@ -105,7 +105,8 @@
 
   // ── Bootstrap ─────────────────────────────────────────────────
   fetch(`${API}/funds.json`, { headers: RAW_HEADERS })
-    .then(r => r.json())
+    .then(r => r.text())
+    .then(text => JSON.parse(text))
     .then(funds => {
       const f = funds.find(x => x.id === fundId);
       if (!f) {
