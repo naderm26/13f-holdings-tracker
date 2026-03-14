@@ -200,10 +200,13 @@
       </li>`;
   }
 
-  async function loadData() {
+async function loadData() {
     const fundsRes = await fetch(`${API}/funds.json`, { headers: RAW });
     const text = await fundsRes.text();
+    console.log("raw text:", text.substring(0, 200));
+    console.log("type:", typeof text);
     allFunds = JSON.parse(text);
+    console.log("allFunds:", allFunds);
     renderPopular();
     renderAll();
   }
