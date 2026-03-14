@@ -90,10 +90,6 @@
 </main>
 
 <script>
-  const GITHUB_USER = "naderm26";
-  const GITHUB_REPO = "13f-holdings-tracker";
-  const API = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents`;
-  const RAW_HEADERS = { "Accept": "application/vnd.github.v3.raw" };
   const PAGES = "/13f-holdings-tracker";
 
   const params = new URLSearchParams(window.location.search);
@@ -145,7 +141,7 @@
     const found = [];
     for (const label of candidates) {
       try {
-        const r = await fetch(`${API}/data/${fundId}_${label}.csv`, { headers: RAW_HEADERS });
+        const r = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
         if (r.ok) found.push(label);
         if (found.length === 8) break;
       } catch { /* skip */ }
@@ -176,7 +172,7 @@
   // ── CSV loader ────────────────────────────────────────────────
   async function loadCSV(label) {
     if (csvCache[label]) return;
-    const r     = await fetch(`${API}/data/${fundId}_${label}.csv`, { headers: RAW_HEADERS });
+    const r     = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
     const text  = await r.text();
     const lines = text.trim().split("\n");
     csvCache[label] = lines.slice(1).map(line => {
