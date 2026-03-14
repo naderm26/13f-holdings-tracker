@@ -56,6 +56,9 @@
     .chg.new { color: var(--green); font-size: 0.72rem; letter-spacing: 0.05em; }
     .chg.exited { color: var(--red); font-size: 0.72rem; letter-spacing: 0.05em; }
     .chg.na { color: var(--muted); }
+    .putcall { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; }
+    .putcall.put  { color: var(--red); }
+    .putcall.call { color: var(--green); }
     .loading, .error { text-align: center; padding: 4rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
     .error { color: #c0392b; }
     @media (max-width: 640px) { header, main { padding: 1.5rem; } .header-right { gap: 1.5rem; } }
@@ -179,7 +182,8 @@
         cusip:      cols[1]?.trim() || "",
         shares:     parseInt(cols[2]) || 0,
         value:      parseInt(cols[3]) || 0,
-        discretion: cols[4]?.trim() || ""
+        discretion: cols[4]?.trim() || "",
+        putcall:    cols[5]?.trim() || ""
       };
     });
   }
@@ -272,6 +276,9 @@
       const valueStr = "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
       const chg1     = getChange(r.shares, prev1, r.cusip, r.company);
       const chg4     = getChange(r.shares, prev4, r.cusip, r.company);
+      const putcallHtml = r.putcall
+        ? `<span class="putcall ${r.putcall.toLowerCase()}">${r.putcall.toUpperCase()}</span>`
+        : `<span class="chg na">—</span>`;
       return `
         <tr>
           <td><div class="company-name">${r.company}</div><div class="cusip">${r.cusip}</div></td>
@@ -281,6 +288,7 @@
           <td class="num">${valueStr}</td>
           <td class="num">${fmtChg(chg1)}</td>
           <td class="num">${fmtChg(chg4)}</td>
+          <td class="num">${putcallHtml}</td>
         </tr>`;
     }).join("");
 
@@ -295,6 +303,7 @@
             <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
             <th class="num">Shares vs Prior Quarter</th>
             <th class="num">Shares vs Prior Year</th>
+            <th class="num">Option</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}</tbody>
