@@ -10,14 +10,15 @@ def parse_xml(xml_file, csv_file):
 
     with open(csv_file, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["Company", "CUSIP", "Shares", "Value", "Discretion"])
+        writer.writerow(["Company", "CUSIP", "Shares", "Value", "Discretion", "PutCall"])
         for entry in root.findall(".//{*}infoTable"):
             name       = entry.findtext("{*}nameOfIssuer", default="").strip()
             cusip      = entry.findtext("{*}cusip", default="").strip()
             shares     = entry.findtext(".//{*}sshPrnamt", default="0").strip()
             value      = entry.findtext("{*}value", default="0").strip()
             discretion = entry.findtext("{*}investmentDiscretion", default="").strip()
-            writer.writerow([name, cusip, int(shares), int(value), discretion])
+            putcall    = entry.findtext("{*}putCall", default="").strip()
+            writer.writerow([name, cusip, int(shares), int(value), discretion, putcall])
 
     print(f"  Parsed {xml_file} -> {csv_file}")
 
