@@ -202,7 +202,8 @@
 
   async function loadData() {
     const fundsRes = await fetch(`${API}/funds.json`, { headers: RAW });
-    allFunds = await fundsRes.json();
+    const text = await fundsRes.text();
+    allFunds = JSON.parse(text);
     renderPopular();
     renderAll();
   }
