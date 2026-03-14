@@ -1,0 +1,26 @@
+name: Reparse CSVs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  reparse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete existing CSVs
+        run: find data/ -name "*.csv" -delete
+
+      - name: Reparse XMLs
+        run: python parse_13f.py
+
+      - name: Commit new CSVs
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/*.csv
+          git commit -m "Reparse CSVs with putCall column"
+          git push
