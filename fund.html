@@ -5,6 +5,10 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>13F Holdings Tracker</title>
+  <meta name="description" content=""/>
+  <meta property="og:title" content=""/>
+  <meta property="og:description" content=""/>
+  <meta property="og:type" content="website"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -132,7 +136,15 @@
       }
       FUND_CONFIG = f;
       document.getElementById("fund-name").textContent = f.name;
-      document.title = f.name + " — 13F Holdings";
+
+      // Parse "Fund Name (Manager Name)" for SEO
+      const nameMatch = f.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const fundOnly    = nameMatch ? nameMatch[1].trim() : f.name;
+      const managerOnly = nameMatch ? nameMatch[2].trim() : f.name;
+      FUND_CONFIG._fundOnly    = fundOnly;
+      FUND_CONFIG._managerOnly = managerOnly;
+
+      document.title = `${fundOnly} (${managerOnly})`;
       loadQuarters();
     })
     .catch(e => {
@@ -299,7 +311,15 @@
     document.getElementById("period").innerHTML =
       `Holdings as of ${quarterToDate(activeQ)}${filedStr}`;
 
-    // Show stale warning if most recent quarter is over 1 year old
+    // SEO meta tags
+    const fundOnly    = FUND_CONFIG._fundOnly    || FUND_CONFIG.name;
+    const managerOnly = FUND_CONFIG._managerOnly || FUND_CONFIG.name;
+    const qLabel      = activeQ.replace("Q", " Q");  // "2025Q4" -> "2025 Q4" -> format nicely
+    const qShort      = `Q${activeQ.split("Q")[1]} ${activeQ.split("Q")[0]}`; // "Q4 2025"
+    const desc = `Track ${managerOnly}'s latest 13F holdings for ${qShort}. See what ${fundOnly} is buying and selling, position changes, and portfolio breakdown.`;
+    document.querySelector('meta[name="description"]').setAttribute("content", desc);
+    document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
+    document.querySelector('meta[property="og:description"]').setAttribute("content", desc);
     const warningEl = document.getElementById("stale-warning");
     const [qYear, qNum] = activeQ.split("Q");
     const quarterDate = new Date(parseInt(qYear), parseInt(qNum) * 3, 1);
