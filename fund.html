@@ -166,11 +166,20 @@
     const idx = allQuarters.indexOf(activeQ);
     if (idx + 1 < allQuarters.length) await loadCSV(allQuarters[idx + 1]);
     if (idx + 4 < allQuarters.length) await loadCSV(allQuarters[idx + 4]);
+    await loadMeta(activeQ);
     renderTable();
   }
 
   // ── CSV loader ────────────────────────────────────────────────
-  async function loadCSV(label) {
+  let metaCache = {};
+
+  async function loadMeta(label) {
+    if (metaCache[label]) return;
+    try {
+      const r = await fetch(`${PAGES}/data/${fundId}_${label}.json`);
+      if (r.ok) metaCache[label] = await r.json();
+    } catch { /* no meta file */ }
+  }
     if (csvCache[label]) return;
     const r     = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
     const text  = await r.text();
@@ -198,10 +207,18 @@
     const idx = allQuarters.indexOf(q);
     if (idx + 1 < allQuarters.length) await loadCSV(allQuarters[idx + 1]);
     if (idx + 4 < allQuarters.length) await loadCSV(allQuarters[idx + 4]);
+    await loadMeta(q);
     renderTable();
   }
 
   // ── Helpers ───────────────────────────────────────────────────
+  function fmtDate(dateStr) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
+  }
+
   function quarterToDate(q) {
     const [year, qn] = q.split("Q");
     const ends = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
@@ -255,8 +272,10 @@
     document.getElementById("total-value").textContent =
       "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
     document.getElementById("total-positions").textContent = rows.length;
-    document.getElementById("period").textContent =
-      `Holdings as of ${quarterToDate(activeQ)}`;
+    const meta = metaCache[activeQ];
+    const filedStr = meta ? ` <span style="font-weight:400">(Filed ${fmtDate(meta.filed)})</span>` : "";
+    document.getElementById("period").innerHTML =
+      `Holdings as of ${quarterToDate(activeQ)}${filedStr}`;
 
     const keys = ["company", "cusip", "shares", "value", "discretion"];
     const sorted = [...rows].sort((a, b) => {
