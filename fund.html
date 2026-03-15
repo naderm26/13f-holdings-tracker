@@ -320,7 +320,7 @@
           <td class="num">${r.shares.toLocaleString()}</td>
           <td class="num">${priceStr}</td>
           <td class="num" style="padding-right:2.5rem; text-align:left">${valueStr}</td>
-          <td class="num right">${fmtChg(chg1)}</td>
+          <td class="num right" style="padding-left:2.5rem">${fmtChg(chg1)}</td>
           <td class="num right">${fmtChg(chg4)}</td>
           <td class="num right">${putcallHtml}</td>
         </tr>`;
@@ -351,8 +351,8 @@
             <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
             <th class="num">Reported Price</th>
-            <th class="num" style="text-align:left" onclick="sort(3)">Value${arrow(3)}</th>
-            <th class="num" style="text-align:right">Shares vs Prior Quarter</th>
+            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
+            <th class="num" style="text-align:right; padding-left:2.5rem">Shares vs Prior Quarter</th>
             <th class="num" style="text-align:right">Shares vs Prior Year</th>
             <th class="num" style="text-align:right">Option</th>
           </tr>
