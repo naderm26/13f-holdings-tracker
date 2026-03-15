@@ -67,7 +67,7 @@
   { "id": "fundsmith", "name": "Terry Smith - Fundsmith", "cik": "0001520023" },
   { "id": "punch_card", "name": "Norbert Lou - Punch Card Management", "cik": "0001631664" },
   { "id": "wedgewood", "name": "David Rolfe - Wedgewood Partners", "cik": "0001016919" },
-  { "id": "third_avenue", "name": "Third Avenue Management", "cik": "0000732905" },
+  { "id": "third_avenue", "name": "Third Avenue Management", "cik": "0001078799" },
   { "id": "gardner_russo", "name": "Thomas Russo - Gardner Russo & Quinn", "cik": "0000828272" },
   { "id": "causeway", "name": "Sarah Ketterer - Causeway Capital Management", "cik": "0001340263" },
   { "id": "chou", "name": "Francis Chou - Chou Associates", "cik": "0001389403" },
@@ -76,5 +76,8 @@
   { "id": "jensen", "name": "Jensen Investment Management", "cik": "0000878500" },
   { "id": "rv_capital", "name": "Robert Vinall - RV Capital GmbH", "cik": "0001780059" },
   { "id": "oakmark_select", "name": "Bill Nygren - Oakmark (Harris Associates)", "cik": "0000764038" },
-  { "id": "ariel_focus", "name": "Ariel Investments (Ariel Focus / Appreciation)", "cik": "0000764191" }
+  { "id": "ariel_focus", "name": "Ariel Investments (Ariel Focus / Appreciation)", "cik": "0000764191" },
+  { "id": "hillman", "name": "Hillman Value Fund", "cik": "0001314620" },
+  { "id": "lindsell_train", "name": "Lindsell Train", "cik": "0001406026" },
+  { "id": "fpa_queens", "name": "FPA Queens Road Small Cap Value Fund", "cik": "0000109501" }
 ]
