@@ -138,14 +138,15 @@
       if (q === 0) { q = 4; year--; }
     }
 
-    const found = [];
-    for (const label of candidates) {
+    // Check all quarters in parallel
+    const checks = await Promise.all(candidates.map(async label => {
       try {
-        const r = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
-        if (r.ok) found.push(label);
-        if (found.length === 8) break;
-      } catch { /* skip */ }
-    }
+        const r = await fetch(`${PAGES}/data/${fundId}_${label}.csv`, { method: "HEAD" });
+        return r.ok ? label : null;
+      } catch { return null; }
+    }));
+
+    const found = checks.filter(Boolean);
 
     if (found.length === 0) {
       document.getElementById("table-container").innerHTML =
@@ -162,11 +163,13 @@
       `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
     ).join("");
 
-    await loadCSV(activeQ);
     const idx = allQuarters.indexOf(activeQ);
-    if (idx + 1 < allQuarters.length) await loadCSV(allQuarters[idx + 1]);
-    if (idx + 4 < allQuarters.length) await loadCSV(allQuarters[idx + 4]);
-    await loadMeta(activeQ);
+    await Promise.all([
+      loadCSV(activeQ),
+      idx + 1 < allQuarters.length ? loadCSV(allQuarters[idx + 1]) : Promise.resolve(),
+      idx + 4 < allQuarters.length ? loadCSV(allQuarters[idx + 4]) : Promise.resolve(),
+      loadMeta(activeQ)
+    ]);
     renderTable();
   }
 
@@ -203,11 +206,13 @@
     document.querySelectorAll(".q-btn").forEach(b =>
       b.classList.toggle("active", b.textContent === q)
     );
-    await loadCSV(q);
     const idx = allQuarters.indexOf(q);
-    if (idx + 1 < allQuarters.length) await loadCSV(allQuarters[idx + 1]);
-    if (idx + 4 < allQuarters.length) await loadCSV(allQuarters[idx + 4]);
-    await loadMeta(q);
+    await Promise.all([
+      loadCSV(q),
+      idx + 1 < allQuarters.length ? loadCSV(allQuarters[idx + 1]) : Promise.resolve(),
+      idx + 4 < allQuarters.length ? loadCSV(allQuarters[idx + 4]) : Promise.resolve(),
+      loadMeta(q)
+    ]);
     renderTable();
   }
 
