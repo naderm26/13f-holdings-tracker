@@ -62,7 +62,7 @@
 
     /* ── Main layout ── */
     main { max-width: 1300px; margin: 0 auto; padding: 2rem 3rem 4rem; }
-    .columns { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; align-items: start; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
 
     /* ── Column headers ── */
     .col-header { margin-bottom: 0.85rem; }
@@ -171,10 +171,6 @@
   let allFunds = [];
   let top100   = [];
 
-  function truncate(name, max = 35) {
-    return name.length > max ? name.slice(0, max).trimEnd() + "…" : name;
-  }
-
   function fmtAUM(aum) {
     if (!aum) return "";
     if (aum >= 1e12) return `$${(aum / 1e12).toFixed(1)}T`;
@@ -189,7 +185,7 @@
         <a href="fund.html?fund=${id}">
           <span class="rank">${rank}.</span>
           <span class="fund-info">
-            <span class="fund-name">${truncate(name)}</span>
+            <span class="fund-name">${name}</span>
             ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
           </span>
           <span class="arrow">→</span>
