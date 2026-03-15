@@ -39,9 +39,12 @@
     }
     .q-btn:hover { border-color: var(--accent); color: var(--accent); }
     .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
-    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; color: var(--muted); padding: 0.85rem 1.25rem; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; color: var(--muted); padding: 0.85rem 1.25rem; text-align: left; cursor: pointer; user-select: none; white-space: normal; line-height: 1.3; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; table-layout: fixed; }
+    th:nth-child(1) { width: 3%; }
+    th:nth-child(2) { width: 25%; }
+    th:nth-child(3), th:nth-child(4), th:nth-child(5), th:nth-child(6), th:nth-child(7), th:nth-child(8), th:nth-child(9) { width: 10.7%; }
     th:hover { color: var(--text); }
     th.num, td.num { text-align: center; }
     td { padding: 0.9rem 1.25rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
