@@ -1,0 +1,41 @@
+name: RSS Monitor — Auto-fetch New 13F Filings
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:       # Also allow manual trigger
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check RSS feed for new filings
+        run: python rss_monitor.py
+
+      - name: Check if new data was found
+        id: check
+        run: |
+          result=$(cat rss_check_result.txt)
+          echo "result=$result" >> $GITHUB_OUTPUT
+          if [ "$result" != "none" ]; then
+            echo "new_data=true" >> $GITHUB_OUTPUT
+          else
+            echo "new_data=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit new data
+        if: steps.check.outputs.new_data == 'true'
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add data/
+          git commit -m "Auto-fetch: new 13F filings for ${{ steps.check.outputs.result }}"
+          git push --force
+
+      - name: No new filings
+        if: steps.check.outputs.new_data == 'false'
+        run: echo "No new filings found for tracked funds."
