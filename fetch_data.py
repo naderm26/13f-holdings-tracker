@@ -50,6 +50,43 @@ def get_infotable_filename(cik_stripped, accession):
         print(f"  Index lookup failed: {e}")
     return "infotable.xml"
 
+def collect_filings(data, cik, cik_stripped):
+    """Collect up to 8 most recent 13F-HR filings, with pagination fallback."""
+    collected = []
+
+    # Check recent filings first
+    filings = data["filings"]["recent"]
+    for i, form in enumerate(filings["form"]):
+        if form == "13F-HR":
+            collected.append({
+                "accession_raw": filings["accessionNumber"][i],
+                "period":        filings["reportDate"][i],
+                "filed":         filings["filingDate"][i]
+            })
+        if len(collected) == 8:
+            return collected
+
+    # If not enough, check paginated older filings
+    for file_entry in data["filings"].get("files", []):
+        if len(collected) >= 8:
+            break
+        try:
+            url = f"https://data.sec.gov/submissions/{file_entry['name']}"
+            old_data = json.loads(fetch_url(url))
+            for i, form in enumerate(old_data["form"]):
+                if form == "13F-HR":
+                    collected.append({
+                        "accession_raw": old_data["accessionNumber"][i],
+                        "period":        old_data["reportDate"][i],
+                        "filed":         old_data["filingDate"][i]
+                    })
+                if len(collected) == 8:
+                    break
+        except Exception as e:
+            print(f"  Pagination fetch failed: {e}")
+
+    return collected
+
 def fetch_fund(fund):
     cik = fund["cik"]
     cik_stripped = str(int(cik))
@@ -64,17 +101,7 @@ def fetch_fund(fund):
         print(f"  Skipping — could not load submissions: {e}")
         return
 
-    filings = data["filings"]["recent"]
-    collected = []
-    for i, form in enumerate(filings["form"]):
-        if form == "13F-HR":
-            collected.append({
-                "accession_raw": filings["accessionNumber"][i],
-                "period":        filings["reportDate"][i],
-                "filed":         filings["filingDate"][i]
-            })
-        if len(collected) == 8:
-            break
+    collected = collect_filings(data, cik, cik_stripped)
 
     if not collected:
         print(f"  No 13F-HR filings found, skipping")
