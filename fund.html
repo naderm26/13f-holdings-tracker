@@ -141,7 +141,7 @@
     // Check all quarters in parallel
     const checks = await Promise.all(candidates.map(async label => {
       try {
-        const r = await fetch(`${PAGES}/data/${fundId}_${label}.csv`, { method: "HEAD" });
+        const r = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
         return r.ok ? label : null;
       } catch { return null; }
     }));
