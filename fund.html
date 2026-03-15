@@ -183,6 +183,9 @@
       if (r.ok) metaCache[label] = await r.json();
     } catch(e) { /* no meta file */ }
   }
+
+  // ── CSV loader ────────────────────────────────────────────────
+  async function loadCSV(label) {
     if (csvCache[label]) return;
     const r     = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
     const text  = await r.text();
