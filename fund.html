@@ -59,6 +59,7 @@
     .putcall { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; }
     .putcall.put  { color: var(--red); }
     .putcall.call { color: var(--green); }
+    tr.exited td { color: var(--muted); background: var(--bg); }
     .loading, .error { text-align: center; padding: 4rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
     .error { color: #c0392b; }
     @media (max-width: 640px) { header, main { padding: 1.5rem; } .header-right { gap: 1.5rem; } }
@@ -319,6 +320,21 @@
         </tr>`;
     }).join("");
 
+    // Exited positions — in prev1 but not in current quarter
+    const exitedHtml = prev1 ? prev1
+      .filter(p => !rows.find(r => r.cusip === p.cusip || r.company === p.company))
+      .map(p => `
+        <tr class="exited">
+          <td><div class="company-name">${p.company}</div><div class="cusip">${p.cusip}</div></td>
+          <td class="num">—</td>
+          <td class="num">—</td>
+          <td class="num">—</td>
+          <td class="num">—</td>
+          <td class="num"><span class="chg exited">EXITED</span></td>
+          <td class="num">—</td>
+          <td class="num">—</td>
+        </tr>`).join("") : "";
+
     document.getElementById("table-container").innerHTML = `
       <table>
         <thead>
@@ -333,7 +349,7 @@
             <th class="num">Option</th>
           </tr>
         </thead>
-        <tbody>${rowsHtml}</tbody>
+        <tbody>${rowsHtml}${exitedHtml}</tbody>
       </table>`;
   }
 
