@@ -70,7 +70,8 @@ def fetch_fund(fund):
         if form == "13F-HR":
             collected.append({
                 "accession_raw": filings["accessionNumber"][i],
-                "period": filings["reportDate"][i]
+                "period":        filings["reportDate"][i],
+                "filed":         filings["filingDate"][i]
             })
         if len(collected) == 8:
             break
@@ -84,12 +85,18 @@ def fetch_fund(fund):
     for filing in collected:
         accession_raw = filing["accession_raw"]
         period = filing["period"]
+        filed  = filing["filed"]
         accession = accession_raw.replace("-", "")
         label = quarter_label(period)
-        out_file = f"data/{fund_id}_{label}.xml"
+        out_file  = f"data/{fund_id}_{label}.xml"
+        meta_file = f"data/{fund_id}_{label}.json"
 
         if os.path.exists(out_file):
             print(f"  {label} already exists, skipping")
+            # Write meta if missing
+            if not os.path.exists(meta_file):
+                with open(meta_file, "w") as f:
+                    json.dump({"filed": filed, "period": period}, f)
             continue
 
         try:
@@ -99,6 +106,8 @@ def fetch_fund(fund):
             xml_data = fetch_url(info_url).decode("utf-8")
             with open(out_file, "w") as f:
                 f.write(xml_data)
+            with open(meta_file, "w") as f:
+                json.dump({"filed": filed, "period": period}, f)
             print(f"  Saved {out_file}")
         except Exception as e:
             print(f"  Failed {label}: {e}")
