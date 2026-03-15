@@ -3,7 +3,7 @@ name: Fetch Market Data
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 16 * * 1-5'  # Every weekday at 4pm UTC (after US market close)
+    - cron: '30 21 * * 1-5'  # Mon-Fri at 9:30pm UTC (after 4pm EST market close)
 
 jobs:
   fetch:
