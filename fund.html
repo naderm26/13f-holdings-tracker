@@ -43,9 +43,9 @@
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; color: var(--muted); padding: 0.85rem 0.75rem; text-align: left; cursor: pointer; user-select: none; white-space: normal; line-height: 1.3; }
     th.num { text-align: center; padding: 0.85rem 1rem; }
     table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; table-layout: fixed; }
-    th:nth-child(1) { width: 3%; }
-    th:nth-child(2) { width: 25%; }
-    th:nth-child(3), th:nth-child(4), th:nth-child(5), th:nth-child(6), th:nth-child(7), th:nth-child(8), th:nth-child(9) { width: 10.7%; }
+    th:nth-child(1) { width: 2%; }
+    th:nth-child(2) { width: 20%; }
+    th:nth-child(3), th:nth-child(4), th:nth-child(5), th:nth-child(6), th:nth-child(7), th:nth-child(8), th:nth-child(9), th:nth-child(10), th:nth-child(11) { width: 8.7%; }
     th:hover { color: var(--text); }
     th.num, td.num { text-align: center; }
     td { padding: 0.9rem 1.25rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
@@ -101,19 +101,25 @@
   const params = new URLSearchParams(window.location.search);
   const fundId = params.get("fund") || "pershing";
 
-  let FUND_CONFIG = null;
-  let allQuarters = [];   // up to 8 quarters (for comparison data)
-  let showQuarters = [];  // only 4 most recent (for tab buttons)
-  let csvCache    = {};
-  let activeQ     = null;
-  let sortCol     = 3;
-  let sortAsc     = false;
+  let FUND_CONFIG   = null;
+  let allQuarters   = [];
+  let showQuarters  = [];
+  let csvCache      = {};
+  let metaCache     = {};
+  let tickerMap     = {};  // cusip -> ticker
+  let priceMap      = {};  // ticker -> {price, week52High, week52Low}
+  let activeQ       = null;
+  let sortCol       = 3;
+  let sortAsc       = false;
 
   // ── Bootstrap ─────────────────────────────────────────────────
-  fetch(`${PAGES}/funds.json`)
-    .then(r => r.text())
-    .then(text => JSON.parse(text))
-    .then(funds => {
+  Promise.all([
+    fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse),
+    fetch(`${PAGES}/cusip_to_ticker.json`).then(r => r.text()).then(JSON.parse).catch(() => ({})),
+    fetch(`${PAGES}/prices.json`).then(r => r.text()).then(JSON.parse).catch(() => ({}))
+  ]).then(([funds, tickers, prices]) => {
+      tickerMap = tickers;
+      priceMap  = prices;
       const f = funds.find(x => x.id === fundId);
       if (!f) {
         document.getElementById("table-container").innerHTML =
@@ -180,8 +186,6 @@
   }
 
   // ── CSV loader ────────────────────────────────────────────────
-  let metaCache = {};
-
   async function loadMeta(label) {
     if (metaCache[label]) return;
     try {
@@ -302,24 +306,42 @@
     function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
     const rowsHtml = sorted.map((r, i) => {
-      const adjValue = r.value * mult;
-      const pct      = tv > 0 ? ((adjValue / tv) * 100).toFixed(1) : "0.0";
-      const price    = r.shares > 0 ? adjValue / r.shares : 0;
-      const priceStr = "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const valueStr = "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
-      const chg1     = getChange(r.shares, prev1, r.cusip, r.company);
-      const chg4     = getChange(r.shares, prev4, r.cusip, r.company);
+      const adjValue  = r.value * mult;
+      const pct       = tv > 0 ? ((adjValue / tv) * 100).toFixed(1) : "0.0";
+      const repPrice  = r.shares > 0 ? adjValue / r.shares : 0;
+      const repPriceStr = "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const valueStr  = "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      const chg1      = getChange(r.shares, prev1, r.cusip, r.company);
+      const chg4      = getChange(r.shares, prev4, r.cusip, r.company);
       const putcallHtml = r.putcall
         ? `<span class="putcall ${r.putcall.toLowerCase()}">${r.putcall.toUpperCase()}</span>`
         : `<span class="chg na">—</span>`;
+
+      // Market data
+      const ticker    = tickerMap[r.cusip] || null;
+      const priceData = ticker ? priceMap[ticker] : null;
+      const lastPrice = priceData ? priceData.price : null;
+      const lastPriceStr = lastPrice ? "$" + lastPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
+      const tickerStr = ticker ? `<span style="color:var(--accent); font-weight:500; font-size:0.78rem">${ticker}</span>` : "";
+
+      let priceDiffHtml = `<span class="chg na">—</span>`;
+      if (lastPrice && repPrice > 0) {
+        const diff = ((lastPrice - repPrice) / repPrice) * 100;
+        const sign = diff >= 0 ? "+" : "";
+        const cls  = diff >= 0 ? "pos" : "neg";
+        priceDiffHtml = `<span class="chg ${cls}">${sign}${diff.toFixed(1)}%</span>`;
+      }
+
       return `
         <tr>
           <td class="num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
-          <td><div class="company-name">${r.company}</div><div class="cusip">${r.cusip}</div></td>
+          <td><div class="company-name">${r.company}</div>${tickerStr ? `<div class="cusip">${tickerStr}</div>` : ""}</td>
           <td class="num">${pct}%</td>
           <td class="num">${r.shares.toLocaleString()}</td>
-          <td class="num">${priceStr}</td>
           <td class="num" style="padding-right:2.5rem; text-align:left">${valueStr}</td>
+          <td class="num">${repPriceStr}</td>
+          <td class="num">${lastPriceStr}</td>
+          <td class="num">${priceDiffHtml}</td>
           <td class="num right" style="padding-left:2.5rem">${fmtChg(chg1)}</td>
           <td class="num right">${fmtChg(chg4)}</td>
           <td class="num right">${putcallHtml}</td>
@@ -332,7 +354,9 @@
       .map(p => `
         <tr class="exited">
           <td class="num" style="color:var(--muted); font-size:0.72rem">—</td>
-          <td><div class="company-name">${p.company}</div><div class="cusip">${p.cusip}</div></td>
+          <td><div class="company-name">${p.company}</div></td>
+          <td class="num">—</td>
+          <td class="num">—</td>
           <td class="num">—</td>
           <td class="num">—</td>
           <td class="num">—</td>
@@ -350,8 +374,10 @@
             <th onclick="sort(0)">Company${arrow(0)}</th>
             <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
+            <th class="num" onclick="sort(3)" style="text-align:left">Value${arrow(3)}</th>
             <th class="num">Reported Price</th>
-            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
+            <th class="num">Last Price</th>
+            <th class="num">+/- Reported</th>
             <th class="num" style="text-align:right; padding-left:2.5rem">Shares vs Prior Quarter</th>
             <th class="num" style="text-align:right">Shares vs Prior Year</th>
             <th class="num" style="text-align:right">Option</th>
