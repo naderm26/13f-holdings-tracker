@@ -63,7 +63,11 @@
     .putcall.put  { color: var(--red); }
     .putcall.call { color: var(--green); }
     tr.exited td { color: var(--muted); background: #f0ede8; }
-    .loading, .error { text-align: center; padding: 4rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
+    .stale-warning {
+      background: #fef9e7; border: 1px solid #f0c040; border-radius: 6px;
+      padding: 0.75rem 1.25rem; margin-bottom: 1.5rem;
+      font-size: 0.82rem; color: #7d5a00; display: flex; align-items: center; gap: 0.5rem;
+    }
     .error { color: #c0392b; }
     @media (max-width: 640px) { header, main { padding: 1.5rem; } .header-right { gap: 1.5rem; } }
   </style>
@@ -90,6 +94,7 @@
   <div class="section-label" id="fund-name">Loading...</div>
   <div class="period-line" id="period">Loading...</div>
   <div class="quarter-selector" id="quarter-selector"></div>
+  <div id="stale-warning" style="display:none" class="stale-warning"></div>
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
 </main>
 
@@ -292,6 +297,19 @@
     const filedStr = meta ? ` <span style="font-weight:400">(Filed ${fmtDate(meta.filed)})</span>` : "";
     document.getElementById("period").innerHTML =
       `Holdings as of ${quarterToDate(activeQ)}${filedStr}`;
+
+    // Show stale warning if most recent quarter is over 1 year old
+    const warningEl = document.getElementById("stale-warning");
+    const [qYear, qNum] = activeQ.split("Q");
+    const quarterDate = new Date(parseInt(qYear), parseInt(qNum) * 3, 1);
+    const oneYearAgo  = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+    if (quarterDate < oneYearAgo) {
+      warningEl.style.display = "block";
+      warningEl.innerHTML = `⚠️ <strong>Data may be outdated.</strong> The most recent filing available is ${activeQ}. This fund may no longer be required to file with the SEC, or may have dropped below the $100M reporting threshold.`;
+    } else {
+      warningEl.style.display = "none";
+    }
 
     const keys = ["company", "cusip", "shares", "value", "discretion"];
     const sorted = [...rows].sort((a, b) => {
