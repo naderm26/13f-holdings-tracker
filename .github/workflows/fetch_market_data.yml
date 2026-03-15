@@ -1,0 +1,28 @@
+name: Fetch Market Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 16 * * 1-5'  # Every weekday at 4pm UTC (after US market close)
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fetch ticker mappings
+        run: python fetch_tickers.py
+
+      - name: Fetch prices
+        run: python fetch_prices.py
+
+      - name: Commit data
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add cusip_to_ticker.json prices.json
+          git commit -m "Update market data" || echo "No changes"
+          git push
