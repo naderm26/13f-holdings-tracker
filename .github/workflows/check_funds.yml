@@ -1,0 +1,13 @@
+name: Check Fund Data Status
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check fund status
+        run: python check_funds.py
