@@ -53,7 +53,8 @@
     tr:hover td { background: var(--accent-light); }
     .company-name { font-weight: 500; color: var(--text); }
     .cusip { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
-    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.9rem 1.5rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.9rem 1.5rem; text-align: center; }
+    td.num.right { text-align: right; }
     .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
     .chg.pos { color: var(--green); }
     .chg.neg { color: var(--red); }
@@ -319,9 +320,9 @@
           <td class="num">${r.shares.toLocaleString()}</td>
           <td class="num">${priceStr}</td>
           <td class="num">${valueStr}</td>
-          <td class="num">${fmtChg(chg1)}</td>
-          <td class="num">${fmtChg(chg4)}</td>
-          <td class="num">${putcallHtml}</td>
+          <td class="num right">${fmtChg(chg1)}</td>
+          <td class="num right">${fmtChg(chg4)}</td>
+          <td class="num right">${putcallHtml}</td>
         </tr>`;
     }).join("");
 
@@ -336,9 +337,9 @@
           <td class="num">—</td>
           <td class="num">—</td>
           <td class="num">—</td>
-          <td class="num"><span class="chg exited">EXITED</span></td>
-          <td class="num">—</td>
-          <td class="num">—</td>
+          <td class="num right"><span class="chg exited">EXITED</span></td>
+          <td class="num right">—</td>
+          <td class="num right">—</td>
         </tr>`).join("") : "";
 
     document.getElementById("table-container").innerHTML = `
