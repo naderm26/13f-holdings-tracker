@@ -9908,7 +9908,7 @@
   "JAMF": {
     "price": 13.05,
     "week52High": 16.12,
-    "week52Low": 0.0,
+    "week52Low": 7.08,
     "currency": "USD"
   },
   "WMT": {
@@ -14373,6 +14373,642 @@
     "price": 25.01,
     "week52High": 27.6,
     "week52Low": 22.86,
+    "currency": "USD"
+  },
+  "ENR": {
+    "price": 17.01,
+    "week52High": 30.5,
+    "week52Low": 16.38,
+    "currency": "USD"
+  },
+  "BEPC": {
+    "price": 39.22,
+    "week52High": 45.18,
+    "week52Low": 23.73,
+    "currency": "USD"
+  },
+  "HYS": {
+    "price": 92.78,
+    "week52High": 95.88,
+    "week52Low": 86.65,
+    "currency": "USD"
+  },
+  "XYL": {
+    "price": 119.88,
+    "week52High": 154.27,
+    "week52Low": 100.47,
+    "currency": "USD"
+  },
+  "BKV": {
+    "price": 28.75,
+    "week52High": 32.81,
+    "week52Low": 15.0,
+    "currency": "USD"
+  },
+  "LBRDA": {
+    "price": 50.56,
+    "week52High": 95.95,
+    "week52Low": 42.05,
+    "currency": "USD"
+  },
+  "MPC": {
+    "price": 226.18,
+    "week52High": 236.11,
+    "week52Low": 115.1,
+    "currency": "USD"
+  },
+  "ASAIY": {
+    "price": 7.18,
+    "week52High": 10.67,
+    "week52Low": 6.2,
+    "currency": "USD"
+  },
+  "AAPL": {
+    "price": 250.12,
+    "week52High": 288.62,
+    "week52Low": 169.21,
+    "currency": "USD"
+  },
+  "NWG": {
+    "price": 14.97,
+    "week52High": 19.36,
+    "week52Low": 10.4,
+    "currency": "USD"
+  },
+  "CX": {
+    "price": 10.41,
+    "week52High": 13.35,
+    "week52Low": 4.89,
+    "currency": "USD"
+  },
+  "PI": {
+    "price": 91.73,
+    "week52High": 247.06,
+    "week52Low": 60.85,
+    "currency": "USD"
+  },
+  "MUFG": {
+    "price": 16.43,
+    "week52High": 20.15,
+    "week52Low": 10.46,
+    "currency": "USD"
+  },
+  "VT": {
+    "price": 139.52,
+    "week52High": 149.07,
+    "week52Low": 100.89,
+    "currency": "USD"
+  },
+  "ABCB": {
+    "price": 75.18,
+    "week52High": 87.98,
+    "week52Low": 48.27,
+    "currency": "USD"
+  },
+  "FNDC": {
+    "price": 45.67,
+    "week52High": 50.69,
+    "week52Low": 32.61,
+    "currency": "USD"
+  },
+  "ARW": {
+    "price": 140.44,
+    "week52High": 162.61,
+    "week52Low": 86.5,
+    "currency": "USD"
+  },
+  "GDX": {
+    "price": 93.26,
+    "week52High": 117.18,
+    "week52Low": 40.26,
+    "currency": "USD"
+  },
+  "BLFS": {
+    "price": 18.36,
+    "week52High": 29.62,
+    "week52Low": 17.86,
+    "currency": "USD"
+  },
+  "HMN": {
+    "price": 42.39,
+    "week52High": 48.33,
+    "week52Low": 38.76,
+    "currency": "USD"
+  },
+  "IJS": {
+    "price": 115.93,
+    "week52High": 127.85,
+    "week52Low": 82.1,
+    "currency": "USD"
+  },
+  "VIS": {
+    "price": 316.59,
+    "week52High": 345.71,
+    "week52Low": 213.26,
+    "currency": "USD"
+  },
+  "CWH": {
+    "price": 6.46,
+    "week52High": 19.64,
+    "week52Low": 6.41,
+    "currency": "USD"
+  },
+  "ALGT": {
+    "price": 75.04,
+    "week52High": 118.0,
+    "week52Low": 39.8,
+    "currency": "USD"
+  },
+  "CHYM": {
+    "price": 20.61,
+    "week52High": 44.94,
+    "week52Low": 16.17,
+    "currency": "USD"
+  },
+  "ROK": {
+    "price": 360.93,
+    "week52High": 438.72,
+    "week52Low": 215.0,
+    "currency": "USD"
+  },
+  "ROAD": {
+    "price": 113.97,
+    "week52High": 141.9,
+    "week52Low": 64.79,
+    "currency": "USD"
+  },
+  "CNTA": {
+    "price": 26.33,
+    "week52High": 30.58,
+    "week52Low": 9.6,
+    "currency": "USD"
+  },
+  "BAR": {
+    "price": 49.4,
+    "week52High": 54.62,
+    "week52Low": 29.17,
+    "currency": "USD"
+  },
+  "MGV": {
+    "price": 146.36,
+    "week52High": 154.03,
+    "week52Low": 112.25,
+    "currency": "USD"
+  },
+  "CCOR": {
+    "price": 26.53,
+    "week52High": 28.13,
+    "week52Low": 25.36,
+    "currency": "USD"
+  },
+  "VLTO": {
+    "price": 90.2,
+    "week52High": 110.11,
+    "week52Low": 83.86,
+    "currency": "USD"
+  },
+  "FIGS": {
+    "price": 14.85,
+    "week52High": 17.48,
+    "week52Low": 3.56,
+    "currency": "USD"
+  },
+  "IDU": {
+    "price": 118.72,
+    "week52High": 120.82,
+    "week52Low": 91.91,
+    "currency": "USD"
+  },
+  "VWO": {
+    "price": 54.02,
+    "week52High": 59.09,
+    "week52Low": 39.53,
+    "currency": "USD"
+  },
+  "SMR": {
+    "price": 11.8,
+    "week52High": 57.42,
+    "week52Low": 11.08,
+    "currency": "USD"
+  },
+  "QLYS": {
+    "price": 99.71,
+    "week52High": 155.47,
+    "week52Low": 85.14,
+    "currency": "USD"
+  },
+  "INVH": {
+    "price": 24.99,
+    "week52High": 35.8,
+    "week52Low": 24.87,
+    "currency": "USD"
+  },
+  "JEF": {
+    "price": 36.36,
+    "week52High": 71.04,
+    "week52Low": 35.53,
+    "currency": "USD"
+  },
+  "UA": {
+    "price": 6.27,
+    "week52High": 7.91,
+    "week52Low": 3.95,
+    "currency": "USD"
+  },
+  "BBSI": {
+    "price": 27.5,
+    "week52High": 49.65,
+    "week52Low": 25.33,
+    "currency": "USD"
+  },
+  "TFIN": {
+    "price": 55.45,
+    "week52High": 77.84,
+    "week52Low": 42.9,
+    "currency": "USD"
+  },
+  "PXH": {
+    "price": 26.62,
+    "week52High": 28.98,
+    "week52Low": 18.62,
+    "currency": "USD"
+  },
+  "NUV": {
+    "price": 9.14,
+    "week52High": 9.26,
+    "week52Low": 8.38,
+    "currency": "USD"
+  },
+  "BIPC": {
+    "price": 46.82,
+    "week52High": 51.72,
+    "week52Low": 32.08,
+    "currency": "USD"
+  },
+  "TECS": {
+    "price": 19.54,
+    "week52High": 101.82,
+    "week52Low": 14.94,
+    "currency": "USD"
+  },
+  "URBN": {
+    "price": 63.41,
+    "week52High": 84.35,
+    "week52Low": 41.89,
+    "currency": "USD"
+  },
+  "RTX": {
+    "price": 204.52,
+    "week52High": 214.5,
+    "week52Low": 112.27,
+    "currency": "USD"
+  },
+  "WING": {
+    "price": 203.44,
+    "week52High": 388.14,
+    "week52Low": 192.87,
+    "currency": "USD"
+  },
+  "MANH": {
+    "price": 140.78,
+    "week52High": 247.22,
+    "week52Low": 127.86,
+    "currency": "USD"
+  },
+  "SCHA": {
+    "price": 28.71,
+    "week52High": 31.25,
+    "week52Low": 20.04,
+    "currency": "USD"
+  },
+  "MS": {
+    "price": 154.87,
+    "week52High": 192.68,
+    "week52Low": 94.33,
+    "currency": "USD"
+  },
+  "RVLV": {
+    "price": 22.92,
+    "week52High": 31.68,
+    "week52Low": 16.8,
+    "currency": "USD"
+  },
+  "OBT": {
+    "price": 30.51,
+    "week52High": 37.99,
+    "week52Low": 20.97,
+    "currency": "USD"
+  },
+  "KLIC": {
+    "price": 64.37,
+    "week52High": 77.5,
+    "week52Low": 26.63,
+    "currency": "USD"
+  },
+  "HTH": {
+    "price": 34.75,
+    "week52High": 40.41,
+    "week52Low": 27.35,
+    "currency": "USD"
+  },
+  "MBLY": {
+    "price": 7.57,
+    "week52High": 20.18,
+    "week52Low": 7.54,
+    "currency": "USD"
+  },
+  "VB": {
+    "price": 260.61,
+    "week52High": 281.9,
+    "week52Low": 190.27,
+    "currency": "USD"
+  },
+  "IBTA": {
+    "price": 23.42,
+    "week52High": 62.74,
+    "week52Low": 19.1,
+    "currency": "USD"
+  },
+  "VIAV": {
+    "price": 29.97,
+    "week52High": 35.61,
+    "week52Low": 8.1,
+    "currency": "USD"
+  },
+  "CFR": {
+    "price": 132.13,
+    "week52High": 148.97,
+    "week52Low": 100.31,
+    "currency": "USD"
+  },
+  "SHEL": {
+    "price": 89.43,
+    "week52High": 89.91,
+    "week52Low": 58.55,
+    "currency": "USD"
+  },
+  "GPGI": {
+    "price": 16.51,
+    "week52High": 26.78,
+    "week52Low": 9.24,
+    "currency": "USD"
+  },
+  "TROW": {
+    "price": 88.59,
+    "week52High": 118.22,
+    "week52Low": 77.85,
+    "currency": "USD"
+  },
+  "NSSC": {
+    "price": 42.57,
+    "week52High": 48.12,
+    "week52Low": 19.0,
+    "currency": "USD"
+  },
+  "SPY": {
+    "price": 662.29,
+    "week52High": 697.84,
+    "week52Low": 481.8,
+    "currency": "USD"
+  },
+  "KRG": {
+    "price": 25.14,
+    "week52High": 26.38,
+    "week52Low": 18.52,
+    "currency": "USD"
+  },
+  "PHO": {
+    "price": 67.27,
+    "week52High": 74.93,
+    "week52Low": 57.11,
+    "currency": "USD"
+  },
+  "BURL": {
+    "price": 296.7,
+    "week52High": 332.2,
+    "week52Low": 212.92,
+    "currency": "USD"
+  },
+  "ARM": {
+    "price": 115.75,
+    "week52High": 183.16,
+    "week52Low": 80.0,
+    "currency": "USD"
+  },
+  "AUROW": {
+    "price": 0.26,
+    "week52High": 0.27,
+    "week52Low": 0.26,
+    "currency": "USD"
+  },
+  "SO": {
+    "price": 98.01,
+    "week52High": 100.84,
+    "week52Low": 83.09,
+    "currency": "USD"
+  },
+  "WEX": {
+    "price": 159.95,
+    "week52High": 180.71,
+    "week52Low": 110.45,
+    "currency": "USD"
+  },
+  "EPC": {
+    "price": 19.76,
+    "week52High": 31.72,
+    "week52Low": 15.88,
+    "currency": "USD"
+  },
+  "AVY": {
+    "price": 170.77,
+    "week52High": 199.54,
+    "week52Low": 156.23,
+    "currency": "USD"
+  },
+  "SWZ": {
+    "price": 5.98,
+    "week52High": 9.43,
+    "week52Low": 5.84,
+    "currency": "USD"
+  },
+  "TGS": {
+    "price": 30.77,
+    "week52High": 34.1,
+    "week52Low": 19.74,
+    "currency": "USD"
+  },
+  "TRUP": {
+    "price": 24.74,
+    "week52High": 57.88,
+    "week52Low": 24.5,
+    "currency": "USD"
+  },
+  "SSD": {
+    "price": 177.96,
+    "week52High": 211.98,
+    "week52Low": 137.35,
+    "currency": "USD"
+  },
+  "SCVL": {
+    "price": 18.2,
+    "week52High": 26.57,
+    "week52Low": 15.21,
+    "currency": "USD"
+  },
+  "FIW": {
+    "price": 104.26,
+    "week52High": 116.3,
+    "week52Low": 89.31,
+    "currency": "USD"
+  },
+  "EXPE": {
+    "price": 228.37,
+    "week52High": 303.8,
+    "week52Low": 130.01,
+    "currency": "USD"
+  },
+  "UMH": {
+    "price": 14.65,
+    "week52High": 19.02,
+    "week52Low": 13.95,
+    "currency": "USD"
+  },
+  "RWR": {
+    "price": 104.25,
+    "week52High": 109.24,
+    "week52Low": 83.14,
+    "currency": "USD"
+  },
+  "HPQ": {
+    "price": 18.93,
+    "week52High": 29.55,
+    "week52Low": 17.56,
+    "currency": "USD"
+  },
+  "MCHP": {
+    "price": 61.94,
+    "week52High": 83.35,
+    "week52Low": 34.13,
+    "currency": "USD"
+  },
+  "LAKE": {
+    "price": 8.82,
+    "week52High": 21.19,
+    "week52Low": 7.77,
+    "currency": "USD"
+  },
+  "ITB": {
+    "price": 93.08,
+    "week52High": 118.0,
+    "week52Low": 82.71,
+    "currency": "USD"
+  },
+  "BBBY": {
+    "price": 4.9,
+    "week52High": 12.65,
+    "week52Low": 3.54,
+    "currency": "USD"
+  },
+  "FMDE": {
+    "price": 35.78,
+    "week52High": 38.26,
+    "week52Low": 26.93,
+    "currency": "USD"
+  },
+  "COHU": {
+    "price": 27.25,
+    "week52High": 34.96,
+    "week52Low": 12.57,
+    "currency": "USD"
+  },
+  "UMC": {
+    "price": 9.27,
+    "week52High": 12.68,
+    "week52Low": 5.71,
+    "currency": "USD"
+  },
+  "ALV": {
+    "price": 102.91,
+    "week52High": 130.14,
+    "week52Low": 75.49,
+    "currency": "USD"
+  },
+  "STRT": {
+    "price": 74.0,
+    "week52High": 92.5,
+    "week52Low": 31.57,
+    "currency": "USD"
+  },
+  "PWP": {
+    "price": 16.09,
+    "week52High": 25.93,
+    "week52Low": 14.12,
+    "currency": "USD"
+  },
+  "PKG": {
+    "price": 214.5,
+    "week52High": 249.51,
+    "week52Low": 172.72,
+    "currency": "USD"
+  },
+  "PDLB": {
+    "price": 16.3,
+    "week52High": 18.01,
+    "week52Low": 10.88,
+    "currency": "USD"
+  },
+  "EAF": {
+    "price": 5.66,
+    "week52High": 20.32,
+    "week52Low": 4.92,
+    "currency": "USD"
+  },
+  "HR": {
+    "price": 17.98,
+    "week52High": 18.97,
+    "week52Low": 14.09,
+    "currency": "USD"
+  },
+  "BXC": {
+    "price": 49.37,
+    "week52High": 88.3,
+    "week52Low": 48.92,
+    "currency": "USD"
+  },
+  "CATH": {
+    "price": 79.38,
+    "week52High": 83.95,
+    "week52Low": 58.39,
+    "currency": "USD"
+  },
+  "JCPB": {
+    "price": 47.04,
+    "week52High": 48.17,
+    "week52Low": 45.56,
+    "currency": "USD"
+  },
+  "DDL": {
+    "price": 2.62,
+    "week52High": 3.41,
+    "week52Low": 1.65,
+    "currency": "USD"
+  },
+  "PREF": {
+    "price": 18.95,
+    "week52High": 19.32,
+    "week52Low": 18.06,
+    "currency": "USD"
+  },
+  "LOCO": {
+    "price": 12.72,
+    "week52High": 13.07,
+    "week52Low": 8.29,
+    "currency": "USD"
+  },
+  "NBIX": {
+    "price": 129.78,
+    "week52High": 160.18,
+    "week52Low": 84.23,
     "currency": "USD"
   }
 }
