@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<informationTable xsi:schemaLocation="http://www.sec.gov/edgar/document/thirteenf/informationtable eis_13FDocument.xsd"
+	xmlns="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:n1="http://www.sec.gov/edgar/document/thirteenf/informationtable"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<infoTable>
+		<nameOfIssuer>ALPHABET INC CAP STK</nameOfIssuer>
+		<titleOfClass>CL A</titleOfClass>
+		<cusip>02079K305</cusip>
+		<value>18463617</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>104770</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>104770</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>AMAZON COM INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>023135106</cusip>
+		<value>71222770</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>324640</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>324640</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>BERKSHIRE HATHAWAY INC DEL</nameOfIssuer>
+		<titleOfClass>CL A</titleOfClass>
+		<cusip>084670108</cusip>
+		<value>48829600</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>67</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>67</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>BROOKFIELD CORP CL A LTD VT SH</nameOfIssuer>
+		<titleOfClass>CL A LTD VT SH</titleOfClass>
+		<cusip>112585104</cusip>
+		<value>58894498</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>952215</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>952215</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>BURFORD CAPITAL LTD</nameOfIssuer>
+		<titleOfClass>ORD SHS</titleOfClass>
+		<cusip>G17977110</cusip>
+		<value>45723630</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>3362322</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>3362322</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>MARKEL CORP COM</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>570535104</cusip>
+		<value>44850719</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>22455</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>22455</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>TESLA INC COM</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>88160R101</cusip>
+		<value>25201556</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>79335</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>79335</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+	<infoTable>
+		<nameOfIssuer>TRUPANION INC</nameOfIssuer>
+		<titleOfClass>COM</titleOfClass>
+		<cusip>898202106</cusip>
+		<value>42292658</value>
+		<shrsOrPrnAmt>
+			<sshPrnamt>764095</sshPrnamt>
+			<sshPrnamtType>SH</sshPrnamtType>
+		</shrsOrPrnAmt>
+		<investmentDiscretion>SOLE</investmentDiscretion>
+		<votingAuthority>
+			<Sole>764095</Sole>
+			<Shared>0</Shared>
+			<None>0</None>
+		</votingAuthority>
+	</infoTable>
+</informationTable>

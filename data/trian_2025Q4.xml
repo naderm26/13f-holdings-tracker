@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<n1:informationTable xmlns:n1="http://www.sec.gov/edgar/document/thirteenf/informationtable">
+	<n1:infoTable>
+		<n1:nameOfIssuer>Ferguson Plc New</n1:nameOfIssuer>
+		<n1:titleOfClass>SHS</n1:titleOfClass>
+		<n1:cusip>G3421J106</n1:cusip>
+		<n1:value>241855659</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>1086357</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>OTR</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>1086357</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+	<n1:infoTable>
+		<n1:nameOfIssuer>GE Aerospace</n1:nameOfIssuer>
+		<n1:titleOfClass>COM NEW</n1:titleOfClass>
+		<n1:cusip>369604301</n1:cusip>
+		<n1:value>1241596543</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>4030765</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>DFND</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>4030765</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+	<n1:infoTable>
+		<n1:nameOfIssuer>GE HealthCare Technologies Inc.</n1:nameOfIssuer>
+		<n1:titleOfClass>COM</n1:titleOfClass>
+		<n1:cusip>36266G107</n1:cusip>
+		<n1:value>331689</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>4044</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>DFND</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>4044</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+	<n1:infoTable>
+		<n1:nameOfIssuer>Invesco Ltd.</n1:nameOfIssuer>
+		<n1:titleOfClass>SHS</n1:titleOfClass>
+		<n1:cusip>G491BT108</n1:cusip>
+		<n1:value>78046699</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>2970944</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>DFND</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>2970944</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+	<n1:infoTable>
+		<n1:nameOfIssuer>Janus Henderson Group plc</n1:nameOfIssuer>
+		<n1:titleOfClass>ORD SHS</n1:titleOfClass>
+		<n1:cusip>G4474Y214</n1:cusip>
+		<n1:value>1515951246</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>31867800</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>DFND</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>31867800</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+	<n1:infoTable>
+		<n1:nameOfIssuer>Solventum Corporation</n1:nameOfIssuer>
+		<n1:titleOfClass>COM SHS</n1:titleOfClass>
+		<n1:cusip>83444M101</n1:cusip>
+		<n1:value>652680308</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>8236753</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>DFND</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>8236753</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+	<n1:infoTable>
+		<n1:nameOfIssuer>Wendys Co.</n1:nameOfIssuer>
+		<n1:titleOfClass>COM</n1:titleOfClass>
+		<n1:cusip>95058W100</n1:cusip>
+		<n1:value>124479072</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>14943466</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>DFND</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>14943466</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+	<n1:infoTable>
+		<n1:nameOfIssuer>Wendys Co.</n1:nameOfIssuer>
+		<n1:titleOfClass>COM</n1:titleOfClass>
+		<n1:cusip>95058W100</n1:cusip>
+		<n1:value>129088777</n1:value>
+		<n1:shrsOrPrnAmt>
+			<n1:sshPrnamt>15496852</n1:sshPrnamt>
+			<n1:sshPrnamtType>SH</n1:sshPrnamtType>
+		</n1:shrsOrPrnAmt>
+		<n1:investmentDiscretion>OTR</n1:investmentDiscretion>
+		<n1:otherManager>1,2,3</n1:otherManager>
+		<n1:votingAuthority>
+			<n1:Sole>0</n1:Sole>
+			<n1:Shared>15496852</n1:Shared>
+			<n1:None>0</n1:None>
+		</n1:votingAuthority>
+	</n1:infoTable>
+</n1:informationTable>
