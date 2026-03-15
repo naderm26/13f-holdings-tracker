@@ -320,7 +320,7 @@
       const priceData = ticker ? priceMap[ticker] : null;
       const lastPrice = priceData ? priceData.price : null;
       const lastPriceStr = lastPrice ? "$" + lastPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
-      const tickerStr = ticker ? `<span style="color:var(--accent); font-weight:500; font-size:0.78rem">${ticker}</span>` : "";
+      const tickerStr = ticker ? `<span style="color:#1a3a6b; font-weight:500; font-size:0.78rem">${ticker}</span>` : "";
 
       let priceDiffHtml = `<span class="chg na">—</span>`;
       if (lastPrice && repPrice > 0) {
