@@ -42,17 +42,18 @@
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
     th:nth-child(1) { text-align: left; width: 30px; }
-    th:nth-child(2) { text-align: left; }
-    th.num { text-align: center; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
+    th:nth-child(2) { text-align: left; width: 22%; }
+    th:nth-child(n+3) { width: 8.8%; text-align: center; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
     th:hover { color: var(--text); }
-    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
+    td:nth-child(1) { text-align: left; }
+    td:nth-child(2) { text-align: left; white-space: normal; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
     .company-name { font-weight: 500; color: var(--text); white-space: normal; }
     .cusip { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
     td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
-    td.num.right { text-align: right; }
     .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
     .chg.pos { color: var(--green); }
     .chg.neg { color: var(--red); }
@@ -354,13 +355,13 @@
           <td><div class="company-name">${r.company}</div>${tickerHtml}</td>
           <td class="num">${pct}%</td>
           <td class="num">${r.shares.toLocaleString()}</td>
-          <td class="num right">${fmtChg(chg1)}</td>
-          <td class="num right">${fmtChg(chg4)}</td>
-          <td class="num" style="text-align:left">${valueStr}</td>
+          <td class="num">${fmtChg(chg1)}</td>
+          <td class="num">${fmtChg(chg4)}</td>
+          <td class="num">${valueStr}</td>
           <td class="num">${repPriceStr}</td>
           <td class="num">${lastPriceStr}</td>
           <td class="num">${priceDiffHtml}</td>
-          <td class="num right">${putcallHtml}</td>
+          <td class="num">${putcallHtml}</td>
         </tr>`;
     }).join("");
 
@@ -373,30 +374,30 @@
           <td><div class="company-name">${p.company}</div></td>
           <td class="num">—</td>
           <td class="num">—</td>
-          <td class="num right"><span class="chg exited">EXITED</span></td>
-          <td class="num right">—</td>
+          <td class="num"><span class="chg exited">EXITED</span></td>
           <td class="num">—</td>
           <td class="num">—</td>
           <td class="num">—</td>
           <td class="num">—</td>
-          <td class="num right">—</td>
+          <td class="num">—</td>
+          <td class="num">—</td>
         </tr>`).join("") : "";
 
     document.getElementById("table-container").innerHTML = `
       <table>
         <thead>
           <tr>
-            <th style="width:2rem; color:var(--muted)">#</th>
+            <th style="color:var(--muted)">#</th>
             <th onclick="sort(0)">Company${arrow(0)}</th>
             <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="num" style="text-align:right">Shares vs Prior Quarter</th>
-            <th class="num" style="text-align:right">Shares vs Prior Year</th>
-            <th class="num" onclick="sort(3)" style="text-align:left">Value${arrow(3)}</th>
+            <th class="num">Shares vs Prior Quarter</th>
+            <th class="num">Shares vs Prior Year</th>
+            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
             <th class="num">Reported Price</th>
             <th class="num">Last Price</th>
             <th class="num">+/- Reported</th>
-            <th class="num" style="text-align:right">Option</th>
+            <th class="num">Option</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}${exitedHtml}</tbody>
