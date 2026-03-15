@@ -396,6 +396,11 @@
     "cik": "0001953324"
   },
   {
+    "id": "thiel_macro",
+    "name": "Thiel Macro (Peter Thiel)",
+    "cik": "0001562087"
+  },
+  {
     "id": "yacktman",
     "name": "Yacktman Asset Management (Donald Yacktman)",
     "cik": "0000905567"
