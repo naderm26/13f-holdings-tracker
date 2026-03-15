@@ -35,17 +35,17 @@ def lookup_batch(cusips):
 
 def fetch_all_tickers(cusips):
     mapping = {}
-    batch_size = 100
+    batch_size = 10  # OpenFIGI free tier limit
     total = len(cusips)
 
     for i in range(0, total, batch_size):
         batch = cusips[i:i + batch_size]
-        print(f"  Looking up {i+1}-{min(i+batch_size, total)} of {total}...")
+        if (i // batch_size) % 10 == 0:
+            print(f"  Looking up {i+1}-{min(i+batch_size, total)} of {total}...")
         results = lookup_batch(batch)
 
         for cusip, result in zip(batch, results):
             if result and result.get("data"):
-                # Prefer common stock on US exchanges
                 ticker = None
                 for item in result["data"]:
                     if item.get("exchCode") in ("US", "UW", "UN", "UA", "UR"):
@@ -56,7 +56,7 @@ def fetch_all_tickers(cusips):
                 if ticker:
                     mapping[cusip] = ticker
 
-        time.sleep(1)  # OpenFIGI rate limit
+        time.sleep(0.5)  # OpenFIGI allows 25 requests/min on free tier
 
     return mapping
 
