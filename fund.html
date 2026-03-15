@@ -296,7 +296,7 @@
 
     function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
-    const rowsHtml = sorted.map(r => {
+    const rowsHtml = sorted.map((r, i) => {
       const adjValue = r.value * mult;
       const pct      = tv > 0 ? ((adjValue / tv) * 100).toFixed(1) : "0.0";
       const price    = r.shares > 0 ? adjValue / r.shares : 0;
@@ -309,6 +309,7 @@
         : `<span class="chg na">—</span>`;
       return `
         <tr>
+          <td class="num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
           <td><div class="company-name">${r.company}</div><div class="cusip">${r.cusip}</div></td>
           <td class="num">${pct}%</td>
           <td class="num">${r.shares.toLocaleString()}</td>
@@ -325,6 +326,7 @@
       .filter(p => !rows.find(r => r.cusip === p.cusip || r.company === p.company))
       .map(p => `
         <tr class="exited">
+          <td class="num" style="color:var(--muted); font-size:0.72rem">—</td>
           <td><div class="company-name">${p.company}</div><div class="cusip">${p.cusip}</div></td>
           <td class="num">—</td>
           <td class="num">—</td>
@@ -339,6 +341,7 @@
       <table>
         <thead>
           <tr>
+            <th style="width:2rem; color:var(--muted)">#</th>
             <th onclick="sort(0)">Company${arrow(0)}</th>
             <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
