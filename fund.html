@@ -45,13 +45,13 @@
     .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
-    th:nth-child(1) { text-align: left; width: 30px; }
+    th:nth-child(1) { text-align: center; width: 2rem; max-width: 2rem; overflow: hidden; }
     th:nth-child(2) { text-align: left; width: 22%; }
     th:nth-child(n+3) { width: 8.8%; text-align: center; }
     table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
-    td:nth-child(1) { text-align: left; }
+    td:nth-child(1) { text-align: center; width: 2rem; max-width: 2rem; overflow: hidden; }
     td:nth-child(2) { text-align: left; white-space: normal; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
@@ -101,6 +101,9 @@
   <div class="quarter-selector" id="quarter-selector"></div>
   <div id="stale-warning" style="display:none" class="stale-warning"></div>
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
+  <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
+    * Price at last filing is calculated by dividing the reported value by the number of shares held as of the filing date. It represents the implied average price per share at quarter end, not an actual purchase or sale price.
+  </div>
 </main>
 
 <footer style="text-align:center; padding:2rem; font-family:'DM Mono',monospace; font-size:0.7rem; color:#8a8780; border-top:1px solid #e8e6e1; margin-top:2rem;">
@@ -384,8 +387,8 @@
           <td class="num">${fmtChg(chg4)}</td>
           <td class="num">${valueStr}</td>
           <td class="num">${repPriceStr}</td>
-          <td class="num" style="display:none">${lastPriceStr}</td>
-          <td class="num" style="display:none">${priceDiffHtml}</td>
+          <td class="num">${lastPriceStr}</td>
+          <td class="num">${priceDiffHtml}</td>
           <td class="num">${putcallHtml}</td>
         </tr>`;
     }).join("");
@@ -412,21 +415,22 @@
       <table>
         <thead>
           <tr>
-            <th style="color:var(--muted)">#</th>
+            <th style="color:var(--muted); width:2rem; max-width:2rem">#</th>
             <th onclick="sort(0)">Company${arrow(0)}</th>
             <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
             <th class="num">Shares vs Prior Quarter</th>
             <th class="num">Shares vs Prior Year</th>
             <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
-            <th class="num">Last Reported Price</th>
-            <th class="num" style="display:none">Previous Close</th>
-            <th class="num" style="display:none">+/-<br>Last Reported<br>Price</th>
+            <th class="num">Price at Last Filing *</th>
+            <th class="num">Previous Close</th>
+            <th class="num">+/-<br>Last Reported<br>Price</th>
             <th class="num">Option</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}${exitedHtml}</tbody>
       </table>`;
+    document.getElementById("table-footnote").style.display = "block";
   }
 
   function sort(col) {
