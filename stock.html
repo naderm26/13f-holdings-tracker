@@ -158,12 +158,19 @@
     for (const fid of Object.keys(stock.funds)) {
       const fund   = fundMap[fid];
       if (!fund) continue;
-      const latest = stock.funds[fid].quarters[latestQ];
-      const prev1  = prevQ     ? stock.funds[fid].quarters[prevQ]     : null;
-      const prev4  = prevYearQ ? stock.funds[fid].quarters[prevYearQ] : null;
+
+      // Get this fund's own sorted quarters
+      const fundQuarters = Object.keys(stock.funds[fid].quarters).sort().reverse();
+      const fundLatestQ  = fundQuarters[0];
+      const fundPrevQ    = fundQuarters[1] || null;
+      const fundPrevYearQ = fundQuarters[4] || null;
+
+      const latest = stock.funds[fid].quarters[fundLatestQ];
+      const prev1  = fundPrevQ     ? stock.funds[fid].quarters[fundPrevQ]     : null;
+      const prev4  = fundPrevYearQ ? stock.funds[fid].quarters[fundPrevYearQ] : null;
 
       if (latest && latest.shares > 0) {
-        holdingFunds.push({ fid, fund, latest, prev1, prev4 });
+        holdingFunds.push({ fid, fund, latest, prev1, prev4, fundLatestQ });
       } else if (prev1 && prev1.shares > 0) {
         exitedFunds.push({ fid, fund, latest: null, prev1, prev4 });
       }
