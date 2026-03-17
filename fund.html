@@ -380,7 +380,12 @@
       return `
         <tr>
           <td class="num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
-          <td><div class="company-name">${r.company}</div>${tickerHtml}</td>
+          <td>
+            <a href="stock.html?ticker=${ticker || r.cusip}" style="text-decoration:none; color:inherit">
+              <div class="company-name">${r.company}</div>
+              ${tickerHtml}
+            </a>
+          </td>
           <td class="num">${pct}%</td>
           <td class="num">${r.shares.toLocaleString()}</td>
           <td class="num">${fmtChg(chg1)}</td>
@@ -399,7 +404,7 @@
       .map(p => `
         <tr class="exited">
           <td class="num" style="color:var(--muted); font-size:0.72rem">—</td>
-          <td><div class="company-name">${p.company}</div></td>
+          <td><a href="stock.html?cusip=${p.cusip}" style="text-decoration:none; color:inherit"><div class="company-name">${p.company}</div></a></td>
           <td class="num">—</td>
           <td class="num">—</td>
           <td class="num"><span class="chg exited">EXITED</span></td>
