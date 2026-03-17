@@ -192,7 +192,7 @@
       const chg1        = getChg(latest.shares, prev1);
       const chg4        = getChg(latest.shares, prev4);
       const repPrice    = latest.shares > 0 ? latest.value / latest.shares : 0;
-      const repPriceStr = repPrice > 0 ? fmtPrice(repPrice) : "—";
+      const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
       const putcall     = latest.putcall || "";
       const putcallHtml = putcall
         ? `<span class="putcall ${putcall.toLowerCase()}">${putcall.toUpperCase()}</span>`
