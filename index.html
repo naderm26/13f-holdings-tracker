@@ -171,8 +171,8 @@
     "tci",          // Chris Hohn
   ];
 
-  let allFunds = [];
-  let top100   = [];
+  let allFunds  = [];
+  let stockIndex = {};
 
   function fmtAUM(aum) {
     if (!aum) return "";
@@ -200,6 +200,13 @@
     const fundsRes = await fetch(`${BASE}/funds.json`);
     const text = await fundsRes.text();
     allFunds = JSON.parse(text);
+
+    // Load stock index for search (don't block on failure)
+    try {
+      const res = await fetch(`${BASE}/stock_index.json`);
+      if (res.ok) stockIndex = await res.json();
+    } catch(e) { /* stock index not yet generated */ }
+
     renderPopular();
     renderAll();
   }
@@ -221,16 +228,39 @@
 
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.trim().toLowerCase();
-    if (!q || allFunds.length === 0) { searchResults.classList.remove("visible"); return; }
-    const matches = allFunds.filter(f => f.name.toLowerCase().includes(q)).slice(0, 8);
-    if (matches.length === 0) {
-      searchResults.innerHTML = `<div class="no-results">No funds found</div>`;
-    } else {
-      searchResults.innerHTML = matches.map((f, i) => `
+    if (!q) { searchResults.classList.remove("visible"); return; }
+
+    // Search funds
+    const fundMatches = allFunds
+      .filter(f => f.name.toLowerCase().includes(q))
+      .slice(0, 4)
+      .map(f => `
         <a class="search-result-item" href="fund.html?fund=${f.id}">
-          <span class="search-result-num">${i + 1}.</span>
+          <span class="search-result-num">Fund</span>
           <span>${f.name}</span>
-        </a>`).join("");
+        </a>`);
+
+    // Search stocks by ticker or company name
+    const stockMatches = [];
+    for (const [key, stock] of Object.entries(stockIndex)) {
+      if (stockMatches.length >= 4) break;
+      if (
+        (stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
+        stock.name.toLowerCase().includes(q)
+      ) {
+        stockMatches.push(`
+          <a class="search-result-item" href="stock.html?ticker=${key}">
+            <span class="search-result-num" style="color:#2563eb">${stock.ticker || "Stock"}</span>
+            <span>${stock.name}</span>
+          </a>`);
+      }
+    }
+
+    const all = [...fundMatches, ...stockMatches];
+    if (all.length === 0) {
+      searchResults.innerHTML = `<div class="no-results">No results found</div>`;
+    } else {
+      searchResults.innerHTML = all.join("");
     }
     searchResults.classList.add("visible");
   });
