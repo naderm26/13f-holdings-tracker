@@ -1,0 +1,5708 @@
+{
+  "latest_q": "2025Q4",
+  "prev_q": "2025Q3",
+  "bought": [
+    {
+      "key": "MSFT",
+      "company": "MICROSOFT CORP",
+      "ticker": "MSFT",
+      "cusip": "594918104",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+0%",
+          "value": 824088
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+2%",
+          "value": 269667189
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "+10%",
+          "value": 4836
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+23%",
+          "value": 556403843
+        },
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "+26%",
+          "value": 1156819
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 610337629
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+0%",
+          "value": 124574225
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "+2%",
+          "value": 596847533
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "+208%",
+          "value": 415429580
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "+1%",
+          "value": 69020618
+        },
+        {
+          "id": "tci",
+          "name": "TCI Fund Management (Chris Hohn)",
+          "type": "+1%",
+          "value": 8116088110
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "+32%",
+          "value": 1556116024
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "+6%",
+          "value": 1791812
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+16%",
+          "value": 29405634
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "+3%",
+          "value": 466693
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "+8%",
+          "value": 241810000
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+1%",
+          "value": 259065563
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+0%",
+          "value": 925114873
+        }
+      ],
+      "total_value": 13774125069
+    },
+    {
+      "key": "AMZN",
+      "company": "AMAZON COM INC",
+      "ticker": "AMZN",
+      "cusip": "023135106",
+      "funds": [
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "NEW",
+          "value": 13448958
+        },
+        {
+          "id": "shawspring",
+          "name": "ShawSpring Partners (Dennis Hong)",
+          "type": "NEW",
+          "value": 27337859
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+7%",
+          "value": 549963273
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "+92%",
+          "value": 193413000
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+2%",
+          "value": 45609571
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "+0%",
+          "value": 129849857
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "+45%",
+          "value": 1360105927
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "NEW",
+          "value": 261673709
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 721731669
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "NEW",
+          "value": 240053
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+9%",
+          "value": 791545223
+        },
+        {
+          "id": "pershing",
+          "name": "Pershing Square Capital Management (Bill Ackman)",
+          "type": "+65%",
+          "value": 2217677936
+        },
+        {
+          "id": "baupost",
+          "name": "Baupost Group (Seth Klarman)",
+          "type": "NEW",
+          "value": 489659
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+1%",
+          "value": 598462710
+        }
+      ],
+      "total_value": 6911549404
+    },
+    {
+      "key": "META",
+      "company": "META PLATFORMS INC",
+      "ticker": "META",
+      "cusip": "30303M102",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+1%",
+          "value": 206904550
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "+14%",
+          "value": 3763
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+27%",
+          "value": 3313544205
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+19%",
+          "value": 13568810
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "+14%",
+          "value": 21245979
+        },
+        {
+          "id": "valueact",
+          "name": "ValueAct Capital",
+          "type": "+36%",
+          "value": 691757158
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+2%",
+          "value": 1157130854
+        },
+        {
+          "id": "pershing",
+          "name": "Pershing Square Capital Management (Bill Ackman)",
+          "type": "NEW",
+          "value": 1764796161
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "+27%",
+          "value": 72864181
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "+62%",
+          "value": 396054000
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+23%",
+          "value": 208937628
+        }
+      ],
+      "total_value": 7846807289
+    },
+    {
+      "key": "V",
+      "company": "VISA INC",
+      "ticker": "V",
+      "cusip": "92826C839",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+0%",
+          "value": 142859965
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "NEW",
+          "value": 272453623
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 683704937
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "+37%",
+          "value": 1147172059
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "NEW",
+          "value": 5336754
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "+1%",
+          "value": 402954
+        },
+        {
+          "id": "valueact",
+          "name": "ValueAct Capital",
+          "type": "+10%",
+          "value": 602607458
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "+38%",
+          "value": 1397300536
+        },
+        {
+          "id": "valley_forge",
+          "name": "Valley Forge Capital Management",
+          "type": "+0%",
+          "value": 321394151
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+1%",
+          "value": 281450966
+        }
+      ],
+      "total_value": 4854683403
+    },
+    {
+      "key": "BN",
+      "company": "BROOKFIELD CORP",
+      "ticker": "BN",
+      "cusip": "11271J107",
+      "funds": [
+        {
+          "id": "greenlea_lane",
+          "name": "Greenlea Lane Capital (Josh Tarasoff)",
+          "type": "+48%",
+          "value": 64863771
+        },
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "+50%",
+          "value": 233117
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "NEW",
+          "value": 1894353885
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "NEW",
+          "value": 4038
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "+56%",
+          "value": 730722990
+        },
+        {
+          "id": "pershing",
+          "name": "Pershing Square Capital Management (Bill Ackman)",
+          "type": "+50%",
+          "value": 2817787754
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+50%",
+          "value": 599947917
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "+33%",
+          "value": 284518000
+        },
+        {
+          "id": "akre",
+          "name": "Akre Capital Management (Chuck Akre)",
+          "type": "+40%",
+          "value": 1231854338
+        }
+      ],
+      "total_value": 7624285810
+    },
+    {
+      "key": "GOOGL",
+      "company": "ALPHABET INC",
+      "ticker": "GOOGL",
+      "cusip": "02079K305",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+1%",
+          "value": 113117574
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "+8%",
+          "value": 109466742
+        },
+        {
+          "id": "semper_augustus",
+          "name": "Semper Augustus (Christopher Bloomstran)",
+          "type": "NEW",
+          "value": 219100
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "+277%",
+          "value": 120505000
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 1319368242
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "NEW",
+          "value": 53572141
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 834543136
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+13%",
+          "value": 976174798
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+90%",
+          "value": 15612753
+        }
+      ],
+      "total_value": 3542579486
+    },
+    {
+      "key": "DIS",
+      "company": "DISNEY WALT CO",
+      "ticker": "DIS",
+      "cusip": "254687106",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+109%",
+          "value": 61938550
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+0%",
+          "value": 391754554
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "+34%",
+          "value": 109072550
+        },
+        {
+          "id": "semper_augustus",
+          "name": "Semper Augustus (Christopher Bloomstran)",
+          "type": "+0%",
+          "value": 16585563
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "+3446%",
+          "value": 10264216
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+1%",
+          "value": 5527288
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "+7%",
+          "value": 1273484950
+        },
+        {
+          "id": "longleaf",
+          "name": "Longleaf Partners (Mason Hawkins)",
+          "type": "+11%",
+          "value": 36085000
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "+12%",
+          "value": 63443499
+        }
+      ],
+      "total_value": 1968156170
+    },
+    {
+      "key": "TSM",
+      "company": "TAIWAN SEMICONDUCTOR MFG LTD",
+      "ticker": "TSM",
+      "cusip": "874039100",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "+13%",
+          "value": 60958295
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+63%",
+          "value": 504047149
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 859789292
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+77%",
+          "value": 35555
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "+371%",
+          "value": 372078054
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "+25%",
+          "value": 1493587745
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "+1%",
+          "value": 155506439
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "+7%",
+          "value": 343395700
+        }
+      ],
+      "total_value": 3789398229
+    },
+    {
+      "key": "GOOG",
+      "company": "ALPHABET INC",
+      "ticker": "GOOG",
+      "cusip": "02079K107",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+0%",
+          "value": 200677297
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "NEW",
+          "value": 358203641
+        },
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "+1%",
+          "value": 42493540
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "NEW",
+          "value": 338517398
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "+2%",
+          "value": 582224520
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+10%",
+          "value": 223101674
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "+29%",
+          "value": 560738948
+        },
+        {
+          "id": "himalaya",
+          "name": "Himalaya Capital Management (Li Lu)",
+          "type": "+4%",
+          "value": 796052900
+        }
+      ],
+      "total_value": 3102009918
+    },
+    {
+      "key": "AON",
+      "company": "AON PLC",
+      "ticker": "AON",
+      "cusip": "G0403H108",
+      "funds": [
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 438636192
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+127%",
+          "value": 2770974673
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "+2%",
+          "value": 77187207
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+32%",
+          "value": 29290
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "+5%",
+          "value": 3741587
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "+0%",
+          "value": 231676659
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+3%",
+          "value": 47303564
+        }
+      ],
+      "total_value": 3569549172
+    },
+    {
+      "key": "FISV",
+      "company": "FISERV INC",
+      "ticker": "FISV",
+      "cusip": "337738108",
+      "funds": [
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+28%",
+          "value": 3323210360
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "NEW",
+          "value": 17407856
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "+68%",
+          "value": 2577716
+        },
+        {
+          "id": "longleaf",
+          "name": "Longleaf Partners (Mason Hawkins)",
+          "type": "NEW",
+          "value": 268008
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "NEW",
+          "value": 38218521
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "+27%",
+          "value": 21563249
+        },
+        {
+          "id": "baupost",
+          "name": "Baupost Group (Seth Klarman)",
+          "type": "+146%",
+          "value": 147774
+        }
+      ],
+      "total_value": 3403393484
+    },
+    {
+      "key": "UBER",
+      "company": "UBER TECHNOLOGIES INC",
+      "ticker": "UBER",
+      "cusip": "90353T100",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "+64%",
+          "value": 3759
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 420043574
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+33%",
+          "value": 28190
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "NEW",
+          "value": 219078564
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "+9%",
+          "value": 420402853
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "+2%",
+          "value": 77891120
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+13%",
+          "value": 11439400
+        }
+      ],
+      "total_value": 1148887460
+    },
+    {
+      "key": "FERG",
+      "company": "FERGUSON ENTERPRISES INC",
+      "ticker": "FERG",
+      "cusip": "31488V107",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+2%",
+          "value": 8097944
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+5%",
+          "value": 140133340
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+50%",
+          "value": 4923240
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 441888046
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+711%",
+          "value": 16252
+        },
+        {
+          "id": "durable_capital",
+          "name": "Durable Capital Partners (Henry Ellenbogen)",
+          "type": "+43%",
+          "value": 347601569
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+11%",
+          "value": 36400005
+        }
+      ],
+      "total_value": 979060396
+    },
+    {
+      "key": "LYV",
+      "company": "LIVE NATION ENTERTAINMENT IN",
+      "ticker": "LYV",
+      "cusip": "538034109",
+      "funds": [
+        {
+          "id": "dorsey",
+          "name": "Dorsey Asset Management (Pat Dorsey)",
+          "type": "NEW",
+          "value": 85923653
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 398601713
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+8%",
+          "value": 5558
+        },
+        {
+          "id": "valueact",
+          "name": "ValueAct Capital",
+          "type": "+28%",
+          "value": 117286905
+        },
+        {
+          "id": "triple_frond",
+          "name": "Triple Frond Partners",
+          "type": "NEW",
+          "value": 36460
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "+92%",
+          "value": 63713601
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "+28%",
+          "value": 245812500
+        }
+      ],
+      "total_value": 911380390
+    },
+    {
+      "key": "ENTG",
+      "company": "Entegris",
+      "ticker": "ENTG",
+      "cusip": "29362U104",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+92%",
+          "value": 888248
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "NEW",
+          "value": 71120000
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 207183641
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+112%",
+          "value": 4297
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "NEW",
+          "value": 257318878
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+13%",
+          "value": 113652071
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "+3%",
+          "value": 1919552
+        }
+      ],
+      "total_value": 652086687
+    },
+    {
+      "key": "SPY",
+      "company": "SPDR S&P 500 ETF TR",
+      "ticker": "SPY",
+      "cusip": "78462F103",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "+168%",
+          "value": 4580746
+        },
+        {
+          "id": "oaktree",
+          "name": "Oaktree Capital Management (Howard Marks)",
+          "type": "+17%",
+          "value": 262539200
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+2%",
+          "value": 17251221
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "+155%",
+          "value": 733166
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "+618%",
+          "value": 21883495
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "NEW",
+          "value": 4552498
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+0%",
+          "value": 18448664
+        }
+      ],
+      "total_value": 329988990
+    },
+    {
+      "key": "APD",
+      "company": "AIR PRODS & CHEMS INC",
+      "ticker": "APD",
+      "cusip": "009158106",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "NEW",
+          "value": 3952
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+3%",
+          "value": 2281627402
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "+19%",
+          "value": 337676
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "+0%",
+          "value": 2231826
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "+30%",
+          "value": 1181381549
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+10%",
+          "value": 17661930
+        }
+      ],
+      "total_value": 3483244335
+    },
+    {
+      "key": "NVDA",
+      "company": "NVIDIA CORPORATION",
+      "ticker": "NVDA",
+      "cusip": "67066G104",
+      "funds": [
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+39%",
+          "value": 556955208
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "+1%",
+          "value": 119138794
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "+1111%",
+          "value": 1349719150
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "+4%",
+          "value": 420321764
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+24%",
+          "value": 20709251
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "+4%",
+          "value": 550175000
+        }
+      ],
+      "total_value": 3017019167
+    },
+    {
+      "key": "GEHC",
+      "company": "GE HealthCare Technologies Inc.",
+      "ticker": "GEHC",
+      "cusip": "36266G107",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "NEW",
+          "value": 4183
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "+4%",
+          "value": 83487174
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+13%",
+          "value": 2559945003
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+3%",
+          "value": 213416
+        },
+        {
+          "id": "cooperman",
+          "name": "Cooperman Capital (Leon Cooperman)",
+          "type": "+12%",
+          "value": 54953400
+        },
+        {
+          "id": "trian",
+          "name": "Trian Fund Management (Nelson Peltz)",
+          "type": "+0%",
+          "value": 331689
+        }
+      ],
+      "total_value": 2698934865
+    },
+    {
+      "key": "RKT",
+      "company": "ROCKET COS INC",
+      "ticker": "RKT",
+      "cusip": "77311W101",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+7%",
+          "value": 1194899
+        },
+        {
+          "id": "valueact",
+          "name": "ValueAct Capital",
+          "type": "+55%",
+          "value": 762409423
+        },
+        {
+          "id": "durable_capital",
+          "name": "Durable Capital Partners (Henry Ellenbogen)",
+          "type": "+59%",
+          "value": 338223014
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+3%",
+          "value": 62492338
+        },
+        {
+          "id": "cooperman",
+          "name": "Cooperman Capital (Leon Cooperman)",
+          "type": "NEW",
+          "value": 406881376
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "+138%",
+          "value": 184210400
+        }
+      ],
+      "total_value": 1755411450
+    },
+    {
+      "key": "TSN",
+      "company": "TYSON FOODS INC",
+      "ticker": "TSN",
+      "cusip": "902494103",
+      "funds": [
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "+17%",
+          "value": 971040
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "+11%",
+          "value": 897502272
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "+3%",
+          "value": 21807486
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+29%",
+          "value": 751950994
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "+17%",
+          "value": 971040
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+4%",
+          "value": 51849390
+        }
+      ],
+      "total_value": 1725052222
+    },
+    {
+      "key": "DASH",
+      "company": "DOORDASH INC",
+      "ticker": "DASH",
+      "cusip": "25809K105",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "NEW",
+          "value": 3850
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+6200%",
+          "value": 81334630
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "NEW",
+          "value": 8131000
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "NEW",
+          "value": 572966996
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "+0%",
+          "value": 210732166
+        },
+        {
+          "id": "durable_capital",
+          "name": "Durable Capital Partners (Henry Ellenbogen)",
+          "type": "+114%",
+          "value": 810514168
+        }
+      ],
+      "total_value": 1683682810
+    },
+    {
+      "key": "TXN",
+      "company": "Texas Instruments",
+      "ticker": "TXN",
+      "cusip": "882508104",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+1%",
+          "value": 633118758
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "+12%",
+          "value": 4684
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "+0%",
+          "value": 28643199
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "+31%",
+          "value": 23227567
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+23%",
+          "value": 495008831
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "+23%",
+          "value": 24307337
+        }
+      ],
+      "total_value": 1204310376
+    },
+    {
+      "key": "TMO",
+      "company": "THERMO FISHER SCIENTIFIC INC",
+      "ticker": "TMO",
+      "cusip": "883556102",
+      "funds": [
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 506046433
+        },
+        {
+          "id": "lindsell_train",
+          "name": "Lindsell Train (Nick Train)",
+          "type": "NEW",
+          "value": 5099160
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 459612207
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "+2%",
+          "value": 126651545
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+13%",
+          "value": 36389461
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "NEW",
+          "value": 28972500
+        }
+      ],
+      "total_value": 1162771306
+    },
+    {
+      "key": "NFLX",
+      "company": "NETFLIX INC",
+      "ticker": "NFLX",
+      "cusip": "64110L106",
+      "funds": [
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "NEW",
+          "value": 4762727
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+953%",
+          "value": 317847
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "+1108%",
+          "value": 228680640
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "+764%",
+          "value": 489427
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "+873%",
+          "value": 469246766
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "+900%",
+          "value": 1537664
+        }
+      ],
+      "total_value": 705035071
+    },
+    {
+      "key": "EFX",
+      "company": "EQUIFAX INC",
+      "ticker": "EFX",
+      "cusip": "294429105",
+      "funds": [
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "NEW",
+          "value": 4967974
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 374073086
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "+0%",
+          "value": 46624662
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+212%",
+          "value": 16274
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "+1%",
+          "value": 2403921
+        },
+        {
+          "id": "valley_forge",
+          "name": "Valley Forge Capital Management",
+          "type": "+2%",
+          "value": 31755457
+        }
+      ],
+      "total_value": 459841374
+    },
+    {
+      "key": "PNC",
+      "company": "PNC FINANCIAL SERVICES GROUP INC.",
+      "ticker": "PNC",
+      "cusip": "693475105",
+      "funds": [
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "+55%",
+          "value": 471103
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "+17%",
+          "value": 1266574
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+16%",
+          "value": 346701
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "+0%",
+          "value": 39884077
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+6%",
+          "value": 110645477
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "+17%",
+          "value": 1266574
+        }
+      ],
+      "total_value": 153880506
+    },
+    {
+      "key": "UL",
+      "company": "UNILEVER PLC SPONSORED ADR",
+      "ticker": "UL",
+      "cusip": "904767803",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "NEW",
+          "value": 44300897
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "NEW",
+          "value": 3621438
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "NEW",
+          "value": 342965
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "NEW",
+          "value": 31588
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "NEW",
+          "value": 12805545
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "NEW",
+          "value": 3621438
+        }
+      ],
+      "total_value": 64723871
+    },
+    {
+      "key": "CB",
+      "company": "Chubb Ltd.",
+      "ticker": "CB",
+      "cusip": "H1467J104",
+      "funds": [
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "NEW",
+          "value": 17642895
+        },
+        {
+          "id": "berkshire",
+          "name": "Berkshire Hathaway (Warren Buffett)",
+          "type": "+9%",
+          "value": 10689854998
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+2%",
+          "value": 18080488
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 316439429
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+11%",
+          "value": 370380411
+        }
+      ],
+      "total_value": 11412398221
+    },
+    {
+      "key": "BRK/B",
+      "company": "Berkshire Hathaway Inc., Class B",
+      "ticker": "BRK/B",
+      "cusip": "084670702",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+239%",
+          "value": 26076024
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "+17%",
+          "value": 105659041
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+1%",
+          "value": 65137912
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "+38%",
+          "value": 3607114919
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+39%",
+          "value": 371908140
+        }
+      ],
+      "total_value": 4175896036
+    },
+    {
+      "key": "LPLA",
+      "company": "LPL FINL HLDGS INC",
+      "ticker": "LPLA",
+      "cusip": "50212V100",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "NEW",
+          "value": 3572
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "NEW",
+          "value": 131820017
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+19%",
+          "value": 1410453615
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "NEW",
+          "value": 91011559
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+1%",
+          "value": 199997699
+        }
+      ],
+      "total_value": 1833286462
+    },
+    {
+      "key": "ICE",
+      "company": "INTERCONTINENTAL EXCHANGE IN",
+      "ticker": "ICE",
+      "cusip": "45866F104",
+      "funds": [
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 540619565
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+3%",
+          "value": 12954858
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 777925786
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "+0%",
+          "value": 337555
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+271%",
+          "value": 3380105
+        }
+      ],
+      "total_value": 1335217869
+    },
+    {
+      "key": "ADBE",
+      "company": "ADOBE INC",
+      "ticker": "ADBE",
+      "cusip": "00724F101",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "+5%",
+          "value": 5600
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "NEW",
+          "value": 4935909
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+16%",
+          "value": 405021378
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+36%",
+          "value": 757544605
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "+4%",
+          "value": 292942
+        }
+      ],
+      "total_value": 1167800434
+    },
+    {
+      "key": "AMAT",
+      "company": "APPLIED MATLS INC",
+      "ticker": "AMAT",
+      "cusip": "038222105",
+      "funds": [
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "NEW",
+          "value": 290726619
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 764201140
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+11%",
+          "value": 1045436
+        },
+        {
+          "id": "brave_warrior",
+          "name": "Brave Warrior Advisors (Glenn Greenberg)",
+          "type": "NEW",
+          "value": 246967
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+30%",
+          "value": 8763360
+        }
+      ],
+      "total_value": 1064983522
+    },
+    {
+      "key": "BMY",
+      "company": "BRISTOL-MYERS SQUIBB CO",
+      "ticker": "BMY",
+      "cusip": "110122108",
+      "funds": [
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "+16%",
+          "value": 908457
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "+20%",
+          "value": 967872552
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "NEW",
+          "value": 211930
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "+16%",
+          "value": 908457
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "NEW",
+          "value": 39520597
+        }
+      ],
+      "total_value": 1009421993
+    },
+    {
+      "key": "MA",
+      "company": "MASTERCARD INCORPORATED",
+      "ticker": "MA",
+      "cusip": "57636Q104",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+4%",
+          "value": 16417938
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+0%",
+          "value": 45371260
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "NEW",
+          "value": 54997437
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "NEW",
+          "value": 57150
+        },
+        {
+          "id": "valley_forge",
+          "name": "Valley Forge Capital Management",
+          "type": "+0%",
+          "value": 849132050
+        }
+      ],
+      "total_value": 965975835
+    },
+    {
+      "key": "UNH",
+      "company": "UnitedHealth Group",
+      "ticker": "UNH",
+      "cusip": "91324P102",
+      "funds": [
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "+15%",
+          "value": 811740
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 395231790
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+12%",
+          "value": 420368751
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "+15%",
+          "value": 811740
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "+4%",
+          "value": 19526997
+        }
+      ],
+      "total_value": 836751018
+    },
+    {
+      "key": "UNP",
+      "company": "UNION PAC CORP",
+      "ticker": "UNP",
+      "cusip": "907818108",
+      "funds": [
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+18%",
+          "value": 303771043
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "+1%",
+          "value": 5779216
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+11%",
+          "value": 32680427
+        },
+        {
+          "id": "baupost",
+          "name": "Baupost Group (Seth Klarman)",
+          "type": "+9%",
+          "value": 376416
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "+107%",
+          "value": 418689200
+        }
+      ],
+      "total_value": 761296302
+    },
+    {
+      "key": "PGR",
+      "company": "PROGRESSIVE CORP",
+      "ticker": "PGR",
+      "cusip": "743315103",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+1%",
+          "value": 122247383
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+1%",
+          "value": 2353259
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 303217833
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "NEW",
+          "value": 50098400
+        },
+        {
+          "id": "fairholme",
+          "name": "Fairholme Capital (Bruce Berkowitz)",
+          "type": "NEW",
+          "value": 5829632
+        }
+      ],
+      "total_value": 483746507
+    },
+    {
+      "key": "SCHW",
+      "company": "SCHWAB CHARLES CORP",
+      "ticker": "SCHW",
+      "cusip": "808513105",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "+1%",
+          "value": 158423391
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+44%",
+          "value": 125196222
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+1%",
+          "value": 593266
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+2%",
+          "value": 30142347
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+1%",
+          "value": 137456178
+        }
+      ],
+      "total_value": 451811404
+    },
+    {
+      "key": "LOW",
+      "company": "LOWES COS INC",
+      "ticker": "LOW",
+      "cusip": "548661107",
+      "funds": [
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "+124%",
+          "value": 2005487
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+2%",
+          "value": 5829803
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "+7%",
+          "value": 15684077
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "NEW",
+          "value": 219947566
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "+1%",
+          "value": 177127198
+        }
+      ],
+      "total_value": 420594131
+    },
+    {
+      "key": "MICC.AS",
+      "company": "MAGNUM ICE CREAM CO NV ADR",
+      "ticker": "MICC.AS",
+      "cusip": "N5505D105",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "NEW",
+          "value": 260540849
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "NEW",
+          "value": 197142
+        },
+        {
+          "id": "longleaf",
+          "name": "Longleaf Partners (Mason Hawkins)",
+          "type": "NEW",
+          "value": 22671063
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "NEW",
+          "value": 26908149
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "NEW",
+          "value": 197142
+        }
+      ],
+      "total_value": 310514345
+    },
+    {
+      "key": "KSPI",
+      "company": "KASPI KZ JSC",
+      "ticker": "KSPI",
+      "cusip": "48581R205",
+      "funds": [
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+931%",
+          "value": 14354512
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "+56%",
+          "value": 211398997
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "+11%",
+          "value": 321271
+        },
+        {
+          "id": "longleaf",
+          "name": "Longleaf Partners (Mason Hawkins)",
+          "type": "+35%",
+          "value": 18800266
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "+7%",
+          "value": 1029128
+        }
+      ],
+      "total_value": 245904174
+    },
+    {
+      "key": "VTI",
+      "company": "Vanguard Index Funds Total Sto",
+      "ticker": "VTI",
+      "cusip": "922908769",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "NEW",
+          "value": 1903328
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+13%",
+          "value": 5014970
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "+1%",
+          "value": 897853
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+58%",
+          "value": 433839
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "+0%",
+          "value": 248682
+        }
+      ],
+      "total_value": 8498672
+    },
+    {
+      "key": "SPGI",
+      "company": "S&P GLOBAL INC",
+      "ticker": "SPGI",
+      "cusip": "78409V104",
+      "funds": [
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "+1%",
+          "value": 917471546
+        },
+        {
+          "id": "tci",
+          "name": "TCI Fund Management (Chris Hohn)",
+          "type": "+5%",
+          "value": 6161498103
+        },
+        {
+          "id": "valley_forge",
+          "name": "Valley Forge Capital Management",
+          "type": "+0%",
+          "value": 918806764
+        },
+        {
+          "id": "brave_warrior",
+          "name": "Brave Warrior Advisors (Glenn Greenberg)",
+          "type": "NEW",
+          "value": 209559
+        }
+      ],
+      "total_value": 7997985972
+    },
+    {
+      "key": "REGN",
+      "company": "REGENERON PHARMACEUTICALS",
+      "ticker": "REGN",
+      "cusip": "75886F107",
+      "funds": [
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "+53%",
+          "value": 135761899
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+1%",
+          "value": 3547790849
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+28%",
+          "value": 24701
+        },
+        {
+          "id": "longleaf",
+          "name": "Longleaf Partners (Mason Hawkins)",
+          "type": "+15%",
+          "value": 127969871
+        }
+      ],
+      "total_value": 3811547320
+    },
+    {
+      "key": "CHTR",
+      "company": "CHARTER COMMUNICATIONS INC CL",
+      "ticker": "CHTR",
+      "cusip": "16119P108",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+120%",
+          "value": 619884620
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "NEW",
+          "value": 4954055
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+24%",
+          "value": 3049674675
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+2000%",
+          "value": 4384
+        }
+      ],
+      "total_value": 3674517734
+    },
+    {
+      "key": "CI",
+      "company": "Cigna Group",
+      "ticker": "CI",
+      "cusip": "125523100",
+      "funds": [
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+20%",
+          "value": 3065680742
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "+8%",
+          "value": 157110367
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+15%",
+          "value": 200919
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "+15%",
+          "value": 207212398
+        }
+      ],
+      "total_value": 3430204426
+    },
+    {
+      "key": "ZBH",
+      "company": "ZIMMER BIOMET HOLDINGS INC",
+      "ticker": "ZBH",
+      "cusip": "98956P102",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "+5%",
+          "value": 7373
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "+1%",
+          "value": 2113735862
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "+143%",
+          "value": 6565
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "+25%",
+          "value": 65506589
+        }
+      ],
+      "total_value": 2179256389
+    },
+    {
+      "key": "CRM",
+      "company": "SALESFORCE INC",
+      "ticker": "CRM",
+      "cusip": "79466L302",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "+17%",
+          "value": 1144200943
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "NEW",
+          "value": 100278767
+        },
+        {
+          "id": "valueact",
+          "name": "ValueAct Capital",
+          "type": "+3%",
+          "value": 793275379
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "+0%",
+          "value": 78416804
+        }
+      ],
+      "total_value": 2116171893
+    }
+  ],
+  "sold": [
+    {
+      "key": "GOOGL",
+      "company": "Alphabet Class A",
+      "ticker": "GOOGL",
+      "cusip": "02079K305",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-93%",
+          "value": 115091124
+        },
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "-21%",
+          "value": 50378126
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-47%",
+          "value": 794660839
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "EXITED",
+          "value": 3478275
+        },
+        {
+          "id": "greenlea_lane",
+          "name": "Greenlea Lane Capital (Josh Tarasoff)",
+          "type": "-3%",
+          "value": 25469587
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-15%",
+          "value": 56877378
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-4%",
+          "value": 2756456689
+        },
+        {
+          "id": "altarock",
+          "name": "AltaRock Partners",
+          "type": "-51%",
+          "value": 83721452
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-2%",
+          "value": 15619661
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "-5%",
+          "value": 149101308
+        },
+        {
+          "id": "fundsmith",
+          "name": "Fundsmith (Terry Smith)",
+          "type": "-44%",
+          "value": 1528941471
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 959612
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-8%",
+          "value": 572918389
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-25%",
+          "value": 1945
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-14%",
+          "value": 435467218
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-4%",
+          "value": 3764647
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-21%",
+          "value": 588865749
+        },
+        {
+          "id": "pershing",
+          "name": "Pershing Square Capital Management (Bill Ackman)",
+          "type": "-86%",
+          "value": 1177569836
+        },
+        {
+          "id": "brave_warrior",
+          "name": "Brave Warrior Advisors (Glenn Greenberg)",
+          "type": "-7%",
+          "value": 5313680
+        },
+        {
+          "id": "aquamarine",
+          "name": "Aquamarine Capital (Guy Spier)",
+          "type": "EXITED",
+          "value": 3890
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-15%",
+          "value": 56877378
+        },
+        {
+          "id": "abrams",
+          "name": "Abrams Capital Management (David Abrams)",
+          "type": "-10%",
+          "value": 516376003
+        },
+        {
+          "id": "himalaya",
+          "name": "Himalaya Capital Management (Li Lu)",
+          "type": "-4%",
+          "value": 618276230
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-6%",
+          "value": 12219422
+        }
+      ],
+      "total_value_sold": 9568409909
+    },
+    {
+      "key": "GOOG",
+      "company": "Alphabet Class C",
+      "ticker": "GOOG",
+      "cusip": "02079K107",
+      "funds": [
+        {
+          "id": "dorsey",
+          "name": "Dorsey Asset Management (Pat Dorsey)",
+          "type": "-49%",
+          "value": 104560399
+        },
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-13%",
+          "value": 1130130861
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-2%",
+          "value": 1833172800
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-48%",
+          "value": 3531
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "EXITED",
+          "value": 1527546
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-8%",
+          "value": 3407931096
+        },
+        {
+          "id": "chou",
+          "name": "Chou Associates (Francis Chou)",
+          "type": "-12%",
+          "value": 20066085
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "-21%",
+          "value": 107308130
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-1%",
+          "value": 38261463
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-3%",
+          "value": 284079886
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-2%",
+          "value": 39115177
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-9%",
+          "value": 305550765
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-22%",
+          "value": 358749
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-15%",
+          "value": 1132488747
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-9%",
+          "value": 361342470
+        },
+        {
+          "id": "pershing",
+          "name": "Pershing Square Capital Management (Bill Ackman)",
+          "type": "-3%",
+          "value": 1540217750
+        },
+        {
+          "id": "triple_frond",
+          "name": "Triple Frond Partners",
+          "type": "-36%",
+          "value": 134165
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-41%",
+          "value": 153962045
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "EXITED",
+          "value": 1527546
+        },
+        {
+          "id": "baupost",
+          "name": "Baupost Group (Seth Klarman)",
+          "type": "-41%",
+          "value": 452550
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-4%",
+          "value": 429278287
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-0%",
+          "value": 1491744
+        }
+      ],
+      "total_value_sold": 10892961792
+    },
+    {
+      "key": "META",
+      "company": "META PLATFORMS INC",
+      "ticker": "META",
+      "cusip": "30303M102",
+      "funds": [
+        {
+          "id": "dorsey",
+          "name": "Dorsey Asset Management (Pat Dorsey)",
+          "type": "-17%",
+          "value": 141165461
+        },
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "EXITED",
+          "value": 394995
+        },
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "-2%",
+          "value": 51842742
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-5%",
+          "value": 2446918594
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "EXITED",
+          "value": 55886000
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-2%",
+          "value": 2070217954
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "-1%",
+          "value": 105750697
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "EXITED",
+          "value": 397422221
+        },
+        {
+          "id": "fundsmith",
+          "name": "Fundsmith (Terry Smith)",
+          "type": "-13%",
+          "value": 1144651668
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "EXITED",
+          "value": 971041299
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-2%",
+          "value": 179204142
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-8%",
+          "value": 293702797
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "EXITED",
+          "value": 682241223
+        },
+        {
+          "id": "rv_capital",
+          "name": "RV Capital (Robert Vinall)",
+          "type": "-2%",
+          "value": 102601699
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-1%",
+          "value": 522140508
+        },
+        {
+          "id": "triple_frond",
+          "name": "Triple Frond Partners",
+          "type": "-4%",
+          "value": 74653
+        },
+        {
+          "id": "abrams",
+          "name": "Abrams Capital Management (David Abrams)",
+          "type": "-18%",
+          "value": 289900177
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "-11%",
+          "value": 205832761
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "EXITED",
+          "value": 161563600
+        }
+      ],
+      "total_value_sold": 9822553191
+    },
+    {
+      "key": "MSFT",
+      "company": "Microsoft",
+      "ticker": "MSFT",
+      "cusip": "594918104",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-22%",
+          "value": 2600190996
+        },
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "-2%",
+          "value": 41025625
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-5%",
+          "value": 4077385790
+        },
+        {
+          "id": "altarock",
+          "name": "AltaRock Partners",
+          "type": "-19%",
+          "value": 1330751843
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "-5%",
+          "value": 79751351
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-16%",
+          "value": 3393281056
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "-3%",
+          "value": 937897645
+        },
+        {
+          "id": "fundsmith",
+          "name": "Fundsmith (Terry Smith)",
+          "type": "-19%",
+          "value": 1338055974
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-6%",
+          "value": 532461923
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-8%",
+          "value": 5940887
+        },
+        {
+          "id": "gates",
+          "name": "Gates Foundation Trust (Bill Gates)",
+          "type": "-16%",
+          "value": 4760585666
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-13%",
+          "value": 786997056
+        },
+        {
+          "id": "thiel_macro",
+          "name": "Thiel Macro (Peter Thiel)",
+          "type": "EXITED",
+          "value": 25379550
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "-5%",
+          "value": 553686
+        },
+        {
+          "id": "triple_frond",
+          "name": "Triple Frond Partners",
+          "type": "-8%",
+          "value": 199503
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-11%",
+          "value": 100551705
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "-16%",
+          "value": 569745000
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-4%",
+          "value": 18402764
+        }
+      ],
+      "total_value_sold": 20599158020
+    },
+    {
+      "key": "BAC",
+      "company": "BANK AMERICA CORP",
+      "ticker": "BAC",
+      "cusip": "060505104",
+      "funds": [
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "EXITED",
+          "value": 171228964
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "-16%",
+          "value": 96973208
+        },
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "-6%",
+          "value": 573990
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-2%",
+          "value": 19659866
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "EXITED",
+          "value": 51035000
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-87%",
+          "value": 791752797
+        },
+        {
+          "id": "berkshire",
+          "name": "Berkshire Hathaway (Warren Buffett)",
+          "type": "-9%",
+          "value": 29306731919
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-0%",
+          "value": 335529546
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-1%",
+          "value": 2979215
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "-61%",
+          "value": 593299961
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "-0%",
+          "value": 59358887
+        },
+        {
+          "id": "aquamarine",
+          "name": "Aquamarine Capital (Guy Spier)",
+          "type": "EXITED",
+          "value": 39613
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-2%",
+          "value": 19659866
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-4%",
+          "value": 27841008
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-10%",
+          "value": 1288512
+        }
+      ],
+      "total_value_sold": 31477952352
+    },
+    {
+      "key": "AMZN",
+      "company": "Amazon.com",
+      "ticker": "AMZN",
+      "cusip": "023135106",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-23%",
+          "value": 2469400230
+        },
+        {
+          "id": "greenlea_lane",
+          "name": "Greenlea Lane Capital (Josh Tarasoff)",
+          "type": "-2%",
+          "value": 70678485
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-7%",
+          "value": 3578185178
+        },
+        {
+          "id": "altarock",
+          "name": "AltaRock Partners",
+          "type": "-3%",
+          "value": 1659565611
+        },
+        {
+          "id": "berkshire",
+          "name": "Berkshire Hathaway (Warren Buffett)",
+          "type": "-77%",
+          "value": 2195700000
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-9%",
+          "value": 2424808340
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "-14%",
+          "value": 617415031
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 27631537
+        },
+        {
+          "id": "valueact",
+          "name": "ValueAct Capital",
+          "type": "-3%",
+          "value": 768604785
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "-4%",
+          "value": 396990
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-2%",
+          "value": 315385078
+        },
+        {
+          "id": "triple_frond",
+          "name": "Triple Frond Partners",
+          "type": "-11%",
+          "value": 118667
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "-13%",
+          "value": 548925000
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "-23%",
+          "value": 616991700
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-3%",
+          "value": 16468628
+        }
+      ],
+      "total_value_sold": 15310275260
+    },
+    {
+      "key": "UNH",
+      "company": "UNITEDHEALTH GROUP INC",
+      "ticker": "UNH",
+      "cusip": "91324P102",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-19%",
+          "value": 511943
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-1%",
+          "value": 13565802
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-9%",
+          "value": 5697
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-4%",
+          "value": 3282296111
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-9%",
+          "value": 2169521
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-4%",
+          "value": 151517640
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "-1%",
+          "value": 128231547
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-4%",
+          "value": 60285236
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-3%",
+          "value": 257127
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-2%",
+          "value": 261814402
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-6%",
+          "value": 2824899
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-10%",
+          "value": 1509997
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "EXITED",
+          "value": 22307357
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "-2%",
+          "value": 70268550
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-22%",
+          "value": 369452740
+        }
+      ],
+      "total_value_sold": 4367018569
+    },
+    {
+      "key": "BRK/B",
+      "company": "BERKSHIRE HATHAWAY INC DEL",
+      "ticker": "BRK/B",
+      "cusip": "084670702",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "-1%",
+          "value": 256721165
+        },
+        {
+          "id": "semper_augustus",
+          "name": "Semper Augustus (Christopher Bloomstran)",
+          "type": "-0%",
+          "value": 125805155
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-2%",
+          "value": 49828070
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-2%",
+          "value": 161055775
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 5832287
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-2%",
+          "value": 162159792
+        },
+        {
+          "id": "gates",
+          "name": "Gates Foundation Trust (Bill Gates)",
+          "type": "-11%",
+          "value": 10942248714
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-3%",
+          "value": 583879220
+        },
+        {
+          "id": "aquamarine",
+          "name": "Aquamarine Capital (Guy Spier)",
+          "type": "-31%",
+          "value": 70685
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-2%",
+          "value": 49828070
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-2%",
+          "value": 12759038
+        },
+        {
+          "id": "akre",
+          "name": "Akre Capital Management (Chuck Akre)",
+          "type": "-15%",
+          "value": 7030819
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-88%",
+          "value": 12379470
+        },
+        {
+          "id": "fairholme",
+          "name": "Fairholme Capital (Bruce Berkowitz)",
+          "type": "-1%",
+          "value": 24351217
+        }
+      ],
+      "total_value_sold": 12393949477
+    },
+    {
+      "key": "TSM",
+      "company": "Taiwan Semiconductor",
+      "ticker": "TSM",
+      "cusip": "874039100",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "-96%",
+          "value": 128083232
+        },
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "-2%",
+          "value": 52864505
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-11%",
+          "value": 1871245237
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "-29%",
+          "value": 213681000
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-38%",
+          "value": 11865636
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-19%",
+          "value": 1278694074
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-24%",
+          "value": 525545858
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-15%",
+          "value": 3121066
+        },
+        {
+          "id": "lindsell_train",
+          "name": "Lindsell Train (Nick Train)",
+          "type": "EXITED",
+          "value": 5781303
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-10%",
+          "value": 5340025
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-10%",
+          "value": 3143688
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-2%",
+          "value": 138322562
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "-61%",
+          "value": 307219000
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-2%",
+          "value": 7725441
+        }
+      ],
+      "total_value_sold": 4552632627
+    },
+    {
+      "key": "AAPL",
+      "company": "Apple",
+      "ticker": "AAPL",
+      "cusip": "037833100",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "-2%",
+          "value": 4296881
+        },
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-50%",
+          "value": 3909748
+        },
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "-14%",
+          "value": 42495326
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-19%",
+          "value": 4074
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "EXITED",
+          "value": 2813916
+        },
+        {
+          "id": "berkshire",
+          "name": "Berkshire Hathaway (Warren Buffett)",
+          "type": "-4%",
+          "value": 60656116097
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "-7%",
+          "value": 8868535515
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-1%",
+          "value": 37825094
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-14%",
+          "value": 586477821
+        },
+        {
+          "id": "thiel_macro",
+          "name": "Thiel Macro (Peter Thiel)",
+          "type": "EXITED",
+          "value": 20161858
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-1%",
+          "value": 1196506
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-3%",
+          "value": 236042
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-6%",
+          "value": 13600082
+        }
+      ],
+      "total_value_sold": 70237668960
+    },
+    {
+      "key": "COF",
+      "company": "CAPITAL ONE FINL CORP",
+      "ticker": "COF",
+      "cusip": "14040H105",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "-0%",
+          "value": 1759100
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "-20%",
+          "value": 97209858
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "EXITED",
+          "value": 9337000
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-24%",
+          "value": 2573900996
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-1%",
+          "value": 1073982645
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-2%",
+          "value": 1238705
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "-0%",
+          "value": 441707015
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "-11%",
+          "value": 546222397
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-1%",
+          "value": 446019200
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "-60%",
+          "value": 1570648605
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-21%",
+          "value": 43783402
+        },
+        {
+          "id": "cas",
+          "name": "CAS Investment Partners (Clifford Sosin)",
+          "type": "-12%",
+          "value": 141465613
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "-21%",
+          "value": 294423300
+        }
+      ],
+      "total_value_sold": 7241697836
+    },
+    {
+      "key": "AXP",
+      "company": "American Express",
+      "ticker": "AXP",
+      "cusip": "025816109",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-5%",
+          "value": 572288147
+        },
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "-47%",
+          "value": 381984
+        },
+        {
+          "id": "semper_augustus",
+          "name": "Semper Augustus (Christopher Bloomstran)",
+          "type": "-16%",
+          "value": 1363849
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-2%",
+          "value": 22001282
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-15%",
+          "value": 114758623
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 1019069
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-11%",
+          "value": 4528005
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "-3%",
+          "value": 82355848
+        },
+        {
+          "id": "aquamarine",
+          "name": "Aquamarine Capital (Guy Spier)",
+          "type": "-69%",
+          "value": 69754
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-2%",
+          "value": 22001282
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-6%",
+          "value": 56477623
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-58%",
+          "value": 19149024
+        }
+      ],
+      "total_value_sold": 896394490
+    },
+    {
+      "key": "WFC",
+      "company": "WELLS FARGO CO NEW",
+      "ticker": "WFC",
+      "cusip": "949746101",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-8%",
+          "value": 6119
+        },
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "-1%",
+          "value": 77589408
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-4%",
+          "value": 48749293
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-17%",
+          "value": 3259585892
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-2%",
+          "value": 856420708
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-19%",
+          "value": 10562326
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-1%",
+          "value": 18336203
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-22%",
+          "value": 850662
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-14%",
+          "value": 108265181
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-4%",
+          "value": 48749293
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-20%",
+          "value": 182085294
+        }
+      ],
+      "total_value_sold": 4611200379
+    },
+    {
+      "key": "V",
+      "company": "Visa",
+      "ticker": "V",
+      "cusip": "92826C839",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-22%",
+          "value": 1481665609
+        },
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "-2%",
+          "value": 30423956
+        },
+        {
+          "id": "altarock",
+          "name": "AltaRock Partners",
+          "type": "-3%",
+          "value": 182133740
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-1%",
+          "value": 55828390
+        },
+        {
+          "id": "fundsmith",
+          "name": "Fundsmith (Terry Smith)",
+          "type": "-8%",
+          "value": 1315793224
+        },
+        {
+          "id": "tci",
+          "name": "TCI Fund Management (Chris Hohn)",
+          "type": "-1%",
+          "value": 9578218484
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-11%",
+          "value": 41738484
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "-9%",
+          "value": 541038
+        },
+        {
+          "id": "akre",
+          "name": "Akre Capital Management (Chuck Akre)",
+          "type": "-10%",
+          "value": 1015182189
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-2%",
+          "value": 6868566
+        }
+      ],
+      "total_value_sold": 13708393680
+    },
+    {
+      "key": "DIS",
+      "company": "DISNEY WALT CO",
+      "ticker": "DIS",
+      "cusip": "254687106",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-1%",
+          "value": 12481
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "-56%",
+          "value": 185536373
+        },
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "-0%",
+          "value": 45172998
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-6%",
+          "value": 32990542
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "-2%",
+          "value": 82783500
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-2%",
+          "value": 155473630
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-11%",
+          "value": 3143254
+        },
+        {
+          "id": "valueact",
+          "name": "ValueAct Capital",
+          "type": "-30%",
+          "value": 502876100
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-8%",
+          "value": 68232202
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-6%",
+          "value": 35899643
+        }
+      ],
+      "total_value_sold": 1112120723
+    },
+    {
+      "key": "JNJ",
+      "company": "JOHNSON & JOHNSON",
+      "ticker": "JNJ",
+      "cusip": "478160104",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-40%",
+          "value": 8993
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-2%",
+          "value": 44872196
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-1%",
+          "value": 46030700
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-4%",
+          "value": 7602785
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-3%",
+          "value": 238678999
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 576842
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-65%",
+          "value": 5371617
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-2%",
+          "value": 44872196
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-17%",
+          "value": 9614769
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-18%",
+          "value": 182731768
+        }
+      ],
+      "total_value_sold": 580360865
+    },
+    {
+      "key": "AVGO",
+      "company": "Broadcom Limited",
+      "ticker": "AVGO",
+      "cusip": "11135F101",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-21%",
+          "value": 1479928108
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "-2%",
+          "value": 1550490893
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-2%",
+          "value": 6938007
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-4%",
+          "value": 76769728
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-0%",
+          "value": 953312555
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-2%",
+          "value": 369169
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-25%",
+          "value": 37846945
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-15%",
+          "value": 1293247
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-3%",
+          "value": 31114472
+        }
+      ],
+      "total_value_sold": 4138063124
+    },
+    {
+      "key": "C",
+      "company": "CITIGROUP INC",
+      "ticker": "C",
+      "cusip": "172967424",
+      "funds": [
+        {
+          "id": "sound_shore",
+          "name": "Sound Shore (Harry Burn)",
+          "type": "-20%",
+          "value": 100376802
+        },
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "-0%",
+          "value": 88980990
+        },
+        {
+          "id": "duquesne",
+          "name": "Duquesne Family Office (Stanley Druckenmiller)",
+          "type": "EXITED",
+          "value": 52257000
+        },
+        {
+          "id": "chou",
+          "name": "Chou Associates (Francis Chou)",
+          "type": "-43%",
+          "value": 5856045
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-15%",
+          "value": 1271998305
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "-1%",
+          "value": 133006291
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-7%",
+          "value": 383580172
+        },
+        {
+          "id": "greenhaven",
+          "name": "Greenhaven Associates (Edgar Wachenheim)",
+          "type": "-60%",
+          "value": 8452210
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-30%",
+          "value": 101304786
+        }
+      ],
+      "total_value_sold": 2145812601
+    },
+    {
+      "key": "INTU",
+      "company": "INTUIT",
+      "ticker": "INTU",
+      "cusip": "461202103",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-23%",
+          "value": 451899818
+        },
+        {
+          "id": "shawspring",
+          "name": "ShawSpring Partners (Dennis Hong)",
+          "type": "-56%",
+          "value": 78103734
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-0%",
+          "value": 385162
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 307992
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-49%",
+          "value": 366707646
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "EXITED",
+          "value": 180381116
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "-65%",
+          "value": 460572
+        },
+        {
+          "id": "durable_capital",
+          "name": "Durable Capital Partners (Henry Ellenbogen)",
+          "type": "EXITED",
+          "value": 298606495
+        },
+        {
+          "id": "valley_forge",
+          "name": "Valley Forge Capital Management",
+          "type": "-15%",
+          "value": 178305752
+        }
+      ],
+      "total_value_sold": 1555158287
+    },
+    {
+      "key": "CMCSA",
+      "company": "COMCAST CORP NEW",
+      "ticker": "CMCSA",
+      "cusip": "20030N101",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "EXITED",
+          "value": 5247
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "-81%",
+          "value": 14186130
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-43%",
+          "value": 592205
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-1%",
+          "value": 36729980
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-29%",
+          "value": 26603232
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-2%",
+          "value": 2921871
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-6%",
+          "value": 76844225
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-25%",
+          "value": 353120834
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "EXITED",
+          "value": 238792
+        }
+      ],
+      "total_value_sold": 511242516
+    },
+    {
+      "key": "CSCO",
+      "company": "CISCO SYS INC",
+      "ticker": "CSCO",
+      "cusip": "17275R102",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-24%",
+          "value": 5884
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-0%",
+          "value": 3840141
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-25%",
+          "value": 14901125
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-10%",
+          "value": 105666274
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-5%",
+          "value": 5381371
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-5%",
+          "value": 24643242
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-16%",
+          "value": 9192233
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-0%",
+          "value": 3840141
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-3%",
+          "value": 1430252
+        }
+      ],
+      "total_value_sold": 168900663
+    },
+    {
+      "key": "MA",
+      "company": "MASTERCARD INCORPORATED",
+      "ticker": "MA",
+      "cusip": "57636Q104",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-22%",
+          "value": 1559246649
+        },
+        {
+          "id": "altarock",
+          "name": "AltaRock Partners",
+          "type": "-7%",
+          "value": 332233958
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "-0%",
+          "value": 261740766
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-17%",
+          "value": 330778373
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-2%",
+          "value": 921626733
+        },
+        {
+          "id": "aquamarine",
+          "name": "Aquamarine Capital (Guy Spier)",
+          "type": "-39%",
+          "value": 37399
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-3%",
+          "value": 366314
+        },
+        {
+          "id": "akre",
+          "name": "Akre Capital Management (Chuck Akre)",
+          "type": "-5%",
+          "value": 1794933423
+        }
+      ],
+      "total_value_sold": 5200963615
+    },
+    {
+      "key": "BK",
+      "company": "BANK OF NEW YORK MELLON CORP",
+      "ticker": "BK",
+      "cusip": "064058100",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-5%",
+          "value": 1122825451
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-8%",
+          "value": 15149907
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-26%",
+          "value": 3796487178
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-0%",
+          "value": 1594303
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-7%",
+          "value": 43009672
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-3%",
+          "value": 29266109
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "-48%",
+          "value": 110123786
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-8%",
+          "value": 15149907
+        }
+      ],
+      "total_value_sold": 5133606313
+    },
+    {
+      "key": "FDX",
+      "company": "FEDEX CORP",
+      "ticker": "FDX",
+      "cusip": "31428X106",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-20%",
+          "value": 7546
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-0%",
+          "value": 26716094
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-4%",
+          "value": 3826054894
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-1%",
+          "value": 13087208
+        },
+        {
+          "id": "longleaf",
+          "name": "Longleaf Partners (Mason Hawkins)",
+          "type": "-4%",
+          "value": 88282548
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-0%",
+          "value": 26716094
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-6%",
+          "value": 17890669
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "EXITED",
+          "value": 50227530
+        }
+      ],
+      "total_value_sold": 4048982583
+    },
+    {
+      "key": "BABA",
+      "company": "ALIBABA GROUP HLDG LTD",
+      "ticker": "BABA",
+      "cusip": "01609W102",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "EXITED",
+          "value": 509381
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-9%",
+          "value": 1961627880
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-39%",
+          "value": 7393987
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "-80%",
+          "value": 87519945
+        },
+        {
+          "id": "hh_intl",
+          "name": "H&H International Investment (Duan Yongping)",
+          "type": "-8%",
+          "value": 496392191
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-2%",
+          "value": 220099561
+        },
+        {
+          "id": "aquamarine",
+          "name": "Aquamarine Capital (Guy Spier)",
+          "type": "EXITED",
+          "value": 8490
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "-20%",
+          "value": 1152808500
+        }
+      ],
+      "total_value_sold": 3926359935
+    },
+    {
+      "key": "DHR",
+      "company": "DANAHER CORPORATION",
+      "ticker": "DHR",
+      "cusip": "235851102",
+      "funds": [
+        {
+          "id": "dorsey",
+          "name": "Dorsey Asset Management (Pat Dorsey)",
+          "type": "-4%",
+          "value": 170672121
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "EXITED",
+          "value": 127419719
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "-2%",
+          "value": 104473107
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-2%",
+          "value": 19955266
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 337835
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "EXITED",
+          "value": 545461834
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-33%",
+          "value": 347946
+        },
+        {
+          "id": "akre",
+          "name": "Akre Capital Management (Chuck Akre)",
+          "type": "-92%",
+          "value": 173443994
+        }
+      ],
+      "total_value_sold": 1142111822
+    },
+    {
+      "key": "FISV",
+      "company": "Fiserv",
+      "ticker": "FISV",
+      "cusip": "337738108",
+      "funds": [
+        {
+          "id": "giverny",
+          "name": "Giverny Capital (Francois Rochon)",
+          "type": "EXITED",
+          "value": 83966565
+        },
+        {
+          "id": "punch_card",
+          "name": "Punch Card Management (Norbert Lou)",
+          "type": "EXITED",
+          "value": 4770410
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "EXITED",
+          "value": 7478
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-8%",
+          "value": 3598437
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "EXITED",
+          "value": 10095944
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "EXITED",
+          "value": 119260250
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-6%",
+          "value": 225618604
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "EXITED",
+          "value": 5874180
+        }
+      ],
+      "total_value_sold": 453191868
+    },
+    {
+      "key": "PEP",
+      "company": "PEPSICO INC",
+      "ticker": "PEP",
+      "cusip": "713448108",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "EXITED",
+          "value": 635912
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-1%",
+          "value": 6281881
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "-75%",
+          "value": 2256449
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-15%",
+          "value": 3849218
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-2%",
+          "value": 289350358
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-11%",
+          "value": 12981712
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-11%",
+          "value": 1539218
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-3%",
+          "value": 1313254
+        }
+      ],
+      "total_value_sold": 318208002
+    },
+    {
+      "key": "SCHW",
+      "company": "SCHWAB CHARLES CORP",
+      "ticker": "SCHW",
+      "cusip": "808513105",
+      "funds": [
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-8%",
+          "value": 7928139405
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-6%",
+          "value": 400462854
+        },
+        {
+          "id": "sequoia",
+          "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+          "type": "-11%",
+          "value": 602946609
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "-16%",
+          "value": 1583188652
+        },
+        {
+          "id": "greenhaven",
+          "name": "Greenhaven Associates (Edgar Wachenheim)",
+          "type": "-17%",
+          "value": 1432050
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-1%",
+          "value": 33167042
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-9%",
+          "value": 28582668
+        }
+      ],
+      "total_value_sold": 10577919280
+    },
+    {
+      "key": "CVS",
+      "company": "CVS HEALTH CORP",
+      "ticker": "CVS",
+      "cusip": "126650100",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-19%",
+          "value": 5202
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-15%",
+          "value": 5516782819
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-2%",
+          "value": 1194552439
+        },
+        {
+          "id": "patient_capital",
+          "name": "Patient Capital Management (Samantha McLemore)",
+          "type": "-1%",
+          "value": 93475577
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 465684
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-13%",
+          "value": 6209045
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-17%",
+          "value": 74609412
+        }
+      ],
+      "total_value_sold": 6886100178
+    },
+    {
+      "key": "NVDA",
+      "company": "NVIDIA CORPORATION",
+      "ticker": "NVDA",
+      "cusip": "67066G104",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-15%",
+          "value": 1174900577
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-1%",
+          "value": 6324691
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-6%",
+          "value": 2184805528
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-4%",
+          "value": 1559473
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-1%",
+          "value": 709937
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "-11%",
+          "value": 354502000
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-11%",
+          "value": 1040448401
+        }
+      ],
+      "total_value_sold": 4763250607
+    },
+    {
+      "key": "GS",
+      "company": "GOLDMAN SACHS GROUP INC",
+      "ticker": "GS",
+      "cusip": "38141G104",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-57%",
+          "value": 2787
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-23%",
+          "value": 1758838519
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-90%",
+          "value": 98390635
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-28%",
+          "value": 5494815
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-2%",
+          "value": 22833454
+        },
+        {
+          "id": "greenhaven",
+          "name": "Greenhaven Associates (Edgar Wachenheim)",
+          "type": "EXITED",
+          "value": 796350
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-0%",
+          "value": 2518855
+        }
+      ],
+      "total_value_sold": 1888875415
+    },
+    {
+      "key": "ZTS",
+      "company": "ZOETIS INC",
+      "ticker": "ZTS",
+      "cusip": "98978V103",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-26%",
+          "value": 1099874442
+        },
+        {
+          "id": "wedgewood",
+          "name": "Wedgewood Partners (David Rolfe)",
+          "type": "-18%",
+          "value": 18658986
+        },
+        {
+          "id": "cantillon",
+          "name": "Cantillon Capital Management (William von Mueffling)",
+          "type": "EXITED",
+          "value": 176420365
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "EXITED",
+          "value": 219480
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-64%",
+          "value": 45944
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "EXITED",
+          "value": 129335760
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "EXITED",
+          "value": 100040
+        }
+      ],
+      "total_value_sold": 1424655017
+    },
+    {
+      "key": "PG",
+      "company": "Procter & Gamble Co",
+      "ticker": "PG",
+      "cusip": "742718109",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "EXITED",
+          "value": 745203
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "EXITED",
+          "value": 3704502
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-3%",
+          "value": 11795250
+        },
+        {
+          "id": "fundsmith",
+          "name": "Fundsmith (Terry Smith)",
+          "type": "-7%",
+          "value": 703262196
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "-1%",
+          "value": 298368325
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 337868
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-11%",
+          "value": 221559920
+        }
+      ],
+      "total_value_sold": 1239773264
+    },
+    {
+      "key": "XOM",
+      "company": "EXXON MOBIL CORP",
+      "ticker": "XOM",
+      "cusip": "30231G102",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-1%",
+          "value": 878816052
+        },
+        {
+          "id": "semper_augustus",
+          "name": "Semper Augustus (Christopher Bloomstran)",
+          "type": "-0%",
+          "value": 6521460
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-2%",
+          "value": 8553553
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-0%",
+          "value": 74613891
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-3%",
+          "value": 8648265
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 540513
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-0%",
+          "value": 354035
+        }
+      ],
+      "total_value_sold": 978047769
+    },
+    {
+      "key": "ADBE",
+      "company": "Adobe",
+      "ticker": "ADBE",
+      "cusip": "00724F101",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-28%",
+          "value": 655126570
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-7%",
+          "value": 18977951
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-14%",
+          "value": 2978268
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-21%",
+          "value": 15518178
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "EXITED",
+          "value": 4938500
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-1%",
+          "value": 715730
+        },
+        {
+          "id": "torray",
+          "name": "Torray (Robert Torray)",
+          "type": "-9%",
+          "value": 5775929
+        }
+      ],
+      "total_value_sold": 704031126
+    },
+    {
+      "key": "MDT",
+      "company": "MEDTRONIC PLC",
+      "ticker": "MDT",
+      "cusip": "G5960L103",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-32%",
+          "value": 11900775
+        },
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-16%",
+          "value": 8286
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-46%",
+          "value": 564590886
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-39%",
+          "value": 170409
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-0%",
+          "value": 35296790
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-0%",
+          "value": 356960
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-4%",
+          "value": 41005093
+        }
+      ],
+      "total_value_sold": 653329199
+    },
+    {
+      "key": "USB",
+      "company": "US BANCORP DEL",
+      "ticker": "USB",
+      "cusip": "902973304",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-22%",
+          "value": 7605
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-5%",
+          "value": 9478721
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-2%",
+          "value": 2097474
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-1%",
+          "value": 34592881
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-14%",
+          "value": 3010621
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-5%",
+          "value": 9478721
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-15%",
+          "value": 36911423
+        }
+      ],
+      "total_value_sold": 95577446
+    },
+    {
+      "key": "904767704",
+      "company": "UNILEVER PLC SPONSORED ADR",
+      "ticker": "",
+      "cusip": "904767704",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "EXITED",
+          "value": 41584100
+        },
+        {
+          "id": "maverick",
+          "name": "Maverick Capital (Lee Ainslie)",
+          "type": "EXITED",
+          "value": 2721189
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "EXITED",
+          "value": 3711876
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "EXITED",
+          "value": 1416792
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "EXITED",
+          "value": 415849
+        },
+        {
+          "id": "yacktman",
+          "name": "Yacktman Asset Management (Donald Yacktman)",
+          "type": "EXITED",
+          "value": 13970458
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "EXITED",
+          "value": 3711876
+        }
+      ],
+      "total_value_sold": 67532140
+    },
+    {
+      "key": "RTX",
+      "company": "RTX CORPORATION",
+      "ticker": "RTX",
+      "cusip": "75513E101",
+      "funds": [
+        {
+          "id": "olstein",
+          "name": "Olstein Capital Management (Robert Olstein)",
+          "type": "-14%",
+          "value": 3096
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-6%",
+          "value": 6709826913
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-4%",
+          "value": 1555500
+        },
+        {
+          "id": "hillman",
+          "name": "Hillman Capital Management (Mark Hillman)",
+          "type": "-6%",
+          "value": 399751
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-0%",
+          "value": 2949526
+        },
+        {
+          "id": "appaloosa",
+          "name": "Appaloosa Management (David Tepper)",
+          "type": "-2%",
+          "value": 85254635
+        }
+      ],
+      "total_value_sold": 6799989421
+    },
+    {
+      "key": "ORCL",
+      "company": "ORACLE CORP",
+      "ticker": "ORCL",
+      "cusip": "68389X105",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-23%",
+          "value": 2612336546
+        },
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-6%",
+          "value": 2485996484
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-2%",
+          "value": 49557585
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-13%",
+          "value": 40058419
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "EXITED",
+          "value": 46800949
+        },
+        {
+          "id": "ariel_focus",
+          "name": "Ariel Investments (John Rogers)",
+          "type": "-0%",
+          "value": 4612898
+        }
+      ],
+      "total_value_sold": 5239362881
+    },
+    {
+      "key": "TEL",
+      "company": "TE CONNECTIVITY PLC",
+      "ticker": "TEL",
+      "cusip": "G87052109",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-6%",
+          "value": 26105630
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-7%",
+          "value": 3521207196
+        },
+        {
+          "id": "pzena",
+          "name": "Pzena Investment Management (Richard Pzena)",
+          "type": "-57%",
+          "value": 414818619
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-1%",
+          "value": 15587
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-2%",
+          "value": 10437754
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-16%",
+          "value": 465219853
+        }
+      ],
+      "total_value_sold": 4437804639
+    },
+    {
+      "key": "SE",
+      "company": "SEA LTD",
+      "ticker": "SE",
+      "cusip": "81141R100",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-39%",
+          "value": 12552732
+        },
+        {
+          "id": "oaktree",
+          "name": "Oaktree Capital Management (Howard Marks)",
+          "type": "EXITED",
+          "value": 25266702
+        },
+        {
+          "id": "tiger_global",
+          "name": "Tiger Global Management (Chase Coleman)",
+          "type": "-4%",
+          "value": 2867067805
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "EXITED",
+          "value": 334135914
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "-1%",
+          "value": 78747366
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "EXITED",
+          "value": 27411820
+        }
+      ],
+      "total_value_sold": 3345182339
+    },
+    {
+      "key": "JPM",
+      "company": "JPMORGAN CHASE & CO.",
+      "ticker": "JPM",
+      "cusip": "46625H100",
+      "funds": [
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-36%",
+          "value": 61400027
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-2%",
+          "value": 43776278
+        },
+        {
+          "id": "viking",
+          "name": "Viking Global Investors (Andreas Halvorsen)",
+          "type": "-62%",
+          "value": 1595779296
+        },
+        {
+          "id": "gardner_russo",
+          "name": "Gardner Russo & Quinn (Thomas Russo)",
+          "type": "-3%",
+          "value": 171918813
+        },
+        {
+          "id": "davis",
+          "name": "Davis Advisors (Christopher Davis)",
+          "type": "-4%",
+          "value": 187878341
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-6%",
+          "value": 429467408
+        }
+      ],
+      "total_value_sold": 2490220163
+    },
+    {
+      "key": "IDXX",
+      "company": "IDEXX LABS INC",
+      "ticker": "IDXX",
+      "cusip": "45168D104",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-15%",
+          "value": 720123065
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "-38%",
+          "value": 36288952
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-3%",
+          "value": 99667
+        },
+        {
+          "id": "fundsmith",
+          "name": "Fundsmith (Terry Smith)",
+          "type": "-28%",
+          "value": 1667794873
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-19%",
+          "value": 2830283
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-1%",
+          "value": 1369780
+        }
+      ],
+      "total_value_sold": 2428506620
+    },
+    {
+      "key": "LLY",
+      "company": "ELI LILLY & CO",
+      "ticker": "LLY",
+      "cusip": "532457108",
+      "funds": [
+        {
+          "id": "polen",
+          "name": "Polen Capital Management",
+          "type": "-23%",
+          "value": 1238323946
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-2%",
+          "value": 33101992
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-2%",
+          "value": 8800465
+        },
+        {
+          "id": "matrix",
+          "name": "Matrix Asset Advisors (David Katz)",
+          "type": "-1%",
+          "value": 250566
+        },
+        {
+          "id": "jensen",
+          "name": "Jensen Investment Management",
+          "type": "-46%",
+          "value": 353832857
+        },
+        {
+          "id": "mairs_power",
+          "name": "Mairs & Power",
+          "type": "-4%",
+          "value": 273289051
+        }
+      ],
+      "total_value_sold": 1907598877
+    },
+    {
+      "key": "MCO",
+      "company": "MOODYS CORP",
+      "ticker": "MCO",
+      "cusip": "615369105",
+      "funds": [
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-23%",
+          "value": 746168
+        },
+        {
+          "id": "altarock",
+          "name": "AltaRock Partners",
+          "type": "-14%",
+          "value": 452053253
+        },
+        {
+          "id": "chou",
+          "name": "Chou Associates (Francis Chou)",
+          "type": "-75%",
+          "value": 2810756
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-2%",
+          "value": 123885
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "-4%",
+          "value": 365528
+        },
+        {
+          "id": "akre",
+          "name": "Akre Capital Management (Chuck Akre)",
+          "type": "-18%",
+          "value": 1009636820
+        }
+      ],
+      "total_value_sold": 1465736410
+    },
+    {
+      "key": "FLUT",
+      "company": "FLUTTER ENTMT PLC",
+      "ticker": "FLUT",
+      "cusip": "G3643J108",
+      "funds": [
+        {
+          "id": "makaira",
+          "name": "Makaira Partners (Tom Bancroft)",
+          "type": "-49%",
+          "value": 20681188
+        },
+        {
+          "id": "egerton",
+          "name": "Egerton Capital (John Armitage)",
+          "type": "EXITED",
+          "value": 358652572
+        },
+        {
+          "id": "lone_pine",
+          "name": "Lone Pine Capital (Stephen Mandel)",
+          "type": "EXITED",
+          "value": 440267344
+        },
+        {
+          "id": "ako",
+          "name": "AKO Capital",
+          "type": "-0%",
+          "value": 796701
+        },
+        {
+          "id": "durable_capital",
+          "name": "Durable Capital Partners (Henry Ellenbogen)",
+          "type": "EXITED",
+          "value": 315972952
+        },
+        {
+          "id": "third_point",
+          "name": "Third Point (Daniel Loeb)",
+          "type": "EXITED",
+          "value": 284480000
+        }
+      ],
+      "total_value_sold": 1420850757
+    },
+    {
+      "key": "ADI",
+      "company": "ANALOG DEVICES INC",
+      "ticker": "ADI",
+      "cusip": "032654105",
+      "funds": [
+        {
+          "id": "first_eagle",
+          "name": "First Eagle Investment Management",
+          "type": "-0%",
+          "value": 498930850
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-33%",
+          "value": 7568789
+        },
+        {
+          "id": "weitz",
+          "name": "Weitz Investment Management (Wallace Weitz)",
+          "type": "-5%",
+          "value": 34226010
+        },
+        {
+          "id": "fpa_crescent",
+          "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+          "type": "-6%",
+          "value": 490202458
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-13%",
+          "value": 74268058
+        },
+        {
+          "id": "markel",
+          "name": "Markel Group (Tom Gayner)",
+          "type": "-12%",
+          "value": 286896765
+        }
+      ],
+      "total_value_sold": 1392092930
+    },
+    {
+      "key": "NVS",
+      "company": "NOVARTIS AG AMERICAN DEPOSITORY SHARES",
+      "ticker": "NVS",
+      "cusip": "66987v109",
+      "funds": [
+        {
+          "id": "kahn_brothers",
+          "name": "Kahn Brothers Group (Irving Kahn)",
+          "type": "-5%",
+          "value": 1837166
+        },
+        {
+          "id": "tweedy_browne",
+          "name": "Tweedy Browne",
+          "type": "-2%",
+          "value": 9753165
+        },
+        {
+          "id": "dodge_cox",
+          "name": "Dodge & Cox",
+          "type": "-15%",
+          "value": 1357438995
+        },
+        {
+          "id": "oakmark_select",
+          "name": "Oakmark / Harris Associates (Bill Nygren)",
+          "type": "-3%",
+          "value": 928587
+        },
+        {
+          "id": "causeway",
+          "name": "Causeway Capital Management (Sarah Ketterer)",
+          "type": "-6%",
+          "value": 263395
+        },
+        {
+          "id": "third_avenue",
+          "name": "Third Avenue Management",
+          "type": "-2%",
+          "value": 9753165
+        }
+      ],
+      "total_value_sold": 1379974473
+    }
+  ]
+}
