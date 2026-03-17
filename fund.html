@@ -273,9 +273,10 @@
   }
 
   function fmtChg(val) {
-    if (val === null)     return `<span class="chg na">—</span>`;
-    if (val === "NEW")    return `<span class="chg new">NEW</span>`;
-    if (val === "EXITED") return `<span class="chg exited">EXITED</span>`;
+    if (val === null)        return `<span class="chg na">—</span>`;
+    if (val === "NEW")       return `<span class="chg new">NEW</span>`;
+    if (val === "EXITED")    return `<span class="chg exited">EXITED</span>`;
+    if (Math.abs(val) < 0.005) return `<span class="chg na">—</span>`;
     const sign = val >= 0 ? "+" : "";
     const cls  = val >= 0 ? "pos" : "neg";
     return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
@@ -383,8 +384,8 @@
           <td class="num">${fmtChg(chg4)}</td>
           <td class="num">${valueStr}</td>
           <td class="num">${repPriceStr}</td>
-          <td class="num">${lastPriceStr}</td>
-          <td class="num">${priceDiffHtml}</td>
+          <td class="num" style="display:none">${lastPriceStr}</td>
+          <td class="num" style="display:none">${priceDiffHtml}</td>
           <td class="num">${putcallHtml}</td>
         </tr>`;
     }).join("");
@@ -419,8 +420,8 @@
             <th class="num">Shares vs Prior Year</th>
             <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
             <th class="num">Last Reported Price</th>
-            <th class="num">Previous Close</th>
-            <th class="num">+/-<br>Last Reported<br>Price</th>
+            <th class="num" style="display:none">Previous Close</th>
+            <th class="num" style="display:none">+/-<br>Last Reported<br>Price</th>
             <th class="num">Option</th>
           </tr>
         </thead>
