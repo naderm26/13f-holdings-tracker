@@ -45,6 +45,8 @@ MANUAL_MAPPINGS = {
     
     # NewAmsterdam Pharma (NASDAQ: NAMS)
     "N6388T108": "NAMS",
+    "N62509109": "NAMS",
+    "N62509109": "NAMS",
     
     # BBB Foods (NYSE: TBBB)
     "G07817104": "TBBB",
