@@ -19,17 +19,40 @@
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
     header {
       background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 2rem 3rem; display: flex; align-items: flex-end;
+      padding: 1.5rem 3rem; display: flex; align-items: center;
       justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
-    .header-left a.back-link { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-decoration: none; display: block; margin-bottom: 0.4rem; }
-    .header-left a.back-link:hover { color: var(--text); }
-    .header-left h1 { font-size: 1.1rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; }
-    .header-right { display: flex; gap: 2.5rem; }
-    .stat { text-align: right; }
-    .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
-    .stat-value { font-family: var(--mono); font-size: 1.4rem; font-weight: 500; color: var(--text); margin-top: 0.15rem; }
-    .stat-value.green { color: var(--accent); }
+    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .brand-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); text-decoration: none; }
+    /* ── Search ── */
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 300px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+    }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
     main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
 
     /* Stock header */
@@ -87,11 +110,14 @@
 <body>
 
 <header>
-  <div class="header-left">
-    <a class="back-link" href="index.html">← All Funds</a>
-    <h1>13FAI</h1>
+  <div class="brand">
+    <a class="brand-name" href="index.html">13FAI</a>
+    <span class="brand-sub">AI-powered hedge fund holdings tracker</span>
   </div>
-  <div class="header-right">
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+    <div class="search-results" id="search-results"></div>
   </div>
 </header>
 
@@ -324,6 +350,60 @@
         `<div class="error">Failed to load data: ${e.message}</div>`;
     });
   }
+
+  // ── Search ─────────────────────────────────────────────────────
+  let allFundsForSearch = [];
+  let stockIndexForSearch = {};
+  fetch(`${PAGES}/funds.json`).then(r => r.text()).then(t => { allFundsForSearch = JSON.parse(t); });
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d; }).catch(() => {});
+
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove("visible"); return; }
+
+    // Search funds
+    const fundMatches = allFundsForSearch
+      .filter(f => f.name.toLowerCase().includes(q))
+      .slice(0, 4)
+      .map(f => `
+        <a class="search-result-item" href="fund.html?fund=${f.id}">
+          <span class="search-result-tag">Fund</span>
+          <span>${f.name}</span>
+        </a>`);
+
+    // Search stocks
+    const stockMatches = [];
+    for (const [key, stock] of Object.entries(stockIndexForSearch)) {
+      if (stockMatches.length >= 4) break;
+      if (
+        (stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
+        (stock.name && stock.name.toLowerCase().includes(q))
+      ) {
+        stockMatches.push(`
+          <a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
+            <span class="search-result-tag">Stock</span>
+            <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
+          </a>`);
+      }
+    }
+
+    const all = [...fundMatches, ...stockMatches];
+    if (all.length === 0) {
+      searchResults.innerHTML = `<div class="no-results">No results found</div>`;
+    } else {
+      searchResults.innerHTML = all.join("");
+    }
+    searchResults.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.classList.remove("visible");
+    }
+  });
 </script>
 </body>
 </html>
