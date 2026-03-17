@@ -61,6 +61,7 @@ for fid, quarter_files in fund_quarters.items():
                     company = row.get("Company", "").strip()
                     shares  = int(row.get("Shares", 0) or 0)
                     value   = int(row.get("Value", 0) or 0) * mult
+                    putcall = row.get("PutCall", "").strip()
 
                     if not cusip or not company:
                         continue
@@ -81,7 +82,8 @@ for fid, quarter_files in fund_quarters.items():
 
                     stock_index[key]["funds"][fid]["quarters"][ql] = {
                         "shares": shares,
-                        "value":  value
+                        "value":  value,
+                        "putcall": putcall
                     }
         except Exception as e:
             print(f"Error processing {csv_file}: {e}")
