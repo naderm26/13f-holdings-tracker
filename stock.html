@@ -121,9 +121,8 @@
 
   Promise.all([
     fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
-    fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse),
-    fetch(`${PAGES}/prices.json`).then(r => r.json()).catch(() => ({}))
-  ]).then(([stockIndex, funds, prices]) => {
+    fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse)
+  ]).then(([stockIndex, funds]) => {
     const stock = stockIndex[key];
     if (!stock) {
       document.getElementById("content").innerHTML =
@@ -131,8 +130,7 @@
       return;
     }
 
-    const fundMap   = Object.fromEntries(funds.map(f => [f.id, f]));
-    const priceData = prices[stock.ticker] || null;
+    const fundMap = Object.fromEntries(funds.map(f => [f.id, f]));
 
     // SEO
     const desc = `See which hedge funds own ${stock.name} (${stock.ticker || stock.cusip}). Track position sizes, portfolio weights, and quarterly changes from 13F filings.`;
@@ -145,8 +143,8 @@
       Object.keys(stock.funds[fid].quarters).forEach(q => allQuarters.add(q));
     }
     const sortedQuarters = Array.from(allQuarters).sort().reverse();
-    const latestQ  = sortedQuarters[0];
-    const prevQ    = sortedQuarters[1] || null;
+    const latestQ   = sortedQuarters[0];
+    const prevQ     = sortedQuarters[1] || null;
     const prevYearQ = sortedQuarters[4] || null;
 
     // Total value held by all funds in latest quarter
@@ -154,22 +152,18 @@
     let fundCount  = 0;
     for (const fid of Object.keys(stock.funds)) {
       const q = stock.funds[fid].quarters[latestQ];
-      if (q && q.shares > 0) {
-        totalValue += q.value;
-        fundCount++;
-      }
+      if (q && q.shares > 0) { totalValue += q.value; fundCount++; }
     }
 
-    // Build rows — funds holding in latest quarter + exited
     const holdingFunds = [];
     const exitedFunds  = [];
 
     for (const fid of Object.keys(stock.funds)) {
-      const fund    = fundMap[fid];
+      const fund   = fundMap[fid];
       if (!fund) continue;
-      const latest  = stock.funds[fid].quarters[latestQ];
-      const prev1   = prevQ    ? stock.funds[fid].quarters[prevQ]    : null;
-      const prev4   = prevYearQ ? stock.funds[fid].quarters[prevYearQ] : null;
+      const latest = stock.funds[fid].quarters[latestQ];
+      const prev1  = prevQ     ? stock.funds[fid].quarters[prevQ]     : null;
+      const prev4  = prevYearQ ? stock.funds[fid].quarters[prevYearQ] : null;
 
       if (latest && latest.shares > 0) {
         holdingFunds.push({ fid, fund, latest, prev1, prev4 });
@@ -178,12 +172,11 @@
       }
     }
 
-    // Sort by value descending
     holdingFunds.sort((a, b) => (b.latest?.value || 0) - (a.latest?.value || 0));
 
     const rowsHtml = holdingFunds.map((item, i) => {
       const { fid, fund, latest, prev1, prev4 } = item;
-      const nameMatch = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const nameMatch   = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
       const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
       const managerOnly = nameMatch ? nameMatch[2].trim() : "";
       const pct  = totalValue > 0 ? ((latest.value / totalValue) * 100).toFixed(2) : "—";
@@ -199,17 +192,17 @@
               ${managerOnly ? `<div class="manager">${managerOnly}</div>` : ""}
             </a>
           </td>
-          <td class="num">${latest.shares.toLocaleString()}</td>
-          <td class="num">${fmtVal(latest.value)}</td>
           <td class="num">${pct}%</td>
+          <td class="num">${latest.shares.toLocaleString()}</td>
           <td class="num">${fmtChg(chg1)}</td>
           <td class="num">${fmtChg(chg4)}</td>
+          <td class="num">${fmtVal(latest.value)}</td>
         </tr>`;
     }).join("");
 
     const exitedHtml = exitedFunds.map(item => {
       const { fid, fund } = item;
-      const nameMatch = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const nameMatch   = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
       const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
       const managerOnly = nameMatch ? nameMatch[2].trim() : "";
       return `
@@ -223,8 +216,8 @@
           </td>
           <td class="num" style="color:var(--muted)">—</td>
           <td class="num" style="color:var(--muted)">—</td>
-          <td class="num" style="color:var(--muted)">—</td>
           <td class="num"><span class="chg exited">EXITED</span></td>
+          <td class="num" style="color:var(--muted)">—</td>
           <td class="num" style="color:var(--muted)">—</td>
         </tr>`;
     }).join("");
@@ -234,20 +227,6 @@
         ${stock.ticker ? `<div class="stock-ticker">${stock.ticker}</div>` : ""}
         <div class="stock-name">${stock.name}</div>
         <div class="stock-stats">
-          ${priceData ? `
-            <div class="stat">
-              <div class="stat-label">Previous Close</div>
-              <div class="stat-value">$${priceData.price.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">52W High</div>
-              <div class="stat-value">$${priceData.week52High.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
-            </div>
-            <div class="stat">
-              <div class="stat-label">52W Low</div>
-              <div class="stat-value">$${priceData.week52Low.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
-            </div>
-          ` : ""}
           <div class="stat">
             <div class="stat-label">Total Held (Tracked Funds)</div>
             <div class="stat-value green">${fmtVal(totalValue)}</div>
@@ -264,11 +243,11 @@
           <tr>
             <th style="width:2rem">#</th>
             <th>Fund</th>
+            <th class="num">% of Portfolio</th>
             <th class="num">Shares</th>
+            <th class="num">Shares vs Prior Quarter</th>
+            <th class="num">Shares vs Prior Year</th>
             <th class="num">Value</th>
-            <th class="num">% of Total</th>
-            <th class="num">vs Prior Quarter</th>
-            <th class="num">vs Prior Year</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}${exitedHtml}</tbody>
