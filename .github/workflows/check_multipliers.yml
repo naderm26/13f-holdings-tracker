@@ -1,0 +1,13 @@
+name: Check Value Multipliers
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check value multipliers
+        run: python check_value_multipliers.py
