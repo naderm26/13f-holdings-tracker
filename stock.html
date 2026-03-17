@@ -1,0 +1,282 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Holdings | 13FAI</title>
+  <meta name="description" content=""/>
+  <meta property="og:type" content="website"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f6f3; --surface: #ffffff; --border: #e8e6e1;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1.5rem 3rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .back-link { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--text); }
+    main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 3rem; }
+
+    /* Stock header */
+    .stock-header { margin-bottom: 2rem; }
+    .stock-ticker { font-family: var(--mono); font-size: 0.85rem; color: #2563eb; font-weight: 600; margin-bottom: 0.3rem; }
+    .stock-name { font-size: 1.6rem; font-weight: 500; margin-bottom: 0.75rem; }
+    .stock-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .stat { }
+    .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+    .stat-value { font-family: var(--mono); font-size: 1.1rem; font-weight: 500; margin-top: 0.15rem; }
+    .stat-value.green { color: var(--accent); }
+    .conviction-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--accent-light); border: 1px solid var(--accent);
+      border-radius: 20px; padding: 0.35rem 0.9rem;
+      font-size: 0.78rem; color: var(--accent); font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; table-layout: fixed; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; color: var(--muted); padding: 0.85rem 1.25rem; text-align: left; white-space: normal; line-height: 1.3; }
+    th.num { text-align: right; }
+    td { padding: 0.9rem 1.25rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    td.num { font-family: var(--mono); font-size: 0.82rem; text-align: right; }
+    .fund-name { font-weight: 500; }
+    .fund-link { text-decoration: none; color: var(--text); }
+    .fund-link:hover .fund-name { color: var(--accent); }
+    .manager { font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
+    .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .chg.pos { color: var(--green); }
+    .chg.neg { color: var(--red); }
+    .chg.new { color: var(--green); font-size: 0.72rem; }
+    .chg.exited { color: var(--red); font-size: 0.72rem; }
+    .chg.na { color: var(--muted); }
+    .loading, .error { text-align: center; padding: 4rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
+    .error { color: #c0392b; }
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    @media (max-width: 640px) { header, main { padding: 1.5rem; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="brand-name" href="index.html">13FAI</a>
+  <a class="back-link" href="javascript:history.back()">← Back</a>
+</header>
+
+<main>
+  <div id="content"><div class="loading">Loading stock data...</div></div>
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F-HR filings · For informational purposes only · <a href="disclaimer.html">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "/13f-holdings-tracker";
+
+  const params = new URLSearchParams(window.location.search);
+  const key    = params.get("ticker") || params.get("cusip") || "";
+
+  if (!key) {
+    document.getElementById("content").innerHTML = `<div class="error">No stock specified.</div>`;
+  }
+
+  function fmtChg(val) {
+    if (val === null)     return `<span class="chg na">—</span>`;
+    if (val === "NEW")    return `<span class="chg new">NEW</span>`;
+    if (val === "EXITED") return `<span class="chg exited">EXITED</span>`;
+    const sign = val >= 0 ? "+" : "";
+    const cls  = val >= 0 ? "pos" : "neg";
+    return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
+  }
+
+  function getChg(currentShares, prevQuarterData) {
+    if (!prevQuarterData) return null;
+    if (prevQuarterData.shares === 0 && currentShares > 0) return "NEW";
+    if (currentShares === 0 && prevQuarterData.shares > 0) return "EXITED";
+    if (prevQuarterData.shares === 0) return null;
+    return ((currentShares - prevQuarterData.shares) / prevQuarterData.shares) * 100;
+  }
+
+  function fmtVal(v) {
+    if (!v) return "—";
+    if (v >= 1e9)  return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6)  return "$" + (v / 1e6).toFixed(1) + "M";
+    return "$" + v.toLocaleString();
+  }
+
+  Promise.all([
+    fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
+    fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse),
+    fetch(`${PAGES}/prices.json`).then(r => r.json()).catch(() => ({}))
+  ]).then(([stockIndex, funds, prices]) => {
+    const stock = stockIndex[key];
+    if (!stock) {
+      document.getElementById("content").innerHTML =
+        `<div class="error">No data found for "${key}". It may not be held by any tracked fund.</div>`;
+      return;
+    }
+
+    const fundMap   = Object.fromEntries(funds.map(f => [f.id, f]));
+    const priceData = prices[stock.ticker] || null;
+
+    // SEO
+    const desc = `See which hedge funds own ${stock.name} (${stock.ticker || stock.cusip}). Track position sizes, portfolio weights, and quarterly changes from 13F filings.`;
+    document.title = `${stock.name} (${stock.ticker || stock.cusip}) — Who Owns It | 13FAI`;
+    document.querySelector('meta[name="description"]').setAttribute("content", desc);
+
+    // Get all quarters across all funds
+    const allQuarters = new Set();
+    for (const fid of Object.keys(stock.funds)) {
+      Object.keys(stock.funds[fid].quarters).forEach(q => allQuarters.add(q));
+    }
+    const sortedQuarters = Array.from(allQuarters).sort().reverse();
+    const latestQ  = sortedQuarters[0];
+    const prevQ    = sortedQuarters[1] || null;
+    const prevYearQ = sortedQuarters[4] || null;
+
+    // Total value held by all funds in latest quarter
+    let totalValue = 0;
+    let fundCount  = 0;
+    for (const fid of Object.keys(stock.funds)) {
+      const q = stock.funds[fid].quarters[latestQ];
+      if (q && q.shares > 0) {
+        totalValue += q.value;
+        fundCount++;
+      }
+    }
+
+    // Build rows — funds holding in latest quarter + exited
+    const holdingFunds = [];
+    const exitedFunds  = [];
+
+    for (const fid of Object.keys(stock.funds)) {
+      const fund    = fundMap[fid];
+      if (!fund) continue;
+      const latest  = stock.funds[fid].quarters[latestQ];
+      const prev1   = prevQ    ? stock.funds[fid].quarters[prevQ]    : null;
+      const prev4   = prevYearQ ? stock.funds[fid].quarters[prevYearQ] : null;
+
+      if (latest && latest.shares > 0) {
+        holdingFunds.push({ fid, fund, latest, prev1, prev4 });
+      } else if (prev1 && prev1.shares > 0) {
+        exitedFunds.push({ fid, fund, latest: null, prev1, prev4 });
+      }
+    }
+
+    // Sort by value descending
+    holdingFunds.sort((a, b) => (b.latest?.value || 0) - (a.latest?.value || 0));
+
+    const rowsHtml = holdingFunds.map((item, i) => {
+      const { fid, fund, latest, prev1, prev4 } = item;
+      const nameMatch = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
+      const managerOnly = nameMatch ? nameMatch[2].trim() : "";
+      const pct  = totalValue > 0 ? ((latest.value / totalValue) * 100).toFixed(2) : "—";
+      const chg1 = getChg(latest.shares, prev1);
+      const chg4 = getChg(latest.shares, prev4);
+
+      return `
+        <tr>
+          <td style="color:var(--muted); font-family:var(--mono); font-size:0.72rem">${i + 1}</td>
+          <td>
+            <a class="fund-link" href="fund.html?fund=${fid}">
+              <div class="fund-name">${fundOnly}</div>
+              ${managerOnly ? `<div class="manager">${managerOnly}</div>` : ""}
+            </a>
+          </td>
+          <td class="num">${latest.shares.toLocaleString()}</td>
+          <td class="num">${fmtVal(latest.value)}</td>
+          <td class="num">${pct}%</td>
+          <td class="num">${fmtChg(chg1)}</td>
+          <td class="num">${fmtChg(chg4)}</td>
+        </tr>`;
+    }).join("");
+
+    const exitedHtml = exitedFunds.map(item => {
+      const { fid, fund } = item;
+      const nameMatch = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
+      const managerOnly = nameMatch ? nameMatch[2].trim() : "";
+      return `
+        <tr style="background:#f0ede8">
+          <td style="color:var(--muted); font-family:var(--mono); font-size:0.72rem">—</td>
+          <td>
+            <a class="fund-link" href="fund.html?fund=${fid}">
+              <div class="fund-name" style="color:var(--muted)">${fundOnly}</div>
+              ${managerOnly ? `<div class="manager">${managerOnly}</div>` : ""}
+            </a>
+          </td>
+          <td class="num" style="color:var(--muted)">—</td>
+          <td class="num" style="color:var(--muted)">—</td>
+          <td class="num" style="color:var(--muted)">—</td>
+          <td class="num"><span class="chg exited">EXITED</span></td>
+          <td class="num" style="color:var(--muted)">—</td>
+        </tr>`;
+    }).join("");
+
+    document.getElementById("content").innerHTML = `
+      <div class="stock-header">
+        ${stock.ticker ? `<div class="stock-ticker">${stock.ticker}</div>` : ""}
+        <div class="stock-name">${stock.name}</div>
+        <div class="stock-stats">
+          ${priceData ? `
+            <div class="stat">
+              <div class="stat-label">Previous Close</div>
+              <div class="stat-value">$${priceData.price.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">52W High</div>
+              <div class="stat-value">$${priceData.week52High.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+            </div>
+            <div class="stat">
+              <div class="stat-label">52W Low</div>
+              <div class="stat-value">$${priceData.week52Low.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+            </div>
+          ` : ""}
+          <div class="stat">
+            <div class="stat-label">Total Held (Tracked Funds)</div>
+            <div class="stat-value green">${fmtVal(totalValue)}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="conviction-badge">
+        🏦 Held by ${fundCount} of ${funds.length} tracked funds
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width:2rem">#</th>
+            <th>Fund</th>
+            <th class="num">Shares</th>
+            <th class="num">Value</th>
+            <th class="num">% of Total</th>
+            <th class="num">vs Prior Quarter</th>
+            <th class="num">vs Prior Year</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}${exitedHtml}</tbody>
+      </table>`;
+  }).catch(e => {
+    document.getElementById("content").innerHTML =
+      `<div class="error">Failed to load data: ${e.message}</div>`;
+  });
+</script>
+</body>
+</html>
