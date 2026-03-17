@@ -85,7 +85,7 @@
       font-size: 0.855rem; transition: background 0.1s;
     }
     .fund-list a:hover { background: var(--accent-light); }
-    .rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 1.4rem; text-align: right; flex-shrink: 0; }
+    .rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 1rem; max-width: 1rem; text-align: right; flex-shrink: 0; }
     .fund-info { flex: 1; min-width: 0; }
     .fund-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .fund-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; }
@@ -123,7 +123,7 @@
   </div>
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="Search funds or managers..." autocomplete="off"/>
+    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
     <div class="search-results" id="search-results"></div>
   </div>
 </header>
@@ -249,9 +249,9 @@
         stock.name.toLowerCase().includes(q)
       ) {
         stockMatches.push(`
-          <a class="search-result-item" href="stock.html?ticker=${key}">
-            <span class="search-result-num" style="color:#2563eb">${stock.ticker || "Stock"}</span>
-            <span>${stock.name}</span>
+          <a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
+            <span class="search-result-num">Stock</span>
+            <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
           </a>`);
       }
     }
