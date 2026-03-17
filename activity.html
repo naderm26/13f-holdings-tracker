@@ -1,0 +1,246 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hedge Fund Activity | 13FAI</title>
+  <meta name="description" content="See what stocks hedge funds are buying and selling this quarter. Track new positions, exits, and major changes across 80+ top fund managers."/>
+  <meta property="og:title" content="Hedge Fund Activity | 13FAI"/>
+  <meta property="og:description" content="See what stocks hedge funds are buying and selling this quarter."/>
+  <meta property="og:type" content="website"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f7f6f3; --surface: #ffffff; --border: #e8e6e1;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1.5rem 3rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .brand-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 300px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+    }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 2.5rem; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+    main { max-width: 1300px; margin: 0 auto; padding: 2.5rem 3rem; }
+    .page-title { font-size: 1.4rem; font-weight: 500; margin-bottom: 0.3rem; }
+    .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    .col-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 600; margin-bottom: 0.2rem; }
+    .col-desc { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.85rem; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; color: var(--muted); padding: 0.75rem 1rem; text-align: left; }
+    th.num { text-align: right; }
+    td { padding: 0.85rem 1rem; font-size: 0.855rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    .stock-link { text-decoration: none; color: var(--text); }
+    .stock-link:hover .stock-name { color: var(--accent); }
+    .stock-name { font-weight: 500; }
+    .stock-ticker { font-family: var(--mono); font-size: 0.72rem; color: #2563eb; font-weight: 600; margin-top: 0.1rem; }
+    td.num { font-family: var(--mono); font-size: 0.78rem; text-align: right; }
+    .fund-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.3rem; }
+    .fund-tag {
+      font-family: var(--mono); font-size: 0.65rem; padding: 0.15rem 0.5rem;
+      border-radius: 3px; white-space: nowrap;
+    }
+    .fund-tag.new  { background: #dcfce7; color: var(--green); }
+    .fund-tag.exit { background: #fee2e2; color: var(--red); }
+    .fund-tag.add  { background: #dbeafe; color: #1d4ed8; }
+    .fund-tag.trim { background: #fef9c3; color: #92400e; }
+    .loading { text-align: center; padding: 3rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    @media (max-width: 800px) { .columns { grid-template-columns: 1fr; } header, main { padding: 1.5rem; } #search { width: 200px; } }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <a class="brand-name" href="index.html">13FAI</a>
+    <span class="brand-sub">AI-powered hedge fund holdings tracker</span>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</header>
+
+<main>
+  <div class="page-title" id="page-title">Hedge Fund Activity</div>
+  <div class="period-line" id="period-line">Loading...</div>
+  <div class="columns">
+    <div>
+      <div class="col-label">Most Bought</div>
+      <div class="col-desc">New positions & largest increases this quarter</div>
+      <div id="bought-table"><div class="loading">Loading...</div></div>
+    </div>
+    <div>
+      <div class="col-label">Most Sold</div>
+      <div class="col-desc">Exits & largest reductions this quarter</div>
+      <div id="sold-table"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F-HR filings · For informational purposes only · <a href="disclaimer.html">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "/13f-holdings-tracker";
+
+  function fmtVal(v) {
+    if (!v) return "—";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(1) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(0) + "M";
+    return "$" + v.toLocaleString();
+  }
+
+  function tagClass(type) {
+    if (type === "NEW")    return "new";
+    if (type === "EXITED") return "exit";
+    if (type.startsWith("+")) return "add";
+    return "trim";
+  }
+
+  function renderTable(items, valueKey) {
+    return `
+      <table>
+        <thead>
+          <tr>
+            <th style="width:2rem; color:var(--muted)">#</th>
+            <th>Stock</th>
+            <th class="num">Value</th>
+            <th>Funds</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${items.slice(0, 25).map((item, i) => {
+            const href = item.ticker
+              ? `stock.html?ticker=${encodeURIComponent(item.key)}`
+              : `stock.html?cusip=${encodeURIComponent(item.cusip)}`;
+            const val = valueKey === "total_value" ? item.total_value : item.total_value_sold;
+            return `
+              <tr>
+                <td style="color:var(--muted); font-family:var(--mono); font-size:0.72rem">${i + 1}</td>
+                <td>
+                  <a class="stock-link" href="${href}">
+                    <div class="stock-name">${item.company}</div>
+                    ${item.ticker ? `<div class="stock-ticker">${item.ticker}</div>` : ""}
+                  </a>
+                  <div class="fund-tags">
+                    ${item.funds.slice(0, 4).map(f => {
+                      const nameMatch = f.name.match(/^(.+?)\s*\((.+?)\)$/);
+                      const short = nameMatch ? nameMatch[1].trim().split(" ")[0] : f.name.split(" ")[0];
+                      return `<span class="fund-tag ${tagClass(f.type)}" title="${f.name}">${short} ${f.type}</span>`;
+                    }).join("")}
+                    ${item.funds.length > 4 ? `<span class="fund-tag add">+${item.funds.length - 4} more</span>` : ""}
+                  </div>
+                </td>
+                <td class="num">${fmtVal(val)}</td>
+                <td style="font-family:var(--mono); font-size:0.75rem; color:var(--muted)">${item.funds.length}</td>
+              </tr>`;
+          }).join("")}
+        </tbody>
+      </table>`;
+  }
+
+  fetch(`${PAGES}/activity.json`)
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById("page-title").textContent = `Hedge Fund Activity — ${data.latest_q}`;
+      document.getElementById("period-line").textContent =
+        `Changes from ${data.prev_q} to ${data.latest_q} across all tracked funds`;
+      document.title = `Hedge Fund Activity ${data.latest_q} | 13FAI`;
+
+      document.getElementById("bought-table").innerHTML = renderTable(data.bought, "total_value");
+      document.getElementById("sold-table").innerHTML   = renderTable(data.sold, "total_value_sold");
+    })
+    .catch(() => {
+      document.getElementById("bought-table").innerHTML = `<div class="loading">Run "Generate Activity Data" workflow to populate.</div>`;
+      document.getElementById("sold-table").innerHTML   = `<div class="loading">Run "Generate Activity Data" workflow to populate.</div>`;
+    });
+
+  // ── Search ──────────────────────────────────────────────────────
+  let allFundsForSearch  = [];
+  let stockIndexForSearch = {};
+  fetch(`${PAGES}/funds.json`).then(r => r.text()).then(t => { allFundsForSearch = JSON.parse(t); }).catch(() => {});
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d; }).catch(() => {});
+
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove("visible"); return; }
+
+    const fundMatches = allFundsForSearch
+      .filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
+      .map(f => `
+        <a class="search-result-item" href="fund.html?fund=${f.id}">
+          <span class="search-result-num">Fund</span>
+          <span>${f.name}</span>
+        </a>`);
+
+    const stockMatches = [];
+    for (const [key, stock] of Object.entries(stockIndexForSearch)) {
+      if (stockMatches.length >= 4) break;
+      if ((stock.ticker && stock.ticker.toLowerCase().includes(q)) || stock.name.toLowerCase().includes(q)) {
+        stockMatches.push(`
+          <a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
+            <span class="search-result-num">Stock</span>
+            <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
+          </a>`);
+      }
+    }
+
+    const all = [...fundMatches, ...stockMatches];
+    searchResults.innerHTML = all.length === 0
+      ? `<div class="no-results">No results found</div>`
+      : all.join("");
+    searchResults.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target))
+      searchResults.classList.remove("visible");
+  });
+</script>
+</body>
+</html>
