@@ -12,7 +12,8 @@
   {
     "id": "ako",
     "name": "AKO Capital",
-    "cik": "0001376879"
+    "cik": "0001376879",
+    "value_multiplier": 1000
   },
   {
     "id": "altarock",
@@ -37,7 +38,8 @@
   {
     "id": "baupost",
     "name": "Baupost Group (Seth Klarman)",
-    "cik": "0001061768"
+    "cik": "0001061768",
+    "value_multiplier": 1000
   },
   {
     "id": "berkshire",
@@ -208,7 +210,8 @@
   {
     "id": "lindsell_train",
     "name": "Lindsell Train (Nick Train)",
-    "cik": "0001406026"
+    "cik": "0001406026",
+    "value_multiplier": 1000
   },
   {
     "id": "lone_pine",
@@ -268,7 +271,8 @@
   {
     "id": "olstein",
     "name": "Olstein Capital Management (Robert Olstein)",
-    "cik": "0000947996"
+    "cik": "0000947996",
+    "value_multiplier": 1000
   },
   {
     "id": "patient_capital",
@@ -358,7 +362,8 @@
   {
     "id": "triple_frond",
     "name": "Triple Frond Partners",
-    "cik": "0001454502"
+    "cik": "0001454502",
+    "value_multiplier": 1000
   },
   {
     "id": "tweedy_browne",
@@ -393,7 +398,8 @@
   {
     "id": "aquamarine",
     "name": "Aquamarine Capital (Guy Spier)",
-    "cik": "0001953324"
+    "cik": "0001953324",
+    "value_multiplier": 1000
   },
   {
     "id": "thiel_macro",
