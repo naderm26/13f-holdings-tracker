@@ -92,18 +92,6 @@
     <h1>13FAI</h1>
   </div>
   <div class="header-right">
-    <div class="stat">
-      <div class="stat-label">Previous Close</div>
-      <div class="stat-value" id="hdr-price">—</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">52W High</div>
-      <div class="stat-value" id="hdr-high">—</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">52W Low</div>
-      <div class="stat-value" id="hdr-low">—</div>
-    </div>
   </div>
 </header>
 
@@ -124,7 +112,6 @@
   let sortAsc  = false;
   let stockData = null;
   let fundsData = null;
-  let pricesData = null;
   let latestQ, prevQ, prevYearQ;
 
   function fmtChg(val) {
@@ -151,11 +138,6 @@
     return "$" + v.toLocaleString();
   }
 
-  function fmtPrice(p) {
-    if (!p) return "—";
-    return "$" + p.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  }
-
   function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
   function sort(col) {
@@ -169,8 +151,6 @@
     const fundMap  = Object.fromEntries(fundsData.map(f => [f.id, f]));
     const prices   = pricesData;
     const ticker   = stock.ticker;
-    const priceData = ticker ? prices[ticker] : null;
-    const lastPrice = priceData ? priceData.price : null;
 
     const holdingFunds = [];
     const exitedFunds  = [];
@@ -288,9 +268,8 @@
   } else {
     Promise.all([
       fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
-      fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse),
-      fetch(`${PAGES}/prices.json`).then(r => r.json()).catch(() => ({}))
-    ]).then(([stockIndex, funds, prices]) => {
+      fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse)
+    ]).then(([stockIndex, funds]) => {
       const stock = stockIndex[key];
       if (!stock) {
         document.getElementById("stock-header").innerHTML =
@@ -300,7 +279,7 @@
 
       stockData  = stock;
       fundsData  = funds;
-      pricesData = prices;
+      pricesData = {};
 
       // Get sorted quarters
       const allQ = new Set();
@@ -310,14 +289,6 @@
       latestQ    = sortedQ[0];
       prevQ      = sortedQ[1] || null;
       prevYearQ  = sortedQ[4] || null;
-
-      // Price data
-      const priceData = stock.ticker ? prices[stock.ticker] : null;
-      if (priceData) {
-        document.getElementById("hdr-price").textContent = fmtPrice(priceData.price);
-        document.getElementById("hdr-high").textContent  = fmtPrice(priceData.week52High);
-        document.getElementById("hdr-low").textContent   = fmtPrice(priceData.week52Low);
-      }
 
       // Fund count
       let fundCount = 0;
