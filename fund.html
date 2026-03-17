@@ -392,8 +392,6 @@
           <td class="num">${fmtChg(chg4)}</td>
           <td class="num">${valueStr}</td>
           <td class="num">${repPriceStr}</td>
-          <td class="num">${lastPriceStr}</td>
-          <td class="num">${priceDiffHtml}</td>
           <td class="num">${putcallHtml}</td>
         </tr>`;
     }).join("");
@@ -411,9 +409,7 @@
           <td class="num">—</td>
           <td class="num">—</td>
           <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num">—</td>
+          <td class="num right">—</td>
         </tr>`).join("") : "";
 
     document.getElementById("table-container").innerHTML = `
@@ -422,14 +418,12 @@
           <tr>
             <th style="color:var(--muted); width:2rem; max-width:2rem">#</th>
             <th onclick="sort(0)">Company${arrow(0)}</th>
-            <th class="num" onclick="sort(3)">Weight${arrow(3)}</th>
+            <th class="num" onclick="sort(3)">% of Portfolio${arrow(3)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
             <th class="num">Shares vs Prior Quarter</th>
             <th class="num">Shares vs Prior Year</th>
             <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
             <th class="num">Price at Last Filing *</th>
-            <th class="num">Previous Close</th>
-            <th class="num">+/-<br>Last Reported<br>Price</th>
             <th class="num">Option</th>
           </tr>
         </thead>
