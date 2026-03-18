@@ -14,7 +14,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #f7f6f3; --surface: #ffffff; --border: #e8e6e1;
+      --bg: #ffffff; --surface: #f7f6f3; --border: #e8e6e1;
       --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
       --accent-light: #eef4f0; --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
@@ -44,7 +44,7 @@
     .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
     .search-results {
       position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: var(--surface); border: 1px solid var(--border);
+      background: var(--bg); border: 1px solid var(--border);
       border-radius: 6px; overflow: hidden; z-index: 100;
       box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
     }
@@ -221,7 +221,7 @@
         <a href="fund.html?fund=${id}">
           <span class="rank">${rank}.</span>
           <span class="fund-info">
-            <span class="fund-name">${name}<span class="fund-last-updated" id="last-updated-${id}" style="color:#2563eb; font-family:var(--mono); font-size:0.68rem; font-weight:400; margin-left:0.5rem;"></span></span>
+            <span class="fund-name">${name}<span class="fund-last-updated" data-fund-id="${id}" style="color:#2563eb; font-family:var(--mono); font-size:0.68rem; font-weight:400; margin-left:0.5rem;"></span></span>
             ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
           </span>
           <span class="arrow">→</span>
@@ -280,8 +280,10 @@
           if (r.ok) {
             const meta = await r.json();
             if (meta && meta.filed) {
-              const el = document.getElementById(`last-updated-${fund.id}`);
-              if (el) el.textContent = `· ${fmtDate(meta.filed)}`;
+              const dateStr = `· ${fmtDate(meta.filed)}`;
+              document.querySelectorAll(`[data-fund-id="${fund.id}"]`).forEach(el => {
+                el.textContent = dateStr;
+              });
             }
             return; // stop at first found
           }
