@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -207,13 +208,20 @@
     return `$${aum.toLocaleString()}`;
   }
 
+  function fmtDate(dateStr) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
+  }
+
   function fundItem(id, name, rank, meta) {
     return `
       <li>
         <a href="fund.html?fund=${id}">
           <span class="rank">${rank}.</span>
           <span class="fund-info">
-            <span class="fund-name">${name}</span>
+            <span class="fund-name">${name}<span class="fund-last-updated" id="last-updated-${id}" style="color:#2563eb; font-family:var(--mono); font-size:0.68rem; font-weight:400; margin-left:0.5rem;"></span></span>
             ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
           </span>
           <span class="arrow">→</span>
@@ -234,6 +242,7 @@
 
     renderPopular();
     renderAll();
+    loadLastUpdatedDates();
   }
 
   function renderPopular() {
@@ -245,6 +254,40 @@
   function renderAll() {
     const el = document.getElementById("list-all");
     el.innerHTML = allFunds.map((f, i) => fundItem(f.id, f.name, i + 1, null)).join("");
+  }
+
+  // Fetch latest filed date for each fund and inject into the DOM
+  async function loadLastUpdatedDates() {
+    const now = new Date();
+    let year = now.getFullYear();
+    let q = Math.ceil((now.getMonth() + 1) / 3) - 1;
+    if (q === 0) { q = 4; year--; }
+
+    // Build candidate quarter labels (last 8)
+    const candidates = [];
+    let cy = year, cq = q;
+    for (let i = 0; i < 8; i++) {
+      candidates.push(`${cy}Q${cq}`);
+      cq--;
+      if (cq === 0) { cq = 4; cy--; }
+    }
+
+    // For each fund, find first available quarter metadata in parallel
+    await Promise.all(allFunds.map(async (fund) => {
+      for (const label of candidates) {
+        try {
+          const r = await fetch(`${BASE}/data/${fund.id}_${label}.json`);
+          if (r.ok) {
+            const meta = await r.json();
+            if (meta && meta.filed) {
+              const el = document.getElementById(`last-updated-${fund.id}`);
+              if (el) el.textContent = `· ${fmtDate(meta.filed)}`;
+            }
+            return; // stop at first found
+          }
+        } catch(e) { /* skip */ }
+      }
+    }));
   }
 
   // ── Search ─────────────────────────────────────────────────────
