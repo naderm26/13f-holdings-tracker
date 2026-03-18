@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,12 +39,12 @@
     }
     .q-btn:hover { border-color: var(--accent); color: var(--accent); }
     .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    thead tr { background: var(--surface); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
     th:nth-child(1) { text-align: center; width: 30px; min-width: 30px; max-width: 30px; }
     th:nth-child(2) { text-align: left; width: 22%; }
     th:nth-child(n+3) { width: 8.8%; text-align: center; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
+    table { width: 100%; border-collapse: collapse; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
     td:nth-child(1) { text-align: center; width: 30px; min-width: 30px; max-width: 30px; }
@@ -286,13 +287,13 @@
   function fmtDate(dateStr) {
     if (!dateStr) return "";
     const [year, month, day] = dateStr.split("-");
-    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
   }
 
   function quarterToDate(q) {
     const [year, qn] = q.split("Q");
-    const ends = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
+    const ends = { "1": "Mar 31", "2": "Jun 30", "3": "Sep 30", "4": "Dec 31" };
     return `${ends[qn]}, ${year}`;
   }
 
@@ -370,11 +371,27 @@
       warningEl.style.display = "none";
     }
 
-    const keys = ["company", "cusip", "shares", "value", "discretion"];
     const sorted = [...rows].sort((a, b) => {
-      const key = keys[sortCol];
-      const av = typeof a[key] === "string" ? a[key].toLowerCase() : a[key];
-      const bv = typeof b[key] === "string" ? b[key].toLowerCase() : b[key];
+      let av, bv;
+      const mult_ = mult;
+      if (sortCol === 0)      { av = a.company.toLowerCase(); bv = b.company.toLowerCase(); }
+      else if (sortCol === 1) { av = a.value * mult_; bv = b.value * mult_; }
+      else if (sortCol === 2) { av = a.shares; bv = b.shares; }
+      else if (sortCol === 3) { av = tv > 0 ? (a.value * mult_) / tv : 0; bv = tv > 0 ? (b.value * mult_) / tv : 0; }
+      else if (sortCol === 4) {
+        const ca = getChange(a.shares, prev1, a.cusip, a.company);
+        const cb = getChange(b.shares, prev1, b.cusip, b.company);
+        av = typeof ca === 'number' ? ca : (ca === "NEW" ? 1e9 : (ca === "EXITED" ? -1e9 : 0));
+        bv = typeof cb === 'number' ? cb : (cb === "NEW" ? 1e9 : (cb === "EXITED" ? -1e9 : 0));
+      }
+      else if (sortCol === 5) {
+        const ca = getChange(a.shares, prev4, a.cusip, a.company);
+        const cb = getChange(b.shares, prev4, b.cusip, b.company);
+        av = typeof ca === 'number' ? ca : (ca === "NEW" ? 1e9 : (ca === "EXITED" ? -1e9 : 0));
+        bv = typeof cb === 'number' ? cb : (cb === "NEW" ? 1e9 : (cb === "EXITED" ? -1e9 : 0));
+      }
+      else if (sortCol === 6) { av = a.shares > 0 ? (a.value * mult_) / a.shares : 0; bv = b.shares > 0 ? (b.value * mult_) / b.shares : 0; }
+      else                   { av = 0; bv = 0; }
       return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
     });
 
@@ -382,10 +399,15 @@
 
     const rowsHtml = sorted.map((r, i) => {
       const adjValue  = r.value * mult;
-      const pct       = tv > 0 ? ((adjValue / tv) * 100).toFixed(2) : "0.00";
+      const pctRaw    = tv > 0 ? (adjValue / tv) * 100 : 0;
+      const pct       = (pctRaw === 0) ? "—" : pctRaw.toFixed(2) + "%";
       const repPrice  = r.shares > 0 ? adjValue / r.shares : 0;
-      const repPriceStr = "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const valueStr  = "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
+      const valueStr  = adjValue >= 1e9
+        ? "$" + (adjValue / 1e9).toFixed(2) + "B"
+        : adjValue >= 1e6
+          ? "$" + (adjValue / 1e6).toFixed(1) + "M"
+          : "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
       const chg1      = getChange(r.shares, prev1, r.cusip, r.company);
       const chg4      = getChange(r.shares, prev4, r.cusip, r.company);
       const putcallHtml = r.putcall
@@ -450,10 +472,10 @@
             <th onclick="sort(0)">Company${arrow(0)}</th>
             <th class="num" onclick="sort(3)">% of Portfolio${arrow(3)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="num">Shares vs Prior Quarter</th>
-            <th class="num">Shares vs Prior Year</th>
-            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
-            <th class="num">Price at Last Filing *</th>
+            <th class="num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
+            <th class="num" onclick="sort(5)">Shares vs Prior Year${arrow(5)}</th>
+            <th class="num" onclick="sort(1)">Value${arrow(1)}</th>
+            <th class="num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
             <th class="num">Option</th>
           </tr>
         </thead>
