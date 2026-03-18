@@ -12,7 +12,7 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #f7f6f3; --surface: #ffffff; --border: #e8e6e1;
+      --bg: #ffffff; --surface: #f7f6f3; --border: #e8e6e1;
       --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
       --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
       --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
@@ -40,7 +40,7 @@
     .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
     .search-results {
       position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: var(--surface); border: 1px solid var(--border);
+      background: var(--bg); border: 1px solid var(--border);
       border-radius: 6px; overflow: hidden; z-index: 100;
       box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
     }
@@ -74,15 +74,15 @@
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
 
     /* Table — matches fund.html */
-    table { width: 100%; border-collapse: collapse; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
-    thead tr { background: var(--surface); border-bottom: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
-    th:nth-child(1) { text-align: center; width: 30px; min-width: 30px; max-width: 30px; }
+    th:nth-child(1) { text-align: center; width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
     th:nth-child(2) { text-align: left; width: 22%; }
     th:nth-child(n+3) { width: 8.8%; text-align: center; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
-    td:nth-child(1) { text-align: center; width: 30px; min-width: 30px; max-width: 30px; }
+    td:nth-child(1) { text-align: center; width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
     td:nth-child(2) { text-align: left; white-space: normal; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
@@ -135,7 +135,7 @@
   const PAGES = "/13f-holdings-tracker";
   const params = new URLSearchParams(window.location.search);
   const key    = params.get("ticker") || params.get("cusip") || "";
-  let sortCol  = 3; // default sort by value
+  let sortCol  = 1; // default sort by % of portfolio
   let sortAsc  = false;
   let stockData  = null;
   let fundsData  = null;
@@ -312,7 +312,7 @@
       <table>
         <thead>
           <tr>
-            <th style="width:0.5rem; color:var(--muted)">#</th>
+            <th style="width:2.5rem; min-width:2.5rem; max-width:2.5rem; color:var(--muted)">#</th>
             <th onclick="sort(0)">Fund${arrow(0)}</th>
             <th class="num" onclick="sort(1)">% of Portfolio${arrow(1)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
