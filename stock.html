@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -73,8 +74,8 @@
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
 
     /* Table — matches fund.html */
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
-    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
+    thead tr { background: var(--surface); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
     th:nth-child(1) { text-align: center; width: 30px; min-width: 30px; max-width: 30px; }
     th:nth-child(2) { text-align: left; width: 22%; }
@@ -136,8 +137,9 @@
   const key    = params.get("ticker") || params.get("cusip") || "";
   let sortCol  = 3; // default sort by value
   let sortAsc  = false;
-  let stockData = null;
-  let fundsData = null;
+  let stockData  = null;
+  let fundsData  = null;
+  let fundTotals = {}; // fid -> total portfolio value (adjusted)
   let latestQ, prevQ, prevYearQ;
 
   function fmtChg(val) {
@@ -164,12 +166,36 @@
     return "$" + v.toLocaleString();
   }
 
+  function fmtPct(val) {
+    if (val === null || val === undefined || isNaN(val)) return "—";
+    if (val === 0) return "—";
+    return val.toFixed(2) + "%";
+  }
+
   function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
   function sort(col) {
     if (sortCol === col) sortAsc = !sortAsc;
     else { sortCol = col; sortAsc = false; }
     renderTable();
+  }
+
+  // Fetch CSV for a fund/quarter and return total adjusted value
+  async function fetchFundTotal(fid, quarter, mult) {
+    try {
+      const r = await fetch(`${PAGES}/data/${fid}_${quarter}.csv`);
+      if (!r.ok) return 0;
+      const text = await r.text();
+      const lines = text.trim().split("\n").slice(1);
+      let total = 0;
+      for (const line of lines) {
+        const cols = line.split(",");
+        const shares = parseInt(cols[2]) || 0;
+        const value  = parseInt(cols[3]) || 0;
+        if (shares > 0) total += value;
+      }
+      return total * mult;
+    } catch(e) { return 0; }
   }
 
   function renderTable() {
@@ -206,8 +232,12 @@
     const sortFn = (a, b) => {
       let av, bv;
       if (sortCol === 0)      { av = (fundMap[a.fid]?.name||"").toLowerCase(); bv = (fundMap[b.fid]?.name||"").toLowerCase(); }
+      else if (sortCol === 1) { av = fundTotals[a.fid] > 0 ? a.latest.value * (fundMap[a.fid]?.value_multiplier||1) / fundTotals[a.fid] : 0; bv = fundTotals[b.fid] > 0 ? b.latest.value * (fundMap[b.fid]?.value_multiplier||1) / fundTotals[b.fid] : 0; }
       else if (sortCol === 2) { av = a.latest?.shares || 0; bv = b.latest?.shares || 0; }
       else if (sortCol === 3) { av = a.latest?.value  || 0; bv = b.latest?.value  || 0; }
+      else if (sortCol === 4) { const ca = getChg(a.latest?.shares||0,a.prev1); const cb = getChg(b.latest?.shares||0,b.prev1); av = (typeof ca==='number') ? ca : (ca==="NEW"?1e9:(ca==="EXITED"?-1e9:0)); bv = (typeof cb==='number') ? cb : (cb==="NEW"?1e9:(cb==="EXITED"?-1e9:0)); }
+      else if (sortCol === 5) { const ca = getChg(a.latest?.shares||0,a.prev4); const cb = getChg(b.latest?.shares||0,b.prev4); av = (typeof ca==='number') ? ca : (ca==="NEW"?1e9:(ca==="EXITED"?-1e9:0)); bv = (typeof cb==='number') ? cb : (cb==="NEW"?1e9:(cb==="EXITED"?-1e9:0)); }
+      else if (sortCol === 6) { av = a.latest?.shares > 0 ? a.latest.value / a.latest.shares : 0; bv = b.latest?.shares > 0 ? b.latest.value / b.latest.shares : 0; }
       else                   { av = 0; bv = 0; }
       return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
     };
@@ -221,7 +251,11 @@
       const nameMatch   = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
       const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
       const managerOnly = nameMatch ? nameMatch[2].trim() : "";
-      const pct         = totalValue > 0 ? ((latest.value / totalValue) * 100).toFixed(2) : "—";
+      const mult        = fund.value_multiplier || 1;
+      const adjValue    = latest.value * mult;
+      const fundTotal   = fundTotals[fid] || 0;
+      const pctNum      = fundTotal > 0 ? (adjValue / fundTotal) * 100 : 0;
+      const pct         = fmtPct(pctNum);
       const chg1        = getChg(latest.shares, prev1);
       const chg4        = getChg(latest.shares, prev4);
       const repPrice    = latest.shares > 0 ? latest.value / latest.shares : 0;
@@ -240,11 +274,11 @@
               ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
             </a>
           </td>
-          <td class="num">${pct}%</td>
+          <td class="num">${pct}</td>
           <td class="num">${latest.shares.toLocaleString()}</td>
           <td class="num">${fmtChg(chg1)}</td>
           <td class="num">${fmtChg(chg4)}</td>
-          <td class="num">${fmtVal(latest.value)}</td>
+          <td class="num">${fmtVal(adjValue)}</td>
           <td class="num">${repPriceStr}</td>
           <td class="num">${putcallHtml}</td>
         </tr>`;
@@ -280,12 +314,12 @@
           <tr>
             <th style="width:0.5rem; color:var(--muted)">#</th>
             <th onclick="sort(0)">Fund${arrow(0)}</th>
-            <th class="num">% of Portfolio</th>
+            <th class="num" onclick="sort(1)">% of Portfolio${arrow(1)}</th>
             <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="num">vs Prior Quarter</th>
-            <th class="num">vs Prior Year</th>
+            <th class="num" onclick="sort(4)">vs Prior Quarter${arrow(4)}</th>
+            <th class="num" onclick="sort(5)">vs Prior Year${arrow(5)}</th>
             <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
-            <th class="num">Price at Last Filing *</th>
+            <th class="num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
             <th class="num">Option</th>
           </tr>
         </thead>
@@ -302,7 +336,7 @@
     Promise.all([
       fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
       fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse)
-    ]).then(([stockIndex, funds]) => {
+    ]).then(async ([stockIndex, funds]) => {
       const stock = stockIndex[key];
       if (!stock) {
         document.getElementById("stock-header").innerHTML =
@@ -314,7 +348,7 @@
       fundsData  = funds;
       pricesData = {};
 
-      // Get sorted quarters
+      // Get sorted quarters (for header display only)
       const allQ = new Set();
       for (const fid of Object.keys(stock.funds))
         Object.keys(stock.funds[fid].quarters).forEach(q => allQ.add(q));
@@ -323,12 +357,26 @@
       prevQ      = sortedQ[1] || null;
       prevYearQ  = sortedQ[4] || null;
 
-      // Fund count
+      // Correct fund count: use each fund's own latest quarter
       let fundCount = 0;
       for (const fid of Object.keys(stock.funds)) {
-        const q = stock.funds[fid].quarters[latestQ];
+        const fundQuarters = Object.keys(stock.funds[fid].quarters).sort().reverse();
+        const fLatestQ = fundQuarters[0];
+        const q = fLatestQ ? stock.funds[fid].quarters[fLatestQ] : null;
         if (q && q.shares > 0) fundCount++;
       }
+
+      // Pre-fetch fund totals for % of portfolio (each fund's own latest quarter)
+      const totalFetches = Object.keys(stock.funds).map(async fid => {
+        const fund = funds.find(f => f.id === fid);
+        if (!fund) return;
+        const fundQuarters = Object.keys(stock.funds[fid].quarters).sort().reverse();
+        const fLatestQ = fundQuarters[0];
+        if (!fLatestQ) return;
+        const mult = fund.value_multiplier || 1;
+        fundTotals[fid] = await fetchFundTotal(fid, fLatestQ, mult);
+      });
+      await Promise.all(totalFetches);
 
       // SEO
       const desc = `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""}. Track position sizes, portfolio weights, and quarterly changes from 13F filings.`;
