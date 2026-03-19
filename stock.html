@@ -74,16 +74,17 @@
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
 
     /* Table — matches fund.html */
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); table-layout: fixed; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
-    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-num  { width: 2rem; }
     th.col-fund { text-align: left; width: 22%; }
-    th.col-data { width: 9%; text-align: center; }
+    th.col-data { width: 9.5%; text-align: center; }
     th:hover { color: var(--text); }
-    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
-    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
-    td.col-fund { text-align: left; white-space: normal; }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; overflow: hidden; text-overflow: ellipsis; }
+    td.col-num  { width: 2rem; }
+    td.col-fund { text-align: left; white-space: normal; overflow: visible; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
     td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
@@ -180,6 +181,33 @@
     renderTable();
   }
 
+  // Build candidate quarter labels from today going back 12 quarters
+  function recentQuarters() {
+    const now = new Date();
+    let year = now.getFullYear();
+    let q = Math.ceil((now.getMonth() + 1) / 3) - 1;
+    if (q === 0) { q = 4; year--; }
+    const out = [];
+    for (let i = 0; i < 12; i++) {
+      out.push(`${year}Q${q}`);
+      q--; if (q === 0) { q = 4; year--; }
+    }
+    return out;
+  }
+
+  // Find the actual latest quarter for a fund by probing CSVs newest-first
+  const _fundLatestQCache = {};
+  async function findFundLatestQ(fid) {
+    if (_fundLatestQCache[fid]) return _fundLatestQCache[fid];
+    for (const label of recentQuarters()) {
+      try {
+        const r = await fetch(`${PAGES}/data/${fid}_${label}.csv`, { method: 'HEAD' });
+        if (r.ok) { _fundLatestQCache[fid] = label; return label; }
+      } catch(e) { /* skip */ }
+    }
+    return null;
+  }
+
   // Fetch CSV for a fund/quarter and return total adjusted value
   async function fetchFundTotal(fid, quarter, mult) {
     try {
@@ -199,32 +227,39 @@
   }
 
   function renderTable() {
-    const stock    = stockData;
-    const fundMap  = Object.fromEntries(fundsData.map(f => [f.id, f]));
-    const prices   = pricesData;
-    const ticker   = stock.ticker;
+    const stock   = stockData;
+    const fundMap = Object.fromEntries(fundsData.map(f => [f.id, f]));
 
     const holdingFunds = [];
     const exitedFunds  = [];
 
     for (const fid of Object.keys(stock.funds)) {
-      const fund   = fundMap[fid];
+      const fund = fundMap[fid];
       if (!fund) continue;
 
-      // Get this fund's own sorted quarters
-      const fundQuarters = Object.keys(stock.funds[fid].quarters).sort().reverse();
-      const fundLatestQ  = fundQuarters[0];
-      const fundPrevQ    = fundQuarters[1] || null;
-      const fundPrevYearQ = fundQuarters[4] || null;
+      // The actual latest quarter this fund has filed (from CSV probe)
+      const actualLatestQ = _fundLatestQCache[fid];
+      if (!actualLatestQ) continue; // no data for this fund at all
 
-      const latest = stock.funds[fid].quarters[fundLatestQ];
-      const prev1  = fundPrevQ     ? stock.funds[fid].quarters[fundPrevQ]     : null;
-      const prev4  = fundPrevYearQ ? stock.funds[fid].quarters[fundPrevYearQ] : null;
+      // All quarters this stock appears in for this fund, newest first
+      const stockQs    = Object.keys(stock.funds[fid].quarters).sort().reverse();
+      const stockLatestQ    = stockQs[0];
+      const stockPrevQ      = stockQs[1] || null;
+      const stockPrevYearQ  = stockQs[4] || null;
 
-      if (latest && latest.shares > 0) {
-        holdingFunds.push({ fid, fund, latest, prev1, prev4, fundLatestQ });
-      } else if (prev1 && prev1.shares > 0) {
-        exitedFunds.push({ fid, fund, latest: null, prev1, prev4 });
+      const latestHolding = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
+      const prev1         = stockPrevQ     ? stock.funds[fid].quarters[stockPrevQ]     : null;
+      const prev4         = stockPrevYearQ ? stock.funds[fid].quarters[stockPrevYearQ] : null;
+
+      if (actualLatestQ === stockLatestQ && latestHolding && latestHolding.shares > 0) {
+        // Fund's actual latest filing matches the latest quarter they hold this stock → current holder
+        holdingFunds.push({ fid, fund, latest: latestHolding, prev1, prev4 });
+      } else if (latestHolding && latestHolding.shares > 0) {
+        // Fund has filed more recently but stock doesn't appear → they exited
+        exitedFunds.push({ fid, fund, prev1: latestHolding });
+      } else if (stockPrevQ && actualLatestQ === stockPrevQ && prev1 && prev1.shares > 0) {
+        // Fund's latest filing is the prior quarter where they held it → just exited
+        exitedFunds.push({ fid, fund, prev1 });
       }
     }
 
@@ -258,7 +293,7 @@
       const pct         = fmtPct(pctNum);
       const chg1        = getChg(latest.shares, prev1);
       const chg4        = getChg(latest.shares, prev4);
-      const repPrice    = latest.shares > 0 ? latest.value / latest.shares : 0;
+      const repPrice    = latest.shares > 0 ? (latest.value * mult) / latest.shares : 0;
       const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
       const putcall     = latest.putcall || "";
       const putcallHtml = putcall
@@ -309,6 +344,7 @@
     }).join("");
 
     document.getElementById("table-container").innerHTML = `
+      <div class="table-wrap">
       <table>
         <thead>
           <tr>
@@ -325,6 +361,7 @@
         </thead>
         <tbody>${rowsHtml}${exitedHtml}</tbody>
       </table>
+      </div>
       <div style="font-family:var(--mono); font-size:0.68rem; color:var(--muted); margin-top:0.75rem">
         * Price at last filing is calculated by dividing the reported value by shares held at quarter end. It represents the implied average price per share, not an actual purchase or sale price.
       </div>`;
@@ -348,35 +385,28 @@
       fundsData  = funds;
       pricesData = {};
 
-      // Get sorted quarters (for header display only)
-      const allQ = new Set();
-      for (const fid of Object.keys(stock.funds))
-        Object.keys(stock.funds[fid].quarters).forEach(q => allQ.add(q));
-      const sortedQ = Array.from(allQ).sort().reverse();
-      latestQ    = sortedQ[0];
-      prevQ      = sortedQ[1] || null;
-      prevYearQ  = sortedQ[4] || null;
+      // Probe each fund's actual latest CSV quarter (needed for stale-holder detection and correct totals)
+      await Promise.all(Object.keys(stock.funds).map(fid => findFundLatestQ(fid)));
 
-      // Correct fund count: use each fund's own latest quarter
+      // Fund count: only funds whose actual latest quarter is the one they hold this stock
       let fundCount = 0;
       for (const fid of Object.keys(stock.funds)) {
-        const fundQuarters = Object.keys(stock.funds[fid].quarters).sort().reverse();
-        const fLatestQ = fundQuarters[0];
-        const q = fLatestQ ? stock.funds[fid].quarters[fLatestQ] : null;
-        if (q && q.shares > 0) fundCount++;
+        const actualLatestQ = _fundLatestQCache[fid];
+        const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
+        const stockLatestQ = stockQs[0];
+        const q = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
+        if (actualLatestQ === stockLatestQ && q && q.shares > 0) fundCount++;
       }
 
-      // Pre-fetch fund totals for % of portfolio (each fund's own latest quarter)
-      const totalFetches = Object.keys(stock.funds).map(async fid => {
+      // Fetch fund totals using each fund's actual latest quarter (not stock_index quarter)
+      await Promise.all(Object.keys(stock.funds).map(async fid => {
         const fund = funds.find(f => f.id === fid);
         if (!fund) return;
-        const fundQuarters = Object.keys(stock.funds[fid].quarters).sort().reverse();
-        const fLatestQ = fundQuarters[0];
-        if (!fLatestQ) return;
+        const actualLatestQ = _fundLatestQCache[fid];
+        if (!actualLatestQ) return;
         const mult = fund.value_multiplier || 1;
-        fundTotals[fid] = await fetchFundTotal(fid, fLatestQ, mult);
-      });
-      await Promise.all(totalFetches);
+        fundTotals[fid] = await fetchFundTotal(fid, actualLatestQ, mult);
+      }));
 
       // SEO
       const desc = `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""}. Track position sizes, portfolio weights, and quarterly changes from 13F filings.`;
