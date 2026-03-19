@@ -74,16 +74,16 @@
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
 
     /* Table — matches fund.html */
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
-    th:nth-child(1) { text-align: center; width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
-    th:nth-child(2) { text-align: left; width: 22%; }
-    th:nth-child(n+3) { width: 8.8%; text-align: center; }
+    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-fund { text-align: left; width: 22%; }
+    th.col-data { width: 9%; text-align: center; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
-    td:nth-child(1) { text-align: center; width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
-    td:nth-child(2) { text-align: left; white-space: normal; }
+    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    td.col-fund { text-align: left; white-space: normal; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
     td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
@@ -267,20 +267,20 @@
 
       return `
         <tr>
-          <td class="num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
-          <td>
+          <td class="col-num num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
+          <td class="col-fund">
             <a class="fund-link" href="fund.html?fund=${fid}">
               <div class="fund-name-cell">${fundOnly}</div>
               ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
             </a>
           </td>
-          <td class="num">${pct}</td>
-          <td class="num">${latest.shares.toLocaleString()}</td>
-          <td class="num">${fmtChg(chg1)}</td>
-          <td class="num">${fmtChg(chg4)}</td>
-          <td class="num">${fmtVal(adjValue)}</td>
-          <td class="num">${repPriceStr}</td>
-          <td class="num">${putcallHtml}</td>
+          <td class="col-data num">${pct}</td>
+          <td class="col-data num">${latest.shares.toLocaleString()}</td>
+          <td class="col-data num">${fmtChg(chg1)}</td>
+          <td class="col-data num">${fmtChg(chg4)}</td>
+          <td class="col-data num">${fmtVal(adjValue)}</td>
+          <td class="col-data num">${repPriceStr}</td>
+          <td class="col-data num">${putcallHtml}</td>
         </tr>`;
     }).join("");
 
@@ -291,20 +291,20 @@
       const managerOnly = nameMatch ? nameMatch[2].trim() : "";
       return `
         <tr class="exited">
-          <td class="num" style="font-size:0.72rem">—</td>
-          <td>
+          <td class="col-num num" style="font-size:0.72rem">—</td>
+          <td class="col-fund">
             <a class="fund-link" href="fund.html?fund=${fid}">
               <div class="fund-name-cell">${fundOnly}</div>
               ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
             </a>
           </td>
-          <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num"><span class="chg exited">EXITED</span></td>
-          <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num"><span class="chg exited">EXITED</span></td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
         </tr>`;
     }).join("");
 
@@ -312,15 +312,15 @@
       <table>
         <thead>
           <tr>
-            <th style="width:2.5rem; min-width:2.5rem; max-width:2.5rem; color:var(--muted)">#</th>
-            <th onclick="sort(0)">Fund${arrow(0)}</th>
-            <th class="num" onclick="sort(1)">% of Portfolio${arrow(1)}</th>
-            <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="num" onclick="sort(4)">vs Prior Quarter${arrow(4)}</th>
-            <th class="num" onclick="sort(5)">vs Prior Year${arrow(5)}</th>
-            <th class="num" onclick="sort(3)">Value${arrow(3)}</th>
-            <th class="num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
-            <th class="num">Option</th>
+            <th class="col-num" style="color:var(--muted)">#</th>
+            <th class="col-fund" onclick="sort(0)">Fund${arrow(0)}</th>
+            <th class="col-data num" onclick="sort(1)">% of Portfolio${arrow(1)}</th>
+            <th class="col-data num" onclick="sort(2)">Shares${arrow(2)}</th>
+            <th class="col-data num" onclick="sort(4)">vs Prior Quarter${arrow(4)}</th>
+            <th class="col-data num" onclick="sort(5)">vs Prior Year${arrow(5)}</th>
+            <th class="col-data num" onclick="sort(3)">Value${arrow(3)}</th>
+            <th class="col-data num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
+            <th class="col-data num">Option</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}${exitedHtml}</tbody>
