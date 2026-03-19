@@ -242,6 +242,25 @@
     } catch(e) { /* no meta file */ }
   }
 
+  // ── CSV parser — handles quoted fields containing commas ─────────
+  function parseCSVLine(line) {
+    const cols = [];
+    let cur = "", inQuote = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        cols.push(cur.trim());
+        cur = "";
+      } else {
+        cur += ch;
+      }
+    }
+    cols.push(cur.trim());
+    return cols;
+  }
+
   // ── CSV loader ────────────────────────────────────────────────
   async function loadCSV(label) {
     if (csvCache[label]) return;
@@ -249,16 +268,16 @@
     const text  = await r.text();
     const lines = text.trim().split("\n");
     csvCache[label] = lines.slice(1).map(line => {
-      const cols = line.split(",");
+      const cols = parseCSVLine(line);
       return {
-        company:    cols[0]?.trim() || "",
-        cusip:      cols[1]?.trim() || "",
+        company:    cols[0] || "",
+        cusip:      cols[1] || "",
         shares:     parseInt(cols[2]) || 0,
         value:      parseInt(cols[3]) || 0,
-        discretion: cols[4]?.trim() || "",
-        putcall:    cols[5]?.trim() || ""
+        discretion: cols[4] || "",
+        putcall:    cols[5] || ""
       };
-    });
+    }).filter(r => r.cusip || r.company);
   }
 
   // ── Quarter switcher ──────────────────────────────────────────
