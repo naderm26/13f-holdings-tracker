@@ -54,6 +54,19 @@ for fid, quarter_files in fund_quarters.items():
 
     for ql, csv_file in quarter_files:
         try:
+            # Group all rows by CUSIP first, then write once per CUSIP.
+            # This prevents a CALL/PUT options row from overwriting the underlying
+            # stock position when both share the same CUSIP in the same quarter.
+            # Rows without a putcall value (plain stock) take priority; shares and
+            # values are summed across all rows for the same CUSIP so nothing is lost.
+            cusip_groups = defaultdict(lambda: {
+                "company": "",
+                "shares": 0,
+                "value": 0,
+                "putcall_set": set(),
+                "has_stock": False,   # True if any row has no putcall (plain equity)
+            })
+
             with open(csv_file, newline="") as f:
                 reader = csv.DictReader(f)
                 for row in reader:
@@ -66,25 +79,54 @@ for fid, quarter_files in fund_quarters.items():
                     if not cusip or not company:
                         continue
 
-                    ticker = ticker_map.get(cusip, "")
-                    key    = ticker if ticker else cusip
+                    g = cusip_groups[cusip]
+                    if not g["company"]:
+                        g["company"] = company
+                    g["shares"] += shares
+                    g["value"]  += value
+                    if putcall:
+                        g["putcall_set"].add(putcall)
+                    else:
+                        g["has_stock"] = True
 
-                    if key not in stock_index:
-                        stock_index[key] = {
-                            "name":   company,
-                            "cusip":  cusip,
-                            "ticker": ticker,
-                            "funds":  {}
-                        }
+            # Write one entry per CUSIP into the index
+            for cusip, g in cusip_groups.items():
+                company = g["company"]
+                shares  = g["shares"]
+                value   = g["value"]
 
-                    if fid not in stock_index[key]["funds"]:
-                        stock_index[key]["funds"][fid] = {"quarters": {}}
+                # putcall: only set if ALL rows for this CUSIP are options (no plain equity row).
+                # If there's a mix (stock + options on same CUSIP), treat as plain equity.
+                if g["has_stock"] or not g["putcall_set"]:
+                    putcall = ""
+                else:
+                    # All rows are options — use the option type (Put or Call)
+                    putcall = list(g["putcall_set"])[0] if len(g["putcall_set"]) == 1 else ""
 
-                    stock_index[key]["funds"][fid]["quarters"][ql] = {
-                        "shares": shares,
-                        "value":  value,
-                        "putcall": putcall
+                # Skip zero-share rows
+                if shares == 0:
+                    continue
+
+                ticker = ticker_map.get(cusip, "")
+                key    = ticker if ticker else cusip
+
+                if key not in stock_index:
+                    stock_index[key] = {
+                        "name":   company,
+                        "cusip":  cusip,
+                        "ticker": ticker,
+                        "funds":  {}
                     }
+
+                if fid not in stock_index[key]["funds"]:
+                    stock_index[key]["funds"][fid] = {"quarters": {}}
+
+                stock_index[key]["funds"][fid]["quarters"][ql] = {
+                    "shares":  shares,
+                    "value":   value,
+                    "putcall": putcall
+                }
+
         except Exception as e:
             print(f"Error processing {csv_file}: {e}")
 
