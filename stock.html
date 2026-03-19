@@ -172,6 +172,21 @@
     return val.toFixed(2) + "%";
   }
 
+  function fmtShares(n) {
+    if (!n || n === 0) return "—";
+    let scaled, suffix;
+    if (n >= 1e6)      { scaled = n / 1e6; suffix = "M"; }
+    else if (n >= 1e3) { scaled = n / 1e3; suffix = "K"; }
+    else               { return n.toString(); }
+    // Round to 3 significant figures
+    const mag = Math.floor(Math.log10(Math.abs(scaled)));
+    const factor = Math.pow(10, 2 - mag);
+    const rounded = Math.round(scaled * factor) / factor;
+    // Format: remove trailing zeros after decimal
+    const str = rounded % 1 === 0 ? rounded.toString() : rounded.toPrecision(3).replace(/\.?0+$/, "");
+    return str + suffix;
+  }
+
   function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
 
   function sort(col) {
@@ -308,7 +323,7 @@
             </a>
           </td>
           <td class="col-data num">${pct}</td>
-          <td class="col-data num">${latest.shares.toLocaleString()}</td>
+          <td class="col-data num">${fmtShares(latest.shares)}</td>
           <td class="col-data num">${fmtChg(chg1)}</td>
           <td class="col-data num">${fmtChg(chg4)}</td>
           <td class="col-data num">${fmtVal(adjValue)}</td>
