@@ -267,15 +267,13 @@
     // Sort
     const sortFn = (a, b) => {
       let av, bv;
-      const mA = fundMap[a.fid]?.value_multiplier || 1;
-      const mB = fundMap[b.fid]?.value_multiplier || 1;
       if (sortCol === 0)      { av = (fundMap[a.fid]?.name||"").toLowerCase(); bv = (fundMap[b.fid]?.name||"").toLowerCase(); }
-      else if (sortCol === 1) { av = fundTotals[a.fid] > 0 ? (a.latest.value * mA) / fundTotals[a.fid] : 0; bv = fundTotals[b.fid] > 0 ? (b.latest.value * mB) / fundTotals[b.fid] : 0; }
+      else if (sortCol === 1) { av = fundTotals[a.fid] > 0 ? a.latest.value / fundTotals[a.fid] : 0; bv = fundTotals[b.fid] > 0 ? b.latest.value / fundTotals[b.fid] : 0; }
       else if (sortCol === 2) { av = a.latest?.shares || 0; bv = b.latest?.shares || 0; }
-      else if (sortCol === 3) { av = (a.latest?.value || 0) * mA; bv = (b.latest?.value || 0) * mB; }
+      else if (sortCol === 3) { av = a.latest?.value || 0; bv = b.latest?.value || 0; }
       else if (sortCol === 4) { const ca = getChg(a.latest?.shares||0, a.prev1); const cb = getChg(b.latest?.shares||0, b.prev1); av = typeof ca==='number' ? ca : (ca==="NEW"?1e9:-1e9); bv = typeof cb==='number' ? cb : (cb==="NEW"?1e9:-1e9); }
       else if (sortCol === 5) { const ca = getChg(a.latest?.shares||0, a.prev4); const cb = getChg(b.latest?.shares||0, b.prev4); av = typeof ca==='number' ? ca : (ca==="NEW"?1e9:-1e9); bv = typeof cb==='number' ? cb : (cb==="NEW"?1e9:-1e9); }
-      else if (sortCol === 6) { av = a.latest?.shares > 0 ? (a.latest.value * mA) / a.latest.shares : 0; bv = b.latest?.shares > 0 ? (b.latest.value * mB) / b.latest.shares : 0; }
+      else if (sortCol === 6) { av = a.latest?.shares > 0 ? a.latest.value / a.latest.shares : 0; bv = b.latest?.shares > 0 ? b.latest.value / b.latest.shares : 0; }
       else { av = 0; bv = 0; }
       return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
     };
@@ -287,13 +285,13 @@
       const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
       const managerOnly = nameMatch ? nameMatch[2].trim() : "";
       const mult        = fund.value_multiplier || 1;
-      const adjValue    = latest.value * mult;
+      const adjValue    = latest.value;  // stock_index values are pre-multiplied by value_multiplier
       const fundTotal   = fundTotals[fid] || 0;
       const pctNum      = fundTotal > 0 ? (adjValue / fundTotal) * 100 : 0;
       const pct         = fmtPct(pctNum);
       const chg1        = getChg(latest.shares, prev1);
       const chg4        = getChg(latest.shares, prev4);
-      const repPrice    = latest.shares > 0 ? adjValue / latest.shares : 0;
+      const repPrice    = latest.shares > 0 ? latest.value / latest.shares : 0;
       const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
       const putcall     = latest.putcall || "";
       const putcallHtml = putcall
