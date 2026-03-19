@@ -41,14 +41,14 @@
     .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
-    th:nth-child(1) { text-align: center; width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
-    th:nth-child(2) { text-align: left; width: 22%; }
-    th:nth-child(n+3) { width: 8.8%; text-align: center; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; table-layout: fixed; }
+    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-company { text-align: left; width: 22%; }
+    th.col-data { width: 9%; text-align: center; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
-    td:nth-child(1) { text-align: center; width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
-    td:nth-child(2) { text-align: left; white-space: normal; }
+    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    td.col-company { text-align: left; white-space: normal; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
     .company-name { font-weight: 500; color: var(--text); white-space: normal; }
@@ -414,20 +414,20 @@
 
       return `
         <tr>
-          <td class="num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
-          <td>
+          <td class="col-num num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
+          <td class="col-company">
             <a href="stock.html?ticker=${ticker || r.cusip}" style="text-decoration:none; color:inherit">
               <div class="company-name">${r.company}</div>
               ${tickerHtml}
             </a>
           </td>
-          <td class="num">${pct}%</td>
-          <td class="num">${r.shares.toLocaleString()}</td>
-          <td class="num">${fmtChg(chg1)}</td>
-          <td class="num">${fmtChg(chg4)}</td>
-          <td class="num">${valueStr}</td>
-          <td class="num">${repPriceStr}</td>
-          <td class="num">${putcallHtml}</td>
+          <td class="col-data num">${pct}</td>
+          <td class="col-data num">${r.shares.toLocaleString()}</td>
+          <td class="col-data num">${fmtChg(chg1)}</td>
+          <td class="col-data num">${fmtChg(chg4)}</td>
+          <td class="col-data num">${valueStr}</td>
+          <td class="col-data num">${repPriceStr}</td>
+          <td class="col-data num">${putcallHtml}</td>
         </tr>`;
     }).join("");
 
@@ -436,30 +436,30 @@
       .filter(p => !rows.find(r => r.cusip === p.cusip || r.company === p.company))
       .map(p => `
         <tr class="exited">
-          <td class="num" style="color:var(--muted); font-size:0.72rem">—</td>
-          <td><a href="stock.html?cusip=${p.cusip}" style="text-decoration:none; color:inherit"><div class="company-name">${p.company}</div></a></td>
-          <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num"><span class="chg exited">EXITED</span></td>
-          <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num">—</td>
-          <td class="num right">—</td>
+          <td class="col-num num" style="color:var(--muted); font-size:0.72rem">—</td>
+          <td class="col-company"><a href="stock.html?cusip=${p.cusip}" style="text-decoration:none; color:inherit"><div class="company-name">${p.company}</div></a></td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num"><span class="chg exited">EXITED</span></td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num right">—</td>
         </tr>`).join("") : "";
 
     document.getElementById("table-container").innerHTML = `
       <table>
         <thead>
           <tr>
-            <th style="color:var(--muted); width:2.5rem; min-width:2.5rem; max-width:2.5rem">#</th>
-            <th onclick="sort(0)">Company${arrow(0)}</th>
-            <th class="num" onclick="sort(3)">% of Portfolio${arrow(3)}</th>
-            <th class="num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
-            <th class="num" onclick="sort(5)">Shares vs Prior Year${arrow(5)}</th>
-            <th class="num" onclick="sort(1)">Value${arrow(1)}</th>
-            <th class="num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
-            <th class="num">Option</th>
+            <th class="col-num" style="color:var(--muted)">#</th>
+            <th class="col-company" onclick="sort(0)">Company${arrow(0)}</th>
+            <th class="col-data num" onclick="sort(3)">% of Portfolio${arrow(3)}</th>
+            <th class="col-data num" onclick="sort(2)">Shares${arrow(2)}</th>
+            <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
+            <th class="col-data num" onclick="sort(5)">Shares vs Prior Year${arrow(5)}</th>
+            <th class="col-data num" onclick="sort(1)">Value${arrow(1)}</th>
+            <th class="col-data num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
+            <th class="col-data num">Option</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}${exitedHtml}</tbody>
