@@ -64,7 +64,7 @@
     .putcall.put  { color: var(--red); }
     .putcall.call { color: var(--green); }
     tr.exited td { color: var(--muted); background: #f0ede8; }
-    tr.total-row td { background: var(--bg); font-weight: 600; border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
+    tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
     tr.total-row td.col-company { font-family: var(--sans); font-size: 0.875rem; }
     /* ── Search ── */
     .search-wrap { position: relative; }
@@ -491,20 +491,7 @@
         </tr>`).join("") : "";
 
     // ── Total row ─────────────────────────────────────────────────
-    const totalShares  = rows.reduce((s, r) => s + r.shares, 0);
-    const prev1Shares  = prev1 ? rows.reduce((s, r) => {
-      const old = prev1.find(p => p.cusip && p.cusip === r.cusip) || prev1.find(p => p.company === r.company);
-      return s + (old ? old.shares : 0);
-    }, 0) : 0;
-    const prev4Shares  = prev4 ? rows.reduce((s, r) => {
-      const old = prev4.find(p => p.cusip && p.cusip === r.cusip) || prev4.find(p => p.company === r.company);
-      return s + (old ? old.shares : 0);
-    }, 0) : 0;
-
-    const totalChg1 = prev1 && prev1Shares > 0
-      ? ((totalShares - prev1Shares) / prev1Shares) * 100 : null;
-    const totalChg4 = prev4 && prev4Shares > 0
-      ? ((totalShares - prev4Shares) / prev4Shares) * 100 : null;
+    const totalShares = rows.reduce((s, r) => s + r.shares, 0);
 
     const totalValueStr = tv >= 1e9
       ? "$" + (tv / 1e9).toFixed(2) + "B"
@@ -518,8 +505,8 @@
         <td class="col-company">Total</td>
         <td class="col-data num">100%</td>
         <td class="col-data num">${fmtShares(totalShares)}</td>
-        <td class="col-data num">${fmtChg(totalChg1)}</td>
-        <td class="col-data num">${fmtChg(totalChg4)}</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">—</td>
         <td class="col-data num">${totalValueStr}</td>
         <td class="col-data num">—</td>
         <td class="col-data num">—</td>
