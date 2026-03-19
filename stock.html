@@ -256,7 +256,10 @@
       const stockQs       = Object.keys(stock.funds[fid].quarters).sort().reverse();
       const stockLatestQ  = stockQs[0];  // newest quarter stock_index has for this fund+stock
       const stockPrevQ    = stockQs[1] || null;
-      const stockPrevYearQ = stockQs[4] || null;
+      // Prior year: exact same quarter number, one year back
+      const stockPrevYearQ = stockLatestQ
+        ? (parseInt(stockLatestQ.split("Q")[0]) - 1) + "Q" + stockLatestQ.split("Q")[1]
+        : null;
 
       const latestEntry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
       const prev1       = stockPrevQ     ? stock.funds[fid].quarters[stockPrevQ]     : null;
