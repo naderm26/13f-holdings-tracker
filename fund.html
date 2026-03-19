@@ -224,10 +224,12 @@
     ).join("");
 
     const idx = allQuarters.indexOf(activeQ);
+    const [ayear, aqn] = activeQ.split("Q");
+    const pyLabel = (parseInt(ayear) - 1) + "Q" + aqn;
     await Promise.all([
       loadCSV(activeQ),
       idx + 1 < allQuarters.length ? loadCSV(allQuarters[idx + 1]) : Promise.resolve(),
-      idx + 4 < allQuarters.length ? loadCSV(allQuarters[idx + 4]) : Promise.resolve(),
+      allQuarters.includes(pyLabel) ? loadCSV(pyLabel) : Promise.resolve(),
       loadMeta(activeQ)
     ]);
     renderTable();
@@ -287,10 +289,12 @@
       b.classList.toggle("active", b.textContent === q)
     );
     const idx = allQuarters.indexOf(q);
+    const [syear, sqn] = q.split("Q");
+    const pyLabel = (parseInt(syear) - 1) + "Q" + sqn;
     await Promise.all([
       loadCSV(q),
       idx + 1 < allQuarters.length ? loadCSV(allQuarters[idx + 1]) : Promise.resolve(),
-      idx + 4 < allQuarters.length ? loadCSV(allQuarters[idx + 4]) : Promise.resolve(),
+      allQuarters.includes(pyLabel) ? loadCSV(pyLabel) : Promise.resolve(),
       loadMeta(q)
     ]);
     renderTable();
@@ -366,7 +370,10 @@
     const rows  = groupByCompany(csvCache[activeQ] || []);
     const idx   = allQuarters.indexOf(activeQ);
     const prev1 = idx + 1 < allQuarters.length ? groupByCompany(csvCache[allQuarters[idx + 1]] || []) : null;
-    const prev4 = idx + 4 < allQuarters.length ? groupByCompany(csvCache[allQuarters[idx + 4]] || []) : null;
+    // Prior year: find the quarter exactly 1 year back (same Q, year-1)
+    const [activeYear, activeQn] = activeQ.split("Q");
+    const prevYearLabel = (parseInt(activeYear) - 1) + "Q" + activeQn;
+    const prev4 = allQuarters.includes(prevYearLabel) ? groupByCompany(csvCache[prevYearLabel] || []) : null;
 
     const tv = rows.reduce((s, r) => s + r.value, 0) * mult;
 
