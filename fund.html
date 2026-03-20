@@ -74,8 +74,8 @@
     .insights-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 0; margin-bottom: 1.25rem; }
     .insights { font-size: 0.875rem; line-height: 1.75; color: var(--text); }
     .insights ul { list-style: none; margin: 0; padding: 0; }
-    .insights li { display: flex; gap: 0.6rem; align-items: baseline; margin: 0; padding: 0.1rem 0; }
-    .insights li::before { content: "•"; color: var(--muted); flex-shrink: 0; font-size: 0.75rem; }
+    .insights li { position: relative; padding-left: 1rem; margin: 0; padding-top: 0.15rem; padding-bottom: 0.15rem; }
+    .insights li::before { content: "•"; position: absolute; left: 0; color: var(--muted); font-size: 0.75rem; top: 0.22rem; }
     .ins-green { color: var(--green); font-weight: 500; }
     .ins-red   { color: var(--red); font-weight: 500; }
     /* ── Search (back in header) ── */
@@ -211,7 +211,7 @@
       FUND_CONFIG._fundOnly    = fundOnly;
       FUND_CONFIG._managerOnly = managerOnly;
 
-      document.title = `${fundOnly} (${managerOnly}) — 13F Holdings | 13FAI`;
+      document.title = `${fundOnly} (${managerOnly}) — 13F Holdings`;
       loadQuarters();
     })
     .catch(e => {
@@ -684,7 +684,7 @@
     const managerOnly = FUND_CONFIG._managerOnly || FUND_CONFIG.name;
     const qLabel      = activeQ.replace("Q", " Q");
     const qShort      = `Q${activeQ.split("Q")[1]} ${activeQ.split("Q")[0]}`; // "Q4 2025"
-    document.title = `${fundOnly} (${managerOnly}) — 13F Holdings ${qShort} | 13FAI`;
+    document.title = `${fundOnly} (${managerOnly}) — 13F Holdings ${qShort}`;
     const desc = `Track ${managerOnly}'s 13F holdings for ${qShort}. See what ${fundOnly} is buying and selling, position changes, and portfolio breakdown.`;
     document.querySelector('meta[name="description"]').setAttribute("content", desc);
     document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
@@ -806,6 +806,7 @@
       </tr>`;
 
     document.getElementById("table-container").innerHTML = `
+      <div class="period-line" style="margin-bottom:0.5rem">${fundOnly}'s portfolio breakdown and changes</div>
       <div class="table-wrap">
       <table>
         <thead>
@@ -887,4 +888,3 @@
 </script>
 </body>
 </html>
-
