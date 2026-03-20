@@ -66,7 +66,22 @@
     tr.exited td { color: var(--muted); background: #f0ede8; }
     tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
     tr.total-row td.col-company { font-family: var(--sans); font-size: 0.875rem; }
-    /* ── Search ── */
+    /* ── Insights block ── */
+    .insights {
+      font-size: 0.865rem; line-height: 1.85; color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .insights p { margin: 0; }
+    .ins-blue  { color: #1e40af; font-weight: 500; }
+    .ins-green { color: var(--green); font-weight: 500; }
+    .ins-red   { color: var(--red); font-weight: 500; }
+    /* ── Search repositioned into main ── */
+    .main-search-wrap { position: relative; margin-bottom: 1.25rem; }
+    .main-search-wrap #search { width: 100%; max-width: 420px; }
+    /* ── Header stats (moved from main) ── */
+    .header-stats { display: flex; gap: 1.5rem; font-family: var(--mono); flex-shrink: 0; align-items: center; }
+    .header-stats .stat-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+    .header-stats .stat-value { font-size: 0.95rem; font-weight: 500; }
     .search-wrap { position: relative; }
     #search {
       font-family: var(--sans); font-size: 0.875rem;
@@ -102,31 +117,32 @@
     <a class="brand-name" href="index.html">13FAI</a>
     <span class="brand-sub">AI-powered hedge fund holdings tracker</span>
   </div>
-  <div class="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
-    <div class="search-results" id="search-results"></div>
+  <div class="header-stats">
+    <div>
+      <div class="stat-label">Portfolio Value</div>
+      <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
+    </div>
+    <div>
+      <div class="stat-label">Positions</div>
+      <div class="stat-value" id="total-positions">—</div>
+    </div>
   </div>
 </header>
 
 <main>
   <div class="section-label" id="fund-name">Loading...</div>
+  <div class="main-search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+    <div class="search-results" id="search-results"></div>
+  </div>
   <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:0.5rem; margin-bottom:0.75rem;">
     <div>
       <div class="period-line" id="period" style="margin-bottom:0.5rem"></div>
       <div class="quarter-selector" id="quarter-selector"></div>
     </div>
-    <div style="display:flex; gap:2rem; font-family:var(--mono); flex-shrink:0;">
-      <div>
-        <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); font-weight:500;">Portfolio Value</div>
-        <div style="font-size:1.1rem; font-weight:500; color:var(--accent)" id="total-value">—</div>
-      </div>
-      <div>
-        <div style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.1em; color:var(--muted); font-weight:500;">Positions</div>
-        <div style="font-size:1.1rem; font-weight:500;" id="total-positions">—</div>
-      </div>
-    </div>
   </div>
+  <div class="insights" id="insights"></div>
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
   <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
     * Price at last filing is calculated by dividing the reported value by the number of shares held as of the filing date. It represents the implied average price per share at quarter end, not an actual purchase or sale price.
@@ -341,13 +357,154 @@
     if (n >= 1e6)      { scaled = n / 1e6; suffix = "M"; }
     else if (n >= 1e3) { scaled = n / 1e3; suffix = "K"; }
     else               { return n.toString(); }
-    // Round to 3 significant figures
     const mag = Math.floor(Math.log10(Math.abs(scaled)));
     const factor = Math.pow(10, 2 - mag);
     const rounded = Math.round(scaled * factor) / factor;
-    // Remove trailing zeros after decimal
     const str = rounded % 1 === 0 ? rounded.toString() : rounded.toPrecision(3).replace(/\.?0+$/, "");
     return str + suffix;
+  }
+
+  // ── Smart insights ────────────────────────────────────────────
+  function renderInsights(rows, prev1, mult, tv, activeQ) {
+    const el = document.getElementById("insights");
+    if (!el) return;
+
+    // Fund short name = everything before the first "(" in fund name
+    const fullName = FUND_CONFIG.name || "";
+    const nameMatch = fullName.match(/^(.+?)\s*\(/);
+    const shortName = nameMatch ? nameMatch[1].trim() : fullName;
+
+    // Quarter label for display e.g. "2025Q4" -> "Q4 2025"
+    const [qYear, qNum] = activeQ.split("Q");
+    const qLabel = `Q${qNum} ${qYear}`;
+
+    const sentences = [];
+
+    // ── 1. Top 3 positions ───────────────────────────────────────
+    const byWeight = [...rows]
+      .filter(r => r.shares > 0)
+      .sort((a, b) => (b.value * mult) - (a.value * mult));
+
+    if (byWeight.length > 0) {
+      const top = byWeight.slice(0, Math.min(3, byWeight.length));
+      const pct = r => tv > 0 ? ((r.value * mult / tv) * 100).toFixed(1) : "0";
+      const ticker = r => tickerMap[r.cusip] || r.company;
+
+      let posStr;
+      if (top.length === 1) {
+        posStr = `${ticker(top[0])} (<span class="ins-blue">${pct(top[0])}%</span>)`;
+      } else if (top.length === 2) {
+        posStr = `${ticker(top[0])} (<span class="ins-blue">${pct(top[0])}%</span>) and ${ticker(top[1])} (<span class="ins-blue">${pct(top[1])}%</span>)`;
+      } else {
+        posStr = `${ticker(top[0])} (<span class="ins-blue">${pct(top[0])}%</span>), ${ticker(top[1])} (<span class="ins-blue">${pct(top[1])}%</span>), and ${ticker(top[2])} (<span class="ins-blue">${pct(top[2])}%</span>)`;
+      }
+      const countWord = top.length === 1 ? "top position is" : `top ${top.length} positions are`;
+      sentences.push(`${shortName}'s ${countWord} ${posStr}.`);
+    }
+
+    if (prev1) {
+      const prev1tv = prev1.reduce((s, r) => s + r.value, 0) * mult;
+
+      // ── 2. New positions ─────────────────────────────────────────
+      const newPos = rows.filter(r => {
+        const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+        return !old && r.shares > 0;
+      }).sort((a, b) => (b.value * mult) - (a.value * mult));
+
+      if (newPos.length === 0) {
+        sentences.push(`${shortName} made no new bets in ${qLabel}.`);
+      } else {
+        const top = newPos.slice(0, Math.min(3, newPos.length));
+        const pct = r => tv > 0 ? ((r.value * mult / tv) * 100).toFixed(1) : "0";
+        const ticker = r => tickerMap[r.cusip] || r.company;
+        const repPrice = r => r.shares > 0
+          ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : null;
+
+        if (top.length === 1) {
+          const p = repPrice(top[0]);
+          const priceStr = p ? `, initiated with a holding price* of ${p}` : "";
+          sentences.push(`${shortName}'s new bet is ${ticker(top[0])} (<span class="ins-blue">${pct(top[0])}%</span>)${priceStr}.`);
+        } else {
+          const parts = top.map(r => `${ticker(r)} (<span class="ins-blue">${pct(r)}%</span>)`).join(", ");
+          sentences.push(`${shortName}'s new bets are ${parts} in ${qLabel}.`);
+        }
+      }
+
+      // ── 3. Top 2 increases (by change in value) ──────────────────
+      const increases = rows.map(r => {
+        const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+        if (!old || old.shares <= 0 || r.shares <= 0) return null;
+        const valNow  = r.value * mult;
+        const valPrev = old.value * mult;
+        if (valNow <= valPrev) return null;
+        const chgPct = ((valNow - valPrev) / valPrev) * 100;
+        return { r, chgPct, valDiff: valNow - valPrev };
+      }).filter(Boolean).sort((a, b) => b.valDiff - a.valDiff);
+
+      if (increases.length === 0) {
+        sentences.push(`${shortName} had no increases in ${qLabel}.`);
+      } else {
+        const top = increases.slice(0, Math.min(2, increases.length));
+        const ticker = x => tickerMap[x.r.cusip] || x.r.company;
+        const fmt = x => `${ticker(x)} (<span class="ins-green">+${x.chgPct.toFixed(1)}%</span>)`;
+        if (top.length === 1) {
+          sentences.push(`${shortName}'s top increase was ${fmt(top[0])} in ${qLabel}.`);
+        } else {
+          sentences.push(`${shortName}'s top 2 increases were ${fmt(top[0])} and ${fmt(top[1])} vs the prior quarter.`);
+        }
+      }
+
+      // ── 4. Top 2 trims (by change in value) ──────────────────────
+      const trims = rows.map(r => {
+        const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+        if (!old || old.shares <= 0) return null;
+        const valNow  = r.value * mult;
+        const valPrev = old.value * mult;
+        if (valNow >= valPrev) return null;
+        const chgPct = ((valNow - valPrev) / valPrev) * 100;
+        return { r, chgPct, valDiff: valPrev - valNow };
+      }).filter(Boolean).sort((a, b) => b.valDiff - a.valDiff);
+
+      if (trims.length === 0) {
+        sentences.push(`${shortName} had no trims in ${qLabel}.`);
+      } else {
+        const top = trims.slice(0, Math.min(2, trims.length));
+        const ticker = x => tickerMap[x.r.cusip] || x.r.company;
+        const fmt = x => `${ticker(x)} (<span class="ins-red">${x.chgPct.toFixed(1)}%</span>)`;
+        if (top.length === 1) {
+          sentences.push(`${shortName}'s top trim was ${fmt(top[0])} in ${qLabel}.`);
+        } else {
+          sentences.push(`${shortName}'s top 2 trims were ${fmt(top[0])} and ${fmt(top[1])} vs the prior quarter.`);
+        }
+      }
+
+      // ── 5. Top 2 exits (by prior quarter value) ───────────────────
+      const exits = prev1.filter(p => {
+        const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
+        return !cur && p.shares > 0;
+      }).sort((a, b) => (b.value * mult) - (a.value * mult));
+
+      if (exits.length === 0) {
+        sentences.push(`${shortName} had no exits in ${qLabel}.`);
+      } else {
+        const top = exits.slice(0, Math.min(2, exits.length));
+        const ticker = p => tickerMap[p.cusip] || p.company;
+        const pct = p => prev1tv > 0 ? ((p.value * mult / prev1tv) * 100).toFixed(1) : "0";
+        const fmt = p => `${ticker(p)} (<span class="ins-red">${pct(p)}%</span>)`;
+        if (top.length === 1) {
+          sentences.push(`${shortName}'s top exit was ${fmt(top[0])} in ${qLabel}.`);
+        } else {
+          sentences.push(`${shortName}'s top 2 exits were ${fmt(top[0])} and ${fmt(top[1])} in ${qLabel}.`);
+        }
+      }
+
+    } else {
+      // No prior quarter data — skip comparison sentences
+      sentences.push(`No prior quarter data available to compare changes for ${qLabel}.`);
+    }
+
+    el.innerHTML = sentences.map(s => `<p>${s}</p>`).join("");
   }
 
   // ── Group rows by CUSIP (fall back to company name) ───────────
@@ -378,6 +535,8 @@
     const prev4 = allQuarters.includes(prevYearLabel) ? groupByCompany(csvCache[prevYearLabel] || []) : null;
 
     const tv = rows.reduce((s, r) => s + r.value, 0) * mult;
+
+    renderInsights(rows, prev1, mult, tv, activeQ);
 
     document.getElementById("total-value").textContent =
       "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
