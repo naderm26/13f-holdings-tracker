@@ -481,88 +481,79 @@
 
     if (prev1) {
       // ── Priority 3: Increases
-      // Detect by: sharePctChange >= 0.10
-      // Rank by: sharePctChange (primary), absShareChange (secondary)
-      // Filter: weight >= 1% OR sharePctChange >= 1.0
+      // Detect: sharePctChange >= 5%
+      // Filter: current_weight >= 1% OR sharePctChange >= 100%
+      // Rank: current portfolio weight descending
+      // Language: "increased its stake in TICKER by X%, now Y% of the portfolio"
       const increases = withDelta
         .filter(x => !x.isNew
           && x.sharePctChange !== null
-          && x.sharePctChange >= 0.10
+          && x.sharePctChange >= 0.05
           && (x.wNow >= 1 || x.sharePctChange >= 1.0))
         .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
-        .sort((a, b) =>
-          b.sharePctChange !== a.sharePctChange
-            ? b.sharePctChange - a.sharePctChange
-            : b.absShareChange - a.absShareChange)
+        .sort((a, b) => b.wNow - a.wNow)
         .slice(0, 2);
 
       if (increases.length > 0) {
         increases.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
 
-        const stakeVerb = sp => {
-          if (sp >= 1.0) return `more than doubled its stake`;
-          if (sp >= 0.5) return `aggressively increased its stake by roughly <b>${Math.round(sp * 100)}%</b>`;
-          return `increased its stake by roughly <b>${Math.round(sp * 100)}%</b>`;
-        };
-
-        const fmtInc = (x, includeWeight) => {
-          const opt     = optionTag(x.r.putcall);
-          const verb    = stakeVerb(x.sharePctChange);
-          const wNote   = includeWeight ? `, bringing it to <b>${Math.round(x.wNow)}%</b> of the portfolio` : "";
-          return `${shortName} ${verb} in ${stockLink(x.r)}${opt}${wNote}`;
+        const fmtInc = x => {
+          const opt  = optionTag(x.r.putcall);
+          const xPct = Math.round(x.sharePctChange * 100);
+          const wNote = `, now <b>${Math.round(x.wNow)}%</b> of the portfolio`;
+          return `${shortName} increased its stake in ${stockLink(x.r)}${opt} by <b>${xPct}%</b>${wNote}`;
         };
 
         if (increases.length === 1) {
-          sentences.push(`${fmtInc(increases[0], true)} vs the prior quarter.`);
+          sentences.push(`${fmtInc(increases[0])} vs the prior quarter.`);
         } else {
-          const s1 = `${fmtInc(increases[0], true)}`;
-          const s2 = `${stakeVerb(increases[1].sharePctChange)} in ${stockLink(increases[1].r)}${optionTag(increases[1].r.putcall)}`;
-          sentences.push(`${s1}, and ${s2}, vs the prior quarter.`);
+          const x2   = increases[1];
+          const opt2 = optionTag(x2.r.putcall);
+          const pct2 = Math.round(x2.sharePctChange * 100);
+          const w2   = Math.round(x2.wNow);
+          sentences.push(`${fmtInc(increases[0])}, and increased its stake in ${stockLink(x2.r)}${opt2} by <b>${pct2}%</b>, now <b>${w2}%</b> of the portfolio, vs the prior quarter.`);
         }
       }
 
       // ── Priority 4: Decreases
-      // Detect by: sharePctChange <= -0.10
-      // Rank by: sharePctChange most negative (primary), prevWeight (secondary)
-      // Filter: prevWeight >= 1% OR sharePctChange <= -0.75
+      // Detect: sharePctChange <= -5%
+      // Filter: prior_weight >= 1% OR sharePctChange <= -75%
+      // Rank: prior portfolio weight descending
+      // Language: "trimmed its stake in TICKER by X%, now Y% of the portfolio" (omit "now Y%" if fully exited)
       const trims = withDelta
         .filter(x => !x.isNew
           && x.sharePctChange !== null
-          && x.sharePctChange <= -0.10
+          && x.sharePctChange <= -0.05
           && (x.wPrev >= 1 || x.sharePctChange <= -0.75))
         .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
-        .sort((a, b) =>
-          a.sharePctChange !== b.sharePctChange
-            ? a.sharePctChange - b.sharePctChange          // most negative first
-            : b.wPrev - a.wPrev)                           // then by prior weight
+        .sort((a, b) => b.wPrev - a.wPrev)
         .slice(0, 2);
 
       if (trims.length > 0) {
         trims.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
 
-        const trimVerb = sp => {
-          if (sp <= -0.75) return `largely exited its stake in`;
-          if (sp <= -0.50) return `cut its stake roughly in half in`;
-          return `trimmed its stake by roughly <b>${Math.round(Math.abs(sp * 100))}%</b> in`;
-        };
-
-        const fmtTrim = (x, includeWeight) => {
-          const opt   = optionTag(x.r.putcall);
-          const verb  = trimVerb(x.sharePctChange);
-          const wNote = includeWeight && x.wNow > 0
-            ? `, now <b>${Math.round(x.wNow)}%</b> of the portfolio`
-            : "";
-          return `${shortName} ${verb} ${stockLink(x.r)}${opt}${wNote}`;
+        const fmtTrim = x => {
+          const opt  = optionTag(x.r.putcall);
+          const xPct = Math.round(Math.abs(x.sharePctChange * 100));
+          const wNote = x.wNow > 0 ? `, now <b>${Math.round(x.wNow)}%</b> of the portfolio` : "";
+          return `${shortName} trimmed its stake in ${stockLink(x.r)}${opt} by <b>${xPct}%</b>${wNote}`;
         };
 
         if (trims.length === 1) {
-          sentences.push(`${fmtTrim(trims[0], true)} vs the prior quarter.`);
+          sentences.push(`${fmtTrim(trims[0])} vs the prior quarter.`);
         } else {
-          sentences.push(`${fmtTrim(trims[0], true)}, and ${trimVerb(trims[1].sharePctChange)} ${stockLink(trims[1].r)}${optionTag(trims[1].r.putcall)}, vs the prior quarter.`);
+          const x2   = trims[1];
+          const opt2 = optionTag(x2.r.putcall);
+          const pct2 = Math.round(Math.abs(x2.sharePctChange * 100));
+          const w2   = x2.wNow > 0 ? `, now <b>${Math.round(x2.wNow)}%</b> of the portfolio` : "";
+          sentences.push(`${fmtTrim(trims[0])}, and trimmed its stake in ${stockLink(x2.r)}${opt2} by <b>${pct2}%</b>${w2}, vs the prior quarter.`);
         }
       }
 
-      // ── Priority 5: Exits (prev_weight >= 3) ─────────────────────
+      // ── Priority 5: Exits (prev_weight >= 3%)
+      // Single exit: "exited TICKER (X% prior quarter)"
+      // Two exits: "top 2 exits were TICKER1 (X%) and TICKER2 (Y%) in Q"
+      // prev_weight >= 10%: add "previously one of the fund's largest holdings"
       const exits = prev1
         .filter(p => {
           const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
@@ -581,7 +572,7 @@
         if (exits.length === 1) {
           sentences.push(`${shortName} exited ${fmtExit(exits[0])}.`);
         } else {
-          sentences.push(`${shortName} exited ${fmtExit(exits[0])} and ${fmtExit(exits[1])}.`);
+          sentences.push(`${shortName}'s top 2 exits were ${fmtExit(exits[0])} and ${fmtExit(exits[1])} in ${qLabel}.`);
         }
       } else if (!prev1.some(p => {
         const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
