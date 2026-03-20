@@ -381,44 +381,54 @@
     const [qYear, qNum] = activeQ.split("Q");
     const qLabel = `Q${qNum} ${qYear}`;
 
-    // Company name + ticker link helper
-    // Uses full company name with ticker in blue in parens
-    const companyLink = (r) => {
+    // ── Link helpers — ticker only, fallback to company name ──────
+    const stockLink = (r) => {
       const t = tickerMap[r.cusip] || null;
-      const name = r.company || t || r.cusip;
-      if (t) return `${name} (<a class="ins-ticker" href="stock.html?ticker=${encodeURIComponent(t)}">${t}</a>)`;
-      return `<a class="ins-ticker" href="stock.html?cusip=${encodeURIComponent(r.cusip)}">${name}</a>`;
+      const display = t || r.company;
+      const href = t
+        ? `stock.html?ticker=${encodeURIComponent(t)}`
+        : `stock.html?cusip=${encodeURIComponent(r.cusip)}`;
+      return `<a class="ins-ticker" href="${href}">${display}</a>`;
     };
-    const companyLinkFromCusip = (cusip, company) => {
+    const stockLinkFromCusip = (cusip, company) => {
       const t = tickerMap[cusip] || null;
-      const name = company || t || cusip;
-      if (t) return `${name} (<a class="ins-ticker" href="stock.html?ticker=${encodeURIComponent(t)}">${t}</a>)`;
-      return `<a class="ins-ticker" href="stock.html?cusip=${encodeURIComponent(cusip)}">${name}</a>`;
+      const display = t || company;
+      const href = t
+        ? `stock.html?ticker=${encodeURIComponent(t)}`
+        : `stock.html?cusip=${encodeURIComponent(cusip)}`;
+      return `<a class="ins-ticker" href="${href}">${display}</a>`;
     };
 
-    // ── Precompute weights ────────────────────────────────────────
+    // ── Option tag helper — "PUT" or "CALL" or "" ─────────────────
+    const optionTag = (putcall) => {
+      if (!putcall) return "";
+      return ` <span class="${putcall.toLowerCase() === 'put' ? 'ins-red' : 'ins-green'}">${putcall.toUpperCase()}</span>`;
+    };
+
+    // ── Precompute weights and share deltas ───────────────────────
     const active = rows.filter(r => r.shares > 0);
-    const weight = r => tv > 0 ? (r.value * mult / tv) * 100 : 0;
-
-    const prev1tv  = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
+    const weight    = r  => tv      > 0 ? (r.value * mult / tv)      * 100 : 0;
+    const prev1tv   = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
     const prevWeight = p => prev1tv > 0 ? (p.value * mult / prev1tv) * 100 : 0;
+    const byWeight  = [...active].sort((a, b) => weight(b) - weight(a));
 
-    const byWeight = [...active].sort((a, b) => weight(b) - weight(a));
-
-    // For each current holding, compute delta vs prev
+    // For each current holding compute weight delta (for ranking)
+    // and share pctChange (for calculation language)
     const withDelta = prev1 ? active.map(r => {
-      const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
-      const wNow  = weight(r);
-      const wPrev = old ? prevWeight(old) : 0;
-      const delta = wNow - wPrev;
-      const pctChange = wPrev > 0 ? (delta / wPrev) : null;
-      return { r, wNow, wPrev, delta, pctChange, isNew: !old };
+      const old    = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+      const wNow   = weight(r);
+      const wPrev  = old ? prevWeight(old) : 0;
+      const delta  = wNow - wPrev;                                  // weight pp change — for ranking
+      const sharePctChange = (old && old.shares > 0)
+        ? (r.shares - old.shares) / old.shares                      // share % change — for language
+        : null;
+      return { r, wNow, wPrev, delta, sharePctChange, isNew: !old };
     }) : [];
 
-    const sentences = [];
-    const usedCusips = new Set(); // de-duplication tracker
+    const sentences  = [];
+    const usedCusips = new Set();
 
-    // ── Priority 1: Major new positions (weight >= 1, prev_weight == 0) ─
+    // ── Priority 1: New positions (weight >= 1) ───────────────────
     if (prev1) {
       const newPos = withDelta
         .filter(x => x.isNew && x.wNow >= 1)
@@ -427,25 +437,25 @@
       if (newPos.length === 0) {
         sentences.push(`${shortName} made no new investments in ${qLabel}.`);
       } else {
-        // Always include largest; add more only if weight >= 3
         const toShow = newPos.filter((x, i) => i === 0 || x.wNow >= 3).slice(0, 3);
         toShow.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
 
         const fmt = x => {
-          const wStr = `<b>${Math.round(x.wNow)}%</b>`;
-          const isTop3 = byWeight.slice(0, 3).some(r => (r.cusip && r.cusip === x.r.cusip) || r.company === x.r.company);
+          const wStr    = `<b>${Math.round(x.wNow)}%</b>`;
+          const isTop3  = byWeight.slice(0, 3).some(r => (r.cusip && r.cusip === x.r.cusip) || r.company === x.r.company);
           const topNote = isTop3 ? ", entering as a top-3 holding" : "";
+          const opt     = optionTag(x.r.putcall);
           const repPrice = x.r.shares > 0
             ? "$" + (x.r.value * mult / x.r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
             : null;
           const priceStr = (repPrice && toShow.length === 1) ? `, price at filing was <b>${repPrice}</b>*` : "";
-          return `${companyLink(x.r)} (${wStr}${topNote})${priceStr}`;
+          return `${stockLink(x.r)}${opt} (${wStr}${topNote})${priceStr}`;
         };
 
         if (toShow.length === 1) {
           sentences.push(`${shortName} initiated a new position in ${fmt(toShow[0])}.`);
         } else {
-          const parts = toShow.map(fmt);
+          const parts  = toShow.map(fmt);
           const joined = parts.length === 2
             ? `${parts[0]} and ${parts[1]}`
             : `${parts[0]}, ${parts[1]}, and ${parts[2]}`;
@@ -454,11 +464,11 @@
       }
     }
 
-    // ── Priority 2: Concentration insight ────────────────────────
+    // ── Priority 2: Concentration ─────────────────────────────────
     if (byWeight.length >= 3) {
-      const top3w = byWeight.slice(0, 3).reduce((s, r) => s + weight(r), 0);
-      const top5w = byWeight.length >= 5 ? byWeight.slice(0, 5).reduce((s, r) => s + weight(r), 0) : null;
-      const top3names = byWeight.slice(0, 3).map(r => companyLink(r)).join(", ");
+      const top3w     = byWeight.slice(0, 3).reduce((s, r) => s + weight(r), 0);
+      const top5w     = byWeight.length >= 5 ? byWeight.slice(0, 5).reduce((s, r) => s + weight(r), 0) : null;
+      const top3names = byWeight.slice(0, 3).map(r => stockLink(r)).join(", ");
 
       if (top3w >= 50) {
         const conc = top5w ? `, with the top 5 at <b>${Math.round(top5w)}%</b>` : "";
@@ -471,7 +481,7 @@
     }
 
     if (prev1) {
-      // ── Priority 3: Largest increases (delta >= 1pp, weight >= 2 or delta >= 5) ─
+      // ── Priority 3: Increases — ranked by weight delta, language by shares ─
       const increases = withDelta
         .filter(x => !x.isNew && x.delta >= 1 && (x.wNow >= 2 || x.delta >= 5))
         .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
@@ -480,42 +490,61 @@
 
       if (increases.length > 0) {
         increases.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
-        const fmt = x => {
-          const deltaStr = x.delta >= 5
-            ? `aggressively increased by <b>${Math.round(x.delta)} percentage points</b>`
-            : `increased by <b>${Math.round(x.delta)} percentage points</b>`;
-          return `${companyLink(x.r)} was ${deltaStr}`;
+
+        const fmtInc = x => {
+          const opt = optionTag(x.r.putcall);
+          // Language based on share % change
+          const sp  = x.sharePctChange;
+          let verb;
+          if (sp !== null && sp >= 1)        verb = `more than doubled`;
+          else if (sp !== null && sp >= 0.5) verb = `aggressively increased by <b>${Math.round(sp * 100)}%</b>`;
+          else if (sp !== null)              verb = `increased by <b>${Math.round(sp * 100)}%</b>`;
+          else                               verb = `increased`;
+          return `${stockLink(x.r)}${opt} was ${verb}`;
         };
+
         if (increases.length === 1) {
-          sentences.push(`${fmt(increases[0])} vs the prior quarter.`);
+          sentences.push(`${fmtInc(increases[0])} vs the prior quarter.`);
         } else {
-          sentences.push(`${fmt(increases[0])}, and ${companyLink(increases[1].r)} by <b>${Math.round(increases[1].delta)} percentage points</b>, vs the prior quarter.`);
+          const sp2 = increases[1].sharePctChange;
+          const opt2 = optionTag(increases[1].r.putcall);
+          let verb2;
+          if (sp2 !== null && sp2 >= 1)        verb2 = `more than doubled`;
+          else if (sp2 !== null && sp2 >= 0.5) verb2 = `aggressively increased by <b>${Math.round(sp2 * 100)}%</b>`;
+          else if (sp2 !== null)               verb2 = `increased by <b>${Math.round(sp2 * 100)}%</b>`;
+          else                                 verb2 = `increased`;
+          sentences.push(`${fmtInc(increases[0])}, and ${stockLink(increases[1].r)}${opt2} was ${verb2}, vs the prior quarter.`);
         }
       }
 
-      // ── Priority 4: Largest decreases (pct_change <= -20%, weight meaningful) ─
+      // ── Priority 4: Decreases — ranked by weight delta, language by shares ─
       const trims = withDelta
-        .filter(x => !x.isNew && x.pctChange !== null && x.pctChange <= -0.2)
+        .filter(x => !x.isNew && x.delta <= -1 && x.sharePctChange !== null && x.sharePctChange <= -0.2)
         .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
-        .sort((a, b) => a.pctChange - b.pctChange) // most negative first
+        .sort((a, b) => a.delta - b.delta) // most negative weight delta first
         .slice(0, 2);
 
       if (trims.length > 0) {
         trims.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
-        const fmt = x => {
-          const pctStr = x.pctChange <= -0.5
-            ? `cut roughly in half`
-            : `trimmed by <b>${Math.round(Math.abs(x.pctChange * 100))}%</b>`;
-          return `${companyLink(x.r)} was ${pctStr}`;
+
+        const fmtTrim = x => {
+          const opt = optionTag(x.r.putcall);
+          const sp  = x.sharePctChange;
+          let verb;
+          if (sp <= -0.5)      verb = `cut roughly in half`;
+          else if (sp <= -0.75) verb = `cut by more than half`;
+          else                 verb = `trimmed by <b>${Math.round(Math.abs(sp * 100))}%</b>`;
+          return `${stockLink(x.r)}${opt} was ${verb}`;
         };
+
         if (trims.length === 1) {
-          sentences.push(`${fmt(trims[0])} vs the prior quarter.`);
+          sentences.push(`${fmtTrim(trims[0])} vs the prior quarter.`);
         } else {
-          sentences.push(`${fmt(trims[0])}, and ${companyLink(trims[1].r)} was ${trims[1].pctChange <= -0.5 ? "cut roughly in half" : `trimmed by <b>${Math.round(Math.abs(trims[1].pctChange * 100))}%</b>`} vs the prior quarter.`);
+          sentences.push(`${fmtTrim(trims[0])}, and ${fmtTrim(trims[1])}, vs the prior quarter.`);
         }
       }
 
-      // ── Priority 5: Most significant exit (prev_weight >= 3) ─────
+      // ── Priority 5: Exits (prev_weight >= 3) ─────────────────────
       const exits = prev1
         .filter(p => {
           const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
@@ -525,21 +554,21 @@
         .slice(0, 2);
 
       if (exits.length > 0) {
-        const fmt = p => {
-          const pw = Math.round(prevWeight(p));
+        const fmtExit = p => {
+          const pw    = Math.round(prevWeight(p));
+          const opt   = optionTag(p.putcall);
           const major = prevWeight(p) >= 10 ? ", previously one of the fund's largest holdings," : "";
-          return `${companyLinkFromCusip(p.cusip, p.company)}${major} (<b>${pw}%</b> prior quarter)`;
+          return `${stockLinkFromCusip(p.cusip, p.company)}${opt}${major} (<b>${pw}%</b> prior quarter)`;
         };
         if (exits.length === 1) {
-          sentences.push(`${shortName} exited ${fmt(exits[0])}.`);
+          sentences.push(`${shortName} exited ${fmtExit(exits[0])}.`);
         } else {
-          sentences.push(`${shortName} exited ${fmt(exits[0])} and ${fmt(exits[1])}.`);
+          sentences.push(`${shortName} exited ${fmtExit(exits[0])} and ${fmtExit(exits[1])}.`);
         }
-      } else if (prev1 && exits.length === 0 &&
-                 !prev1.some(p => {
-                   const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
-                   return !cur && p.shares > 0;
-                 })) {
+      } else if (!prev1.some(p => {
+        const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
+        return !cur && p.shares > 0;
+      })) {
         sentences.push(`${shortName} made no exits in ${qLabel}.`);
       }
     }
