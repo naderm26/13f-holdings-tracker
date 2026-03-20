@@ -594,16 +594,25 @@
 
       // ── 5. Exits — sorted by prior quarter weight, top 2
       //    display: prior quarter weight%
-      //    format: "exited TICKER1 (X%), TICKER2 (Y%), and TICKER3 (Z%)" ──
+      //    omit if prior quarter weight < 1%
+      //    format: "notable exit was / notable exits were" ──────────
       const exits = prev1
-        .filter(p => !active.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company) && p.shares > 0)
+        .filter(p => {
+          const isMissing = !active.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
+          return isMissing && p.shares > 0 && parseFloat(pct(p.value, prev1tv)) >= 1;
+        })
         .sort((a, b) => (b.value * mult) - (a.value * mult));
 
       if (exits.length === 0) {
         sentences.push(`${shortName} had no exits in ${qLabel}.`);
       } else {
         const fmt = p => `${stockLinkFromCusip(p.cusip, p.company)}${optTag(p.putcall)} (<span class="ins-red"><b>${pct(p.value, prev1tv)}%</b></span>)`;
-        sentences.push(`${shortName} exited ${joinList2(exits.map(fmt))} in ${qLabel}.`);
+        const exitStr = joinList2(exits.map(fmt));
+        if (exits.length === 1) {
+          sentences.push(`${shortName}'s notable exit was ${exitStr} in ${qLabel}.`);
+        } else {
+          sentences.push(`${shortName}'s notable exits were ${exitStr} in ${qLabel}.`);
+        }
       }
 
     } else {
