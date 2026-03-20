@@ -73,7 +73,9 @@
     /* ── Insights block ── */
     .insights-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 0; margin-bottom: 1.25rem; }
     .insights { font-size: 0.875rem; line-height: 1.75; color: var(--text); }
-    .insights p { margin: 0; }
+    .insights ul { list-style: none; margin: 0; padding: 0; }
+    .insights li { display: flex; gap: 0.6rem; align-items: baseline; margin: 0; padding: 0.1rem 0; }
+    .insights li::before { content: "•"; color: var(--muted); flex-shrink: 0; font-size: 0.75rem; }
     .ins-green { color: var(--green); font-weight: 500; }
     .ins-red   { color: var(--red); font-weight: 500; }
     /* ── Search (back in header) ── */
@@ -209,7 +211,7 @@
       FUND_CONFIG._fundOnly    = fundOnly;
       FUND_CONFIG._managerOnly = managerOnly;
 
-      document.title = `${fundOnly} (${managerOnly})`;
+      document.title = `${fundOnly} (${managerOnly}) — 13F Holdings | 13FAI`;
       loadQuarters();
     })
     .catch(e => {
@@ -619,7 +621,7 @@
       sentences.push(`No prior quarter data available to compare for ${qLabel}.`);
     }
 
-    el.innerHTML = sentences.map(s => `<p>${s}</p>`).join("");
+    el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
   }
 
   // ── Group rows by CUSIP (fall back to company name) ───────────
@@ -680,9 +682,10 @@
     // SEO meta tags
     const fundOnly    = FUND_CONFIG._fundOnly    || FUND_CONFIG.name;
     const managerOnly = FUND_CONFIG._managerOnly || FUND_CONFIG.name;
-    const qLabel      = activeQ.replace("Q", " Q");  // "2025Q4" -> "2025 Q4" -> format nicely
+    const qLabel      = activeQ.replace("Q", " Q");
     const qShort      = `Q${activeQ.split("Q")[1]} ${activeQ.split("Q")[0]}`; // "Q4 2025"
-    const desc = `Track ${managerOnly}'s latest 13F holdings for ${qShort}. See what ${fundOnly} is buying and selling, position changes, and portfolio breakdown.`;
+    document.title = `${fundOnly} (${managerOnly}) — 13F Holdings ${qShort} | 13FAI`;
+    const desc = `Track ${managerOnly}'s 13F holdings for ${qShort}. See what ${fundOnly} is buying and selling, position changes, and portfolio breakdown.`;
     document.querySelector('meta[name="description"]').setAttribute("content", desc);
     document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
     document.querySelector('meta[property="og:description"]').setAttribute("content", desc);
@@ -884,3 +887,4 @@
 </script>
 </body>
 </html>
+
