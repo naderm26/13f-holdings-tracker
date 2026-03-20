@@ -399,7 +399,11 @@
       return `<a class="ins-ticker" href="${href}">${display}</a>`;
     };
 
-    const pct  = (val, total) => total > 0 ? Math.round((val * mult / total) * 100) : 0;
+    const pct  = (val, total) => {
+      if (total <= 0) return "0.0";
+      const p = (val * mult / total) * 100;
+      return p < 0.05 ? "0.0" : Math.round(p).toString();
+    };
     const prev1tv = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
 
     const active   = rows.filter(r => r.shares > 0);
@@ -450,20 +454,17 @@
         }
       }
 
-      // ── 3. Top 2 increases — detect: valNow > valPrev
-      //    rank: by change in portfolio weight descending
+      // ── 3. Top 2 increases — detect: share change >= 5%
+      //    rank: current portfolio weight descending
       //    display: share-based % change ──────────────────────────
       const increases = active.map(r => {
         const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
         if (!old || old.shares <= 0 || r.shares <= 0) return null;
-        const valNow = r.value * mult, valPrev = old.value * mult;
-        if (valNow <= valPrev) return null;
-        const wNow  = tv     > 0 ? (r.value   * mult / tv)     * 100 : 0;
-        const wPrev = prev1tv > 0 ? (old.value * mult / prev1tv) * 100 : 0;
-        const wDelta = wNow - wPrev;
-        const sharePct = Math.round(((r.shares - old.shares) / old.shares) * 100);
-        return { r, wDelta, sharePct };
-      }).filter(Boolean).sort((a, b) => b.wDelta - a.wDelta).slice(0, 2);
+        const sharePct = (r.shares - old.shares) / old.shares * 100;
+        if (sharePct < 5) return null;
+        const wNow = tv > 0 ? (r.value * mult / tv) * 100 : 0;
+        return { r, wNow, sharePct: Math.round(sharePct) };
+      }).filter(Boolean).sort((a, b) => b.wNow - a.wNow).slice(0, 2);
 
       if (increases.length > 0) {
         const fmt = x => `${stockLink(x.r)} (<span class="ins-green"><b>+${x.sharePct}%</b></span>)`;
@@ -476,20 +477,17 @@
         sentences.push(`${shortName} had no increases in ${qLabel}.`);
       }
 
-      // ── 4. Top 2 trims — detect: valNow < valPrev
-      //    rank: by change in portfolio weight ascending (most negative first)
+      // ── 4. Top 2 trims — detect: share change <= -5%
+      //    rank: current portfolio weight descending
       //    display: share-based % change ──────────────────────────
       const trims = active.map(r => {
         const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
         if (!old || old.shares <= 0) return null;
-        const valNow = r.value * mult, valPrev = old.value * mult;
-        if (valNow >= valPrev) return null;
-        const wNow  = tv     > 0 ? (r.value   * mult / tv)     * 100 : 0;
-        const wPrev = prev1tv > 0 ? (old.value * mult / prev1tv) * 100 : 0;
-        const wDelta = wNow - wPrev;
-        const sharePct = Math.round(((r.shares - old.shares) / old.shares) * 100);
-        return { r, wDelta, sharePct };
-      }).filter(Boolean).sort((a, b) => a.wDelta - b.wDelta).slice(0, 2);
+        const sharePct = (r.shares - old.shares) / old.shares * 100;
+        if (sharePct > -5) return null;
+        const wNow = tv > 0 ? (r.value * mult / tv) * 100 : 0;
+        return { r, wNow, sharePct: Math.round(sharePct) };
+      }).filter(Boolean).sort((a, b) => b.wNow - a.wNow).slice(0, 2);
 
       if (trims.length > 0) {
         const fmt = x => `${stockLink(x.r)} (<span class="ins-red"><b>${x.sharePct}%</b></span>)`;
