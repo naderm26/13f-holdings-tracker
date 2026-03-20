@@ -144,6 +144,7 @@
         <div>
           <div class="stat-label">Portfolio Value</div>
           <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
+          <div id="total-value-chg" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.15rem;"></div>
         </div>
         <div>
           <div class="stat-label">Positions</div>
@@ -571,6 +572,22 @@
     document.getElementById("total-value").textContent =
       "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
     document.getElementById("total-positions").textContent = rows.length;
+
+    // Portfolio value % change vs prior quarter
+    const tvChgEl = document.getElementById("total-value-chg");
+    if (prev1 && prev1.length > 0) {
+      const tv1 = prev1.reduce((s, r) => s + r.value, 0) * mult;
+      if (tv1 > 0) {
+        const chg = Math.round(((tv - tv1) / tv1) * 100);
+        const sign = chg >= 0 ? "+" : "";
+        const color = chg >= 0 ? "var(--green)" : "var(--red)";
+        tvChgEl.innerHTML = `<span style="color:${color}">${sign}${chg}% vs prior quarter</span>`;
+      } else {
+        tvChgEl.textContent = "";
+      }
+    } else {
+      tvChgEl.innerHTML = `<span style="color:var(--muted)">—</span>`;
+    }
     const meta = metaCache[activeQ];
     const filedStr = meta ? ` <span style="font-weight:400">(Filed ${fmtDate(meta.filed)})</span>` : "";
     document.getElementById("period").innerHTML =
