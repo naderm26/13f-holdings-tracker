@@ -68,7 +68,7 @@
     tr.total-row td.col-company { font-family: var(--sans); font-size: 0.875rem; }
     /* ── Insights block ── */
     .insights { font-size: 0.855rem; line-height: 1.9; color: var(--text); }
-    .insights p { margin: 0; }
+    .insights p { margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .ins-green { color: var(--green); font-weight: 500; }
     .ins-red   { color: var(--red); font-weight: 500; }
     /* ── Fund header row: name+period+tabs left, insights right ── */
@@ -149,7 +149,7 @@
   </div>
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
   <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
-    * Price at last filing is calculated by dividing the reported value by the number of shares held as of the filing date. It represents the implied average price per share at quarter end, not an actual purchase or sale price.
+    * Price at last filing is not an actual purchase or sale price. It is the price as of the last holdings date, calculated by dividing the reported value by the number of shares held.
   </div>
 </main>
 
@@ -404,7 +404,7 @@
     if (byWeight.length > 0) {
       const top = byWeight.slice(0, Math.min(3, byWeight.length));
       const pct = r => tv > 0 ? ((r.value * mult / tv) * 100).toFixed(1) : "0";
-      const fmt = r => `${tickerLink(r)} (${pct(r)}%)`;  // black %
+      const fmt = r => `${tickerLink(r)} (<b>${pct(r)}%</b>)`;  // bold %
 
       let posStr;
       if (top.length === 1)      posStr = fmt(top[0]);
@@ -435,11 +435,11 @@
 
         if (top.length === 1) {
           const p = repPrice(top[0]);
-          const priceStr = p ? `, price last held at ${p}` : "";
-          sentences.push(`${shortName}'s new bet was ${tickerLink(top[0])} (${pct(top[0])}%)${priceStr}.`);
+          const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
+          sentences.push(`${shortName}'s new bet was ${tickerLink(top[0])} (<b>${pct(top[0])}%</b>)${priceStr}.`);
         } else {
           // 2 or 3 new bets — use "and" before last item
-          const parts = top.map(r => `${tickerLink(r)} (${pct(r)}%)`);
+          const parts = top.map(r => `${tickerLink(r)} (<b>${pct(r)}%</b>)`);
           let partsStr;
           if (parts.length === 2) partsStr = `${parts[0]} and ${parts[1]}`;
           else                    partsStr = `${parts[0]}, ${parts[1]}, and ${parts[2]}`;
@@ -460,7 +460,7 @@
         sentences.push(`${shortName} had no increases in ${qLabel}.`);
       } else {
         const top = increases.slice(0, Math.min(2, increases.length));
-        const fmt = x => `${tickerLink(x.r)} (<span class="ins-green">+${x.chgPct.toFixed(1)}%</span>)`;
+        const fmt = x => `${tickerLink(x.r)} (<span class="ins-green"><b>+${x.chgPct.toFixed(1)}%</b></span>)`;
         if (top.length === 1) {
           sentences.push(`${shortName}'s top increase was ${fmt(top[0])} in ${qLabel}.`);
         } else {
@@ -481,7 +481,7 @@
         sentences.push(`${shortName} had no trims in ${qLabel}.`);
       } else {
         const top = trims.slice(0, Math.min(2, trims.length));
-        const fmt = x => `${tickerLink(x.r)} (<span class="ins-red">${x.chgPct.toFixed(1)}%</span>)`;
+        const fmt = x => `${tickerLink(x.r)} (<span class="ins-red"><b>${x.chgPct.toFixed(1)}%</b></span>)`;
         if (top.length === 1) {
           sentences.push(`${shortName}'s top trim was ${fmt(top[0])} in ${qLabel}.`);
         } else {
@@ -500,9 +500,9 @@
       } else {
         const top = exits.slice(0, Math.min(2, exits.length));
         const pct = p => prev1tv > 0 ? ((p.value * mult / prev1tv) * 100).toFixed(1) : "0";
-        const fmt = p => `${tickerLinkFromCusip(p.cusip, p.company)} (<span class="ins-red">${pct(p)}%</span>)`;
+        const fmt = p => `${tickerLinkFromCusip(p.cusip, p.company)} (<span class="ins-red"><b>${pct(p)}%</b></span>)`;
         if (top.length === 1) {
-          sentences.push(`${shortName}'s top exit was ${fmt(top[0])} in ${qLabel}.`);
+          sentences.push(`${shortName} exited ${fmt(top[0])} in ${qLabel}.`);
         } else {
           sentences.push(`${shortName}'s top 2 exits were ${fmt(top[0])} and ${fmt(top[1])} in ${qLabel}.`);
         }
