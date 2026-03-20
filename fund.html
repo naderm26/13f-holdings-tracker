@@ -456,14 +456,14 @@
     }
 
     if (prev1) {
-      // ── 2. New positions — weight >= 1%, sorted by current weight, top 3 ──
+      // ── 2. New positions — weight >= 1%, sorted by current weight, top 5 ──
       const newPos = active
         .filter(r => {
           const isNew = !prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
           return isNew && parseFloat(pct(r.value, tv)) >= 1;
         })
         .sort((a, b) => (b.value * mult) - (a.value * mult))
-        .slice(0, 3);
+        .slice(0, 5);
 
       if (newPos.length === 0) {
         sentences.push(`${shortName} made no new investments in ${qLabel}.`);
@@ -472,59 +472,55 @@
           ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : null;
 
-        // rank = 1-based position in byWeight (portfolio weight rank)
+        // rank = 1-based position by portfolio weight across all current holdings
         const rank = r => byWeight.findIndex(x => (x.cusip && x.cusip === r.cusip) || x.company === r.company) + 1;
 
-        const fmtNew = (r, includePriceIfSingle) => {
+        // Build metadata for each new position
+        const enriched = newPos.map(r => {
           const w        = parseFloat(pct(r.value, tv));
           const isSig    = w > 3;
           const rk       = rank(r);
           const rankNote = rk >= 1 && rk <= 5  ? ", now a top 5 holding"
                          : rk >= 6 && rk <= 10 ? ", now a top 10 holding"
                          : "";
-          const p        = includePriceIfSingle ? repPrice(r) : null;
-          const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
-          return { isSig, text: `${stockLink(r)}${optTag(r.putcall)} (<b>${pct(r.value, tv)}%</b>)${rankNote}${priceStr}` };
-        };
+          // rank note goes INSIDE the parenthesis after the %
+          const inner = `<b>${pct(r.value, tv)}%</b>${rankNote}`;
+          return { r, isSig, inner };
+        });
+
+        const sigList    = enriched.filter(x => x.isSig);
+        const nonSigList = enriched.filter(x => !x.isSig);
+
+        // Helper: join an array of strings with commas and "and"
+        const joinList = arr => arr.length === 1 ? arr[0]
+          : arr.slice(0, -1).join(", ") + " and " + arr[arr.length - 1];
 
         if (newPos.length === 1) {
-          const { isSig, text } = fmtNew(newPos[0], true);
-          const sigWord = isSig ? "a significant new position" : "a new position";
-          sentences.push(`${shortName} initiated ${sigWord} in ${text}.`);
+          // Single position
+          const { r, isSig, inner } = enriched[0];
+          const p       = repPrice(r);
+          const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
+          const sigWord  = isSig ? "a significant new position" : "a new position";
+          sentences.push(`${shortName} initiated ${sigWord} in ${stockLink(r)}${optTag(r.putcall)} (${inner})${priceStr}.`);
+        } else if (sigList.length === 0) {
+          // None significant
+          const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          sentences.push(`${shortName} initiated new positions in ${joinList(strs)} in ${qLabel}.`);
+        } else if (nonSigList.length === 0) {
+          // All significant
+          const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          sentences.push(`${shortName} initiated significant new positions in ${joinList(strs)} in ${qLabel}.`);
         } else {
-          // Build each part individually, then join
-          const parts = newPos.map(r => {
-            const { isSig, text } = fmtNew(r, false);
-            return { isSig, text };
-          });
-
-          // Check if any are significant
-          const anySig = parts.some(p => p.isSig);
-          const allSig = parts.every(p => p.isSig);
-
-          let joined;
-          if (!anySig) {
-            // None significant — simple list
-            const strs = parts.map(p => p.text);
-            joined = strs.length === 2
-              ? `new positions in ${strs[0]} and ${strs[1]}`
-              : `new positions in ${strs[0]}, ${strs[1]}, and ${strs[2]}`;
-          } else if (allSig) {
-            // All significant
-            const strs = parts.map(p => p.text);
-            joined = strs.length === 2
-              ? `significant new positions in ${strs[0]} and ${strs[1]}`
-              : `significant new positions in ${strs[0]}, ${strs[1]}, and ${strs[2]}`;
-          } else {
-            // Mixed — label each individually
-            const strs = parts.map(p => p.isSig
-              ? `a significant new position in ${p.text}`
-              : `a new position in ${p.text}`);
-            joined = strs.length === 2
-              ? `${strs[0]} and ${strs[1]}`
-              : `${strs[0]}, ${strs[1]}, and ${strs[2]}`;
-          }
-          sentences.push(`${shortName} initiated ${joined} in ${qLabel}.`);
+          // Mixed — group sig together, non-sig together
+          const sigStrs    = sigList.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          const nonSigStrs = nonSigList.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          const sigPhrase    = sigList.length === 1
+            ? `a significant new position in ${sigStrs[0]}`
+            : `significant new positions in ${joinList(sigStrs)}`;
+          const nonSigPhrase = nonSigList.length === 1
+            ? `a new position in ${nonSigStrs[0]}`
+            : `new positions in ${joinList(nonSigStrs)}`;
+          sentences.push(`${shortName} initiated ${sigPhrase} and ${nonSigPhrase} in ${qLabel}.`);
         }
       }
 
