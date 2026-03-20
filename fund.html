@@ -76,13 +76,22 @@
     .insights p { margin: 0; }
     .ins-green { color: var(--green); font-weight: 500; }
     .ins-red   { color: var(--red); font-weight: 500; }
-    /* ── Header stats (right slot) ── */
-    .header-stats { display: flex; gap: 1.5rem; font-family: var(--mono); flex-shrink: 0; align-items: center; }
-    .header-stats .stat-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
-    .header-stats .stat-value { font-size: 0.95rem; font-weight: 500; }
-    /* ── Header search (center slot) ── */
-    .header-search { position: relative; flex: 1; max-width: 340px; }
-    .header-search #search { width: 100%; }
+    /* ── Search (back in header) ── */
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 300px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    /* ── Fund name row with inline stats ── */
+    .fund-name-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.4rem; }
+    .fund-stats { display: flex; gap: 2rem; font-family: var(--mono); flex-shrink: 0; }
+    .fund-stats .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+    .fund-stats .stat-value { font-size: 1.1rem; font-weight: 500; margin-top: 0.1rem; }
     /* ── Ticker link in insights ── */
     .ins-ticker { color: #2563eb; font-weight: 600; font-family: var(--mono); font-size: 0.82rem; text-decoration: none; }
     .ins-ticker:hover { text-decoration: underline; }
@@ -120,26 +129,28 @@
     <a class="brand-name" href="index.html">13FAI</a>
     <a class="brand-sub" href="index.html">← All Funds</a>
   </div>
-  <div class="header-search">
+  <div class="search-wrap">
     <span class="search-icon">⌕</span>
     <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
     <div class="search-results" id="search-results"></div>
-  </div>
-  <div class="header-stats">
-    <div>
-      <div class="stat-label">Portfolio Value</div>
-      <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
-    </div>
-    <div>
-      <div class="stat-label">Positions</div>
-      <div class="stat-value" id="total-positions">—</div>
-    </div>
   </div>
 </header>
 
 <main>
   <div class="fund-identity">
-    <div class="section-label" id="fund-name">Loading...</div>
+    <div class="fund-name-row">
+      <div class="section-label" id="fund-name">Loading...</div>
+      <div class="fund-stats">
+        <div>
+          <div class="stat-label">Portfolio Value</div>
+          <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
+        </div>
+        <div>
+          <div class="stat-label">Positions</div>
+          <div class="stat-value" id="total-positions">—</div>
+        </div>
+      </div>
+    </div>
     <div class="period-line" id="period" style="margin-top:0.35rem; margin-bottom:0.5rem"></div>
     <div class="quarter-selector" id="quarter-selector"></div>
   </div>
