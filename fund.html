@@ -500,12 +500,12 @@
           const { r, isSig, inner } = enriched[0];
           const p       = repPrice(r);
           const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
-          const sigWord  = isSig ? "a significant new position" : "a new position";
+          const sigWord  = isSig ? "a significant new position" : "a notable new position";
           sentences.push(`${shortName} initiated ${sigWord} in ${stockLink(r)}${optTag(r.putcall)} (${inner})${priceStr}.`);
         } else if (sigList.length === 0) {
           // None significant
           const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
-          sentences.push(`${shortName} initiated new positions in ${joinList(strs)} in ${qLabel}.`);
+          sentences.push(`${shortName} initiated notable new positions in ${joinList(strs)} in ${qLabel}.`);
         } else if (nonSigList.length === 0) {
           // All significant
           const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
@@ -518,8 +518,8 @@
             ? `a significant new position in ${sigStrs[0]}`
             : `significant new positions in ${joinList(sigStrs)}`;
           const nonSigPhrase = nonSigList.length === 1
-            ? `a new position in ${nonSigStrs[0]}`
-            : `new positions in ${joinList(nonSigStrs)}`;
+            ? `a notable new position in ${nonSigStrs[0]}`
+            : `notable new positions in ${joinList(nonSigStrs)}`;
           sentences.push(`${shortName} initiated ${sigPhrase} and ${nonSigPhrase} in ${qLabel}.`);
         }
       }
