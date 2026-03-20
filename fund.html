@@ -27,7 +27,8 @@
     }
     .brand { display: flex; align-items: baseline; gap: 0.75rem; }
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
-    .brand-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+    .brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    .brand-sub:hover { color: var(--accent); }
     main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
     .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
@@ -117,7 +118,7 @@
 <header>
   <div class="brand">
     <a class="brand-name" href="index.html">13FAI</a>
-    <span class="brand-sub">AI-powered hedge fund holdings tracker</span>
+    <a class="brand-sub" href="index.html">← All Funds</a>
   </div>
   <div class="header-search">
     <span class="search-icon">⌕</span>
@@ -375,8 +376,11 @@
 
     // Fund short name = everything before the first "("
     const fullName = FUND_CONFIG.name || "";
-    const nameMatch = fullName.match(/^(.+?)\s*\(/);
-    const shortName = nameMatch ? nameMatch[1].trim() : fullName;
+    // Use manager's last name for brevity (parse from "Fund Name (First Last)")
+    const managerMatch = fullName.match(/\((.+?)\)$/);
+    const managerName  = managerMatch ? managerMatch[1].trim() : null;
+    const lastName     = managerName ? managerName.split(" ").pop() : null;
+    const shortName    = lastName || (fullName.match(/^(.+?)\s*\(/) ? fullName.match(/^(.+?)\s*\(/)[1].trim() : fullName);
 
     // Quarter label e.g. "2025Q4" -> "Q4 2025"
     const [qYear, qNum] = activeQ.split("Q");
@@ -403,7 +407,7 @@
 
     if (byWeight.length > 0) {
       const top = byWeight.slice(0, Math.min(3, byWeight.length));
-      const pct = r => tv > 0 ? ((r.value * mult / tv) * 100).toFixed(1) : "0";
+      const pct = r => tv > 0 ? ((r.value * mult / tv) * 100).toFixed(0) : "0";
       const fmt = r => `${tickerLink(r)} (<b>${pct(r)}%</b>)`;  // bold %
 
       let posStr;
@@ -425,10 +429,10 @@
       }).sort((a, b) => (b.value * mult) - (a.value * mult));
 
       if (newPos.length === 0) {
-        sentences.push(`${shortName} made no new bets in ${qLabel}.`);
+        sentences.push(`${shortName} made no new investments in ${qLabel}.`);
       } else {
         const top = newPos.slice(0, Math.min(3, newPos.length));
-        const pct = r => tv > 0 ? ((r.value * mult / tv) * 100).toFixed(1) : "0";
+        const pct = r => tv > 0 ? ((r.value * mult / tv) * 100).toFixed(0) : "0";
         const repPrice = r => r.shares > 0
           ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : null;
@@ -436,14 +440,13 @@
         if (top.length === 1) {
           const p = repPrice(top[0]);
           const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
-          sentences.push(`${shortName}'s new bet was ${tickerLink(top[0])} (<b>${pct(top[0])}%</b>)${priceStr}.`);
+          sentences.push(`${shortName} initiated a new position in ${tickerLink(top[0])} (<b>${pct(top[0])}%</b>)${priceStr}.`);
         } else {
-          // 2 or 3 new bets — use "and" before last item
           const parts = top.map(r => `${tickerLink(r)} (<b>${pct(r)}%</b>)`);
           let partsStr;
           if (parts.length === 2) partsStr = `${parts[0]} and ${parts[1]}`;
           else                    partsStr = `${parts[0]}, ${parts[1]}, and ${parts[2]}`;
-          sentences.push(`${shortName}'s new bets were ${partsStr} in ${qLabel}.`);
+          sentences.push(`${shortName} initiated new positions in ${partsStr} in ${qLabel}.`);
         }
       }
 
@@ -460,7 +463,7 @@
         sentences.push(`${shortName} had no increases in ${qLabel}.`);
       } else {
         const top = increases.slice(0, Math.min(2, increases.length));
-        const fmt = x => `${tickerLink(x.r)} (<span class="ins-green"><b>+${x.chgPct.toFixed(1)}%</b></span>)`;
+        const fmt = x => `${tickerLink(x.r)} (<span class="ins-green"><b>+${x.chgPct.toFixed(0)}%</b></span>)`;
         if (top.length === 1) {
           sentences.push(`${shortName}'s top increase was ${fmt(top[0])} in ${qLabel}.`);
         } else {
@@ -481,7 +484,7 @@
         sentences.push(`${shortName} had no trims in ${qLabel}.`);
       } else {
         const top = trims.slice(0, Math.min(2, trims.length));
-        const fmt = x => `${tickerLink(x.r)} (<span class="ins-red"><b>${x.chgPct.toFixed(1)}%</b></span>)`;
+        const fmt = x => `${tickerLink(x.r)} (<span class="ins-red"><b>${x.chgPct.toFixed(0)}%</b></span>)`;
         if (top.length === 1) {
           sentences.push(`${shortName}'s top trim was ${fmt(top[0])} in ${qLabel}.`);
         } else {
@@ -499,7 +502,7 @@
         sentences.push(`${shortName} had no exits in ${qLabel}.`);
       } else {
         const top = exits.slice(0, Math.min(2, exits.length));
-        const pct = p => prev1tv > 0 ? ((p.value * mult / prev1tv) * 100).toFixed(1) : "0";
+        const pct = p => prev1tv > 0 ? ((p.value * mult / prev1tv) * 100).toFixed(0) : "0";
         const fmt = p => `${tickerLinkFromCusip(p.cusip, p.company)} (<span class="ins-red"><b>${pct(p)}%</b></span>)`;
         if (top.length === 1) {
           sentences.push(`${shortName} exited ${fmt(top[0])} in ${qLabel}.`);
