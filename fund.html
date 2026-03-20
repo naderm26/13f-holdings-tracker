@@ -416,6 +416,12 @@
       const p = (val * mult / total) * 100;
       return p < 0.05 ? "0.0" : Math.round(p).toString();
     };
+    // Option tag — appended directly after ticker link
+    const optTag = pc => {
+      if (!pc) return "";
+      const cls = pc.toLowerCase() === "put" ? "ins-red" : "ins-green";
+      return ` <span class="${cls}">${pc.toUpperCase()}</span>`;
+    };
     const prev1tv = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
 
     const active   = rows.filter(r => r.shares > 0);
@@ -426,7 +432,7 @@
     // ── 1. Top 3 positions ────────────────────────────────────────
     if (byWeight.length > 0) {
       const top = byWeight.slice(0, Math.min(3, byWeight.length));
-      const fmt = r => `${stockLink(r)} (<b>${pct(r.value, tv)}%</b>)`;
+      const fmt = r => `${stockLink(r)}${optTag(r.putcall)} (<b>${pct(r.value, tv)}%</b>)`;
       let posStr;
       if (top.length === 1)      posStr = fmt(top[0]);
       else if (top.length === 2) posStr = `${fmt(top[0])} and ${fmt(top[1])}`;
@@ -451,7 +457,7 @@
         const repPrice = r => r.shares > 0
           ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : null;
-        const fmtNew = r => `${stockLink(r)} (<b>${pct(r.value, tv)}%</b>)`;
+        const fmtNew = r => `${stockLink(r)}${optTag(r.putcall)} (<b>${pct(r.value, tv)}%</b>)`;
 
         if (newPos.length === 1) {
           const p = repPrice(newPos[0]);
@@ -479,7 +485,7 @@
       }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
 
       if (increases.length > 0) {
-        const fmt = x => `${stockLink(x.r)} (<span class="ins-green"><b>+${x.sharePct}%</b></span>)`;
+        const fmt = x => `${stockLink(x.r)}${optTag(x.r.putcall)} (<span class="ins-green"><b>+${x.sharePct}%</b></span>)`;
         if (increases.length === 1) {
           sentences.push(`${shortName}'s top increase was ${fmt(increases[0])} vs the prior quarter.`);
         } else {
@@ -502,7 +508,7 @@
       }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
 
       if (trims.length > 0) {
-        const fmt = x => `${stockLink(x.r)} (<span class="ins-red"><b>${x.sharePct}%</b></span>)`;
+        const fmt = x => `${stockLink(x.r)}${optTag(x.r.putcall)} (<span class="ins-red"><b>${x.sharePct}%</b></span>)`;
         if (trims.length === 1) {
           sentences.push(`${shortName}'s top trim was ${fmt(trims[0])} vs the prior quarter.`);
         } else {
@@ -523,7 +529,7 @@
       if (exits.length === 0) {
         sentences.push(`${shortName} had no exits in ${qLabel}.`);
       } else {
-        const fmt = p => `${stockLinkFromCusip(p.cusip, p.company)} (<span class="ins-red"><b>${pct(p.value, prev1tv)}%</b></span>)`;
+        const fmt = p => `${stockLinkFromCusip(p.cusip, p.company)}${optTag(p.putcall)} (<span class="ins-red"><b>${pct(p.value, prev1tv)}%</b></span>)`;
         if (exits.length === 1) {
           sentences.push(`${shortName} exited ${fmt(exits[0])} in ${qLabel}.`);
         } else {
