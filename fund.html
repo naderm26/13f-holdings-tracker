@@ -381,8 +381,8 @@
     const [qYear, qNum] = activeQ.split("Q");
     const qLabel = `Q${qNum} ${qYear}`;
 
-    // ── Link helpers — ticker only, fallback to company name ──────
-    const stockLink = (r) => {
+    // Ticker link — ticker only, fallback to company name
+    const stockLink = r => {
       const t = tickerMap[r.cusip] || null;
       const display = t || r.company;
       const href = t
@@ -399,191 +399,115 @@
       return `<a class="ins-ticker" href="${href}">${display}</a>`;
     };
 
-    // ── Option tag helper — "PUT" or "CALL" or "" ─────────────────
-    const optionTag = (putcall) => {
-      if (!putcall) return "";
-      return ` <span class="${putcall.toLowerCase() === 'put' ? 'ins-red' : 'ins-green'}">${putcall.toUpperCase()}</span>`;
-    };
+    const pct  = (val, total) => total > 0 ? Math.round((val * mult / total) * 100) : 0;
+    const prev1tv = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
 
-    // ── Precompute weights and share deltas ───────────────────────
-    const active = rows.filter(r => r.shares > 0);
-    const weight     = r => tv     > 0 ? (r.value * mult / tv)      * 100 : 0;
-    const prev1tv    = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
-    const prevWeight = p => prev1tv > 0 ? (p.value * mult / prev1tv) * 100 : 0;
-    const byWeight   = [...active].sort((a, b) => weight(b) - weight(a));
+    const active   = rows.filter(r => r.shares > 0);
+    const byWeight = [...active].sort((a, b) => (b.value * mult) - (a.value * mult));
 
-    // Per holding: share change (direction + magnitude) and current weight (size/importance)
-    const withDelta = prev1 ? active.map(r => {
-      const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
-      const wNow  = weight(r);
-      const wPrev = old ? prevWeight(old) : 0;
-      const sharePctChange = (old && old.shares > 0)
-        ? (r.shares - old.shares) / old.shares   // share % change — direction & magnitude
-        : null;
-      const absShareChange = old ? (r.shares - old.shares) : r.shares;
-      return { r, wNow, wPrev, sharePctChange, absShareChange, isNew: !old };
-    }) : [];
+    const sentences = [];
 
-    const sentences  = [];
-    const usedCusips = new Set();
+    // ── 1. Top 3 positions ────────────────────────────────────────
+    if (byWeight.length > 0) {
+      const top = byWeight.slice(0, Math.min(3, byWeight.length));
+      const fmt = r => `${stockLink(r)} (<b>${pct(r.value, tv)}%</b>)`;
+      let posStr;
+      if (top.length === 1)      posStr = fmt(top[0]);
+      else if (top.length === 2) posStr = `${fmt(top[0])} and ${fmt(top[1])}`;
+      else                       posStr = `${fmt(top[0])}, ${fmt(top[1])}, and ${fmt(top[2])}`;
+      const word = top.length === 1 ? "top position is" : `top ${top.length} positions are`;
+      sentences.push(`${shortName}'s ${word} ${posStr}.`);
+    }
 
-    // ── Priority 1: New positions (weight >= 1) ───────────────────
     if (prev1) {
-      const newPos = withDelta
-        .filter(x => x.isNew && x.wNow >= 1)
-        .sort((a, b) => b.wNow - a.wNow);
+      // ── 2. New positions ─────────────────────────────────────────
+      const newPos = active
+        .filter(r => !prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company))
+        .sort((a, b) => (b.value * mult) - (a.value * mult));
 
       if (newPos.length === 0) {
         sentences.push(`${shortName} made no new investments in ${qLabel}.`);
       } else {
-        const toShow = newPos.filter((x, i) => i === 0 || x.wNow >= 3).slice(0, 3);
-        toShow.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
-
-        const fmt = x => {
-          const wStr    = `<b>${Math.round(x.wNow)}%</b>`;
-          const isTop3  = byWeight.slice(0, 3).some(r => (r.cusip && r.cusip === x.r.cusip) || r.company === x.r.company);
-          const topNote = isTop3 ? ", entering as a top-3 holding" : "";
-          const opt     = optionTag(x.r.putcall);
-          const repPrice = x.r.shares > 0
-            ? "$" + (x.r.value * mult / x.r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-            : null;
-          const priceStr = (repPrice && toShow.length === 1) ? `, price at filing was <b>${repPrice}</b>*` : "";
-          return `${stockLink(x.r)}${opt} (${wStr}${topNote})${priceStr}`;
-        };
+        const toShow = newPos.filter((r, i) => i === 0 || pct(r.value, tv) >= 3).slice(0, 3);
+        const repPrice = r => r.shares > 0
+          ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : null;
 
         if (toShow.length === 1) {
-          sentences.push(`${shortName} initiated a new position in ${fmt(toShow[0])}.`);
+          const p = repPrice(toShow[0]);
+          const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
+          sentences.push(`${shortName} initiated a new position in ${stockLink(toShow[0])} (<b>${pct(toShow[0].value, tv)}%</b>)${priceStr}.`);
         } else {
-          const parts  = toShow.map(fmt);
+          const parts  = toShow.map(r => `${stockLink(r)} (<b>${pct(r.value, tv)}%</b>)`);
           const joined = parts.length === 2
             ? `${parts[0]} and ${parts[1]}`
             : `${parts[0]}, ${parts[1]}, and ${parts[2]}`;
-          sentences.push(`${shortName} initiated new positions in ${joined}.`);
+          sentences.push(`${shortName} initiated new positions in ${joined} in ${qLabel}.`);
         }
       }
-    }
 
-    // ── Priority 2: Concentration ─────────────────────────────────
-    if (byWeight.length >= 3) {
-      const top3w     = byWeight.slice(0, 3).reduce((s, r) => s + weight(r), 0);
-      const top5w     = byWeight.length >= 5 ? byWeight.slice(0, 5).reduce((s, r) => s + weight(r), 0) : null;
-      const top3names = byWeight.slice(0, 3).map(r => stockLink(r)).join(", ");
-
-      if (top3w >= 50) {
-        const conc = top5w ? `, with the top 5 at <b>${Math.round(top5w)}%</b>` : "";
-        sentences.push(`The portfolio is highly concentrated — ${top3names} account for <b>${Math.round(top3w)}%</b> of assets${conc}.`);
-        byWeight.slice(0, 3).forEach(r => usedCusips.add(r.cusip || r.company));
-      } else if (top3w >= 35) {
-        sentences.push(`The portfolio is moderately concentrated, with ${top3names} representing <b>${Math.round(top3w)}%</b> of assets.`);
-        byWeight.slice(0, 3).forEach(r => usedCusips.add(r.cusip || r.company));
-      }
-    }
-
-    if (prev1) {
-      // ── Priority 3: Increases
-      // Detect: sharePctChange >= 5%
-      // Filter: current_weight >= 1% OR sharePctChange >= 100%
-      // Rank: current portfolio weight descending
-      // Language: "increased its stake in TICKER by X%, now Y% of the portfolio"
-      const increases = withDelta
-        .filter(x => !x.isNew
-          && x.sharePctChange !== null
-          && x.sharePctChange >= 0.05
-          && (x.wNow >= 1 || x.sharePctChange >= 1.0))
-        .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
-        .sort((a, b) => b.wNow - a.wNow)
-        .slice(0, 2);
+      // ── 3. Top 2 increases (by change in value) ──────────────────
+      const increases = active.map(r => {
+        const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+        if (!old || old.shares <= 0 || r.shares <= 0) return null;
+        const valNow = r.value * mult, valPrev = old.value * mult;
+        if (valNow <= valPrev) return null;
+        return { r, chgPct: ((valNow - valPrev) / valPrev) * 100, valDiff: valNow - valPrev };
+      }).filter(Boolean).sort((a, b) => b.valDiff - a.valDiff).slice(0, 2);
 
       if (increases.length > 0) {
-        increases.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
-
-        const fmtInc = x => {
-          const opt  = optionTag(x.r.putcall);
-          const xPct = Math.round(x.sharePctChange * 100);
-          const wNote = `, now <b>${Math.round(x.wNow)}%</b> of the portfolio`;
-          return `${shortName} increased its stake in ${stockLink(x.r)}${opt} by <b>${xPct}%</b>${wNote}`;
-        };
-
+        const fmt = x => `${stockLink(x.r)} (<span class="ins-green"><b>+${Math.round(x.chgPct)}%</b></span>)`;
         if (increases.length === 1) {
-          sentences.push(`${fmtInc(increases[0])} vs the prior quarter.`);
+          sentences.push(`${shortName}'s top increase was ${fmt(increases[0])} vs the prior quarter.`);
         } else {
-          const x2   = increases[1];
-          const opt2 = optionTag(x2.r.putcall);
-          const pct2 = Math.round(x2.sharePctChange * 100);
-          const w2   = Math.round(x2.wNow);
-          sentences.push(`${fmtInc(increases[0])}, and increased its stake in ${stockLink(x2.r)}${opt2} by <b>${pct2}%</b>, now <b>${w2}%</b> of the portfolio, vs the prior quarter.`);
+          sentences.push(`${shortName}'s top 2 increases were ${fmt(increases[0])} and ${fmt(increases[1])} vs the prior quarter.`);
         }
+      } else {
+        sentences.push(`${shortName} had no increases in ${qLabel}.`);
       }
 
-      // ── Priority 4: Decreases
-      // Detect: sharePctChange <= -5%
-      // Filter: prior_weight >= 1% OR sharePctChange <= -75%
-      // Rank: prior portfolio weight descending
-      // Language: "trimmed its stake in TICKER by X%, now Y% of the portfolio" (omit "now Y%" if fully exited)
-      const trims = withDelta
-        .filter(x => !x.isNew
-          && x.sharePctChange !== null
-          && x.sharePctChange <= -0.05
-          && (x.wPrev >= 1 || x.sharePctChange <= -0.75))
-        .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
-        .sort((a, b) => b.wPrev - a.wPrev)
-        .slice(0, 2);
+      // ── 4. Top 2 trims (by change in value) ──────────────────────
+      const trims = active.map(r => {
+        const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+        if (!old || old.shares <= 0) return null;
+        const valNow = r.value * mult, valPrev = old.value * mult;
+        if (valNow >= valPrev) return null;
+        return { r, chgPct: ((valNow - valPrev) / valPrev) * 100, valDiff: valPrev - valNow };
+      }).filter(Boolean).sort((a, b) => b.valDiff - a.valDiff).slice(0, 2);
 
       if (trims.length > 0) {
-        trims.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
-
-        const fmtTrim = x => {
-          const opt  = optionTag(x.r.putcall);
-          const xPct = Math.round(Math.abs(x.sharePctChange * 100));
-          const wNote = x.wNow > 0 ? `, now <b>${Math.round(x.wNow)}%</b> of the portfolio` : "";
-          return `${shortName} trimmed its stake in ${stockLink(x.r)}${opt} by <b>${xPct}%</b>${wNote}`;
-        };
-
+        const fmt = x => `${stockLink(x.r)} (<span class="ins-red"><b>${Math.round(x.chgPct)}%</b></span>)`;
         if (trims.length === 1) {
-          sentences.push(`${fmtTrim(trims[0])} vs the prior quarter.`);
+          sentences.push(`${shortName}'s top trim was ${fmt(trims[0])} vs the prior quarter.`);
         } else {
-          const x2   = trims[1];
-          const opt2 = optionTag(x2.r.putcall);
-          const pct2 = Math.round(Math.abs(x2.sharePctChange * 100));
-          const w2   = x2.wNow > 0 ? `, now <b>${Math.round(x2.wNow)}%</b> of the portfolio` : "";
-          sentences.push(`${fmtTrim(trims[0])}, and trimmed its stake in ${stockLink(x2.r)}${opt2} by <b>${pct2}%</b>${w2}, vs the prior quarter.`);
+          sentences.push(`${shortName}'s top 2 trims were ${fmt(trims[0])} and ${fmt(trims[1])} vs the prior quarter.`);
         }
+      } else {
+        sentences.push(`${shortName} had no trims in ${qLabel}.`);
       }
 
-      // ── Priority 5: Exits (prev_weight >= 3%)
-      // Single exit: "exited TICKER (X% prior quarter)"
-      // Two exits: "top 2 exits were TICKER1 (X%) and TICKER2 (Y%) in Q"
-      // prev_weight >= 10%: add "previously one of the fund's largest holdings"
+      // ── 5. Top 2 exits (by prior quarter value) ───────────────────
       const exits = prev1
-        .filter(p => {
-          const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
-          return !cur && p.shares > 0 && prevWeight(p) >= 3;
-        })
-        .sort((a, b) => prevWeight(b) - prevWeight(a))
+        .filter(p => !active.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company) && p.shares > 0)
+        .sort((a, b) => (b.value * mult) - (a.value * mult))
         .slice(0, 2);
 
-      if (exits.length > 0) {
-        const fmtExit = p => {
-          const pw    = Math.round(prevWeight(p));
-          const opt   = optionTag(p.putcall);
-          const major = prevWeight(p) >= 10 ? ", previously one of the fund's largest holdings," : "";
-          return `${stockLinkFromCusip(p.cusip, p.company)}${opt}${major} (<b>${pw}%</b> prior quarter)`;
-        };
+      if (exits.length === 0) {
+        sentences.push(`${shortName} had no exits in ${qLabel}.`);
+      } else {
+        const fmt = p => `${stockLinkFromCusip(p.cusip, p.company)} (<span class="ins-red"><b>${pct(p.value, prev1tv)}%</b></span>)`;
         if (exits.length === 1) {
-          sentences.push(`${shortName} exited ${fmtExit(exits[0])}.`);
+          sentences.push(`${shortName} exited ${fmt(exits[0])} in ${qLabel}.`);
         } else {
-          sentences.push(`${shortName}'s top 2 exits were ${fmtExit(exits[0])} and ${fmtExit(exits[1])} in ${qLabel}.`);
+          sentences.push(`${shortName}'s top 2 exits were ${fmt(exits[0])} and ${fmt(exits[1])} in ${qLabel}.`);
         }
-      } else if (!prev1.some(p => {
-        const cur = rows.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company);
-        return !cur && p.shares > 0;
-      })) {
-        sentences.push(`${shortName} made no exits in ${qLabel}.`);
       }
+
+    } else {
+      sentences.push(`No prior quarter data available to compare for ${qLabel}.`);
     }
 
-    // Cap at 5 sentences
-    el.innerHTML = sentences.slice(0, 5).map(s => `<p>${s}</p>`).join("");
+    el.innerHTML = sentences.map(s => `<p>${s}</p>`).join("");
   }
 
   // ── Group rows by CUSIP (fall back to company name) ───────────
