@@ -407,22 +407,21 @@
 
     // ── Precompute weights and share deltas ───────────────────────
     const active = rows.filter(r => r.shares > 0);
-    const weight    = r  => tv      > 0 ? (r.value * mult / tv)      * 100 : 0;
-    const prev1tv   = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
+    const weight     = r => tv     > 0 ? (r.value * mult / tv)      * 100 : 0;
+    const prev1tv    = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
     const prevWeight = p => prev1tv > 0 ? (p.value * mult / prev1tv) * 100 : 0;
-    const byWeight  = [...active].sort((a, b) => weight(b) - weight(a));
+    const byWeight   = [...active].sort((a, b) => weight(b) - weight(a));
 
-    // For each current holding compute weight delta (for ranking)
-    // and share pctChange (for calculation language)
+    // Per holding: share change (direction + magnitude) and current weight (size/importance)
     const withDelta = prev1 ? active.map(r => {
-      const old    = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
-      const wNow   = weight(r);
-      const wPrev  = old ? prevWeight(old) : 0;
-      const delta  = wNow - wPrev;                                  // weight pp change — for ranking
+      const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+      const wNow  = weight(r);
+      const wPrev = old ? prevWeight(old) : 0;
       const sharePctChange = (old && old.shares > 0)
-        ? (r.shares - old.shares) / old.shares                      // share % change — for language
+        ? (r.shares - old.shares) / old.shares   // share % change — direction & magnitude
         : null;
-      return { r, wNow, wPrev, delta, sharePctChange, isNew: !old };
+      const absShareChange = old ? (r.shares - old.shares) : r.shares;
+      return { r, wNow, wPrev, sharePctChange, absShareChange, isNew: !old };
     }) : [];
 
     const sentences  = [];
@@ -481,66 +480,85 @@
     }
 
     if (prev1) {
-      // ── Priority 3: Increases — ranked by weight delta, language by shares ─
+      // ── Priority 3: Increases
+      // Detect by: sharePctChange >= 0.10
+      // Rank by: sharePctChange (primary), absShareChange (secondary)
+      // Filter: weight >= 1% OR sharePctChange >= 1.0
       const increases = withDelta
-        .filter(x => !x.isNew && x.delta >= 1 && (x.wNow >= 2 || x.delta >= 5))
+        .filter(x => !x.isNew
+          && x.sharePctChange !== null
+          && x.sharePctChange >= 0.10
+          && (x.wNow >= 1 || x.sharePctChange >= 1.0))
         .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
-        .sort((a, b) => b.delta - a.delta)
+        .sort((a, b) =>
+          b.sharePctChange !== a.sharePctChange
+            ? b.sharePctChange - a.sharePctChange
+            : b.absShareChange - a.absShareChange)
         .slice(0, 2);
 
       if (increases.length > 0) {
         increases.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
 
-        const fmtInc = x => {
-          const opt = optionTag(x.r.putcall);
-          // Language based on share % change
-          const sp  = x.sharePctChange;
-          let verb;
-          if (sp !== null && sp >= 1)        verb = `more than doubled`;
-          else if (sp !== null && sp >= 0.5) verb = `aggressively increased by <b>${Math.round(sp * 100)}%</b>`;
-          else if (sp !== null)              verb = `increased by <b>${Math.round(sp * 100)}%</b>`;
-          else                               verb = `increased`;
-          return `${stockLink(x.r)}${opt} was ${verb}`;
+        const stakeVerb = sp => {
+          if (sp >= 1.0) return `more than doubled its stake`;
+          if (sp >= 0.5) return `aggressively increased its stake by roughly <b>${Math.round(sp * 100)}%</b>`;
+          return `increased its stake by roughly <b>${Math.round(sp * 100)}%</b>`;
+        };
+
+        const fmtInc = (x, includeWeight) => {
+          const opt     = optionTag(x.r.putcall);
+          const verb    = stakeVerb(x.sharePctChange);
+          const wNote   = includeWeight ? `, bringing it to <b>${Math.round(x.wNow)}%</b> of the portfolio` : "";
+          return `${shortName} ${verb} in ${stockLink(x.r)}${opt}${wNote}`;
         };
 
         if (increases.length === 1) {
-          sentences.push(`${fmtInc(increases[0])} vs the prior quarter.`);
+          sentences.push(`${fmtInc(increases[0], true)} vs the prior quarter.`);
         } else {
-          const sp2 = increases[1].sharePctChange;
-          const opt2 = optionTag(increases[1].r.putcall);
-          let verb2;
-          if (sp2 !== null && sp2 >= 1)        verb2 = `more than doubled`;
-          else if (sp2 !== null && sp2 >= 0.5) verb2 = `aggressively increased by <b>${Math.round(sp2 * 100)}%</b>`;
-          else if (sp2 !== null)               verb2 = `increased by <b>${Math.round(sp2 * 100)}%</b>`;
-          else                                 verb2 = `increased`;
-          sentences.push(`${fmtInc(increases[0])}, and ${stockLink(increases[1].r)}${opt2} was ${verb2}, vs the prior quarter.`);
+          const s1 = `${fmtInc(increases[0], true)}`;
+          const s2 = `${stakeVerb(increases[1].sharePctChange)} in ${stockLink(increases[1].r)}${optionTag(increases[1].r.putcall)}`;
+          sentences.push(`${s1}, and ${s2}, vs the prior quarter.`);
         }
       }
 
-      // ── Priority 4: Decreases — ranked by weight delta, language by shares ─
+      // ── Priority 4: Decreases
+      // Detect by: sharePctChange <= -0.10
+      // Rank by: sharePctChange most negative (primary), prevWeight (secondary)
+      // Filter: prevWeight >= 1% OR sharePctChange <= -0.75
       const trims = withDelta
-        .filter(x => !x.isNew && x.delta <= -1 && x.sharePctChange !== null && x.sharePctChange <= -0.2)
+        .filter(x => !x.isNew
+          && x.sharePctChange !== null
+          && x.sharePctChange <= -0.10
+          && (x.wPrev >= 1 || x.sharePctChange <= -0.75))
         .filter(x => !usedCusips.has(x.r.cusip || x.r.company))
-        .sort((a, b) => a.delta - b.delta) // most negative weight delta first
+        .sort((a, b) =>
+          a.sharePctChange !== b.sharePctChange
+            ? a.sharePctChange - b.sharePctChange          // most negative first
+            : b.wPrev - a.wPrev)                           // then by prior weight
         .slice(0, 2);
 
       if (trims.length > 0) {
         trims.forEach(x => usedCusips.add(x.r.cusip || x.r.company));
 
-        const fmtTrim = x => {
-          const opt = optionTag(x.r.putcall);
-          const sp  = x.sharePctChange;
-          let verb;
-          if (sp <= -0.5)      verb = `cut roughly in half`;
-          else if (sp <= -0.75) verb = `cut by more than half`;
-          else                 verb = `trimmed by <b>${Math.round(Math.abs(sp * 100))}%</b>`;
-          return `${stockLink(x.r)}${opt} was ${verb}`;
+        const trimVerb = sp => {
+          if (sp <= -0.75) return `largely exited its stake in`;
+          if (sp <= -0.50) return `cut its stake roughly in half in`;
+          return `trimmed its stake by roughly <b>${Math.round(Math.abs(sp * 100))}%</b> in`;
+        };
+
+        const fmtTrim = (x, includeWeight) => {
+          const opt   = optionTag(x.r.putcall);
+          const verb  = trimVerb(x.sharePctChange);
+          const wNote = includeWeight && x.wNow > 0
+            ? `, now <b>${Math.round(x.wNow)}%</b> of the portfolio`
+            : "";
+          return `${shortName} ${verb} ${stockLink(x.r)}${opt}${wNote}`;
         };
 
         if (trims.length === 1) {
-          sentences.push(`${fmtTrim(trims[0])} vs the prior quarter.`);
+          sentences.push(`${fmtTrim(trims[0], true)} vs the prior quarter.`);
         } else {
-          sentences.push(`${fmtTrim(trims[0])}, and ${fmtTrim(trims[1])}, vs the prior quarter.`);
+          sentences.push(`${fmtTrim(trims[0], true)}, and ${trimVerb(trims[1].sharePctChange)} ${stockLink(trims[1].r)}${optionTag(trims[1].r.putcall)}, vs the prior quarter.`);
         }
       }
 
