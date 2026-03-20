@@ -420,25 +420,29 @@
     }
 
     if (prev1) {
-      // ── 2. New positions ─────────────────────────────────────────
+      // ── 2. New positions — weight >= 1%, sorted by current weight, top 3 ──
       const newPos = active
-        .filter(r => !prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company))
-        .sort((a, b) => (b.value * mult) - (a.value * mult));
+        .filter(r => {
+          const isNew = !prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
+          return isNew && pct(r.value, tv) >= 1;
+        })
+        .sort((a, b) => (b.value * mult) - (a.value * mult))
+        .slice(0, 3);
 
       if (newPos.length === 0) {
         sentences.push(`${shortName} made no new investments in ${qLabel}.`);
       } else {
-        const toShow = newPos.filter((r, i) => i === 0 || pct(r.value, tv) >= 3).slice(0, 3);
         const repPrice = r => r.shares > 0
           ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : null;
+        const fmtNew = r => `${stockLink(r)} (<b>${pct(r.value, tv)}%</b>)`;
 
-        if (toShow.length === 1) {
-          const p = repPrice(toShow[0]);
+        if (newPos.length === 1) {
+          const p = repPrice(newPos[0]);
           const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
-          sentences.push(`${shortName} initiated a new position in ${stockLink(toShow[0])} (<b>${pct(toShow[0].value, tv)}%</b>)${priceStr}.`);
+          sentences.push(`${shortName} initiated a new position in ${fmtNew(newPos[0])}${priceStr}.`);
         } else {
-          const parts  = toShow.map(r => `${stockLink(r)} (<b>${pct(r.value, tv)}%</b>)`);
+          const parts  = newPos.map(fmtNew);
           const joined = parts.length === 2
             ? `${parts[0]} and ${parts[1]}`
             : `${parts[0]}, ${parts[1]}, and ${parts[2]}`;
@@ -446,17 +450,23 @@
         }
       }
 
-      // ── 3. Top 2 increases (by change in value) ──────────────────
+      // ── 3. Top 2 increases — detect: valNow > valPrev
+      //    rank: by change in portfolio weight descending
+      //    display: share-based % change ──────────────────────────
       const increases = active.map(r => {
         const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
         if (!old || old.shares <= 0 || r.shares <= 0) return null;
         const valNow = r.value * mult, valPrev = old.value * mult;
         if (valNow <= valPrev) return null;
-        return { r, chgPct: ((valNow - valPrev) / valPrev) * 100, valDiff: valNow - valPrev };
-      }).filter(Boolean).sort((a, b) => b.valDiff - a.valDiff).slice(0, 2);
+        const wNow  = tv     > 0 ? (r.value   * mult / tv)     * 100 : 0;
+        const wPrev = prev1tv > 0 ? (old.value * mult / prev1tv) * 100 : 0;
+        const wDelta = wNow - wPrev;
+        const sharePct = Math.round(((r.shares - old.shares) / old.shares) * 100);
+        return { r, wDelta, sharePct };
+      }).filter(Boolean).sort((a, b) => b.wDelta - a.wDelta).slice(0, 2);
 
       if (increases.length > 0) {
-        const fmt = x => `${stockLink(x.r)} (<span class="ins-green"><b>+${Math.round(x.chgPct)}%</b></span>)`;
+        const fmt = x => `${stockLink(x.r)} (<span class="ins-green"><b>+${x.sharePct}%</b></span>)`;
         if (increases.length === 1) {
           sentences.push(`${shortName}'s top increase was ${fmt(increases[0])} vs the prior quarter.`);
         } else {
@@ -466,17 +476,23 @@
         sentences.push(`${shortName} had no increases in ${qLabel}.`);
       }
 
-      // ── 4. Top 2 trims (by change in value) ──────────────────────
+      // ── 4. Top 2 trims — detect: valNow < valPrev
+      //    rank: by change in portfolio weight ascending (most negative first)
+      //    display: share-based % change ──────────────────────────
       const trims = active.map(r => {
         const old = prev1.find(p => (r.cusip && p.cusip === r.cusip) || p.company === r.company);
         if (!old || old.shares <= 0) return null;
         const valNow = r.value * mult, valPrev = old.value * mult;
         if (valNow >= valPrev) return null;
-        return { r, chgPct: ((valNow - valPrev) / valPrev) * 100, valDiff: valPrev - valNow };
-      }).filter(Boolean).sort((a, b) => b.valDiff - a.valDiff).slice(0, 2);
+        const wNow  = tv     > 0 ? (r.value   * mult / tv)     * 100 : 0;
+        const wPrev = prev1tv > 0 ? (old.value * mult / prev1tv) * 100 : 0;
+        const wDelta = wNow - wPrev;
+        const sharePct = Math.round(((r.shares - old.shares) / old.shares) * 100);
+        return { r, wDelta, sharePct };
+      }).filter(Boolean).sort((a, b) => a.wDelta - b.wDelta).slice(0, 2);
 
       if (trims.length > 0) {
-        const fmt = x => `${stockLink(x.r)} (<span class="ins-red"><b>${Math.round(x.chgPct)}%</b></span>)`;
+        const fmt = x => `${stockLink(x.r)} (<span class="ins-red"><b>${x.sharePct}%</b></span>)`;
         if (trims.length === 1) {
           sentences.push(`${shortName}'s top trim was ${fmt(trims[0])} vs the prior quarter.`);
         } else {
@@ -486,7 +502,9 @@
         sentences.push(`${shortName} had no trims in ${qLabel}.`);
       }
 
-      // ── 5. Top 2 exits (by prior quarter value) ───────────────────
+      // ── 5. Exits — sorted by prior quarter weight, top 2
+      //    display: prior quarter weight%
+      //    format: "exited TICKER1 (X%) and TICKER2 (Y%)" ──────────
       const exits = prev1
         .filter(p => !active.find(r => (p.cusip && r.cusip === p.cusip) || r.company === p.company) && p.shares > 0)
         .sort((a, b) => (b.value * mult) - (a.value * mult))
@@ -499,7 +517,7 @@
         if (exits.length === 1) {
           sentences.push(`${shortName} exited ${fmt(exits[0])} in ${qLabel}.`);
         } else {
-          sentences.push(`${shortName}'s top 2 exits were ${fmt(exits[0])} and ${fmt(exits[1])} in ${qLabel}.`);
+          sentences.push(`${shortName} exited ${fmt(exits[0])} and ${fmt(exits[1])} in ${qLabel}.`);
         }
       }
 
