@@ -471,17 +471,60 @@
         const repPrice = r => r.shares > 0
           ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
           : null;
-        const fmtNew = r => `${stockLink(r)}${optTag(r.putcall)} (<b>${pct(r.value, tv)}%</b>)`;
-        if (newPos.length === 1) {
-          const p = repPrice(newPos[0]);
+
+        // rank = 1-based position in byWeight (portfolio weight rank)
+        const rank = r => byWeight.findIndex(x => (x.cusip && x.cusip === r.cusip) || x.company === r.company) + 1;
+
+        const fmtNew = (r, includePriceIfSingle) => {
+          const w        = parseFloat(pct(r.value, tv));
+          const isSig    = w > 3;
+          const rk       = rank(r);
+          const rankNote = rk >= 1 && rk <= 5  ? ", now a top 5 holding"
+                         : rk >= 6 && rk <= 10 ? ", now a top 10 holding"
+                         : "";
+          const p        = includePriceIfSingle ? repPrice(r) : null;
           const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
-          sentences.push(`${shortName} initiated a new position in ${fmtNew(newPos[0])}${priceStr}.`);
+          return { isSig, text: `${stockLink(r)}${optTag(r.putcall)} (<b>${pct(r.value, tv)}%</b>)${rankNote}${priceStr}` };
+        };
+
+        if (newPos.length === 1) {
+          const { isSig, text } = fmtNew(newPos[0], true);
+          const sigWord = isSig ? "a significant new position" : "a new position";
+          sentences.push(`${shortName} initiated ${sigWord} in ${text}.`);
         } else {
-          const parts  = newPos.map(fmtNew);
-          const joined = parts.length === 2
-            ? `${parts[0]} and ${parts[1]}`
-            : `${parts[0]}, ${parts[1]}, and ${parts[2]}`;
-          sentences.push(`${shortName} initiated new positions in ${joined} in ${qLabel}.`);
+          // Build each part individually, then join
+          const parts = newPos.map(r => {
+            const { isSig, text } = fmtNew(r, false);
+            return { isSig, text };
+          });
+
+          // Check if any are significant
+          const anySig = parts.some(p => p.isSig);
+          const allSig = parts.every(p => p.isSig);
+
+          let joined;
+          if (!anySig) {
+            // None significant — simple list
+            const strs = parts.map(p => p.text);
+            joined = strs.length === 2
+              ? `new positions in ${strs[0]} and ${strs[1]}`
+              : `new positions in ${strs[0]}, ${strs[1]}, and ${strs[2]}`;
+          } else if (allSig) {
+            // All significant
+            const strs = parts.map(p => p.text);
+            joined = strs.length === 2
+              ? `significant new positions in ${strs[0]} and ${strs[1]}`
+              : `significant new positions in ${strs[0]}, ${strs[1]}, and ${strs[2]}`;
+          } else {
+            // Mixed — label each individually
+            const strs = parts.map(p => p.isSig
+              ? `a significant new position in ${p.text}`
+              : `a new position in ${p.text}`);
+            joined = strs.length === 2
+              ? `${strs[0]} and ${strs[1]}`
+              : `${strs[0]}, ${strs[1]}, and ${strs[2]}`;
+          }
+          sentences.push(`${shortName} initiated ${joined} in ${qLabel}.`);
         }
       }
 
