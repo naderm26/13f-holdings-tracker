@@ -453,8 +453,8 @@
       const fmt3  = top3.map(r => `${stockLink(r)}${optTag(r.putcall)} (<b>${smartRound(w(r))}%</b>)`);
       const pos3  = `${fmt3[0]}, ${fmt3[1]}, and ${fmt3[2]}`;
       const t3str = `<b>${smartRound(top3w)}%</b>`;
-      const t5str = byWeight.length >= 5 ? ` Top 5 positions total <b>${smartRound(top5w)}%</b>.` : "";
-      sentences.push(`${shortName} is ${tier} with top 3 positions in ${pos3}, totaling ${t3str}.${t5str}`);
+      const t5str = byWeight.length >= 5 ? ` Top 5 holdings total <b>${smartRound(top5w)}%</b>.` : "";
+      sentences.push(`${shortName} is ${tier} with its largest investments in ${pos3}, totaling ${t3str}.${t5str}`);
     }
 
     if (prev1) {
@@ -502,12 +502,12 @@
           const { r, isSig, inner } = enriched[0];
           const p       = repPrice(r);
           const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
-          const sigWord  = isSig ? "a significant new position" : "a notable new position";
+          const sigWord  = isSig ? "a significant new position" : "a new stake";
           sentences.push(`${shortName} initiated ${sigWord} in ${stockLink(r)}${optTag(r.putcall)} (${inner})${priceStr}.`);
         } else if (sigList.length === 0) {
           // None significant
           const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
-          sentences.push(`${shortName} initiated notable new positions in ${joinList(strs)} in ${qLabel}.`);
+          sentences.push(`${shortName} opened new stakes in ${joinList(strs)} in ${qLabel}.`);
         } else if (nonSigList.length === 0) {
           // All significant
           const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
@@ -520,8 +520,8 @@
             ? `a significant new position in ${sigStrs[0]}`
             : `significant new positions in ${joinList(sigStrs)}`;
           const nonSigPhrase = nonSigList.length === 1
-            ? `a notable new position in ${nonSigStrs[0]}`
-            : `notable new positions in ${joinList(nonSigStrs)}`;
+            ? `a new stake in ${nonSigStrs[0]}`
+            : `new stakes in ${joinList(nonSigStrs)}`;
           sentences.push(`${shortName} initiated ${sigPhrase} and ${nonSigPhrase} in ${qLabel}.`);
         }
       }
@@ -534,8 +534,8 @@
         if (sp >= 5)  return 3;       // incremental
         return -1;                    // omit
       };
-      const incLabel = tier => ["aggressively added to its position in", "substantially added to its stake in", "meaningfully increased its position in", "incrementally added to its position in"][tier];
-      const decLabel = tier => ["aggressively reduced its position in", "substantially reduced its position in", "meaningfully reduced its position in", "incrementally reduced its position in"][tier];
+      const incLabel = tier => ["aggressively added to its position in", "substantially added to its stake in", "meaningfully increased its position in", "bought more"][tier];
+      const decLabel = tier => ["aggressively reduced its position in", "substantially reduced its position in", "meaningfully reduced its position in", "trimmed"][tier];
 
       // Helper: join list with commas and "and"
       const joinList2 = arr => arr.length === 1 ? arr[0]
@@ -611,9 +611,9 @@
         const fmt = p => `${stockLinkFromCusip(p.cusip, p.company)}${optTag(p.putcall)} (<span class="ins-red"><b>${pct(p.value, prev1tv)}%</b></span>)`;
         const exitStr = joinList2(exits.map(fmt));
         if (exits.length === 1) {
-          sentences.push(`${shortName}'s notable exit was ${exitStr} in ${qLabel}.`);
+          sentences.push(`${shortName} exited ${exitStr} in ${qLabel}.`);
         } else {
-          sentences.push(`${shortName}'s notable exits were ${exitStr} in ${qLabel}.`);
+          sentences.push(`${shortName} exited ${exitStr} in ${qLabel}.`);
         }
       }
 
