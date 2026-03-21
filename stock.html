@@ -60,12 +60,6 @@
     .stock-name { font-size: 1.4rem; font-weight: 500; margin-bottom: 0.3rem; }
     .stock-meta { display: flex; align-items: center; gap: 1.25rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
     .stock-ticker { font-family: var(--mono); font-size: 0.85rem; color: #2563eb; font-weight: 600; }
-    .conviction-badge {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      background: var(--accent-light); border: 1px solid var(--accent);
-      border-radius: 20px; padding: 0.25rem 0.75rem;
-      font-size: 0.75rem; color: var(--accent); font-weight: 500;
-    }
     .price-stats { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
     .pstat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
     .pstat-value { font-family: var(--mono); font-size: 1rem; font-weight: 500; margin-top: 0.1rem; }
@@ -102,6 +96,18 @@
     .putcall.put  { color: var(--red); }
     .putcall.call { color: var(--green); }
     tr.exited td { color: var(--muted); background: #f0ede8; }
+    tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
+    tr.total-row td.col-fund { font-family: var(--sans); font-size: 0.875rem; }
+    /* ── Insights ── */
+    .insights-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 0; margin-bottom: 1.25rem; }
+    .insights { font-size: 0.875rem; line-height: 1.75; color: var(--text); }
+    .insights ul { list-style: none; margin: 0; padding: 0; }
+    .insights li { position: relative; padding-left: 1rem; padding-top: 0.15rem; padding-bottom: 0.15rem; }
+    .insights li::before { content: "•"; position: absolute; left: 0; color: var(--muted); font-size: 0.75rem; top: 0.22rem; }
+    .ins-green { color: var(--green); font-weight: 500; }
+    .ins-red   { color: var(--red); font-weight: 500; }
+    .ins-fund  { color: #2563eb; font-weight: 600; text-decoration: none; }
+    .ins-fund:hover { text-decoration: underline; }
     .loading, .error { text-align: center; padding: 4rem; font-family: var(--mono); font-size: 0.85rem; color: var(--muted); }
     .error { color: #c0392b; }
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
@@ -125,6 +131,7 @@
 
 <main>
   <div id="stock-header"><div class="loading">Loading stock data...</div></div>
+  <div class="insights-wrap"><div class="insights" id="insights"></div></div>
   <div id="table-container"></div>
 </main>
 
@@ -140,8 +147,9 @@
   let sortAsc  = false;
   let stockData  = null;
   let fundsData  = null;
-  let fundTotals = {};       // fid -> total adjusted portfolio value from actual latest CSV
-  let fundActualQ = {};      // fid -> fund's real latest quarter label (from CSV probe)
+  let fundTotals = {};
+  let fundActualQ = {};
+  let fundCount  = 0;
 
   function fmtChg(val) {
     if (val === null)     return `<span class="chg na">—</span>`;
@@ -170,6 +178,13 @@
   function fmtPct(val) {
     if (!val || isNaN(val) || val === 0) return "—";
     return val.toFixed(2) + "%";
+  }
+
+  // Smart rounding: whole number unless rounds to 0, then 1 decimal
+  function smartRound(v) {
+    const r = Math.round(v);
+    if (r === 0 && Math.abs(v) >= 0.05) return parseFloat(v.toFixed(1)).toString();
+    return r.toString();
   }
 
   function fmtShares(n) {
@@ -236,6 +251,126 @@
       }
       return total * mult;
     } catch(e) { return 0; }
+  }
+
+  function renderStockInsights(holdingFunds, stock, fundMap, fundCount, totalFunds) {
+    const el = document.getElementById("insights");
+    if (!el) return;
+
+    const ticker   = stock.ticker || stock.name;
+    const sentences = [];
+
+    // Fund link helper
+    const fundLink = fid => {
+      const f = fundMap[fid];
+      if (!f) return fid;
+      const nm = f.name.match(/^(.+?)\s*\(/) ? f.name.match(/^(.+?)\s*\(/)[1].trim() : f.name;
+      return `<a class="ins-fund" href="fund.html?fund=${fid}">${nm}</a>`;
+    };
+
+    // ── S1: Concentration ────────────────────────────────────────
+    const byPct = [...holdingFunds]
+      .filter(x => fundTotals[x.fid] > 0)
+      .sort((a, b) => (b.latest.value / fundTotals[b.fid]) - (a.latest.value / fundTotals[a.fid]));
+
+    const top2 = byPct.slice(0, 2);
+    const fmtHolder = x => {
+      const pct = smartRound((x.latest.value / fundTotals[x.fid]) * 100);
+      return `${fundLink(x.fid)} (<b>${pct}%</b>)`;
+    };
+    let holdStr = "";
+    if (top2.length === 1)      holdStr = `, with ${fmtHolder(top2[0])} holding the largest stake`;
+    else if (top2.length >= 2)  holdStr = `, with ${fmtHolder(top2[0])} and ${fmtHolder(top2[1])} holding the largest stakes`;
+    sentences.push(`${ticker} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}.`);
+
+    // ── S2: Biggest increases / new positions ────────────────────
+    const increases = holdingFunds.map(x => {
+      const prev = x.prev1;
+      const isNew = !prev || prev.shares === 0;
+      const shareChange = isNew ? x.latest.shares : x.latest.shares - prev.shares;
+      if (shareChange <= 0) return null;
+      const price = x.latest.shares > 0 ? x.latest.value / x.latest.shares : 0;
+      const dollarImpact = shareChange * price;
+      const sharePct = prev && prev.shares > 0 ? (shareChange / prev.shares) * 100 : null;
+      return { fid: x.fid, isNew, sharePct, dollarImpact };
+    }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
+
+    if (increases.length > 0) {
+      const parts = increases.map(x => {
+        if (x.isNew) {
+          const pct = fundTotals[x.fid] > 0
+            ? smartRound((holdingFunds.find(h => h.fid === x.fid)?.latest.value / fundTotals[x.fid]) * 100)
+            : "—";
+          return `${fundLink(x.fid)} initiated a new position at <b>${pct}%</b> of their portfolio`;
+        }
+        return `${fundLink(x.fid)} added to its investment in ${ticker} by <span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>`;
+      });
+      sentences.push(parts.join(", while ") + ".");
+    }
+
+    // ── S3: Biggest reductions / exits ───────────────────────────
+    // Also check exitedFunds for exits
+    const allForDecrease = holdingFunds.map(x => {
+      const prev = x.prev1;
+      if (!prev || prev.shares === 0) return null;
+      const shareChange = x.latest.shares - prev.shares;
+      if (shareChange >= 0) return null;
+      const price = x.latest.shares > 0 ? x.latest.value / x.latest.shares : (prev.value / prev.shares);
+      const dollarImpact = Math.abs(shareChange) * price;
+      const sharePct = (shareChange / prev.shares) * 100;
+      return { fid: x.fid, isExit: false, sharePct, dollarImpact };
+    }).filter(Boolean);
+
+    // Get exited funds from the outer scope via stock data
+    const exitedFids = Object.keys(stock.funds).filter(fid => {
+      const actualLatestQ = fundActualQ[fid];
+      const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
+      const stockLatestQ = stockQs[0];
+      const latestEntry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
+      if (!actualLatestQ || !latestEntry || !latestEntry.shares) return false;
+      if (actualLatestQ === stockLatestQ) return false;
+      const stockLatestQIdx = RECENT_QUARTERS.indexOf(stockLatestQ);
+      const actualQIdx = RECENT_QUARTERS.indexOf(actualLatestQ);
+      return actualQIdx >= 0 && stockLatestQIdx >= 0 && actualQIdx === stockLatestQIdx - 1;
+    });
+
+    const exitItems = exitedFids.map(fid => {
+      const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
+      const stockLatestQ = stockQs[0];
+      const entry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
+      const price = entry && entry.shares > 0 ? entry.value / entry.shares : 0;
+      const dollarImpact = entry ? entry.shares * price : 0;
+      return { fid, isExit: true, sharePct: -100, dollarImpact };
+    });
+
+    const decreases = [...allForDecrease, ...exitItems]
+      .sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
+
+    if (decreases.length > 0) {
+      const parts = decreases.map(x => {
+        if (x.isExit) return `${fundLink(x.fid)} exited its position in ${ticker}`;
+        return `${fundLink(x.fid)} reduced its stake in ${ticker} by <span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>`;
+      });
+      sentences.push(parts.join(", while ") + ".");
+    }
+
+    // ── S4: Net trend ─────────────────────────────────────────────
+    let netShares = 0, prevTotalShares = 0;
+    for (const x of holdingFunds) {
+      if (x.prev1 && x.prev1.shares > 0) {
+        netShares       += x.latest.shares - x.prev1.shares;
+        prevTotalShares += x.prev1.shares;
+      }
+    }
+    if (prevTotalShares > 0) {
+      const netPct = (netShares / prevTotalShares) * 100;
+      const sign   = netPct >= 0 ? "+" : "";
+      const color  = netPct >= 0 ? "var(--green)" : "var(--red)";
+      const verb   = netPct >= 0 ? "increased" : "decreased";
+      sentences.push(`Overall, hedge funds ${verb} their exposure to ${ticker} by <span style="color:${color}"><b>${sign}${smartRound(netPct)}%</b></span> vs the prior quarter.`);
+    }
+
+    el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
   }
 
   function renderTable() {
@@ -359,6 +494,52 @@
         </tr>`;
     }).join("");
 
+    // ── Total row ─────────────────────────────────────────────────
+    const totalShares   = holdingFunds.reduce((s, x) => s + (x.latest?.shares || 0), 0);
+    const totalValue    = holdingFunds.reduce((s, x) => s + (x.latest?.value  || 0), 0);
+
+    // vs prior quarter: net share change / prev total shares (share-based, same as S4)
+    let netShares1 = 0, prevTotal1 = 0;
+    for (const x of holdingFunds) {
+      if (x.prev1 && x.prev1.shares > 0) {
+        netShares1  += x.latest.shares - x.prev1.shares;
+        prevTotal1  += x.prev1.shares;
+      }
+    }
+    // vs prior year
+    let netShares4 = 0, prevTotal4 = 0;
+    for (const x of holdingFunds) {
+      if (x.prev4 && x.prev4.shares > 0) {
+        netShares4 += x.latest.shares - x.prev4.shares;
+        prevTotal4 += x.prev4.shares;
+      }
+    }
+    const totalChg1 = prevTotal1 > 0 ? (netShares1 / prevTotal1) * 100 : null;
+    const totalChg4 = prevTotal4 > 0 ? (netShares4 / prevTotal4) * 100 : null;
+
+    const fmtTotalChg = v => {
+      if (v === null) return "—";
+      const sign = v >= 0 ? "+" : "";
+      const cls  = v >= 0 ? "pos" : "neg";
+      return `<span class="chg ${cls}">${sign}${smartRound(v)}%</span>`;
+    };
+
+    const totalRow = `
+      <tr class="total-row">
+        <td class="col-num num">${holdingFunds.length}</td>
+        <td class="col-fund">Total</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">${fmtShares(totalShares)}</td>
+        <td class="col-data num">${fmtTotalChg(totalChg1)}</td>
+        <td class="col-data num">${fmtTotalChg(totalChg4)}</td>
+        <td class="col-data num">${fmtVal(totalValue)}</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">—</td>
+      </tr>`;
+
+    // Call insights now that holdingFunds is fully built
+    renderStockInsights(holdingFunds, stock, fundMap, fundCount, fundsData.length);
+
     document.getElementById("table-container").innerHTML = `
       <div class="table-wrap">
       <table>
@@ -375,7 +556,7 @@
             <th class="col-data num">Option</th>
           </tr>
         </thead>
-        <tbody>${rowsHtml}${exitedHtml}</tbody>
+        <tbody>${rowsHtml}${exitedHtml}${totalRow}</tbody>
       </table>
       </div>
       <div style="font-family:var(--mono); font-size:0.68rem; color:var(--muted); margin-top:0.75rem">
@@ -412,8 +593,8 @@
         fundTotals[fid]   = await fetchFundTotal(fid, actualQ, mult);
       }));
 
-      // Fund count = funds currently holding (actual latest Q matches stock_index latest Q with shares > 0)
-      let fundCount = 0;
+      // Fund count = funds currently holding
+      fundCount = 0;
       for (const fid of Object.keys(stock.funds)) {
         const actualQ    = fundActualQ[fid];
         const stockQs    = Object.keys(stock.funds[fid].quarters).sort().reverse();
@@ -430,7 +611,6 @@
         <div class="stock-name">${stock.name}</div>
         <div class="stock-meta">
           ${stock.ticker ? `<span class="stock-ticker">${stock.ticker}</span>` : ""}
-          <span class="conviction-badge">🏦 Held by ${fundCount} of ${funds.length} tracked funds</span>
         </div>`;
 
       renderTable();
