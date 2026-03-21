@@ -285,7 +285,12 @@
     let holdStr = "";
     if (top2.length === 1)     holdStr = `, with ${fmtHolder(top2[0])} holding the largest stake`;
     else if (top2.length >= 2) holdStr = `, with ${fmtHolder(top2[0])} and ${fmtHolder(top2[1])} holding the largest stakes`;
-    sentences.push(`${stockLabel} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}.`);
+    const ownershipRatio = totalFunds > 0 ? (fundCount / totalFunds) * 100 : 0;
+    const interestTier = ownershipRatio >= 30 ? "high"
+                       : ownershipRatio >= 20 ? "elevated"
+                       : ownershipRatio >= 10 ? "moderate"
+                       : "limited";
+    sentences.push(`${stockLabel} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}, indicating <b>${interestTier}</b> hedge fund interest relative to peers.`);
 
     // ── S2: Biggest increases / new positions ────────────────────
     const increases = holdingFunds.map(x => {
@@ -312,14 +317,14 @@
           }
           return `${fundLink(x.fid)} added to its investment in ${stockLabel} by <span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>`;
         });
-        sentences.push(parts.join(", while ") + ".");
+        sentences.push(parts.join(", while ") + ", highlighting conviction.");
       } else {
         // No new positions — fallback: "biggest increases came from"
         const parts = increases.map(x =>
           `${fundLink(x.fid)} (<span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>)`
         );
         const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
-        sentences.push(`The biggest increases in ${stockLabel} holdings came from ${joined}.`);
+        sentences.push(`The biggest increases in ${stockLabel} holdings came from ${joined}, highlighting conviction.`);
       }
     }
 
@@ -598,7 +603,7 @@
       </table>
       </div>
       <div style="font-family:var(--mono); font-size:0.68rem; color:var(--muted); margin-top:0.75rem">
-        * Price at last filing is calculated by dividing the reported value by shares held at quarter end. It represents the implied average price per share, not an actual purchase or sale price.
+        * Price at last filing is not an actual purchase or sale price. It is the price as of the last holdings date, calculated by dividing the reported value by the number of shares held.
       </div>`;
   }
 
@@ -641,15 +646,22 @@
         if (actualQ === stockLatestQ && entry && entry.shares > 0) fundCount++;
       }
 
+      // Derive latest quarter label for title e.g. "2025Q4" → "2025 Q4"
+      const allQ = new Set();
+      for (const fid of Object.keys(stock.funds))
+        Object.keys(stock.funds[fid].quarters).forEach(q => allQ.add(q));
+      const latestQLabel = Array.from(allQ).sort().reverse()[0] || "";
+      const qShort = latestQLabel
+        ? `${latestQLabel.split("Q")[0]} Q${latestQLabel.split("Q")[1]}`
+        : "";
+
       const desc = `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""}. Track position sizes, portfolio weights, and quarterly changes from 13F filings.`;
-      document.title = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Who Owns It | 13FAI`;
+      const titleStr = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Hedge fund ownership${qShort ? ` — ${qShort}` : ""}`;
+      document.title = titleStr;
       document.querySelector('meta[name="description"]').setAttribute("content", desc);
 
       document.getElementById("stock-header").innerHTML = `
-        <div class="stock-name">${stock.name}</div>
-        <div class="stock-meta">
-          ${stock.ticker ? `<span class="stock-ticker">${stock.ticker}</span>` : ""}
-        </div>`;
+        <div class="stock-name">${titleStr}</div>`;
 
       renderTable();
     }).catch(e => {
