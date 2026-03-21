@@ -257,10 +257,14 @@
     const el = document.getElementById("insights");
     if (!el) return;
 
-    const ticker   = stock.ticker || stock.name;
+    // Full name (ticker) format e.g. "Amazon (AMZN)"
+    const stockLabel = stock.ticker && stock.ticker !== stock.name
+      ? `${stock.name} (${stock.ticker})`
+      : stock.name;
+
     const sentences = [];
 
-    // Fund link helper
+    // Fund link helper — full fund short name, blue, links to fund page
     const fundLink = fid => {
       const f = fundMap[fid];
       if (!f) return fid;
@@ -279,9 +283,9 @@
       return `${fundLink(x.fid)} (<b>${pct}%</b>)`;
     };
     let holdStr = "";
-    if (top2.length === 1)      holdStr = `, with ${fmtHolder(top2[0])} holding the largest stake`;
-    else if (top2.length >= 2)  holdStr = `, with ${fmtHolder(top2[0])} and ${fmtHolder(top2[1])} holding the largest stakes`;
-    sentences.push(`${ticker} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}.`);
+    if (top2.length === 1)     holdStr = `, with ${fmtHolder(top2[0])} holding the largest stake`;
+    else if (top2.length >= 2) holdStr = `, with ${fmtHolder(top2[0])} and ${fmtHolder(top2[1])} holding the largest stakes`;
+    sentences.push(`${stockLabel} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}.`);
 
     // ── S2: Biggest increases / new positions ────────────────────
     const increases = holdingFunds.map(x => {
@@ -296,20 +300,30 @@
     }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
 
     if (increases.length > 0) {
-      const parts = increases.map(x => {
-        if (x.isNew) {
-          const pct = fundTotals[x.fid] > 0
-            ? smartRound((holdingFunds.find(h => h.fid === x.fid)?.latest.value / fundTotals[x.fid]) * 100)
-            : "—";
-          return `${fundLink(x.fid)} initiated a new position at <b>${pct}%</b> of their portfolio`;
-        }
-        return `${fundLink(x.fid)} added to its investment in ${ticker} by <span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>`;
-      });
-      sentences.push(parts.join(", while ") + ".");
+      const hasNew = increases.some(x => x.isNew);
+      if (hasNew) {
+        // At least one new position — use "initiated" sentence structure
+        const parts = increases.map(x => {
+          if (x.isNew) {
+            const pct = fundTotals[x.fid] > 0
+              ? smartRound((holdingFunds.find(h => h.fid === x.fid)?.latest.value / fundTotals[x.fid]) * 100)
+              : "—";
+            return `${fundLink(x.fid)} initiated a new position at <b>${pct}%</b> of its portfolio`;
+          }
+          return `${fundLink(x.fid)} added to its investment in ${stockLabel} by <span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>`;
+        });
+        sentences.push(parts.join(", while ") + ".");
+      } else {
+        // No new positions — fallback: "biggest increases came from"
+        const parts = increases.map(x =>
+          `${fundLink(x.fid)} (<span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>)`
+        );
+        const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
+        sentences.push(`The biggest increases in ${stockLabel} holdings came from ${joined}.`);
+      }
     }
 
     // ── S3: Biggest reductions / exits ───────────────────────────
-    // Also check exitedFunds for exits
     const allForDecrease = holdingFunds.map(x => {
       const prev = x.prev1;
       if (!prev || prev.shares === 0) return null;
@@ -321,7 +335,6 @@
       return { fid: x.fid, isExit: false, sharePct, dollarImpact };
     }).filter(Boolean);
 
-    // Get exited funds from the outer scope via stock data
     const exitedFids = Object.keys(stock.funds).filter(fid => {
       const actualLatestQ = fundActualQ[fid];
       const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
@@ -347,27 +360,52 @@
       .sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
 
     if (decreases.length > 0) {
-      const parts = decreases.map(x => {
-        if (x.isExit) return `${fundLink(x.fid)} exited its position in ${ticker}`;
-        return `${fundLink(x.fid)} reduced its stake in ${ticker} by <span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>`;
-      });
-      sentences.push(parts.join(", while ") + ".");
-    }
-
-    // ── S4: Net trend ─────────────────────────────────────────────
-    let netShares = 0, prevTotalShares = 0;
-    for (const x of holdingFunds) {
-      if (x.prev1 && x.prev1.shares > 0) {
-        netShares       += x.latest.shares - x.prev1.shares;
-        prevTotalShares += x.prev1.shares;
+      const hasExit = decreases.some(x => x.isExit);
+      if (hasExit) {
+        // At least one exit — use "exited" sentence structure
+        const parts = decreases.map(x => {
+          if (x.isExit) return `${fundLink(x.fid)} exited its position in ${stockLabel}`;
+          return `${fundLink(x.fid)} reduced its stake in ${stockLabel} by <span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>`;
+        });
+        sentences.push(parts.join(", while ") + ".");
+      } else {
+        // No exits — fallback: "biggest decreases came from"
+        const parts = decreases.map(x =>
+          `${fundLink(x.fid)} (<span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>)`
+        );
+        const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
+        sentences.push(`The biggest decreases in ${stockLabel} holdings came from ${joined}.`);
       }
     }
-    if (prevTotalShares > 0) {
-      const netPct = (netShares / prevTotalShares) * 100;
-      const sign   = netPct >= 0 ? "+" : "";
-      const color  = netPct >= 0 ? "var(--green)" : "var(--red)";
-      const verb   = netPct >= 0 ? "increased" : "decreased";
-      sentences.push(`Overall, hedge funds ${verb} their exposure to ${ticker} by <span style="color:${color}"><b>${sign}${smartRound(netPct)}%</b></span> vs the prior quarter.`);
+
+    // ── S4: Net trend — share-based, vs prior quarter AND prior year ─
+    let netShares1 = 0, prevTotal1 = 0;
+    let netShares4 = 0, prevTotal4 = 0;
+    for (const x of holdingFunds) {
+      if (x.prev1 && x.prev1.shares > 0) {
+        netShares1  += x.latest.shares - x.prev1.shares;
+        prevTotal1  += x.prev1.shares;
+      }
+      if (x.prev4 && x.prev4.shares > 0) {
+        netShares4 += x.latest.shares - x.prev4.shares;
+        prevTotal4 += x.prev4.shares;
+      }
+    }
+    if (prevTotal1 > 0) {
+      const netPct1  = (netShares1 / prevTotal1) * 100;
+      const sign1    = netPct1 >= 0 ? "+" : "";
+      const color1   = netPct1 >= 0 ? "var(--green)" : "var(--red)";
+      const verb     = netPct1 >= 0 ? "increased" : "decreased";
+      const qStr     = `<span style="color:${color1}"><b>${sign1}${smartRound(netPct1)}%</b></span> vs the prior quarter`;
+
+      let yearStr = "";
+      if (prevTotal4 > 0) {
+        const netPct4 = (netShares4 / prevTotal4) * 100;
+        const sign4   = netPct4 >= 0 ? "+" : "";
+        const color4  = netPct4 >= 0 ? "var(--green)" : "var(--red)";
+        yearStr = ` and <span style="color:${color4}"><b>${sign4}${smartRound(netPct4)}%</b></span> vs prior year`;
+      }
+      sentences.push(`Overall, hedge funds ${verb} its exposure to ${stockLabel} by ${qStr}${yearStr}.`);
     }
 
     el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
