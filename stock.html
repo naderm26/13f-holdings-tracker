@@ -257,10 +257,11 @@
     const el = document.getElementById("insights");
     if (!el) return;
 
-    // Full name (ticker) format e.g. "Amazon (AMZN)"
+    // Full name for S1, ticker only for all subsequent sentences
     const stockLabel = stock.ticker && stock.ticker !== stock.name
       ? `${stock.name} (${stock.ticker})`
       : stock.name;
+    const shortTicker = stock.ticker || stock.name;
 
     const sentences = [];
 
@@ -307,7 +308,7 @@
     if (newPos.length > 0) {
       const fmtNew = x => {
         const pct = smartRound((x.latest.value / fundTotals[x.fid]) * 100);
-        return `${fundLink(x.fid)} initiated a new position at <b>${pct}%</b> of its portfolio`;
+        return `${fundLink(x.fid)} initiated a new position in ${shortTicker} at <b>${pct}%</b> of its portfolio`;
       };
       if (newPos.length === 1) {
         sentences.push(`${fmtNew(newPos[0])}.`);
@@ -334,7 +335,7 @@
         `${fundLink(x.fid)} (<span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>)`
       );
       const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
-      sentences.push(`The biggest increases in ${stockLabel} holdings came from ${joined}, highlighting conviction.`);
+      sentences.push(`The biggest increases in ${shortTicker} holdings came from ${joined}, highlighting conviction.`);
     }
 
     // ── S4: Biggest decreases (shares down, not exits, top 2) ────
@@ -353,7 +354,7 @@
         `${fundLink(x.fid)} (<span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>)`
       );
       const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
-      sentences.push(`The biggest decreases in ${stockLabel} holdings came from ${joined}.`);
+      sentences.push(`The biggest decreases in ${shortTicker} holdings came from ${joined}.`);
     }
 
     // ── S5: Exits ────────────────────────────────────────────────
@@ -388,7 +389,7 @@
         : `led by ${fmtExit(top2exits[0])} and ${fmtExit(top2exits[1])}`;
       const exitCount = exitedFids.length;
       const fundWord = exitCount === 1 ? "hedge fund" : "hedge funds";
-      sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${stockLabel}, ${ledBy}.`);
+      sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${shortTicker}, ${ledBy}.`);
     }
 
     // ── Net trend (S after exits) ─────────────────────────────────
@@ -417,7 +418,7 @@
         const color4  = netPct4 >= 0 ? "var(--green)" : "var(--red)";
         yearStr = ` and <span style="color:${color4}"><b>${sign4}${smartRound(netPct4)}%</b></span> vs prior year`;
       }
-      sentences.push(`Overall, hedge funds ${verb} its exposure to ${stockLabel} by ${qStr}${yearStr}.`);
+      sentences.push(`Overall, hedge funds ${verb} exposure to ${stockLabel} by ${qStr}${yearStr}.`);
     }
 
     el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
