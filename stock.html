@@ -382,17 +382,22 @@
           ? (entry.value / priorTotal) * 100
           : 0;
         return { fid, entry, prevPortPct };
-      }).filter(x => x.prevPortPct >= 1).sort((a, b) => b.prevPortPct - a.prevPortPct);
+      }).sort((a, b) => b.prevPortPct - a.prevPortPct);
 
       if (exitsSorted.length > 0) {
-        const top2exits = exitsSorted.slice(0, 2);
-        const fmtExit = x => `${fundLink(x.fid)} (<b>${smartRound(x.prevPortPct)}%</b>)`;
-        const ledBy = top2exits.length === 1
-          ? `led by ${fmtExit(top2exits[0])}`
-          : `led by ${fmtExit(top2exits[0])} and ${fmtExit(top2exits[1])}`;
-        const exitCount = exitsSorted.length;
-        const fundWord = exitCount === 1 ? "hedge fund" : "hedge funds";
-        sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${shortTicker}, ${ledBy}.`);
+        const exitCount = exitsSorted.length; // count ALL exits
+        const fundWord  = exitCount === 1 ? "hedge fund" : "hedge funds";
+        // Only list funds with prior weight >= 1% in "led by"
+        const notable   = exitsSorted.filter(x => x.prevPortPct >= 1).slice(0, 2);
+        const fmtExit   = x => `${fundLink(x.fid)} (<b>${smartRound(x.prevPortPct)}%</b>)`;
+        let ledBy = "";
+        if (notable.length > 0) {
+          const listed = notable.length === 1
+            ? fmtExit(notable[0])
+            : `${fmtExit(notable[0])} and ${fmtExit(notable[1])}`;
+          ledBy = `, led by ${listed}`;
+        }
+        sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${shortTicker}${ledBy}.`);
       }
     }
 
