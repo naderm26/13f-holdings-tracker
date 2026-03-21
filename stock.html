@@ -293,7 +293,7 @@
                        : ownershipRatio >= 20 ? "elevated"
                        : ownershipRatio >= 10 ? "moderate"
                        : "limited";
-    sentences.push(`${stockLabel} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}, indicating <b>${interestTier}</b> hedge fund interest relative to peers.`);
+    sentences.push(`${stockLabel} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}, indicating ${interestTier} hedge fund interest relative to peers.`);
 
     // ── S2: New positions (weight >= 1%, top 3) ──────────────────
     const newPos = holdingFunds
@@ -315,8 +315,9 @@
       const parts  = newPos.map(fmtNew);
       const joined = parts.length === 1 ? parts[0]
         : parts.slice(0, -1).join(", ") + ", and " + parts[parts.length - 1];
+      const noun = parts.length === 1 ? "New position" : "New positions";
       const verb = parts.length === 1 ? "was initiated" : "were initiated";
-      sentences.push(`New positions in ${shortTicker} stock ${verb} by ${joined}.`);
+      sentences.push(`${noun} in ${shortTicker} stock ${verb} by ${joined}.`);
     }
 
     // ── S3: Biggest increases (shares up, no new positions, top 2) ──
@@ -381,16 +382,18 @@
           ? (entry.value / priorTotal) * 100
           : 0;
         return { fid, entry, prevPortPct };
-      }).sort((a, b) => b.prevPortPct - a.prevPortPct);
+      }).filter(x => x.prevPortPct >= 1).sort((a, b) => b.prevPortPct - a.prevPortPct);
 
-      const top2exits = exitsSorted.slice(0, 2);
-      const fmtExit = x => `${fundLink(x.fid)} (<b>${smartRound(x.prevPortPct)}%</b>)`;
-      const ledBy = top2exits.length === 1
-        ? `led by ${fmtExit(top2exits[0])}`
-        : `led by ${fmtExit(top2exits[0])} and ${fmtExit(top2exits[1])}`;
-      const exitCount = exitedFids.length;
-      const fundWord = exitCount === 1 ? "hedge fund" : "hedge funds";
-      sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${shortTicker}, ${ledBy}.`);
+      if (exitsSorted.length > 0) {
+        const top2exits = exitsSorted.slice(0, 2);
+        const fmtExit = x => `${fundLink(x.fid)} (<b>${smartRound(x.prevPortPct)}%</b>)`;
+        const ledBy = top2exits.length === 1
+          ? `led by ${fmtExit(top2exits[0])}`
+          : `led by ${fmtExit(top2exits[0])} and ${fmtExit(top2exits[1])}`;
+        const exitCount = exitsSorted.length;
+        const fundWord = exitCount === 1 ? "hedge fund" : "hedge funds";
+        sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${shortTicker}, ${ledBy}.`);
+      }
     }
 
     // ── Net trend (S after exits) ─────────────────────────────────
