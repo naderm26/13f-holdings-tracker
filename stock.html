@@ -292,54 +292,71 @@
                        : "limited";
     sentences.push(`${stockLabel} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}, indicating <b>${interestTier}</b> hedge fund interest relative to peers.`);
 
-    // ── S2: Biggest increases / new positions ────────────────────
-    const increases = holdingFunds.map(x => {
-      const prev = x.prev1;
-      const isNew = !prev || prev.shares === 0;
-      const shareChange = isNew ? x.latest.shares : x.latest.shares - prev.shares;
-      if (shareChange <= 0) return null;
-      const price = x.latest.shares > 0 ? x.latest.value / x.latest.shares : 0;
-      const dollarImpact = shareChange * price;
-      const sharePct = prev && prev.shares > 0 ? (shareChange / prev.shares) * 100 : null;
-      return { fid: x.fid, isNew, sharePct, dollarImpact };
-    }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
+    // ── S2: New positions (weight >= 1%, top 3) ──────────────────
+    const newPos = holdingFunds
+      .filter(x => {
+        const prev = x.prev1;
+        const isNew = !prev || prev.shares === 0;
+        if (!isNew) return false;
+        const portPct = fundTotals[x.fid] > 0 ? (x.latest.value / fundTotals[x.fid]) * 100 : 0;
+        return portPct >= 1;
+      })
+      .sort((a, b) => (b.latest.value / (fundTotals[b.fid] || 1)) - (a.latest.value / (fundTotals[a.fid] || 1)))
+      .slice(0, 3);
 
-    if (increases.length > 0) {
-      const hasNew = increases.some(x => x.isNew);
-      if (hasNew) {
-        // At least one new position — use "initiated" sentence structure
-        const parts = increases.map(x => {
-          if (x.isNew) {
-            const pct = fundTotals[x.fid] > 0
-              ? smartRound((holdingFunds.find(h => h.fid === x.fid)?.latest.value / fundTotals[x.fid]) * 100)
-              : "—";
-            return `${fundLink(x.fid)} initiated a new position at <b>${pct}%</b> of its portfolio`;
-          }
-          return `${fundLink(x.fid)} added to its investment in ${stockLabel} by <span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>`;
-        });
-        sentences.push(parts.join(", while ") + ", highlighting conviction.");
+    if (newPos.length > 0) {
+      const fmtNew = x => {
+        const pct = smartRound((x.latest.value / fundTotals[x.fid]) * 100);
+        return `${fundLink(x.fid)} initiated a new position at <b>${pct}%</b> of its portfolio`;
+      };
+      if (newPos.length === 1) {
+        sentences.push(`${fmtNew(newPos[0])}.`);
       } else {
-        // No new positions — fallback: "biggest increases came from"
-        const parts = increases.map(x =>
-          `${fundLink(x.fid)} (<span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>)`
-        );
-        const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
-        sentences.push(`The biggest increases in ${stockLabel} holdings came from ${joined}, highlighting conviction.`);
+        const parts = newPos.map(fmtNew);
+        const joined = parts.slice(0, -1).join(", ") + ", and " + parts[parts.length - 1];
+        sentences.push(`${joined}.`);
       }
     }
 
-    // ── S3: Biggest reductions / exits ───────────────────────────
-    const allForDecrease = holdingFunds.map(x => {
+    // ── S3: Biggest increases (shares up, no new positions, top 2) ──
+    const increases = holdingFunds.map(x => {
       const prev = x.prev1;
-      if (!prev || prev.shares === 0) return null;
+      if (!prev || prev.shares === 0 || x.latest.shares <= prev.shares) return null;
       const shareChange = x.latest.shares - prev.shares;
-      if (shareChange >= 0) return null;
+      const price = x.latest.shares > 0 ? x.latest.value / x.latest.shares : 0;
+      const dollarImpact = shareChange * price;
+      const sharePct = (shareChange / prev.shares) * 100;
+      return { fid: x.fid, sharePct, dollarImpact };
+    }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
+
+    if (increases.length > 0) {
+      const parts = increases.map(x =>
+        `${fundLink(x.fid)} (<span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>)`
+      );
+      const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
+      sentences.push(`The biggest increases in ${stockLabel} holdings came from ${joined}, highlighting conviction.`);
+    }
+
+    // ── S4: Biggest decreases (shares down, not exits, top 2) ────
+    const decreases = holdingFunds.map(x => {
+      const prev = x.prev1;
+      if (!prev || prev.shares === 0 || x.latest.shares >= prev.shares) return null;
+      const shareChange = x.latest.shares - prev.shares;
       const price = x.latest.shares > 0 ? x.latest.value / x.latest.shares : (prev.value / prev.shares);
       const dollarImpact = Math.abs(shareChange) * price;
       const sharePct = (shareChange / prev.shares) * 100;
-      return { fid: x.fid, isExit: false, sharePct, dollarImpact };
-    }).filter(Boolean);
+      return { fid: x.fid, sharePct, dollarImpact };
+    }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
 
+    if (decreases.length > 0) {
+      const parts = decreases.map(x =>
+        `${fundLink(x.fid)} (<span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>)`
+      );
+      const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
+      sentences.push(`The biggest decreases in ${stockLabel} holdings came from ${joined}.`);
+    }
+
+    // ── S5: Exits ────────────────────────────────────────────────
     const exitedFids = Object.keys(stock.funds).filter(fid => {
       const actualLatestQ = fundActualQ[fid];
       const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
@@ -352,44 +369,35 @@
       return actualQIdx >= 0 && stockLatestQIdx >= 0 && actualQIdx === stockLatestQIdx - 1;
     });
 
-    const exitItems = exitedFids.map(fid => {
-      const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
-      const stockLatestQ = stockQs[0];
-      const entry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
-      const price = entry && entry.shares > 0 ? entry.value / entry.shares : 0;
-      const dollarImpact = entry ? entry.shares * price : 0;
-      return { fid, isExit: true, sharePct: -100, dollarImpact };
-    });
+    if (exitedFids.length > 0) {
+      // Sort by prior quarter portfolio weight, show top 2
+      const exitsSorted = exitedFids.map(fid => {
+        const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
+        const stockLatestQ = stockQs[0];
+        const entry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
+        const prevPortPct = (entry && fundTotals[fid] > 0)
+          ? (entry.value / fundTotals[fid]) * 100
+          : 0;
+        return { fid, entry, prevPortPct };
+      }).sort((a, b) => b.prevPortPct - a.prevPortPct);
 
-    const decreases = [...allForDecrease, ...exitItems]
-      .sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
-
-    if (decreases.length > 0) {
-      const hasExit = decreases.some(x => x.isExit);
-      if (hasExit) {
-        // At least one exit — use "exited" sentence structure
-        const parts = decreases.map(x => {
-          if (x.isExit) return `${fundLink(x.fid)} exited its position in ${stockLabel}`;
-          return `${fundLink(x.fid)} reduced its stake in ${stockLabel} by <span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>`;
-        });
-        sentences.push(parts.join(", while ") + ".");
-      } else {
-        // No exits — fallback: "biggest decreases came from"
-        const parts = decreases.map(x =>
-          `${fundLink(x.fid)} (<span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>)`
-        );
-        const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
-        sentences.push(`The biggest decreases in ${stockLabel} holdings came from ${joined}.`);
-      }
+      const top2exits = exitsSorted.slice(0, 2);
+      const fmtExit = x => `${fundLink(x.fid)} (<b>${smartRound(x.prevPortPct)}%</b>)`;
+      const ledBy = top2exits.length === 1
+        ? `led by ${fmtExit(top2exits[0])}`
+        : `led by ${fmtExit(top2exits[0])} and ${fmtExit(top2exits[1])}`;
+      const exitCount = exitedFids.length;
+      const fundWord = exitCount === 1 ? "hedge fund" : "hedge funds";
+      sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${stockLabel}, ${ledBy}.`);
     }
 
-    // ── S4: Net trend — share-based, vs prior quarter AND prior year ─
+    // ── Net trend (S after exits) ─────────────────────────────────
     let netShares1 = 0, prevTotal1 = 0;
     let netShares4 = 0, prevTotal4 = 0;
     for (const x of holdingFunds) {
       if (x.prev1 && x.prev1.shares > 0) {
-        netShares1  += x.latest.shares - x.prev1.shares;
-        prevTotal1  += x.prev1.shares;
+        netShares1 += x.latest.shares - x.prev1.shares;
+        prevTotal1 += x.prev1.shares;
       }
       if (x.prev4 && x.prev4.shares > 0) {
         netShares4 += x.latest.shares - x.prev4.shares;
@@ -397,13 +405,12 @@
       }
     }
     if (prevTotal1 > 0) {
-      const netPct1  = (netShares1 / prevTotal1) * 100;
-      const sign1    = netPct1 >= 0 ? "+" : "";
-      const color1   = netPct1 >= 0 ? "var(--green)" : "var(--red)";
-      const verb     = netPct1 >= 0 ? "increased" : "decreased";
-      const qStr     = `<span style="color:${color1}"><b>${sign1}${smartRound(netPct1)}%</b></span> vs the prior quarter`;
-
-      let yearStr = "";
+      const netPct1 = (netShares1 / prevTotal1) * 100;
+      const sign1   = netPct1 >= 0 ? "+" : "";
+      const color1  = netPct1 >= 0 ? "var(--green)" : "var(--red)";
+      const verb    = netPct1 >= 0 ? "increased" : "decreased";
+      const qStr    = `<span style="color:${color1}"><b>${sign1}${smartRound(netPct1)}%</b></span> vs the prior quarter`;
+      let yearStr   = "";
       if (prevTotal4 > 0) {
         const netPct4 = (netShares4 / prevTotal4) * 100;
         const sign4   = netPct4 >= 0 ? "+" : "";
