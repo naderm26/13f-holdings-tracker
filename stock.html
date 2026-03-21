@@ -151,6 +151,7 @@
   let fundActualQ = {};
   let fundCount  = 0;
   let fundPriorTotals = {}; // fid -> total portfolio value at the quarter stock was last held
+  let fundHasFiledQ   = {}; // fid -> Set of quarter labels the fund has filed
 
   function fmtChg(val) {
     if (val === null)     return `<span class="chg na">—</span>`;
@@ -453,8 +454,13 @@
 
       if (actualLatestQ === stockLatestQ && latestEntry && latestEntry.shares > 0) {
         // Fund's actual latest filing matches their latest stock_index entry → current holder
-        holdingFunds.push({ fid, fund, latest: latestEntry, prev1, prev4,
-          hasPrev1: stockPrevQ !== null, hasPrev4: stockPrevYearQ !== null });
+        // hasPrev1: did fund file the quarter before stockLatestQ?
+        const sqIdx   = RECENT_QUARTERS.indexOf(stockLatestQ);
+        const prevQ   = sqIdx >= 0 && sqIdx + 1 < RECENT_QUARTERS.length ? RECENT_QUARTERS[sqIdx + 1] : null;
+        const pyQ     = sqIdx >= 0 && sqIdx + 4 < RECENT_QUARTERS.length ? RECENT_QUARTERS[sqIdx + 4] : null;
+        const hasPrev1 = prevQ   ? (fundHasFiledQ[fid]?.has(prevQ)   || false) : false;
+        const hasPrev4 = pyQ     ? (fundHasFiledQ[fid]?.has(pyQ)     || false) : false;
+        holdingFunds.push({ fid, fund, latest: latestEntry, prev1, prev4, hasPrev1, hasPrev4 });
       } else if (latestEntry && latestEntry.shares > 0 && actualLatestQ !== stockLatestQ) {
         // Fund has filed more recently but this stock doesn't appear → exited last quarter
         // Only show as exited if they held it in the most recent stock_index quarter
@@ -643,6 +649,7 @@
         if (!actualQ) return;
         fundActualQ[fid] = actualQ;
         fundTotals[fid]  = await fetchFundTotal(fid, actualQ, mult);
+
         // Also fetch total for the quarter this stock was last held (for exit % calculation)
         const stockQs      = Object.keys(stock.funds[fid].quarters).sort().reverse();
         const stockLatestQ = stockQs[0];
@@ -650,6 +657,31 @@
           fundPriorTotals[fid] = await fetchFundTotal(fid, stockLatestQ, mult);
         } else {
           fundPriorTotals[fid] = fundTotals[fid];
+        }
+
+        // Probe which quarters this fund has filed — check the quarter before stockLatestQ
+        // and the prior year quarter, so we can correctly show NEW vs — in the table
+        fundHasFiledQ[fid] = new Set();
+        fundHasFiledQ[fid].add(actualQ); // we know they filed this one
+        if (stockLatestQ) {
+          // Check one quarter before stockLatestQ
+          const sqIdx = RECENT_QUARTERS.indexOf(stockLatestQ);
+          if (sqIdx >= 0 && sqIdx + 1 < RECENT_QUARTERS.length) {
+            const prevQ = RECENT_QUARTERS[sqIdx + 1];
+            try {
+              const r = await fetch(`${PAGES}/data/${fid}_${prevQ}.csv`, { method: 'HEAD' });
+              if (r.ok) fundHasFiledQ[fid].add(prevQ);
+            } catch(e) { /* skip */ }
+          }
+          // Check prior year quarter (4 quarters back)
+          const pyIdx = sqIdx + 4;
+          if (pyIdx < RECENT_QUARTERS.length) {
+            const prevYearQ = RECENT_QUARTERS[pyIdx];
+            try {
+              const r = await fetch(`${PAGES}/data/${fid}_${prevYearQ}.csv`, { method: 'HEAD' });
+              if (r.ok) fundHasFiledQ[fid].add(prevYearQ);
+            } catch(e) { /* skip */ }
+          }
         }
       }));
 
