@@ -35,6 +35,11 @@ if os.path.exists("cusip_to_ticker.json"):
 
 stock_index = {}
 
+# fund_totals: { "berkshire": { "2025Q4": 300000000000, ... }, ... }
+# Stores total portfolio value per fund per quarter (after multiplier applied).
+# Used by the frontend to compute each fund's % weight for a given stock.
+fund_totals = defaultdict(dict)
+
 # Process all CSVs — only most recent 8 quarters per fund
 fund_quarters = defaultdict(list)
 for csv_file in sorted(glob.glob("data/*.csv")):
@@ -78,6 +83,10 @@ for fid, quarter_files in fund_quarters.items():
 
                     if not cusip or not company:
                         continue
+
+                    # Accumulate fund total (plain equity rows only, no options)
+                    if not putcall:
+                        fund_totals[fid][ql] = fund_totals[fid].get(ql, 0) + value
 
                     g = cusip_groups[cusip]
                     if not g["company"]:
@@ -131,6 +140,6 @@ for fid, quarter_files in fund_quarters.items():
             print(f"Error processing {csv_file}: {e}")
 
 with open("stock_index.json", "w") as f:
-    json.dump(stock_index, f)
+    json.dump({"stocks": stock_index, "fund_totals": fund_totals}, f)
 
 print(f"Done. Indexed {len(stock_index)} unique stocks across all funds.")
