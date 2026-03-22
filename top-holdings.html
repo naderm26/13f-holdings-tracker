@@ -1,0 +1,455 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Stocks Held by Hedge Funds (Latest 13F Data) | 13FAI</title>
+  <meta name="description" content="The most popular stocks held by hedge funds based on latest 13F filings. See which stocks top fund managers are buying."/>
+  <meta property="og:title" content="Top Stocks Held by Hedge Funds (Latest 13F Data)"/>
+  <meta property="og:description" content="The most popular stocks held by hedge funds based on latest 13F filings."/>
+  <meta property="og:type" content="website"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f7f6f3; --border: #e8e6e1;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1.5rem 3rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
+    .brand-sub:hover { color: var(--accent); }
+    main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
+    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.25rem; }
+    .section-sublabel { font-size: 1rem; color: var(--muted); font-weight: 400; margin-bottom: 0.5rem; }
+    .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 1.5rem; }
+    /* ── Search ── */
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 300px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+    }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: block; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
+    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-company { text-align: left; width: 22%; }
+    th.col-data { width: 10%; text-align: center; }
+    th:hover { color: var(--text); }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
+    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    td.col-company { text-align: left; white-space: normal; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    .company-name { font-weight: 500; color: var(--text); white-space: normal; }
+    .ticker-sub { color: #2563eb; font-weight: 600; font-size: 0.78rem; font-family: var(--mono); margin-top: 0.1rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
+    .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .chg.pos { color: var(--green); }
+    .chg.neg { color: var(--red); }
+    .chg.na { color: var(--muted); }
+    tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
+    tr.total-row td.col-company { font-family: var(--sans); font-size: 0.875rem; }
+    .loading { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); padding: 2rem 0; }
+    .error { font-family: var(--mono); font-size: 0.82rem; color: var(--red); padding: 2rem 0; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <a class="brand-name" href="index.html">13FAI</a>
+    <a class="brand-sub" href="index.html">← All Funds</a>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+    <div class="search-results" id="search-results"></div>
+  </div>
+</header>
+
+<main>
+  <div class="section-label">Top Stocks Held by Hedge Funds (Latest 13F Data)</div>
+  <div class="section-sublabel" id="year-sublabel">Most Popular 13F Holdings</div>
+  <div class="period-line" id="period-line">Loading...</div>
+
+  <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
+
+  <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
+    * Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds that hold the stock.
+  </div>
+</main>
+
+<footer style="text-align:center; padding:2rem; font-family:'DM Mono',monospace; font-size:0.7rem; color:#8a8780; border-top:1px solid #e8e6e1; margin-top:2rem;">
+  Data sourced from SEC EDGAR 13F-HR filings · For informational purposes only · <a href="disclaimer.html" style="color:#8a8780; text-decoration:none">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "/13f-holdings-tracker";
+
+  let sortCol = 2; // default: sort by ownership count desc
+  let sortAsc = false;
+  let TOP10 = []; // computed top-10 data
+
+  // ── Bootstrap ─────────────────────────────────────────────────
+  Promise.all([
+    fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
+    fetch(`${PAGES}/funds.json`).then(r => r.json()),
+    fetch(`${PAGES}/cusip_to_ticker.json`).then(r => r.json()).catch(() => ({})),
+    fetch(`${PAGES}/prices.json`).then(r => r.json()).catch(() => ({}))
+  ]).then(([stockIndexRaw, funds, tickerMap, priceMap]) => {
+    const stockIndex = stockIndexRaw.stocks    || stockIndexRaw;
+    const fundTotals = stockIndexRaw.fund_totals || {};
+
+    const fundMap = {};
+    funds.forEach(f => { fundMap[f.id] = f; });
+
+    // Build aggregated data per stock using each fund's own latest quarter
+    const aggregated = {};
+
+    for (const [key, stock] of Object.entries(stockIndex)) {
+      const ticker = stock.ticker || null;
+      const name   = stock.name   || key;
+
+      let totalShares      = 0;
+      let totalValue       = 0;
+      let totalPrevShares  = 0;
+      let totalPrevYrShares = 0;
+      let ownerCount       = 0;
+      let latestQ          = null;
+      let maxPct           = 0;
+
+      for (const [fid, fundData] of Object.entries(stock.funds || {})) {
+        const fund = fundMap[fid];
+        if (!fund) continue;
+        const mult = fund.value_multiplier || 1;
+
+        const quarters = Object.keys(fundData.quarters || {}).sort().reverse();
+        if (quarters.length === 0) continue;
+
+        const latestFundQ = quarters[0];
+        const latest = fundData.quarters[latestFundQ];
+        if (!latest || latest.shares <= 0) continue;
+
+        ownerCount++;
+        totalShares += latest.shares;
+        totalValue  += (latest.value || 0) * mult;
+
+        if (!latestQ || latestFundQ > latestQ) latestQ = latestFundQ;
+
+        // Max % — highest portfolio weight of any single holding fund
+        const fundTotal = (fundTotals[fid] && fundTotals[fid][latestFundQ]) || 0;
+        if (fundTotal > 0) {
+          const pct = ((latest.value * mult) / fundTotal) * 100;
+          if (pct > maxPct) maxPct = pct;
+        }
+
+        // Prior quarter shares (fund's own Q-1)
+        if (quarters.length >= 2) {
+          const prevQ = fundData.quarters[quarters[1]];
+          if (prevQ) totalPrevShares += prevQ.shares;
+        }
+
+        // Prior year shares
+        const [yr, qn] = latestFundQ.split("Q");
+        const prevYrLabel = (parseInt(yr) - 1) + "Q" + qn;
+        if (fundData.quarters[prevYrLabel]) {
+          totalPrevYrShares += fundData.quarters[prevYrLabel].shares;
+        }
+      }
+
+      if (ownerCount === 0) continue;
+
+      aggregated[key] = {
+        key, ticker, name, ownerCount,
+        totalShares, totalValue, totalPrevShares, totalPrevYrShares,
+        latestQ, _maxPct: maxPct > 0 ? maxPct : null
+      };
+    }
+
+    // Sort by ownerCount desc, take top 10
+    const ranked = Object.values(aggregated)
+      .sort((a, b) => b.ownerCount - a.ownerCount || b.totalValue - a.totalValue)
+      .slice(0, 10);
+
+    TOP10 = ranked;
+
+    // Compute year from most common latestQ
+    const qCounts = {};
+    TOP10.forEach(s => { if (s.latestQ) qCounts[s.latestQ] = (qCounts[s.latestQ] || 0) + 1; });
+    const dominantQ = Object.entries(qCounts).sort((a,b) => b[1]-a[1])[0]?.[0] || "";
+    const [dYear, dQn] = dominantQ ? dominantQ.split("Q") : ["",""];
+    const qEndMap = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
+
+    if (dYear) {
+      document.getElementById("year-sublabel").textContent = `${dYear} Most Popular 13F Holdings`;
+      document.title = `Top Stocks Held by Hedge Funds (Latest 13F Data) | 13FAI`;
+      document.getElementById("period-line").textContent =
+        `As of Q${dQn} ${dYear} (period ended ${qEndMap[dQn]}, ${dYear}) · ${funds.length} funds tracked`;
+    }
+
+    // Attach priceMap and tickerMap for rendering
+    TOP10._priceMap  = priceMap;
+    TOP10._tickerMap = tickerMap;
+
+    renderTable();
+  }).catch(e => {
+    document.getElementById("table-container").innerHTML =
+      `<div class="error">Failed to load data: ${e.message}</div>`;
+  });
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function fmtShares(n) {
+    if (!n || n === 0) return "—";
+    let scaled, suffix;
+    if (n >= 1e9)      { scaled = n / 1e9; suffix = "B"; }
+    else if (n >= 1e6) { scaled = n / 1e6; suffix = "M"; }
+    else if (n >= 1e3) { scaled = n / 1e3; suffix = "K"; }
+    else               { return n.toString(); }
+    const mag = Math.floor(Math.log10(Math.abs(scaled)));
+    const factor = Math.pow(10, 2 - mag);
+    const rounded = Math.round(scaled * factor) / factor;
+    const str = rounded % 1 === 0 ? rounded.toString() : rounded.toPrecision(3).replace(/\.?0+$/, "");
+    return str + suffix;
+  }
+
+  function fmtValue(v) {
+    if (!v || v === 0) return "—";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+    return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
+
+  function fmtChg(val) {
+    if (val === null || val === undefined) return `<span class="chg na">—</span>`;
+    if (!isFinite(val))                    return `<span class="chg na">—</span>`;
+    if (Math.abs(val) < 0.005)             return `<span class="chg na">—</span>`;
+    const sign = val >= 0 ? "+" : "";
+    const cls  = val >= 0 ? "pos" : "neg";
+    return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
+  }
+
+  function arrow(col) {
+    if (sortCol !== col) return `<span style="opacity:0.3"> ↕</span>`;
+    return sortAsc ? ` ↑` : ` ↓`;
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function renderTable() {
+    const priceMap  = TOP10._priceMap  || {};
+    const tickerMap = TOP10._tickerMap || {};
+
+    // Sort
+    const sorted = [...TOP10].sort((a, b) => {
+      let av, bv;
+      switch (sortCol) {
+        case 0: // company name
+          av = a.name; bv = b.name;
+          return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+        case 1: // % of portfolio (proportional to value, same ordering as value)
+        case 5: // value
+          av = a.totalValue; bv = b.totalValue; break;
+        case 2: // ownership count
+          av = a.ownerCount; bv = b.ownerCount; break;
+        case 3: // max %
+          av = a._maxPct || 0; bv = b._maxPct || 0; break;
+        case 4: // shares vs prior quarter
+          av = a.totalPrevShares > 0 ? (a.totalShares - a.totalPrevShares) / a.totalPrevShares : 0;
+          bv = b.totalPrevShares > 0 ? (b.totalShares - b.totalPrevShares) / b.totalPrevShares : 0;
+          break;
+        case 6: // shares vs prior year
+          av = a.totalPrevYrShares > 0 ? (a.totalShares - a.totalPrevYrShares) / a.totalPrevYrShares : 0;
+          bv = b.totalPrevYrShares > 0 ? (b.totalShares - b.totalPrevYrShares) / b.totalPrevYrShares : 0;
+          break;
+        case 7: // price at last filing
+          av = a.totalShares > 0 ? a.totalValue / a.totalShares : 0;
+          bv = b.totalShares > 0 ? b.totalValue / b.totalShares : 0;
+          break;
+        default:
+          av = a.totalValue; bv = b.totalValue;
+      }
+      return sortAsc ? av - bv : bv - av;
+    });
+
+    // Total value of top 10 combined (denominator for % of portfolio)
+    const top10Total = TOP10.reduce((s, x) => s + x.totalValue, 0);
+
+    // Compute max % per stock (highest portfolio weight across holding funds)
+    // We'll compute this inline using stock_index structure cached in closure
+    // Already baked into TOP10 from the outer scope? No — we need to pass it.
+    // Since we can't re-access stockIndex here, compute at render time from TOP10 directly.
+    // max % is stored during build below — see _maxPct note.
+
+    const rowsHtml = sorted.map((s, i) => {
+      const pct = top10Total > 0 ? ((s.totalValue / top10Total) * 100).toFixed(1) + "%" : "—";
+      const maxPctStr = s._maxPct != null ? s._maxPct.toFixed(1) + "%" : "—";
+
+      const chgQtr = s.totalPrevShares > 0
+        ? ((s.totalShares - s.totalPrevShares) / s.totalPrevShares) * 100
+        : null;
+      const chgYr = s.totalPrevYrShares > 0
+        ? ((s.totalShares - s.totalPrevYrShares) / s.totalPrevYrShares) * 100
+        : null;
+
+      const repPrice = s.totalShares > 0 ? s.totalValue / s.totalShares : 0;
+      const repPriceStr = repPrice > 0
+        ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+        : "—";
+
+      const ticker = s.ticker;
+      const tickerHtml = ticker
+        ? `<div class="ticker-sub">${ticker}</div>`
+        : "";
+      const href = ticker
+        ? `stock.html?ticker=${encodeURIComponent(ticker)}`
+        : `stock.html?cusip=${encodeURIComponent(s.key)}`;
+
+      return `
+        <tr>
+          <td class="col-num num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
+          <td class="col-company">
+            <a href="${href}" style="text-decoration:none; color:inherit">
+              <div class="company-name">${s.name}</div>
+              ${tickerHtml}
+            </a>
+          </td>
+          <td class="col-data num">${s.ownerCount}</td>
+          <td class="col-data num">${pct}</td>
+          <td class="col-data num">${maxPctStr}</td>
+          <td class="col-data num">${fmtChg(chgQtr)}</td>
+          <td class="col-data num">${fmtChg(chgYr)}</td>
+          <td class="col-data num">${fmtValue(s.totalValue)}</td>
+          <td class="col-data num">${repPriceStr}</td>
+        </tr>`;
+    }).join("");
+
+    // Total row
+    const totalShares = TOP10.reduce((s, x) => s + x.totalShares, 0);
+    const totalRow = `
+      <tr class="total-row">
+        <td class="col-num num">10</td>
+        <td class="col-company">Total</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">100%</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">${fmtValue(top10Total)}</td>
+        <td class="col-data num">—</td>
+      </tr>`;
+
+    document.getElementById("table-container").innerHTML = `
+      <div class="period-line" style="margin-bottom:0.5rem">Top 10 Stocks Held by Hedge Funds (Latest 13F Data)</div>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-num" style="color:var(--muted)">#</th>
+            <th class="col-company" onclick="sort(0)">Company${arrow(0)}</th>
+            <th class="col-data num" onclick="sort(2)">Funds Holding${arrow(2)}</th>
+            <th class="col-data num" onclick="sort(1)">% of Top 10${arrow(1)}</th>
+            <th class="col-data num" onclick="sort(3)">Max % (Single Fund)${arrow(3)}</th>
+            <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
+            <th class="col-data num" onclick="sort(6)">Shares vs Prior Year${arrow(6)}</th>
+            <th class="col-data num" onclick="sort(5)">Aggregate Value${arrow(5)}</th>
+            <th class="col-data num" onclick="sort(7)">Price at Last Filing *</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}${totalRow}</tbody>
+      </table>
+      </div>`;
+    document.getElementById("table-footnote").style.display = "block";
+  }
+
+  function sort(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = false; }
+    renderTable();
+  }
+
+  // ── Search ─────────────────────────────────────────────────────
+  let allFundsForSearch = [];
+  let stockIndexForSearch = {};
+  fetch(`${PAGES}/funds.json`).then(r => r.json()).then(d => { allFundsForSearch = d; }).catch(() => {});
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d.stocks || d; }).catch(() => {});
+
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove("visible"); return; }
+
+    const fundMatches = allFundsForSearch
+      .filter(f => f.name.toLowerCase().includes(q))
+      .slice(0, 4)
+      .map(f => `
+        <a class="search-result-item" href="fund.html?fund=${f.id}">
+          <span class="search-result-num">Fund</span>
+          <span>${f.name}</span>
+        </a>`);
+
+    const stockMatches = [];
+    for (const [key, stock] of Object.entries(stockIndexForSearch)) {
+      if (stockMatches.length >= 4) break;
+      if (
+        (stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
+        (stock.name   && stock.name.toLowerCase().includes(q))
+      ) {
+        stockMatches.push(`
+          <a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
+            <span class="search-result-num">Stock</span>
+            <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
+          </a>`);
+      }
+    }
+
+    const all = [...fundMatches, ...stockMatches];
+    if (all.length === 0) {
+      searchResults.innerHTML = `<div class="no-results">No results found</div>`;
+    } else {
+      searchResults.innerHTML = all.join("");
+    }
+    searchResults.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.classList.remove("visible");
+    }
+  });
+</script>
+</body>
+</html>
