@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -838,7 +839,7 @@
   let allFundsForSearch = [];
   let stockIndexForSearch = {};
   fetch(`${PAGES}/funds.json`).then(r => r.text()).then(t => { allFundsForSearch = JSON.parse(t); }).catch(() => {});
-  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d; }).catch(() => {});
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d.stocks || d; }).catch(() => {});
 
   const searchInput   = document.getElementById("search");
   const searchResults = document.getElementById("search-results");
