@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -238,7 +239,10 @@
     // Load stock index for search (don't block on failure)
     try {
       const res = await fetch(`${BASE}/stock_index.json`);
-      if (res.ok) stockIndex = await res.json();
+      if (res.ok) {
+        const raw = await res.json();
+        stockIndex = raw.stocks || raw;
+      }
     } catch(e) { /* stock index not yet generated */ }
 
     renderPopular();
