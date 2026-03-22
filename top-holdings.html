@@ -119,7 +119,7 @@
 <script>
   const PAGES = "/13f-holdings-tracker";
 
-  let sortCol = 2; // default: sort by ownership count desc
+  let sortCol = 5; // default: grand portfolio weight (aggregate value desc)
   let sortAsc = false;
   let TOP10 = []; // computed top-10 data
 
@@ -199,12 +199,16 @@
       };
     }
 
-    // Sort by ownerCount desc, take top 10
+    // Grand total = sum of all stocks' aggregate values across all funds
+    const grandTotal = Object.values(aggregated).reduce((s, x) => s + x.totalValue, 0);
+
+    // Rank by weight in grand portfolio (aggregate value ÷ grand total), take top 10
     const ranked = Object.values(aggregated)
-      .sort((a, b) => b.ownerCount - a.ownerCount || b.totalValue - a.totalValue)
+      .sort((a, b) => b.totalValue - a.totalValue)
       .slice(0, 10);
 
     TOP10 = ranked;
+    TOP10._grandTotal = grandTotal;
 
     // Compute year from most common latestQ
     const qCounts = {};
@@ -270,20 +274,21 @@
   function renderTable() {
     const priceMap  = TOP10._priceMap  || {};
     const tickerMap = TOP10._tickerMap || {};
+    const grandTotal = TOP10._grandTotal || 0;
 
-    // Sort
+    // Sort — default order is grand portfolio weight (= totalValue desc), same as initial ranking
     const sorted = [...TOP10].sort((a, b) => {
       let av, bv;
       switch (sortCol) {
         case 0: // company name
           av = a.name; bv = b.name;
           return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
-        case 1: // % of portfolio (proportional to value, same ordering as value)
-        case 5: // value
+        case 1: // % of top 10 — proportional to totalValue, same order as col 5
+        case 5: // aggregate value
           av = a.totalValue; bv = b.totalValue; break;
-        case 2: // ownership count
+        case 2: // funds holding
           av = a.ownerCount; bv = b.ownerCount; break;
-        case 3: // max %
+        case 3: // max % single fund
           av = a._maxPct || 0; bv = b._maxPct || 0; break;
         case 4: // shares vs prior quarter
           av = a.totalPrevShares > 0 ? (a.totalShares - a.totalPrevShares) / a.totalPrevShares : 0;
@@ -303,14 +308,8 @@
       return sortAsc ? av - bv : bv - av;
     });
 
-    // Total value of top 10 combined (denominator for % of portfolio)
+    // % of top 10 denominator = sum of top 10 stocks' aggregate values
     const top10Total = TOP10.reduce((s, x) => s + x.totalValue, 0);
-
-    // Compute max % per stock (highest portfolio weight across holding funds)
-    // We'll compute this inline using stock_index structure cached in closure
-    // Already baked into TOP10 from the outer scope? No — we need to pass it.
-    // Since we can't re-access stockIndex here, compute at render time from TOP10 directly.
-    // max % is stored during build below — see _maxPct note.
 
     const rowsHtml = sorted.map((s, i) => {
       const pct = top10Total > 0 ? ((s.totalValue / top10Total) * 100).toFixed(1) + "%" : "—";
