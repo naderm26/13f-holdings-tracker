@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -636,7 +637,8 @@
     Promise.all([
       fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
       fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse)
-    ]).then(async ([stockIndex, funds]) => {
+    ]).then(async ([stockIndexRaw, funds]) => {
+      const stockIndex = stockIndexRaw.stocks || stockIndexRaw; // support both old and new schema
       const stock = stockIndex[key];
       if (!stock) {
         document.getElementById("stock-header").innerHTML =
@@ -731,7 +733,7 @@
   let allFundsForSearch = [];
   let stockIndexForSearch = {};
   fetch(`${PAGES}/funds.json`).then(r => r.text()).then(t => { allFundsForSearch = JSON.parse(t); });
-  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d; }).catch(() => {});
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d.stocks || d; }).catch(() => {});
 
   const searchInput   = document.getElementById("search");
   const searchResults = document.getElementById("search-results");
