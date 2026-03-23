@@ -210,8 +210,7 @@
   {
     "id": "lindsell_train",
     "name": "Lindsell Train (Nick Train)",
-    "cik": "0001484150",
-    "value_multiplier": 1000
+    "cik": "0001484150"
   },
   {
     "id": "lone_pine",
