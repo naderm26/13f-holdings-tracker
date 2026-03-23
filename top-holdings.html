@@ -1,5 +1,5 @@
-
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
@@ -154,7 +154,8 @@
       for (const [fid, fundData] of Object.entries(stock.funds || {})) {
         const fund = fundMap[fid];
         if (!fund) continue;
-        const mult = fund.value_multiplier || 1;
+        // NOTE: values in stock_index.json already have value_multiplier applied
+        // by generate_stock_index.py — do NOT multiply again here
 
         const quarters = Object.keys(fundData.quarters || {}).sort().reverse();
         if (quarters.length === 0) continue;
@@ -165,25 +166,28 @@
 
         ownerCount++;
         totalShares += latest.shares;
-        totalValue  += (latest.value || 0) * mult;
+        totalValue  += (latest.value || 0);  // already multiplied in stock_index
 
         if (!latestQ || latestFundQ > latestQ) latestQ = latestFundQ;
 
-        // Max % — highest portfolio weight of any single holding fund
+        // Max % — use fund_totals which also has multiplier already applied
         const fundTotal = (fundTotals[fid] && fundTotals[fid][latestFundQ]) || 0;
         if (fundTotal > 0) {
-          const pct = ((latest.value * mult) / fundTotal) * 100;
+          const pct = (latest.value / fundTotal) * 100;
           if (pct > maxPct) maxPct = pct;
         }
 
-        // Prior quarter shares (fund's own Q-1)
-        if (quarters.length >= 2) {
-          const prevQ = fundData.quarters[quarters[1]];
-          if (prevQ) totalPrevShares += prevQ.shares;
+        // Prior quarter shares — match by actual prior quarter label, not array index
+        const [yr, qn] = latestFundQ.split("Q");
+        let pqNum = parseInt(qn) - 1;
+        let pqYr  = parseInt(yr);
+        if (pqNum === 0) { pqNum = 4; pqYr--; }
+        const prevQLabel = pqYr + "Q" + pqNum;
+        if (fundData.quarters[prevQLabel]) {
+          totalPrevShares += fundData.quarters[prevQLabel].shares;
         }
 
         // Prior year shares
-        const [yr, qn] = latestFundQ.split("Q");
         const prevYrLabel = (parseInt(yr) - 1) + "Q" + qn;
         if (fundData.quarters[prevYrLabel]) {
           totalPrevYrShares += fundData.quarters[prevYrLabel].shares;
@@ -450,5 +454,6 @@
     }
   });
 </script>
+
 </body>
 </html>
