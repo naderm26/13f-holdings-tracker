@@ -11,7 +11,7 @@
   },
   {
     "id": "ako",
-    "name": "AKO Capital",
+    "name": "AKO Capital (AKO Capital LLP)",
     "cik": "0001376879",
     "value_multiplier": 1000
   },
@@ -68,7 +68,7 @@
   },
   {
     "id": "chou",
-    "name": "Chou Associates (Francis Chou)",
+    "name": "Chou Associates Management (Francis Chou)",
     "cik": "0001389403"
   },
   {
@@ -88,7 +88,7 @@
   },
   {
     "id": "davis",
-    "name": "Davis Advisors (Christopher Davis)",
+    "name": "Davis Selected Advisers (Christopher Davis)",
     "cik": "0001036325"
   },
   {
@@ -129,7 +129,7 @@
   },
   {
     "id": "fairholme",
-    "name": "Fairholme Capital (Bruce Berkowitz)",
+    "name": "Fairholme Capital Management (Bruce Berkowitz)",
     "cik": "0001056831"
   },
   {
@@ -139,7 +139,7 @@
   },
   {
     "id": "fpa_crescent",
-    "name": "First Pacific Advisors / FPA Crescent (Steven Romick)",
+    "name": "First Pacific Advisors (Steven Romick)",
     "cik": "0001377581"
   },
   {
@@ -164,12 +164,12 @@
   },
   {
     "id": "greenlight",
-    "name": "Greenlight Capital / DME Capital (David Einhorn)",
+    "name": "DME Capital Management / Greenlight Capital (David Einhorn)",
     "cik": "0001489933"
   },
   {
     "id": "greenlea_lane",
-    "name": "Greenlea Lane Capital (Josh Tarasoff)",
+    "name": "Greenlea Lane Capital Management (Josh Tarasoff)",
     "cik": "0001766504"
   },
   {
@@ -220,7 +220,7 @@
   },
   {
     "id": "longleaf",
-    "name": "Longleaf Partners (Mason Hawkins)",
+    "name": "Longleaf Partners / Southeastern Asset Management (Mason Hawkins)",
     "cik": "0000807985"
   },
   {
@@ -255,13 +255,8 @@
   },
   {
     "id": "oakcliff",
-    "name": "Oakcliff Capital (Bryan Lawrence)",
+    "name": "Oakcliff Capital Partners (Bryan Lawrence)",
     "cik": "0001657335"
-  },
-  {
-    "id": "oakmark_select",
-    "name": "Oakmark / Harris Associates (Bill Nygren)",
-    "cik": "0000764038"
   },
   {
     "id": "oaktree",
@@ -311,12 +306,12 @@
   },
   {
     "id": "semper_augustus",
-    "name": "Semper Augustus (Christopher Bloomstran)",
+    "name": "Semper Augustus Investments Group (Christopher Bloomstran)",
     "cik": "0001115373"
   },
   {
     "id": "sequoia",
-    "name": "Sequoia Fund / Ruane Cunniff (John Harris)",
+    "name": "Ruane, Cunniff & Goldfarb / Sequoia Fund (John Harris)",
     "cik": "0001720792"
   },
   {
@@ -326,7 +321,7 @@
   },
   {
     "id": "sound_shore",
-    "name": "Sound Shore (Harry Burn)",
+    "name": "Sound Shore Management (Harry Burn)",
     "cik": "0000820124"
   },
   {
@@ -351,7 +346,7 @@
   },
   {
     "id": "torray",
-    "name": "Torray (Robert Torray)",
+    "name": "Torray Investment Partners (Robert Torray)",
     "cik": "0000098758"
   },
   {
@@ -367,12 +362,12 @@
   },
   {
     "id": "tweedy_browne",
-    "name": "Tweedy Browne",
+    "name": "Tweedy, Browne (Tweedy, Browne Co LLC)",
     "cik": "0000732905"
   },
   {
     "id": "valueact",
-    "name": "ValueAct Capital",
+    "name": "ValueAct Capital (ValueAct Holdings)",
     "cik": "0001418814"
   },
   {
@@ -397,7 +392,7 @@
   },
   {
     "id": "aquamarine",
-    "name": "Aquamarine Capital (Guy Spier)",
+    "name": "Aquamarine Capital / Aquamarine Zurich (Guy Spier)",
     "cik": "0001953324",
     "value_multiplier": 1000
   },
