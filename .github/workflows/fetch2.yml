@@ -14,10 +14,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Run fetch and parse scripts
+      - name: Run fetch script
         run: |
           python fetch_data.py
-          python parse_13f.py
 
       - name: Commit results
         run: |
