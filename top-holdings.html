@@ -103,7 +103,6 @@
 <main>
   <div class="section-label">Top Stocks Held by Hedge Funds (Latest 13F Data)</div>
   <div class="section-sublabel" id="year-sublabel">Most Popular 13F Holdings</div>
-  <div class="period-line" id="period-line">Loading...</div>
 
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
 
@@ -130,68 +129,68 @@
     fetch(`${PAGES}/cusip_to_ticker.json`).then(r => r.json()).catch(() => ({})),
     fetch(`${PAGES}/prices.json`).then(r => r.json()).catch(() => ({}))
   ]).then(([stockIndexRaw, funds, tickerMap, priceMap]) => {
-    const stockIndex = stockIndexRaw.stocks    || stockIndexRaw;
-    const fundTotals = stockIndexRaw.fund_totals || {};
+    const stockIndex  = stockIndexRaw.stocks       || stockIndexRaw;
+    const fundTotals  = stockIndexRaw.fund_totals  || {};
+    const fundLatestQ = stockIndexRaw.fund_latest_q || {};  // fid -> actual latest quarter
 
     const fundMap = {};
     funds.forEach(f => { fundMap[f.id] = f; });
 
-    // Build aggregated data per stock using each fund's own latest quarter
+    // Build aggregated data per stock
+    // Only count a fund as a current holder if their stock_index latest quarter
+    // matches their actual latest filing quarter (fund_latest_q) — same logic as stock.html
     const aggregated = {};
 
     for (const [key, stock] of Object.entries(stockIndex)) {
       const ticker = stock.ticker || null;
       const name   = stock.name   || key;
 
-      let totalShares      = 0;
-      let totalValue       = 0;
-      let totalPrevShares  = 0;
+      let totalShares       = 0;
+      let totalValue        = 0;
+      let totalPrevShares   = 0;
       let totalPrevYrShares = 0;
-      let ownerCount       = 0;
-      let latestQ          = null;
-      let maxPct           = 0;
+      let ownerCount        = 0;
+      let latestQ           = null;
+      let maxPct            = 0;
 
       for (const [fid, fundData] of Object.entries(stock.funds || {})) {
         const fund = fundMap[fid];
         if (!fund) continue;
-        // NOTE: values in stock_index.json already have value_multiplier applied
-        // by generate_stock_index.py — do NOT multiply again here
 
-        const quarters = Object.keys(fundData.quarters || {}).sort().reverse();
-        if (quarters.length === 0) continue;
-
-        const latestFundQ = quarters[0];
-        const latest = fundData.quarters[latestFundQ];
+        const stockQs    = Object.keys(fundData.quarters || {}).sort().reverse();
+        if (stockQs.length === 0) continue;
+        const stockLatestQ = stockQs[0];
+        const latest       = fundData.quarters[stockLatestQ];
         if (!latest || latest.shares <= 0) continue;
+
+        // Only count as current holder if fund's actual latest filing = stock's latest quarter
+        // This prevents counting funds that held the stock last quarter but have since filed a
+        // newer quarter without it (i.e. exited)
+        const actualLatestQ = fundLatestQ[fid];
+        if (actualLatestQ && actualLatestQ !== stockLatestQ) continue;
 
         ownerCount++;
         totalShares += latest.shares;
         totalValue  += (latest.value || 0);  // already multiplied in stock_index
 
-        if (!latestQ || latestFundQ > latestQ) latestQ = latestFundQ;
+        if (!latestQ || stockLatestQ > latestQ) latestQ = stockLatestQ;
 
-        // Max % — use fund_totals which also has multiplier already applied
-        const fundTotal = (fundTotals[fid] && fundTotals[fid][latestFundQ]) || 0;
+        // Max % — fund_totals values already have multiplier applied
+        const fundTotal = (fundTotals[fid] && fundTotals[fid][stockLatestQ]) || 0;
         if (fundTotal > 0) {
           const pct = (latest.value / fundTotal) * 100;
           if (pct > maxPct) maxPct = pct;
         }
 
-        // Prior quarter shares — match by actual prior quarter label, not array index
-        const [yr, qn] = latestFundQ.split("Q");
-        let pqNum = parseInt(qn) - 1;
-        let pqYr  = parseInt(yr);
+        // Prior quarter shares — compute actual prior quarter label
+        const [yr, qn] = stockLatestQ.split("Q");
+        let pqNum = parseInt(qn) - 1, pqYr = parseInt(yr);
         if (pqNum === 0) { pqNum = 4; pqYr--; }
-        const prevQLabel = pqYr + "Q" + pqNum;
-        if (fundData.quarters[prevQLabel]) {
-          totalPrevShares += fundData.quarters[prevQLabel].shares;
-        }
-
-        // Prior year shares
+        const prevQLabel  = pqYr + "Q" + pqNum;
         const prevYrLabel = (parseInt(yr) - 1) + "Q" + qn;
-        if (fundData.quarters[prevYrLabel]) {
-          totalPrevYrShares += fundData.quarters[prevYrLabel].shares;
-        }
+
+        if (fundData.quarters[prevQLabel])  totalPrevShares   += fundData.quarters[prevQLabel].shares;
+        if (fundData.quarters[prevYrLabel]) totalPrevYrShares += fundData.quarters[prevYrLabel].shares;
       }
 
       if (ownerCount === 0) continue;
@@ -203,10 +202,10 @@
       };
     }
 
-    // Grand total = sum of all stocks' aggregate values across all funds
+    // Grand total = sum of all stocks' aggregate values
     const grandTotal = Object.values(aggregated).reduce((s, x) => s + x.totalValue, 0);
 
-    // Rank by weight in grand portfolio (aggregate value ÷ grand total), take top 10
+    // Rank by weight in grand portfolio, take top 10
     const ranked = Object.values(aggregated)
       .sort((a, b) => b.totalValue - a.totalValue)
       .slice(0, 10);
@@ -214,21 +213,10 @@
     TOP10 = ranked;
     TOP10._grandTotal = grandTotal;
 
-    // Compute year from most common latestQ
-    const qCounts = {};
-    TOP10.forEach(s => { if (s.latestQ) qCounts[s.latestQ] = (qCounts[s.latestQ] || 0) + 1; });
-    const dominantQ = Object.entries(qCounts).sort((a,b) => b[1]-a[1])[0]?.[0] || "";
-    const [dYear, dQn] = dominantQ ? dominantQ.split("Q") : ["",""];
-    const qEndMap = { "1": "March 31", "2": "June 30", "3": "September 30", "4": "December 31" };
+    document.getElementById("year-sublabel").textContent = "Most Popular 13F Holdings";
+    document.title = `Top Stocks Held by Hedge Funds (Latest 13F Data) | 13FAI`;
 
-    if (dYear) {
-      document.getElementById("year-sublabel").textContent = `${dYear} Most Popular 13F Holdings`;
-      document.title = `Top Stocks Held by Hedge Funds (Latest 13F Data) | 13FAI`;
-      document.getElementById("period-line").textContent =
-        `As of Q${dQn} ${dYear} (period ended ${qEndMap[dQn]}, ${dYear}) · ${funds.length} funds tracked`;
-    }
-
-    // Attach priceMap and tickerMap for rendering
+    // Attach maps for rendering
     TOP10._priceMap  = priceMap;
     TOP10._tickerMap = tickerMap;
 
@@ -381,8 +369,8 @@
           <tr>
             <th class="col-num" style="color:var(--muted)">#</th>
             <th class="col-company" onclick="sort(0)">Company${arrow(0)}</th>
-            <th class="col-data num" onclick="sort(2)">Funds Holding${arrow(2)}</th>
-            <th class="col-data num" onclick="sort(1)">% of Top 10${arrow(1)}</th>
+            <th class="col-data num" onclick="sort(2)"># of Funds${arrow(2)}</th>
+            <th class="col-data num" onclick="sort(1)">% of Top 10 Portfolio${arrow(1)}</th>
             <th class="col-data num" onclick="sort(3)">Max % (Single Fund)${arrow(3)}</th>
             <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
             <th class="col-data num" onclick="sort(6)">Shares vs Prior Year${arrow(6)}</th>
