@@ -180,20 +180,21 @@
   let FUND_CONFIG   = null;
   let allQuarters   = [];
   let showQuarters  = [];
-  let csvCache      = {};
-  let metaCache     = {};
-  let tickerMap     = {};  // cusip -> ticker
-  let priceMap      = {};  // ticker -> {price, week52High, week52Low}
+  let csvCache      = {};  // label -> holdings array (populated from per-fund JSON)
+  let metaCache     = {};  // label -> {filed, period}
+  let tickerMap     = {};
+  let priceMap      = {};
   let activeQ       = null;
   let sortCol       = 3;
   let sortAsc       = false;
 
-  // ── Bootstrap ─────────────────────────────────────────────────
+  // ── Bootstrap — single fetch for per-fund JSON ────────────────
   Promise.all([
     fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse),
     fetch(`${PAGES}/cusip_to_ticker.json`).then(r => r.text()).then(JSON.parse).catch(() => ({})),
-    fetch(`${PAGES}/prices.json`).then(r => r.text()).then(JSON.parse).catch(() => ({}))
-  ]).then(([funds, tickers, prices]) => {
+    fetch(`${PAGES}/prices.json`).then(r => r.text()).then(JSON.parse).catch(() => ({})),
+    fetch(`${PAGES}/data/${fundId}.json`).then(r => r.json())
+  ]).then(([funds, tickers, prices, fundJson]) => {
       tickerMap = tickers;
       priceMap  = prices;
       const f = funds.find(x => x.id === fundId);
@@ -205,134 +206,48 @@
       FUND_CONFIG = f;
       document.getElementById("fund-name").textContent = f.name;
 
-      // Parse "Fund Name (Manager Name)" for SEO
-      const nameMatch = f.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const nameMatch   = f.name.match(/^(.+?)\s*\((.+?)\)$/);
       const fundOnly    = nameMatch ? nameMatch[1].trim() : f.name;
       const managerOnly = nameMatch ? nameMatch[2].trim() : f.name;
       FUND_CONFIG._fundOnly    = fundOnly;
       FUND_CONFIG._managerOnly = managerOnly;
 
       document.title = `${fundOnly} (${managerOnly}) — 13F Holdings`;
-      loadQuarters();
+
+      // Populate caches from per-fund JSON — no further fetches needed
+      const quarters = fundJson.quarters || {};
+      allQuarters = Object.keys(quarters).sort().reverse();
+      for (const [label, qdata] of Object.entries(quarters)) {
+        csvCache[label]  = (qdata.holdings || []).filter(r => r.cusip || r.company);
+        metaCache[label] = { filed: qdata.filed || "", period: qdata.period || "" };
+      }
+
+      if (allQuarters.length === 0) {
+        document.getElementById("table-container").innerHTML =
+          `<div class="error">No data found. Run the workflow to fetch holdings.</div>`;
+        return;
+      }
+
+      showQuarters = allQuarters.slice(0, 4);
+      activeQ      = showQuarters[0];
+
+      document.getElementById("quarter-selector").innerHTML = showQuarters.map(q =>
+        `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
+      ).join("");
+
+      renderTable();
     })
     .catch(e => {
       document.getElementById("table-container").innerHTML =
-        `<div class="error">Failed to load fund config: ${e.message}</div>`;
+        `<div class="error">Failed to load fund data: ${e.message}</div>`;
     });
 
-  // ── Quarter discovery ─────────────────────────────────────────
-  async function loadQuarters() {
-    const now  = new Date();
-    let year   = now.getFullYear();
-    let q      = Math.ceil((now.getMonth() + 1) / 3) - 1;
-    if (q === 0) { q = 4; year--; }
-
-    const candidates = [];
-    for (let i = 0; i < 12; i++) {
-      candidates.push(`${year}Q${q}`);
-      q--;
-      if (q === 0) { q = 4; year--; }
-    }
-
-    // Check all quarters in parallel
-    const checks = await Promise.all(candidates.map(async label => {
-      try {
-        const r = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
-        return r.ok ? label : null;
-      } catch(e) { return null; }
-    }));
-
-    const found = checks.filter(Boolean);
-
-    if (found.length === 0) {
-      document.getElementById("table-container").innerHTML =
-        `<div class="error">No data found. Run the workflow to fetch holdings.</div>`;
-      return;
-    }
-
-    allQuarters  = found;           // up to 8, used for comparison lookups
-    showQuarters = found.slice(0, 4); // only 4 shown as tabs
-    activeQ      = showQuarters[0];
-
-    // Render only 4 quarter buttons
-    document.getElementById("quarter-selector").innerHTML = showQuarters.map(q =>
-      `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
-    ).join("");
-
-    const idx = allQuarters.indexOf(activeQ);
-    const [ayear, aqn] = activeQ.split("Q");
-    const pyLabel = (parseInt(ayear) - 1) + "Q" + aqn;
-    await Promise.all([
-      loadCSV(activeQ),
-      idx + 1 < allQuarters.length ? loadCSV(allQuarters[idx + 1]) : Promise.resolve(),
-      allQuarters.includes(pyLabel) ? loadCSV(pyLabel) : Promise.resolve(),
-      loadMeta(activeQ)
-    ]);
-    renderTable();
-  }
-
-  // ── CSV loader ────────────────────────────────────────────────
-  async function loadMeta(label) {
-    if (metaCache[label]) return;
-    try {
-      const r = await fetch(`${PAGES}/data/${fundId}_${label}.json`);
-      if (r.ok) metaCache[label] = await r.json();
-    } catch(e) { /* no meta file */ }
-  }
-
-  // ── CSV parser — handles quoted fields containing commas ─────────
-  function parseCSVLine(line) {
-    const cols = [];
-    let cur = "", inQuote = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        inQuote = !inQuote;
-      } else if (ch === ',' && !inQuote) {
-        cols.push(cur.trim());
-        cur = "";
-      } else {
-        cur += ch;
-      }
-    }
-    cols.push(cur.trim());
-    return cols;
-  }
-
-  // ── CSV loader ────────────────────────────────────────────────
-  async function loadCSV(label) {
-    if (csvCache[label]) return;
-    const r     = await fetch(`${PAGES}/data/${fundId}_${label}.csv`);
-    const text  = await r.text();
-    const lines = text.trim().split("\n");
-    csvCache[label] = lines.slice(1).map(line => {
-      const cols = parseCSVLine(line);
-      return {
-        company:    cols[0] || "",
-        cusip:      cols[1] || "",
-        shares:     parseInt(cols[2]) || 0,
-        value:      parseInt(cols[3]) || 0,
-        discretion: cols[4] || "",
-        putcall:    cols[5] || ""
-      };
-    }).filter(r => r.cusip || r.company);
-  }
-
-  // ── Quarter switcher ──────────────────────────────────────────
-  async function switchQuarter(q) {
+  // ── Quarter switcher — all data already loaded, just re-render ──
+  function switchQuarter(q) {
     activeQ = q;
     document.querySelectorAll(".q-btn").forEach(b =>
       b.classList.toggle("active", b.textContent === q)
     );
-    const idx = allQuarters.indexOf(q);
-    const [syear, sqn] = q.split("Q");
-    const pyLabel = (parseInt(syear) - 1) + "Q" + sqn;
-    await Promise.all([
-      loadCSV(q),
-      idx + 1 < allQuarters.length ? loadCSV(allQuarters[idx + 1]) : Promise.resolve(),
-      allQuarters.includes(pyLabel) ? loadCSV(pyLabel) : Promise.resolve(),
-      loadMeta(q)
-    ]);
     renderTable();
   }
 
