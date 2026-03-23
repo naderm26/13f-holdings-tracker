@@ -145,13 +145,15 @@
       const ticker = stock.ticker || null;
       const name   = stock.name   || key;
 
-      let totalShares       = 0;
-      let totalValue        = 0;
-      let totalPrevShares   = 0;
-      let totalPrevYrShares = 0;
-      let ownerCount        = 0;
-      let latestQ           = null;
-      let maxPct            = 0;
+      let totalShares    = 0;
+      let totalValue     = 0;
+      let netShares1     = 0;  // sum(current - prev1) for funds with prev1 data
+      let prevTotal1     = 0;  // sum(prev1 shares) for funds with prev1 data
+      let netShares4     = 0;  // sum(current - prev4) for funds with prev4 data
+      let prevTotal4     = 0;  // sum(prev4 shares) for funds with prev4 data
+      let ownerCount     = 0;
+      let latestQ        = null;
+      let maxPct         = 0;
 
       for (const [fid, fundData] of Object.entries(stock.funds || {})) {
         const fund = fundMap[fid];
@@ -167,7 +169,9 @@
         // This prevents counting funds that held the stock last quarter but have since filed a
         // newer quarter without it (i.e. exited)
         const actualLatestQ = fundLatestQ[fid];
-        if (actualLatestQ && actualLatestQ !== stockLatestQ) continue;
+        // Skip if fund has a known latest quarter that doesn't match the stock's latest
+        // Also skip if fund_latest_q is missing entirely (fund not in index) — treat as stale
+        if (!actualLatestQ || actualLatestQ !== stockLatestQ) continue;
 
         ownerCount++;
         totalShares += latest.shares;
@@ -182,22 +186,32 @@
           if (pct > maxPct) maxPct = pct;
         }
 
-        // Prior quarter shares — compute actual prior quarter label
+        // Prior quarter/year: mirror stock.html total row — net change / prev total
+        // only for current holders that also had prior data
         const [yr, qn] = stockLatestQ.split("Q");
         let pqNum = parseInt(qn) - 1, pqYr = parseInt(yr);
         if (pqNum === 0) { pqNum = 4; pqYr--; }
         const prevQLabel  = pqYr + "Q" + pqNum;
         const prevYrLabel = (parseInt(yr) - 1) + "Q" + qn;
 
-        if (fundData.quarters[prevQLabel])  totalPrevShares   += fundData.quarters[prevQLabel].shares;
-        if (fundData.quarters[prevYrLabel]) totalPrevYrShares += fundData.quarters[prevYrLabel].shares;
+        const prev1 = fundData.quarters[prevQLabel];
+        const prev4 = fundData.quarters[prevYrLabel];
+        if (prev1 && prev1.shares > 0) {
+          netShares1 += latest.shares - prev1.shares;
+          prevTotal1 += prev1.shares;
+        }
+        if (prev4 && prev4.shares > 0) {
+          netShares4 += latest.shares - prev4.shares;
+          prevTotal4 += prev4.shares;
+        }
       }
 
       if (ownerCount === 0) continue;
 
       aggregated[key] = {
         key, ticker, name, ownerCount,
-        totalShares, totalValue, totalPrevShares, totalPrevYrShares,
+        totalShares, totalValue,
+        netShares1, prevTotal1, netShares4, prevTotal4,
         latestQ, _maxPct: maxPct > 0 ? maxPct : null
       };
     }
@@ -283,12 +297,12 @@
         case 3: // max % single fund
           av = a._maxPct || 0; bv = b._maxPct || 0; break;
         case 4: // shares vs prior quarter
-          av = a.totalPrevShares > 0 ? (a.totalShares - a.totalPrevShares) / a.totalPrevShares : 0;
-          bv = b.totalPrevShares > 0 ? (b.totalShares - b.totalPrevShares) / b.totalPrevShares : 0;
+          av = a.prevTotal1 > 0 ? a.netShares1 / a.prevTotal1 : 0;
+          bv = b.prevTotal1 > 0 ? b.netShares1 / b.prevTotal1 : 0;
           break;
         case 6: // shares vs prior year
-          av = a.totalPrevYrShares > 0 ? (a.totalShares - a.totalPrevYrShares) / a.totalPrevYrShares : 0;
-          bv = b.totalPrevYrShares > 0 ? (b.totalShares - b.totalPrevYrShares) / b.totalPrevYrShares : 0;
+          av = a.prevTotal4 > 0 ? a.netShares4 / a.prevTotal4 : 0;
+          bv = b.prevTotal4 > 0 ? b.netShares4 / b.prevTotal4 : 0;
           break;
         case 7: // price at last filing
           av = a.totalShares > 0 ? a.totalValue / a.totalShares : 0;
@@ -307,12 +321,8 @@
       const pct = top10Total > 0 ? ((s.totalValue / top10Total) * 100).toFixed(1) + "%" : "—";
       const maxPctStr = s._maxPct != null ? s._maxPct.toFixed(1) + "%" : "—";
 
-      const chgQtr = s.totalPrevShares > 0
-        ? ((s.totalShares - s.totalPrevShares) / s.totalPrevShares) * 100
-        : null;
-      const chgYr = s.totalPrevYrShares > 0
-        ? ((s.totalShares - s.totalPrevYrShares) / s.totalPrevYrShares) * 100
-        : null;
+      const chgQtr = s.prevTotal1 > 0 ? (s.netShares1 / s.prevTotal1) * 100 : null;
+      const chgYr  = s.prevTotal4 > 0 ? (s.netShares4 / s.prevTotal4) * 100 : null;
 
       const repPrice = s.totalShares > 0 ? s.totalValue / s.totalShares : 0;
       const repPriceStr = repPrice > 0
