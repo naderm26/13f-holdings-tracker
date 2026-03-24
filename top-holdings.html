@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Top Stocks Held by Hedge Funds (Latest 13F Data) | 13FAI</title>
+  <title>Top Stocks Held by Hedge Funds 2025 — Latest 13F Holdings Data | 13FAI</title>
   <meta name="description" content="The most popular stocks held by hedge funds based on latest 13F filings. See which stocks top fund managers are buying."/>
   <meta property="og:title" content="Top Stocks Held by Hedge Funds (Latest 13F Data)"/>
   <meta property="og:description" content="The most popular stocks held by hedge funds based on latest 13F filings."/>
@@ -28,6 +28,15 @@
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
     .brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
     .brand-sub:hover { color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-link {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
+      transition: color 0.15s, background 0.15s; white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    @media (max-width: 600px) { .nav-links { display: none; } }
     main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
     .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.25rem; }
     .section-sublabel { font-size: 1rem; color: var(--muted); font-weight: 400; margin-bottom: 0.5rem; }
@@ -89,9 +98,15 @@
 </head>
 <body>
 <header>
-  <div class="brand">
-    <a class="brand-name" href="index.html">13FAI</a>
-    <a class="brand-sub" href="index.html">← All Funds</a>
+  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
+    <div class="brand">
+      <a class="brand-name" href="index.html">13FAI</a>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+    </nav>
   </div>
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
@@ -101,13 +116,12 @@
 </header>
 
 <main>
-  <div class="section-label">Top Stocks Held by Hedge Funds (Latest 13F Data)</div>
+  <h1 class="section-label" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Top Stocks Held by Hedge Funds (Latest 13F Data)</h1>
   <div class="section-sublabel" id="year-sublabel">Most Popular 13F Holdings</div>
 
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
 
-  <div id="top100" style="scroll-margin-top:1.5rem"></div>
-  <div id="table-container-100" style="margin-top:2.5rem"></div>
+  <div id="top100" style="margin-top:2.5rem; scroll-margin-top:1rem"></div>
 
   <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
     * Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds that hold the stock.
@@ -115,7 +129,7 @@
 </main>
 
 <footer style="text-align:center; padding:2rem; font-family:'DM Mono',monospace; font-size:0.7rem; color:#8a8780; border-top:1px solid #e8e6e1; margin-top:2rem;">
-  Data sourced from SEC EDGAR 13F-HR filings · For informational purposes only · <a href="disclaimer.html" style="color:#8a8780; text-decoration:none">Disclaimer</a>
+  Data sourced from 13F filings · For informational purposes only · <a href="disclaimer.html" style="color:#8a8780; text-decoration:none">Disclaimer</a>
 </footer>
 
 <script>
@@ -395,7 +409,7 @@
     const grandTotal = TOP10._grandTotal || 0;
     document.getElementById("table-container").innerHTML =
       buildTableHtml(TOP10,  grandTotal, sortCol10,  sortAsc10,  arrow10,  "sort10",  "Top 10 Stocks Held by Hedge Funds (Latest 13F Data)",  "10");
-    document.getElementById("table-container-100").innerHTML =
+    document.getElementById("top100").innerHTML =
       buildTableHtml(TOP100, grandTotal, sortCol100, sortAsc100, arrow100, "sort100", "Top 100 Stocks Held by Hedge Funds (Latest 13F Data)", "100");
     document.getElementById("table-footnote").style.display = "block";
   }
