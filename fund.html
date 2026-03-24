@@ -158,6 +158,7 @@
   <div class="fund-identity">
     <div class="fund-name-row">
       <h1 class="section-label" id="fund-name" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Loading...</h1>
+      <div id="fund-manager" style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;"></div>
       <div class="fund-stats">
         <div>
           <div class="stat-label">Portfolio Value</div>
@@ -221,7 +222,6 @@
         return;
       }
       FUND_CONFIG = f;
-      document.getElementById("fund-name").textContent = f.name;
 
       const nameMatch   = f.name.match(/^(.+?)\s*\((.+?)\)$/);
       const fundOnly    = nameMatch ? nameMatch[1].trim() : f.name;
@@ -229,7 +229,12 @@
       FUND_CONFIG._fundOnly    = fundOnly;
       FUND_CONFIG._managerOnly = managerOnly;
 
-      document.title = `${fundOnly} (${managerOnly}) — 13F Holdings`;
+      // Show fund name as H1, manager name as subtitle below it
+      document.getElementById("fund-name").textContent = fundOnly;
+      document.getElementById("fund-manager").textContent = managerOnly;
+
+      // Title will be set properly in renderTable once we have the quarter
+      document.title = `${fundOnly} — 13F Holdings`;
       renderManagerBio(fundId);
 
       // Populate caches from per-fund JSON — no further fetches needed
@@ -602,12 +607,12 @@
         const chg = Math.round(((tv - tv1) / tv1) * 100);
         const sign = chg >= 0 ? "+" : "";
         const color = chg >= 0 ? "var(--green)" : "var(--red)";
-        tvChgEl.innerHTML = `<span style="color:${color}">${sign}${chg}% vs prior quarter</span>`;
+        tvChgEl.innerHTML = `<span style="color:${color}; cursor:default" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">${sign}${chg}% QoQ</span>`;
       } else {
         tvChgEl.textContent = "";
       }
     } else {
-      tvChgEl.innerHTML = `<span style="color:var(--muted)">—</span>`;
+      tvChgEl.innerHTML = `<span style="color:var(--muted); cursor:default" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">— QoQ</span>`;
     }
     // Portfolio value % change vs prior year (same quarter, year-1)
     if (prev4 && prev4.length > 0) {
@@ -616,12 +621,12 @@
         const chgYr = Math.round(((tv - tv4) / tv4) * 100);
         const signYr = chgYr >= 0 ? "+" : "";
         const colorYr = chgYr >= 0 ? "var(--green)" : "var(--red)";
-        tvChgYrEl.innerHTML = `<span style="color:${colorYr}">${signYr}${chgYr}% vs prior year</span>`;
+        tvChgYrEl.innerHTML = `<span style="color:${colorYr}; cursor:default" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">${signYr}${chgYr}% YoY</span>`;
       } else {
         tvChgYrEl.textContent = "";
       }
     } else {
-      tvChgYrEl.innerHTML = `<span style="color:var(--muted); font-size:0.75rem; font-family:var(--mono)">— vs prior year</span>`;
+      tvChgYrEl.innerHTML = `<span style="color:var(--muted); cursor:default" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">— YoY</span>`;
     }
     const meta = metaCache[activeQ];
     const filedStr = meta ? ` <span style="font-weight:400">(Filed ${fmtDate(meta.filed)})</span>` : "";
