@@ -102,17 +102,15 @@
     .scrollable::-webkit-scrollbar-track { background: transparent; }
     .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-    /* ── Nav ── */
-    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
     .nav-link {
       font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
-      text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 4px;
+      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
       transition: color 0.15s, background 0.15s; white-space: nowrap;
     }
     .nav-link:hover { color: var(--accent); background: var(--accent-light); }
     .nav-link.active { color: var(--accent); font-weight: 500; }
     @media (max-width: 600px) { .nav-links { display: none; } }
-
     /* ── Footer ── */
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
 
@@ -131,10 +129,9 @@
 <body>
 
 <header>
-  <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
     <div class="brand">
-      <div class="brand-name">13FAI</div>
-      <div class="brand-sub">AI-powered hedge fund holdings tracker</div>
+      <a class="brand-name" href="index.html">13FAI</a>
     </div>
     <nav class="nav-links">
       <a class="nav-link active" href="index.html">Funds</a>
@@ -197,7 +194,7 @@
 </main>
 
 <footer>
-  Data sourced from SEC EDGAR 13F-HR filings · Updated quarterly · <a href="disclaimer.html" style="color:var(--muted); text-decoration:none">Disclaimer</a>
+  Data sourced from 13F filings · Updated quarterly · <a href="disclaimer.html" style="color:var(--muted); text-decoration:none">Disclaimer</a>
 </footer>
 
 <script>
