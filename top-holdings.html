@@ -61,7 +61,7 @@
     .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
     .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
     /* ── Table ── */
-    .table-wrap { overflow-x: auto; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: block; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
@@ -106,6 +106,8 @@
 
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
 
+  <div id="table-container-100" style="margin-top:2.5rem"></div>
+
   <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
     * Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds that hold the stock.
   </div>
@@ -118,9 +120,12 @@
 <script>
   const PAGES = "/13f-holdings-tracker";
 
-  let sortCol = 5; // default: grand portfolio weight (aggregate value desc)
-  let sortAsc = false;
-  let TOP10 = []; // computed top-10 data
+  let sortCol10  = 5;     // sort state for top-10 table
+  let sortAsc10  = false;
+  let sortCol100 = 5;     // sort state for top-100 table
+  let sortAsc100 = false;
+  let TOP10  = [];
+  let TOP100 = [];
 
   // ── Bootstrap ─────────────────────────────────────────────────
   Promise.all([
@@ -219,20 +224,23 @@
     // Grand total = sum of all stocks' aggregate values
     const grandTotal = Object.values(aggregated).reduce((s, x) => s + x.totalValue, 0);
 
-    // Rank by weight in grand portfolio, take top 10
-    const ranked = Object.values(aggregated)
-      .sort((a, b) => b.totalValue - a.totalValue)
-      .slice(0, 10);
+    // Rank by weight in grand portfolio
+    const allRanked = Object.values(aggregated)
+      .sort((a, b) => b.totalValue - a.totalValue);
 
-    TOP10 = ranked;
-    TOP10._grandTotal = grandTotal;
+    TOP10  = allRanked.slice(0, 10);
+    TOP100 = allRanked.slice(0, 100);
+    TOP10._grandTotal  = grandTotal;
+    TOP100._grandTotal = grandTotal;
 
     document.getElementById("year-sublabel").textContent = "Most Popular 13F Holdings";
     document.title = `Top Stocks Held by Hedge Funds (Latest 13F Data) | 13FAI`;
 
     // Attach maps for rendering
-    TOP10._priceMap  = priceMap;
-    TOP10._tickerMap = tickerMap;
+    TOP10._priceMap   = priceMap;
+    TOP10._tickerMap  = tickerMap;
+    TOP100._priceMap  = priceMap;
+    TOP100._tickerMap = tickerMap;
 
     renderTable();
   }).catch(e => {
@@ -271,72 +279,47 @@
     return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
   }
 
-  function arrow(col) {
-    if (sortCol !== col) return `<span style="opacity:0.3"> ↕</span>`;
-    return sortAsc ? ` ↑` : ` ↓`;
-  }
-
-  // ── Render ────────────────────────────────────────────────────
-  function renderTable() {
-    const priceMap  = TOP10._priceMap  || {};
-    const tickerMap = TOP10._tickerMap || {};
-    const grandTotal = TOP10._grandTotal || 0;
-
-    // Sort — default order is grand portfolio weight (= totalValue desc), same as initial ranking
-    const sorted = [...TOP10].sort((a, b) => {
+  // ── Shared table builder ──────────────────────────────────────
+  function buildTableHtml(dataset, poolTotal, sortC, sortA, arrowFn, sortFnName, title, totalLabel) {
+    const sorted = [...dataset].sort((a, b) => {
       let av, bv;
-      switch (sortCol) {
-        case 0: // company name
-          av = a.name; bv = b.name;
-          return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
-        case 1: // % of top 10 — proportional to totalValue, same order as col 5
-        case 5: // aggregate value
-          av = a.totalValue; bv = b.totalValue; break;
-        case 2: // funds holding
-          av = a.ownerCount; bv = b.ownerCount; break;
-        case 3: // max % single fund
-          av = a._maxPct || 0; bv = b._maxPct || 0; break;
-        case 4: // shares vs prior quarter
-          av = a.prevTotal1 > 0 ? a.netShares1 / a.prevTotal1 : 0;
-          bv = b.prevTotal1 > 0 ? b.netShares1 / b.prevTotal1 : 0;
+      switch (sortC) {
+        case 0: av = a.name; bv = b.name;
+          return sortA ? av.localeCompare(bv) : bv.localeCompare(av);
+        case 1: case 5: av = a.totalValue; bv = b.totalValue; break;
+        case 2: av = a.ownerCount; bv = b.ownerCount; break;
+        case 3: av = a._maxPct || 0; bv = b._maxPct || 0; break;
+        case 4:
+          av = a.totalPrevShares > 0 ? (a.totalShares - a.totalPrevShares) / a.totalPrevShares : 0;
+          bv = b.totalPrevShares > 0 ? (b.totalShares - b.totalPrevShares) / b.totalPrevShares : 0;
           break;
-        case 6: // shares vs prior year
-          av = a.prevTotal4 > 0 ? a.netShares4 / a.prevTotal4 : 0;
-          bv = b.prevTotal4 > 0 ? b.netShares4 / b.prevTotal4 : 0;
+        case 6:
+          av = a.totalPrevYrShares > 0 ? (a.totalShares - a.totalPrevYrShares) / a.totalPrevYrShares : 0;
+          bv = b.totalPrevYrShares > 0 ? (b.totalShares - b.totalPrevYrShares) / b.totalPrevYrShares : 0;
           break;
-        case 7: // price at last filing
-          av = a.totalShares > 0 ? a.totalValue / a.totalShares : 0;
-          bv = b.totalShares > 0 ? b.totalValue / b.totalShares : 0;
-          break;
-        default:
-          av = a.totalValue; bv = b.totalValue;
+        case 7: av = a.totalShares > 0 ? a.totalValue / a.totalShares : 0;
+                bv = b.totalShares > 0 ? b.totalValue / b.totalShares : 0; break;
+        default: av = a.totalValue; bv = b.totalValue;
       }
-      return sortAsc ? av - bv : bv - av;
+      return sortA ? av - bv : bv - av;
     });
 
-    // % of top 10 denominator = sum of top 10 stocks' aggregate values
-    const top10Total = TOP10.reduce((s, x) => s + x.totalValue, 0);
+    const poolTotalVal = dataset.reduce((s, x) => s + x.totalValue, 0);
 
     const rowsHtml = sorted.map((s, i) => {
-      const pct = top10Total > 0 ? ((s.totalValue / top10Total) * 100).toFixed(1) + "%" : "—";
-      const maxPctStr = s._maxPct != null ? s._maxPct.toFixed(1) + "%" : "—";
-
-      const chgQtr = s.prevTotal1 > 0 ? (s.netShares1 / s.prevTotal1) * 100 : null;
-      const chgYr  = s.prevTotal4 > 0 ? (s.netShares4 / s.prevTotal4) * 100 : null;
-
-      const repPrice = s.totalShares > 0 ? s.totalValue / s.totalShares : 0;
+      const pct        = poolTotalVal > 0 ? ((s.totalValue / poolTotalVal) * 100).toFixed(1) + "%" : "—";
+      const maxPctStr  = s._maxPct != null ? s._maxPct.toFixed(1) + "%" : "—";
+      const chgQtr     = s.totalPrevShares   > 0 ? ((s.totalShares - s.totalPrevShares)   / s.totalPrevShares)   * 100 : null;
+      const chgYr      = s.totalPrevYrShares > 0 ? ((s.totalShares - s.totalPrevYrShares) / s.totalPrevYrShares) * 100 : null;
+      const repPrice   = s.totalShares > 0 ? s.totalValue / s.totalShares : 0;
       const repPriceStr = repPrice > 0
         ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
         : "—";
-
-      const ticker = s.ticker;
-      const tickerHtml = ticker
-        ? `<div class="ticker-sub">${ticker}</div>`
-        : "";
-      const href = ticker
+      const ticker     = s.ticker;
+      const tickerHtml = ticker ? `<div class="ticker-sub">${ticker}</div>` : "";
+      const href       = ticker
         ? `stock.html?ticker=${encodeURIComponent(ticker)}`
         : `stock.html?cusip=${encodeURIComponent(s.key)}`;
-
       return `
         <tr>
           <td class="col-num num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
@@ -356,47 +339,62 @@
         </tr>`;
     }).join("");
 
-    // Total row
-    const totalShares = TOP10.reduce((s, x) => s + x.totalShares, 0);
     const totalRow = `
       <tr class="total-row">
-        <td class="col-num num">10</td>
+        <td class="col-num num">${totalLabel}</td>
         <td class="col-company">Total</td>
         <td class="col-data num">—</td>
         <td class="col-data num">100%</td>
         <td class="col-data num">—</td>
         <td class="col-data num">—</td>
         <td class="col-data num">—</td>
-        <td class="col-data num">${fmtValue(top10Total)}</td>
+        <td class="col-data num">${fmtValue(poolTotalVal)}</td>
         <td class="col-data num">—</td>
       </tr>`;
 
-    document.getElementById("table-container").innerHTML = `
-      <div class="period-line" style="margin-bottom:0.5rem">Top 10 Stocks Held by Hedge Funds (Latest 13F Data)</div>
+    return `
+      <div class="period-line" style="margin-bottom:0.5rem">${title}</div>
       <div class="table-wrap">
       <table>
         <thead>
           <tr>
             <th class="col-num" style="color:var(--muted)">#</th>
-            <th class="col-company" onclick="sort(0)">Company${arrow(0)}</th>
-            <th class="col-data num" onclick="sort(2)"># of Funds${arrow(2)}</th>
-            <th class="col-data num" onclick="sort(1)">% of Top 10 Portfolio${arrow(1)}</th>
-            <th class="col-data num" onclick="sort(3)">Max % (Single Fund)${arrow(3)}</th>
-            <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
-            <th class="col-data num" onclick="sort(6)">Shares vs Prior Year${arrow(6)}</th>
-            <th class="col-data num" onclick="sort(5)">Aggregate Value${arrow(5)}</th>
-            <th class="col-data num" onclick="sort(7)">Price at Last Filing *</th>
+            <th class="col-company" onclick="${sortFnName}(0)">Company${arrowFn(0)}</th>
+            <th class="col-data num" onclick="${sortFnName}(2)"># of Funds${arrowFn(2)}</th>
+            <th class="col-data num" onclick="${sortFnName}(1)">% of Portfolio${arrowFn(1)}</th>
+            <th class="col-data num" onclick="${sortFnName}(3)">Max % (Single Fund)${arrowFn(3)}</th>
+            <th class="col-data num" onclick="${sortFnName}(4)">Shares vs Prior Quarter${arrowFn(4)}</th>
+            <th class="col-data num" onclick="${sortFnName}(6)">Shares vs Prior Year${arrowFn(6)}</th>
+            <th class="col-data num" onclick="${sortFnName}(5)">Aggregate Value${arrowFn(5)}</th>
+            <th class="col-data num" onclick="${sortFnName}(7)">Price at Last Filing *</th>
           </tr>
         </thead>
         <tbody>${rowsHtml}${totalRow}</tbody>
       </table>
       </div>`;
+  }
+
+  function arrow10(col)  { if (sortCol10  !== col) return `<span style="opacity:0.3"> ↕</span>`; return sortAsc10  ? ` ↑` : ` ↓`; }
+  function arrow100(col) { if (sortCol100 !== col) return `<span style="opacity:0.3"> ↕</span>`; return sortAsc100 ? ` ↑` : ` ↓`; }
+
+  function renderTable() {
+    const grandTotal = TOP10._grandTotal || 0;
+    document.getElementById("table-container").innerHTML =
+      buildTableHtml(TOP10,  grandTotal, sortCol10,  sortAsc10,  arrow10,  "sort10",  "Top 10 Stocks Held by Hedge Funds (Latest 13F Data)",  "10");
+    document.getElementById("table-container-100").innerHTML =
+      buildTableHtml(TOP100, grandTotal, sortCol100, sortAsc100, arrow100, "sort100", "Top 100 Stocks Held by Hedge Funds (Latest 13F Data)", "100");
     document.getElementById("table-footnote").style.display = "block";
   }
 
-  function sort(col) {
-    if (sortCol === col) sortAsc = !sortAsc;
-    else { sortCol = col; sortAsc = false; }
+  function sort10(col) {
+    if (sortCol10 === col) sortAsc10 = !sortAsc10;
+    else { sortCol10 = col; sortAsc10 = false; }
+    renderTable();
+  }
+
+  function sort100(col) {
+    if (sortCol100 === col) sortAsc100 = !sortAsc100;
+    else { sortCol100 = col; sortAsc100 = false; }
     renderTable();
   }
 
