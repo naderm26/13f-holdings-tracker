@@ -290,12 +290,12 @@
         case 2: av = a.ownerCount; bv = b.ownerCount; break;
         case 3: av = a._maxPct || 0; bv = b._maxPct || 0; break;
         case 4:
-          av = a.totalPrevShares > 0 ? (a.totalShares - a.totalPrevShares) / a.totalPrevShares : 0;
-          bv = b.totalPrevShares > 0 ? (b.totalShares - b.totalPrevShares) / b.totalPrevShares : 0;
+          av = a.prevTotal1 > 0 ? a.netShares1 / a.prevTotal1 : 0;
+          bv = b.prevTotal1 > 0 ? b.netShares1 / b.prevTotal1 : 0;
           break;
         case 6:
-          av = a.totalPrevYrShares > 0 ? (a.totalShares - a.totalPrevYrShares) / a.totalPrevYrShares : 0;
-          bv = b.totalPrevYrShares > 0 ? (b.totalShares - b.totalPrevYrShares) / b.totalPrevYrShares : 0;
+          av = a.prevTotal4 > 0 ? a.netShares4 / a.prevTotal4 : 0;
+          bv = b.prevTotal4 > 0 ? b.netShares4 / b.prevTotal4 : 0;
           break;
         case 7: av = a.totalShares > 0 ? a.totalValue / a.totalShares : 0;
                 bv = b.totalShares > 0 ? b.totalValue / b.totalShares : 0; break;
@@ -309,8 +309,8 @@
     const rowsHtml = sorted.map((s, i) => {
       const pct        = poolTotalVal > 0 ? ((s.totalValue / poolTotalVal) * 100).toFixed(1) + "%" : "—";
       const maxPctStr  = s._maxPct != null ? s._maxPct.toFixed(1) + "%" : "—";
-      const chgQtr     = s.totalPrevShares   > 0 ? ((s.totalShares - s.totalPrevShares)   / s.totalPrevShares)   * 100 : null;
-      const chgYr      = s.totalPrevYrShares > 0 ? ((s.totalShares - s.totalPrevYrShares) / s.totalPrevYrShares) * 100 : null;
+      const chgQtr     = s.prevTotal1 > 0 ? (s.netShares1 / s.prevTotal1) * 100 : null;
+      const chgYr      = s.prevTotal4 > 0 ? (s.netShares4 / s.prevTotal4) * 100 : null;
       const repPrice   = s.totalShares > 0 ? s.totalValue / s.totalShares : 0;
       const repPriceStr = repPrice > 0
         ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
@@ -339,6 +339,19 @@
         </tr>`;
     }).join("");
 
+    // Total row — aggregate net share change across all stocks in the pool
+    const totalNetQ  = dataset.reduce((s, x) => s + x.netShares1, 0);
+    const totalPrevQ = dataset.reduce((s, x) => s + x.prevTotal1, 0);
+    const totalNetY  = dataset.reduce((s, x) => s + x.netShares4, 0);
+    const totalPrevY = dataset.reduce((s, x) => s + x.prevTotal4, 0);
+    const totalChgQ  = totalPrevQ > 0 ? (totalNetQ / totalPrevQ) * 100 : null;
+    const totalChgY  = totalPrevY > 0 ? (totalNetY / totalPrevY) * 100 : null;
+    const fmtTotalChg = v => {
+      if (v === null || !isFinite(v)) return "—";
+      const sign = v >= 0 ? "+" : "";
+      const cls  = v >= 0 ? "pos" : "neg";
+      return `<span class="chg ${cls}">${sign}${v.toFixed(2)}%</span>`;
+    };
     const totalRow = `
       <tr class="total-row">
         <td class="col-num num">${totalLabel}</td>
@@ -346,8 +359,8 @@
         <td class="col-data num">—</td>
         <td class="col-data num">100%</td>
         <td class="col-data num">—</td>
-        <td class="col-data num">—</td>
-        <td class="col-data num">—</td>
+        <td class="col-data num">${fmtTotalChg(totalChgQ)}</td>
+        <td class="col-data num">${fmtTotalChg(totalChgY)}</td>
         <td class="col-data num">${fmtValue(poolTotalVal)}</td>
         <td class="col-data num">—</td>
       </tr>`;
