@@ -67,8 +67,7 @@
     .hero p { font-size: 0.9rem; color: var(--muted); max-width: 560px; line-height: 1.6; }
 
     /* ── Main layout ── */
-    main { max-width: 1300px; margin: 0 auto; padding: 2rem 3rem 4rem; }
-    .columns { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start; }
+    main { max-width: 800px; margin: 0 auto; padding: 2rem 3rem 4rem; }
 
     /* ── Column headers ── */
     .col-header { margin-bottom: 0.85rem; }
@@ -114,14 +113,8 @@
     /* ── Footer ── */
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
 
-    @media (max-width: 960px) {
-      .columns { grid-template-columns: 1fr 1fr; }
-      .columns > div:last-child { grid-column: 1 / -1; }
-    }
     @media (max-width: 600px) {
-      header, .hero, main { padding-left: 1.25rem; padding-right: 1.25rem; }
-      .columns { grid-template-columns: 1fr; }
-      .columns > div:last-child { grid-column: auto; }
+      header, main { padding-left: 1.25rem; padding-right: 1.25rem; }
       #search { width: 200px; }
     }
   </style>
@@ -147,49 +140,18 @@
 </header>
 
 <main>
-  <div class="columns">
-
-    <div>
-      <div class="col-header">
-        <div class="col-label">Most Followed</div>
-        <div class="col-desc">Managers retail investors watch closely</div>
-      </div>
-      <ul class="fund-list" id="list-popular"><li><div class="loading">Loading...</div></li></ul>
-
-      <div class="col-header" style="margin-top:2rem">
-        <div class="col-label">All Funds</div>
-        <div class="col-desc">Complete list of tracked managers</div>
-      </div>
-      <ul class="fund-list scrollable" id="list-all"><li><div class="loading">Loading...</div></li></ul>
+  <div>
+    <div class="col-header">
+      <div class="col-label">Most Followed</div>
+      <div class="col-desc">Managers retail investors watch closely</div>
     </div>
+    <ul class="fund-list" id="list-popular"><li><div class="loading">Loading...</div></li></ul>
 
-    <div>
-      <div class="col-header">
-        <div class="col-label">This Quarter</div>
-        <div class="col-desc">Latest activity across all tracked funds</div>
-      </div>
-      <ul class="fund-list">
-        <li>
-          <a href="activity.html">
-            <span class="fund-info">
-              <span class="fund-name">📈 Most Bought This Quarter</span>
-              <span class="fund-meta">New positions & largest increases</span>
-            </span>
-            <span class="arrow">→</span>
-          </a>
-        </li>
-        <li>
-          <a href="activity.html">
-            <span class="fund-info">
-              <span class="fund-name">📉 Most Sold This Quarter</span>
-              <span class="fund-meta">Exits & largest reductions</span>
-            </span>
-            <span class="arrow">→</span>
-          </a>
-        </li>
-      </ul>
+    <div class="col-header" style="margin-top:2rem">
+      <div class="col-label">All Funds</div>
+      <div class="col-desc">Complete list of tracked managers</div>
     </div>
-
+    <ul class="fund-list scrollable" id="list-all"><li><div class="loading">Loading...</div></li></ul>
   </div>
 </main>
 
