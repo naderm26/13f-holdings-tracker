@@ -157,8 +157,11 @@
 <main>
   <div class="fund-identity">
     <div class="fund-name-row">
-      <h1 class="section-label" id="fund-name" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Loading...</h1>
-      <div id="fund-manager" style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;"></div>
+      <div>
+        <h1 class="section-label" id="fund-name" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Loading...</h1>
+        <div id="fund-manager" style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;"></div>
+        <div id="manager-bio" style="font-size:0.85rem; color:var(--muted); line-height:1.65; margin-top:0.5rem; max-width:560px;"></div>
+      </div>
       <div class="fund-stats">
         <div>
           <div class="stat-label">Portfolio Value</div>
@@ -178,7 +181,6 @@
   <div class="insights-wrap">
     <div class="insights" id="insights"></div>
   </div>
-  <div id="manager-bio" style="font-size:0.875rem; color:var(--muted); line-height:1.7; margin-bottom:1.25rem; max-width:720px;"></div>
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
   <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
     * Price at last filing is not an actual purchase or sale price. It is the price as of the last holdings date, calculated by dividing the reported value by the number of shares held.
@@ -233,8 +235,8 @@
       document.getElementById("fund-name").textContent = fundOnly;
       document.getElementById("fund-manager").textContent = managerOnly;
 
-      // Title will be set properly in renderTable once we have the quarter
-      document.title = `${fundOnly} — 13F Holdings`;
+      // Title set here as fallback; renderTable will update with quarter
+      document.title = `${fundOnly} 13F Holdings | ${managerOnly} Portfolio`;
       renderManagerBio(fundId);
 
       // Populate caches from per-fund JSON — no further fetches needed
