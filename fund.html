@@ -30,10 +30,10 @@
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
     .brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
     .brand-sub:hover { color: var(--accent); }
-    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
     .nav-link {
       font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
-      text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 4px;
+      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
       transition: color 0.15s, background 0.15s; white-space: nowrap;
     }
     .nav-link:hover { color: var(--accent); background: var(--accent-light); }
@@ -137,10 +137,9 @@
 </head>
 <body>
 <header>
-  <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
     <div class="brand">
       <a class="brand-name" href="index.html">13FAI</a>
-      <a class="brand-sub" href="index.html">← All Funds</a>
     </div>
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
@@ -158,7 +157,7 @@
 <main>
   <div class="fund-identity">
     <div class="fund-name-row">
-      <div class="section-label" id="fund-name">Loading...</div>
+      <h1 class="section-label" id="fund-name" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Loading...</h1>
       <div class="fund-stats">
         <div>
           <div class="stat-label">Portfolio Value</div>
@@ -178,6 +177,7 @@
   <div class="insights-wrap">
     <div class="insights" id="insights"></div>
   </div>
+  <div id="manager-bio" style="font-size:0.875rem; color:var(--muted); line-height:1.7; margin-bottom:1.25rem; max-width:720px;"></div>
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
   <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
     * Price at last filing is not an actual purchase or sale price. It is the price as of the last holdings date, calculated by dividing the reported value by the number of shares held.
@@ -185,7 +185,7 @@
 </main>
 
 <footer style="text-align:center; padding:2rem; font-family:'DM Mono',monospace; font-size:0.7rem; color:#8a8780; border-top:1px solid #e8e6e1; margin-top:2rem;">
-  Data sourced from SEC EDGAR 13F-HR filings · For informational purposes only · <a href="disclaimer.html" style="color:#8a8780; text-decoration:none">Disclaimer</a>
+  Data sourced from 13F filings · For informational purposes only · <a href="disclaimer.html" style="color:#8a8780; text-decoration:none">Disclaimer</a>
 </footer>
 
 <script>
@@ -230,6 +230,7 @@
       FUND_CONFIG._managerOnly = managerOnly;
 
       document.title = `${fundOnly} (${managerOnly}) — 13F Holdings`;
+      renderManagerBio(fundId);
 
       // Populate caches from per-fund JSON — no further fetches needed
       const quarters = fundJson.quarters || {};
@@ -632,7 +633,7 @@
     const managerOnly = FUND_CONFIG._managerOnly || FUND_CONFIG.name;
     const qLabel      = activeQ.replace("Q", " Q");
     const qShort      = `Q${activeQ.split("Q")[1]} ${activeQ.split("Q")[0]}`; // "Q4 2025"
-    document.title = `${fundOnly} (${managerOnly}) — 13F Holdings ${qShort}`;
+    document.title = `${fundOnly} 13F Holdings ${qShort} | ${managerOnly} Portfolio`;
     const desc = `Track ${managerOnly}'s 13F holdings for ${qShort}. See what ${fundOnly} is buying and selling, position changes, and portfolio breakdown.`;
     document.querySelector('meta[name="description"]').setAttribute("content", desc);
     document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
@@ -780,6 +781,46 @@
     if (sortCol === col) sortAsc = !sortAsc;
     else { sortCol = col; sortAsc = false; }
     renderTable();
+  }
+
+
+  // ── Manager bios ──────────────────────────────────────────────
+  const MANAGER_BIOS = {
+    "berkshire":       "Warren Buffett has led Berkshire Hathaway since 1965, building it into one of the world's largest conglomerates through value investing. His 13F filings are among the most closely followed by retail and institutional investors alike.",
+    "pershing":        "Bill Ackman founded Pershing Square Capital Management in 2004, known for high-conviction concentrated positions and activist campaigns. His public commentary on holdings makes his 13F a must-watch each quarter.",
+    "scion":           "Michael Burry founded Scion Asset Management after gaining fame for his prescient bet against the 2008 housing bubble. His portfolio is small and highly concentrated, with positions frequently in distressed or contrarian opportunities.",
+    "duquesne":        "Stanley Druckenmiller ran Duquesne Capital for over 30 years before converting it to a family office. Widely considered one of the greatest macro investors of all time, his 13F reflects long equity bets alongside his broader macro views.",
+    "appaloosa":       "David Tepper founded Appaloosa Management in 1993, specializing in distressed debt and equities. Known for outsized returns and bold macro calls, his quarterly filings attract significant market attention.",
+    "baupost":         "Seth Klarman founded Baupost Group in 1982 and is regarded as one of the foremost practitioners of value investing. Baupost is known for patience, deep research, and holding significant cash during periods of overvaluation.",
+    "third_point":     "Daniel Loeb founded Third Point in 1995, combining deep value investing with activist strategies. His shareholder letters are widely read for their direct commentary on management and corporate strategy.",
+    "greenlight":      "David Einhorn founded Greenlight Capital in 1996, known for both long value investments and high-profile short positions. His firm rebranded its 13F filing entity to DME Capital Management.",
+    "thiel_macro":     "Peter Thiel co-founded PayPal and was the first outside investor in Facebook. His Thiel Macro vehicle reflects a technology-forward, contrarian investment philosophy.",
+    "tci":             "Chris Hohn founded TCI Fund Management in 2003. The fund is known for concentrated long-term positions in high-quality businesses and selective activist engagement, particularly in infrastructure and technology.",
+    "tiger_global":    "Chase Coleman founded Tiger Global Management in 2001 as a Tiger Cub fund. Known for large positions in technology and internet companies globally, Tiger Global is one of the most influential growth investors.",
+    "viking":          "Andreas Halvorsen co-founded Viking Global Investors in 1999, another prominent Tiger Cub fund. Viking is known for rigorous fundamental research and long/short equity strategies across sectors.",
+    "lone_pine":       "Stephen Mandel founded Lone Pine Capital in 1997 after leaving Tiger Management. The fund focuses on fundamental long/short equity with particular strength in consumer and technology sectors.",
+    "valueact":        "ValueAct Capital is known for taking concentrated positions and engaging constructively with management teams to unlock shareholder value. The firm typically holds board seats at its largest investments.",
+    "trian":           "Nelson Peltz founded Trian Fund Management in 2005, focusing on operational improvement through board-level engagement. Trian targets large-cap companies where it sees potential for strategic and operational change.",
+    "icahn":           "Carl Icahn is one of the original corporate raiders, known for aggressive activism and forcing strategic changes at target companies. His 13F reflects a mix of activist positions and long-term holdings.",
+    "gates":           "The Bill & Melinda Gates Foundation Trust manages the investment portfolio backing the Gates Foundation's philanthropic work. The portfolio reflects a long-term, diversified approach with significant positions in a handful of core holdings.",
+    "pershing":        "Bill Ackman's Pershing Square is known for high-conviction, concentrated equity positions and periodic activist campaigns. Ackman is also known for transparency, frequently discussing his thesis publicly.",
+    "ackman":          "Bill Ackman founded Pershing Square Capital Management in 2004, known for high-conviction concentrated positions and activist campaigns.",
+    "sequoia":         "The Sequoia Fund, managed by Ruane, Cunniff & Goldfarb, has roots going back to a recommendation by Warren Buffett when he closed his partnership in 1969. It remains one of the most respected long-only value funds.",
+    "fairfax":         "Prem Watsa founded Fairfax Financial Holdings in 1985, often called the Canadian Berkshire Hathaway. Fairfax combines insurance operations with long-term equity investing and has a history of prescient macro hedges.",
+    "himalaya":        "Li Lu founded Himalaya Capital after gaining recognition from Charlie Munger, who called him one of the best investors he had ever seen. The fund focuses on deep value with a concentration in Asian markets.",
+    "akre":            "Chuck Akre founded Akre Capital Management, known for seeking compounding machines — businesses with high returns on equity, skilled management, and long reinvestment runways. His concentrated portfolio rarely changes.",
+    "giverny":         "Francois Rochon founded Giverny Capital in Montreal in 1993, managing a highly concentrated portfolio of high-quality growth businesses. Rochon is known for exceptional long-term returns and a patient, businesslike approach.",
+    "pabrai":          "Mohnish Pabrai founded Dalal Street LLC, investing through his Pabrai Investment Funds. A devoted disciple of Buffett and Munger, Pabrai is known for cloning great investors and holding extremely concentrated positions.",
+    "fundsmith":       "Terry Smith founded Fundsmith in 2010 with a simple philosophy: buy good companies, don't overpay, do nothing. The fund focuses on high-quality global businesses with strong returns on capital.",
+    "rv_capital":      "Robert Vinall founded RV Capital in Germany, running a highly concentrated global equity portfolio. Known for long holding periods and deep fundamental research, RV Capital has built a strong record since 2008.",
+    "shawspring":      "Dennis Hong founded ShawSpring Partners after years at Lone Pine Capital. The fund focuses on concentrated long-term investments in high-quality businesses, often with a technology or consumer angle.",
+  };
+
+  function renderManagerBio(fundId) {
+    const el = document.getElementById("manager-bio");
+    if (!el) return;
+    const bio = MANAGER_BIOS[fundId];
+    el.textContent = bio || "";
   }
 
   // ── Search ─────────────────────────────────────────────────────
