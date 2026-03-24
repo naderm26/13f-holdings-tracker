@@ -30,6 +30,15 @@
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
     .brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
     .brand-sub:hover { color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 4px;
+      transition: color 0.15s, background 0.15s; white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    @media (max-width: 600px) { .nav-links { display: none; } }
     main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
     .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
@@ -128,9 +137,16 @@
 </head>
 <body>
 <header>
-  <div class="brand">
-    <a class="brand-name" href="index.html">13FAI</a>
-    <a class="brand-sub" href="index.html">← All Funds</a>
+  <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+    <div class="brand">
+      <a class="brand-name" href="index.html">13FAI</a>
+      <a class="brand-sub" href="index.html">← All Funds</a>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+    </nav>
   </div>
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
@@ -148,6 +164,7 @@
           <div class="stat-label">Portfolio Value</div>
           <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
           <div id="total-value-chg" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.15rem;"></div>
+          <div id="total-value-chg-yr" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.1rem;"></div>
         </div>
         <div>
           <div class="stat-label">Positions</div>
@@ -576,7 +593,8 @@
     document.getElementById("total-positions").textContent = rows.length;
 
     // Portfolio value % change vs prior quarter
-    const tvChgEl = document.getElementById("total-value-chg");
+    const tvChgEl   = document.getElementById("total-value-chg");
+    const tvChgYrEl = document.getElementById("total-value-chg-yr");
     if (prev1 && prev1.length > 0) {
       const tv1 = prev1.reduce((s, r) => s + r.value, 0) * mult;
       if (tv1 > 0) {
@@ -589,6 +607,20 @@
       }
     } else {
       tvChgEl.innerHTML = `<span style="color:var(--muted)">—</span>`;
+    }
+    // Portfolio value % change vs prior year (same quarter, year-1)
+    if (prev4 && prev4.length > 0) {
+      const tv4 = prev4.reduce((s, r) => s + r.value, 0) * mult;
+      if (tv4 > 0) {
+        const chgYr = Math.round(((tv - tv4) / tv4) * 100);
+        const signYr = chgYr >= 0 ? "+" : "";
+        const colorYr = chgYr >= 0 ? "var(--green)" : "var(--red)";
+        tvChgYrEl.innerHTML = `<span style="color:${colorYr}">${signYr}${chgYr}% vs prior year</span>`;
+      } else {
+        tvChgYrEl.textContent = "";
+      }
+    } else {
+      tvChgYrEl.innerHTML = `<span style="color:var(--muted); font-size:0.75rem; font-family:var(--mono)">— vs prior year</span>`;
     }
     const meta = metaCache[activeQ];
     const filedStr = meta ? ` <span style="font-weight:400">(Filed ${fmtDate(meta.filed)})</span>` : "";
