@@ -102,6 +102,17 @@
     .scrollable::-webkit-scrollbar-track { background: transparent; }
     .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
+    /* ── Nav ── */
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 4px;
+      transition: color 0.15s, background 0.15s; white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    @media (max-width: 600px) { .nav-links { display: none; } }
+
     /* ── Footer ── */
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
 
@@ -120,9 +131,16 @@
 <body>
 
 <header>
-  <div class="brand">
-    <div class="brand-name">13FAI</div>
-    <div class="brand-sub">AI-powered hedge fund holdings tracker</div>
+  <div style="display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+    <div class="brand">
+      <div class="brand-name">13FAI</div>
+      <div class="brand-sub">AI-powered hedge fund holdings tracker</div>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-link active" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+    </nav>
   </div>
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
@@ -239,10 +257,7 @@
     // Load stock index for search (don't block on failure)
     try {
       const res = await fetch(`${BASE}/stock_index.json`);
-      if (res.ok) {
-        const raw = await res.json();
-        stockIndex = raw.stocks || raw;
-      }
+      if (res.ok) stockIndex = await res.json();
     } catch(e) { /* stock index not yet generated */ }
 
     renderPopular();
