@@ -27,6 +27,15 @@
     .brand { display: flex; align-items: baseline; gap: 0.75rem; }
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
     .brand-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); text-decoration: none; }
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-link {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
+      transition: color 0.15s, background 0.15s; white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    @media (max-width: 600px) { .nav-links { display: none; } }
     /* ── Search ── */
     .search-wrap { position: relative; }
     #search {
@@ -119,9 +128,15 @@
 <body>
 
 <header>
-  <div class="brand">
-    <a class="brand-name" href="index.html">13FAI</a>
-    <span class="brand-sub">AI-powered hedge fund holdings tracker</span>
+  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
+    <div class="brand">
+      <a class="brand-name" href="index.html">13FAI</a>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+    </nav>
   </div>
   <div class="search-wrap">
     <span class="search-icon">⌕</span>
@@ -137,7 +152,7 @@
 </main>
 
 <footer>
-  Data sourced from SEC EDGAR 13F-HR filings · For informational purposes only · <a href="disclaimer.html">Disclaimer</a>
+  Data sourced from 13F filings · For informational purposes only · <a href="disclaimer.html">Disclaimer</a>
 </footer>
 
 <script>
@@ -714,13 +729,13 @@
         ? `${latestQLabel.split("Q")[0]} Q${latestQLabel.split("Q")[1]}`
         : "";
 
-      const desc = `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""}. Track position sizes, portfolio weights, and quarterly changes from 13F filings.`;
-      const titleStr = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Hedge fund ownership${qShort ? ` — ${qShort}` : ""}`;
-      document.title = titleStr;
+      const desc = `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""}${qShort ? ` as of ${qShort}` : ""}. Track position sizes, portfolio weights, and quarterly changes from 13F filings. Updated quarterly.`;
+      const titleStr = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Hedge Fund Ownership${qShort ? ` ${qShort}` : ""}`;
+      document.title = `${titleStr} | 13F Holdings`;
       document.querySelector('meta[name="description"]').setAttribute("content", desc);
 
       document.getElementById("stock-header").innerHTML = `
-        <div class="stock-name">${titleStr}</div>`;
+        <h1 class="stock-name" style="font-size:1.4rem;font-weight:500;margin-bottom:0.3rem">${titleStr}</h1>`;
 
       renderTable();
     }).catch(e => {
