@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,25 +22,21 @@
       --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-    header {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 1.5rem 3rem; display: flex; align-items: center;
-      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-    }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
     .brand { display: flex; align-items: baseline; gap: 0.75rem; }
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
     .brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
     .brand-sub:hover { color: var(--accent); }
-    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
-    .nav-link {
-      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
-      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
-      transition: color 0.15s, background 0.15s; white-space: nowrap;
-    }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
     .nav-link:hover { color: var(--accent); background: var(--accent-light); }
     .nav-link.active { color: var(--accent); font-weight: 500; }
-    @media (max-width: 600px) { .nav-links { display: none; } }
-    main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
     .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
     .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
@@ -55,7 +52,7 @@
     th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
     th.col-company { text-align: left; width: 22%; }
     th.col-data { width: 9%; text-align: center; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
+    table { width: 100%; min-width: 700px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
     td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
@@ -95,7 +92,7 @@
       padding: 0.6rem 1rem 0.6rem 2.25rem;
       border: 1px solid var(--border); border-radius: 6px;
       background: var(--bg); color: var(--text);
-      width: 300px; outline: none; transition: border 0.15s;
+      width: 200px; outline: none; transition: border 0.15s;
     }
     #search:focus { border-color: var(--accent); background: var(--surface); }
     #search::placeholder { color: var(--muted); }
@@ -112,9 +109,10 @@
       padding: 0.6rem 1rem 0.6rem 2.25rem;
       border: 1px solid var(--border); border-radius: 6px;
       background: var(--bg); color: var(--text);
-      width: 300px; outline: none; transition: border 0.15s;
+      width: 200px; outline: none; transition: border 0.15s;
     }
     #search:focus { border-color: var(--accent); background: var(--surface); }
+    @media (min-width: 700px) { #search { width: 300px; } }
     #search::placeholder { color: var(--muted); }
     .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
     .search-results {
@@ -137,20 +135,29 @@
 </head>
 <body>
 <header>
-  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
-    <div class="brand">
-      <a class="brand-name" href="index.html">13FAI</a>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+        <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      </nav>
     </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
-      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
-      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+      <a class="nav-link" href="top-holdings.html">Top 10</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
     </nav>
-  </div>
-  <div class="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
-    <div class="search-results" id="search-results"></div>
   </div>
 </header>
 
