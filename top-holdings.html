@@ -92,6 +92,14 @@
     tr.total-row td.col-company { font-family: var(--sans); font-size: 0.875rem; }
     .loading { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); padding: 2rem 0; }
     .error { font-family: var(--mono); font-size: 0.82rem; color: var(--red); padding: 2rem 0; }
+    /* ── Side nav ── */
+    .side-nav { position: fixed; top: 50%; transform: translateY(-50%); left: max(0.75rem, calc(50% - 620px - 180px)); width: 150px; z-index: 10; }
+    .side-nav-inner { display: flex; flex-direction: column; gap: 0.15rem; }
+    .side-nav-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.4rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--border); }
+    .side-nav-link { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px; line-height: 1.4; transition: color 0.15s, background 0.15s; display: block; }
+    .side-nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .side-nav-link.active { color: var(--accent); font-weight: 500; background: var(--accent-light); }
+    @media (max-width: 1100px) { .side-nav { display: none; } }
   </style>
 </head>
 <body>
@@ -101,8 +109,7 @@
       <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
-        <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
-        <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+        <a class="nav-link active" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
       </nav>
     </div>
@@ -115,20 +122,32 @@
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
-      <a class="nav-link" href="top-holdings.html">Top 10</a>
-      <a class="nav-link" href="top-holdings.html#top100">Top 100</a>
+      <a class="nav-link active" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
     </nav>
   </div>
 </header>
 
 <main>
+  <!-- Side nav -->
+  <aside class="side-nav">
+    <div class="side-nav-inner">
+      <div class="side-nav-label">Jump to</div>
+      <a class="side-nav-link active" href="#sec-top10">Top 10</a>
+      <a class="side-nav-link" href="#sec-top100">Top 100</a>
+    </div>
+  </aside>
+
   <h1 class="section-label" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Top Stocks Held by Hedge Funds (Latest 13F Data)</h1>
   <div class="section-sublabel" id="year-sublabel">Most Popular 13F Holdings</div>
 
-  <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
+  <div id="sec-top10" style="scroll-margin-top:1rem">
+    <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
+  </div>
 
-  <div id="top100" style="margin-top:2.5rem; scroll-margin-top:1rem"></div>
+  <div id="sec-top100" style="scroll-margin-top:1rem">
+    <div id="top100" style="margin-top:2.5rem"></div>
+  </div>
 
   <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
     * Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds that hold the stock.
@@ -397,7 +416,7 @@
             <th class="col-company" onclick="${sortFnName}(0)">Company${arrowFn(0)}</th>
             <th class="col-data num" onclick="${sortFnName}(2)"># of Funds${arrowFn(2)}</th>
             <th class="col-data num" onclick="${sortFnName}(1)">% of Portfolio${arrowFn(1)}</th>
-            <th class="col-data num" onclick="${sortFnName}(3)">Max % (Single Fund)${arrowFn(3)}</th>
+            <th class="col-data num" onclick="${sortFnName}(3)">Highest Concentration %${arrowFn(3)}</th>
             <th class="col-data num" onclick="${sortFnName}(4)">Shares vs Prior Quarter${arrowFn(4)}</th>
             <th class="col-data num" onclick="${sortFnName}(6)">Shares vs Prior Year${arrowFn(6)}</th>
             <th class="col-data num" onclick="${sortFnName}(5)">Aggregate Value${arrowFn(5)}</th>
@@ -434,6 +453,18 @@
   }
 
   // ── Search ─────────────────────────────────────────────────────
+  // ── Side nav scroll spy ────────────────────────────────────────
+  const thSections = ["sec-top10","sec-top100"];
+  const thNavLinks = document.querySelectorAll(".side-nav-link");
+  window.addEventListener("scroll", () => {
+    let current = thSections[0];
+    for (const id of thSections) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top <= 80) current = id;
+    }
+    thNavLinks.forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${current}`));
+  }, { passive: true });
+
   let allFundsForSearch = [];
   let stockIndexForSearch = {};
   fetch(`${PAGES}/funds.json`).then(r => r.json()).then(d => { allFundsForSearch = d; }).catch(() => {});
