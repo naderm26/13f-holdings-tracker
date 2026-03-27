@@ -585,21 +585,30 @@
     const totalShares   = holdingFunds.reduce((s, x) => s + (x.latest?.shares || 0), 0);
     const totalValue    = holdingFunds.reduce((s, x) => s + (x.latest?.value  || 0), 0);
 
-    // vs prior quarter: net share change / prev total shares (share-based, same as S4)
+    // vs prior quarter/year: include exited funds (sharesNow=0) for true net aggregate
     let netShares1 = 0, prevTotal1 = 0;
-    for (const x of holdingFunds) {
-      if (x.prev1 && x.prev1.shares > 0) {
-        netShares1  += x.latest.shares - x.prev1.shares;
-        prevTotal1  += x.prev1.shares;
-      }
-    }
-    // vs prior year
     let netShares4 = 0, prevTotal4 = 0;
+
+    // Current holders
     for (const x of holdingFunds) {
-      if (x.prev4 && x.prev4.shares > 0) {
-        netShares4 += x.latest.shares - x.prev4.shares;
-        prevTotal4 += x.prev4.shares;
-      }
+      if (x.prev1 && x.prev1.shares > 0) { netShares1 += x.latest.shares - x.prev1.shares; prevTotal1 += x.prev1.shares; }
+      if (x.prev4 && x.prev4.shares > 0) { netShares4 += x.latest.shares - x.prev4.shares; prevTotal4 += x.prev4.shares; }
+    }
+
+    // Exited funds — sharesNow = 0, pull prior quarter data from stock index
+    for (const x of exitedFunds) {
+      const fqData = stock.funds[x.fid]?.quarters || {};
+      const fqKeys = Object.keys(fqData).sort().reverse();
+      const fLatestQ = fqKeys[0];
+      if (!fLatestQ) continue;
+      const [yr, qn] = fLatestQ.split("Q");
+      let pqNum = parseInt(qn) - 1, pqYr = parseInt(yr);
+      if (pqNum === 0) { pqNum = 4; pqYr--; }
+      const fPrev1Q = fqData[pqYr + "Q" + pqNum];
+      const fPrev4Q = fqData[(parseInt(yr) - 1) + "Q" + qn];
+      // sharesNow = 0 (exited), so net = 0 - prev1.shares
+      if (fPrev1Q && fPrev1Q.shares > 0) { netShares1 += 0 - fPrev1Q.shares; prevTotal1 += fPrev1Q.shares; }
+      if (fPrev4Q && fPrev4Q.shares > 0) { netShares4 += 0 - fPrev4Q.shares; prevTotal4 += fPrev4Q.shares; }
     }
     const totalChg1 = prevTotal1 > 0 ? (netShares1 / prevTotal1) * 100 : null;
     const totalChg4 = prevTotal4 > 0 ? (netShares4 / prevTotal4) * 100 : null;
