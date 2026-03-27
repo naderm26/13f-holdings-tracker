@@ -218,8 +218,9 @@
     };
 
     const heads = headsByType[type].map((h, i) => {
-      const cls = i === 0 ? "col-num" : i === 1 ? "col-company" : "col-data num";
-      return `<th class="${cls}">${h}</th>`;
+      if (i === 0) return `<th class="col-num" style="color:var(--muted);width:2.5rem;min-width:2.5rem;max-width:2.5rem">${h}</th>`;
+      if (i === 1) return `<th class="col-company">${h}</th>`;
+      return `<th class="col-data num">${h}</th>`;
     }).join("");
 
     const rowsHtml = rows.map((r, i) => {
