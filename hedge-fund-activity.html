@@ -78,7 +78,7 @@
       padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
     }
 
-    /* Table — identical to top-holdings */
+    /* Table — identical classes to top-holdings */
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: block; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
@@ -130,27 +130,27 @@
   <div class="period-line" id="period-line">Loading...</div>
 
   <div class="activity-section">
-    <div class="activity-section-title">New Positions (by consensus)</div>
+    <div class="activity-section-title">Top New Positions (by consensus)</div>
     <div id="tbl-new"><div class="loading">Fetching data...</div></div>
-    <p class="footnote" id="fn-new" style="display:none">* Price at last filing = aggregate value ÷ aggregate shares (implied average, not actual trade price)</p>
+    <p class="footnote" id="fn-new" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds.</p>
   </div>
 
   <div class="activity-section">
     <div class="activity-section-title">Top Increases (by consensus)</div>
     <div id="tbl-buy"><div class="loading">Fetching data...</div></div>
-    <p class="footnote" id="fn-buy" style="display:none">* Excludes new positions. Price at last filing = aggregate value ÷ aggregate shares.</p>
+    <p class="footnote" id="fn-buy" style="display:none">* Excludes new positions. Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
   </div>
 
   <div class="activity-section">
     <div class="activity-section-title">Top Reductions (by consensus)</div>
     <div id="tbl-sell"><div class="loading">Fetching data...</div></div>
-    <p class="footnote" id="fn-sell" style="display:none">* Excludes full exits. Price at last filing = aggregate value ÷ aggregate shares.</p>
+    <p class="footnote" id="fn-sell" style="display:none">* Excludes full exits. Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
   </div>
 
   <div class="activity-section">
     <div class="activity-section-title">Most Exited (by consensus)</div>
     <div id="tbl-exit"><div class="loading">Fetching data...</div></div>
-    <p class="footnote" id="fn-exit" style="display:none">* Price at last filing = prior quarter value ÷ prior quarter shares.</p>
+    <p class="footnote" id="fn-exit" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the prior quarter, calculated by dividing the reported value by shares held, aggregated across all funds.</p>
   </div>
 </main>
 
@@ -161,26 +161,33 @@
 <script>
   const PAGES = "/13f-holdings-tracker";
 
-  function fmtValue(v) {
-    const d = v * 1000; // stock_index values are in $thousands
-    if (d >= 1e9) return "$" + (d / 1e9).toFixed(2) + "B";
-    if (d >= 1e6) return "$" + (d / 1e6).toFixed(1) + "M";
-    if (d >= 1e3) return "$" + (d / 1e3).toFixed(0) + "K";
-    return "$" + d.toLocaleString();
-  }
-
+  // ── Formatters — identical logic to top-holdings ──────────────
   function fmtShares(n) {
-    if (!n && n !== 0) return "—";
-    const abs = Math.abs(n);
-    if (abs >= 1e9) return (n / 1e9).toFixed(2) + "B";
-    if (abs >= 1e6) return (n / 1e6).toFixed(2) + "M";
-    if (abs >= 1e3) return (n / 1e3).toFixed(0) + "K";
-    return n.toLocaleString();
+    if (!n || n === 0) return "—";
+    let scaled, suffix;
+    if (n >= 1e9)      { scaled = n / 1e9; suffix = "B"; }
+    else if (n >= 1e6) { scaled = n / 1e6; suffix = "M"; }
+    else if (n >= 1e3) { scaled = n / 1e3; suffix = "K"; }
+    else               { return n.toString(); }
+    const mag     = Math.floor(Math.log10(Math.abs(scaled)));
+    const factor  = Math.pow(10, 2 - mag);
+    const rounded = Math.round(scaled * factor) / factor;
+    const str     = rounded % 1 === 0 ? rounded.toString() : rounded.toPrecision(3).replace(/\.?0+$/, "");
+    return str + suffix;
   }
 
-  function fmtPrice(shares, value) {
-    if (!shares || !value || shares <= 0 || value <= 0) return "—";
-    const price = (value * 1000) / shares;
+  function fmtValue(v) {
+    // totalValue in stock_index is already in dollars (fund_totals has multiplier applied)
+    if (!v || v === 0) return "—";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+    return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
+
+  function fmtPrice(totalShares, totalValue) {
+    // Same as top-holdings: totalValue / totalShares, both already in correct units
+    if (!totalShares || !totalValue || totalShares <= 0 || totalValue <= 0) return "—";
+    const price = totalValue / totalShares;
     return "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
@@ -202,57 +209,53 @@
   function buildTable(rows, type) {
     if (!rows || rows.length === 0) return `<div class="loading" style="color:var(--muted)">No data available.</div>`;
 
-    const configs = {
-      new: {
-        heads: ["#","Company","Funds Initiating","Aggregate Shares","Aggregate Value","Price at Filing *"],
-        row: (r, i) => [
-          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
-          `<td class="col-company">${stockCell(r)}</td>`,
-          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
-          `<td class="col-data num">${fmtShares(r.shares)}</td>`,
-          `<td class="col-data num">${fmtValue(r.value)}</td>`,
-          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
-        ].join("")
-      },
-      buy: {
-        heads: ["#","Company","Funds Adding","Net Shares Added","Aggregate Value","Price at Filing *"],
-        row: (r, i) => [
-          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
-          `<td class="col-company">${stockCell(r)}</td>`,
-          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
-          `<td class="col-data num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>`,
-          `<td class="col-data num">${fmtValue(r.value)}</td>`,
-          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
-        ].join("")
-      },
-      sell: {
-        heads: ["#","Company","Funds Reducing","Net Shares Removed","Aggregate Value","Price at Filing *"],
-        row: (r, i) => [
-          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
-          `<td class="col-company">${stockCell(r)}</td>`,
-          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
-          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>`,
-          `<td class="col-data num">${fmtValue(r.value)}</td>`,
-          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
-        ].join("")
-      },
-      exit: {
-        heads: ["#","Company","Funds Exiting","Shares Removed","Prior Quarter Value","Price at Filing *"],
-        row: (r, i) => [
-          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
-          `<td class="col-company">${stockCell(r)}</td>`,
-          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
-          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.shares)}</span></td>`,
-          `<td class="col-data num" style="color:var(--muted)">${fmtValue(r.value)}</td>`,
-          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
-        ].join("")
-      }
+    // Column headers per table type
+    const headsByType = {
+      new:  ["#", "Company", "Funds Initiating", "Aggregate Shares", "Aggregate Value", "Price at Last Filing *"],
+      buy:  ["#", "Company", "Funds Adding",     "Net Shares Added",  "Aggregate Value", "Price at Last Filing *"],
+      sell: ["#", "Company", "Funds Reducing",   "Net Shares Removed","Aggregate Value", "Price at Last Filing *"],
+      exit: ["#", "Company", "Funds Exiting",    "Shares Removed",    "Prior Quarter Value", "Price at Last Filing *"]
     };
 
-    const cfg = configs[type];
-    const thClass = (i) => i === 0 ? "col-num" : i === 1 ? "col-company" : "col-data num";
-    const heads = cfg.heads.map((h, i) => `<th class="${thClass(i)}">${h}</th>`).join("");
-    const rowsHtml = rows.map((r, i) => `<tr>${cfg.row(r, i)}</tr>`).join("");
+    const heads = headsByType[type].map((h, i) => {
+      const cls = i === 0 ? "col-num" : i === 1 ? "col-company" : "col-data num";
+      return `<th class="${cls}">${h}</th>`;
+    }).join("");
+
+    const rowsHtml = rows.map((r, i) => {
+      const numCls    = `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i + 1}</td>`;
+      const companyCl = `<td class="col-company">${stockCell(r)}</td>`;
+      const priceTd   = `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
+
+      let midCols;
+      if (type === "new") {
+        midCols = [
+          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
+          `<td class="col-data num">${fmtShares(r.totalShares)}</td>`,
+          `<td class="col-data num">${fmtValue(r.totalValue)}</td>`
+        ].join("");
+      } else if (type === "buy") {
+        midCols = [
+          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
+          `<td class="col-data num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>`,
+          `<td class="col-data num">${fmtValue(r.totalValue)}</td>`
+        ].join("");
+      } else if (type === "sell") {
+        midCols = [
+          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
+          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>`,
+          `<td class="col-data num">${fmtValue(r.totalValue)}</td>`
+        ].join("");
+      } else { // exit
+        midCols = [
+          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
+          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>`,
+          `<td class="col-data num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`
+        ].join("");
+      }
+
+      return `<tr>${numCls}${companyCl}${midCols}${priceTd}</tr>`;
+    }).join("");
 
     return `<div class="table-wrap"><table>
       <thead><tr>${heads}</tr></thead>
@@ -280,6 +283,7 @@
     }
 
     // ── Compute activity ──────────────────────────────────────────
+    // Maps keyed by stockKey (ticker || cusip || raw key)
     const newMap  = {};
     const buyMap  = {};
     const sellMap = {};
@@ -295,50 +299,88 @@
 
         const quarters  = fundData.quarters || {};
         const sortedQs  = Object.keys(quarters).sort().reverse();
-        const latestIdx = sortedQs.indexOf(latestQ);
-        if (latestIdx === -1) continue;
 
-        const prevQ      = sortedQs[latestIdx + 1] || null;
-        const latestData = quarters[latestQ];
-        const prevData   = prevQ ? quarters[prevQ] : null;
+        // latestQ is the fund's most recent quarter from fund_latest_q.
+        // The stock may only appear in a subset of those quarters.
+        // Find the most recent quarter this stock has data for this fund.
+        const stockLatestQ = sortedQs[0];
+        if (!stockLatestQ) continue;
+
+        // Determine previous quarter label (calendar quarter before stockLatestQ)
+        const [yr, qn] = stockLatestQ.split("Q");
+        let pqNum = parseInt(qn) - 1, pqYr = parseInt(yr);
+        if (pqNum === 0) { pqNum = 4; pqYr--; }
+        const prevQLabel = pqYr + "Q" + pqNum;
+
+        const latestData = quarters[stockLatestQ];
+        const prevData   = quarters[prevQLabel] || null; // null if fund didn't hold it last quarter
+
         if (!latestData) continue;
 
         const sharesNow  = latestData.shares || 0;
         const sharesPrev = prevData ? (prevData.shares || 0) : null;
         const valueNow   = latestData.value  || 0;
         const valuePrev  = prevData ? (prevData.value  || 0) : null;
-        const stockKey   = ticker || cusip || key;
 
+        // Only process activity in the fund's actual latest quarter
+        // (avoids counting stale data for funds that have filed a newer quarter)
+        if (stockLatestQ !== latestQ) {
+          // Stock's latest data for this fund is older than the fund's actual latest quarter
+          // → fund exited this stock (it was in a prior quarter but not the latest filing)
+          if (sharesNow > 0) {
+            // The stock was held in stockLatestQ, but the fund's latestQ is newer — it's an exit
+            const stockKey = ticker || cusip || key;
+            const ensure = (map) => {
+              if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0 };
+              return map[stockKey];
+            };
+            const e = ensure(exitMap);
+            e.fundCount++;
+            e.totalShares += sharesNow;
+            e.totalValue  += valueNow;
+          }
+          continue;
+        }
+
+        const stockKey = ticker || cusip || key;
         const ensure = (map) => {
-          if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, shares: 0, value: 0, netShares: 0 };
+          if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0 };
           return map[stockKey];
         };
 
-        // NEW: present now, absent/zero in prev, fund had a prior quarter on record
-        if (sharesNow > 0 && prevQ !== null && (sharesPrev === 0 || sharesPrev === null)) {
+        // NEW: has shares now, no prior quarter data (fund didn't hold it last quarter)
+        if (sharesNow > 0 && sharesPrev === null) {
           const e = ensure(newMap);
-          e.fundCount++; e.shares += sharesNow; e.value += valueNow;
+          e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
         }
-        // EXITED: zero now, had shares in prev
-        else if (sharesNow === 0 && prevData && sharesPrev > 0) {
+        // NEW: has shares now, prior quarter had 0 shares
+        else if (sharesNow > 0 && sharesPrev === 0) {
+          const e = ensure(newMap);
+          e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
+        }
+        // EXITED: 0 shares now, had shares before
+        else if (sharesNow === 0 && sharesPrev !== null && sharesPrev > 0) {
           const e = ensure(exitMap);
-          e.fundCount++; e.shares += sharesPrev; e.value += valuePrev;
+          e.fundCount++; e.totalShares += sharesPrev; e.totalValue += valuePrev;
         }
-        // INCREASED (existing position only)
-        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow > sharesPrev) {
+        // INCREASED existing position
+        else if (sharesNow > 0 && sharesPrev !== null && sharesPrev > 0 && sharesNow > sharesPrev) {
           const e = ensure(buyMap);
-          e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.shares += sharesNow; e.value += valueNow;
+          e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.totalShares += sharesNow; e.totalValue += valueNow;
         }
-        // REDUCED (existing position only, not exited)
-        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow < sharesPrev) {
+        // REDUCED existing position (not exited)
+        else if (sharesNow > 0 && sharesPrev !== null && sharesPrev > 0 && sharesNow < sharesPrev) {
           const e = ensure(sellMap);
-          e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.shares += sharesNow; e.value += valueNow;
+          e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.totalShares += sharesNow; e.totalValue += valueNow;
         }
       }
     }
 
-    const sortAndSlice = (map, tiebreak = "shares") =>
-      Object.values(map).sort((a, b) => b.fundCount - a.fundCount || b[tiebreak] - a[tiebreak]).slice(0, 10);
+    // Sort: primary = fundCount desc, tiebreak = aggregate shares desc
+    const sortAndSlice = (map, tiebreak = "totalShares") =>
+      Object.values(map)
+        .sort((a, b) => b.fundCount - a.fundCount || b[tiebreak] - a[tiebreak])
+        .slice(0, 10);
 
     const newRows  = sortAndSlice(newMap);
     const buyRows  = sortAndSlice(buyMap,  "netShares");
@@ -351,8 +393,7 @@
     document.getElementById("tbl-exit").innerHTML = buildTable(exitRows, "exit");
 
     ["fn-new","fn-buy","fn-sell","fn-exit"].forEach((id, i) => {
-      const rows = [newRows, buyRows, sellRows, exitRows][i];
-      document.getElementById(id).style.display = rows.length ? "" : "none";
+      document.getElementById(id).style.display = [newRows, buyRows, sellRows, exitRows][i].length ? "" : "none";
     });
 
   }).catch(err => {
