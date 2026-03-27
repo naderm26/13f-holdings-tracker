@@ -23,24 +23,27 @@
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
 
-    /* ── Header ── */
-    header {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 1.5rem 3rem; display: flex; align-items: center;
-      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
-    }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
     .brand { display: flex; align-items: baseline; gap: 0.75rem; }
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
     .brand-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
-
-    /* ── Search ── */
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
     .search-wrap { position: relative; }
     #search {
       font-family: var(--sans); font-size: 0.875rem;
       padding: 0.6rem 1rem 0.6rem 2.25rem;
       border: 1px solid var(--border); border-radius: 6px;
       background: var(--bg); color: var(--text);
-      width: 300px; outline: none; transition: border 0.15s;
+      width: 200px; outline: none; transition: border 0.15s;
+    }
+    @media (min-width: 700px) { #search { width: 300px;
     }
     #search:focus { border-color: var(--accent); background: var(--surface); }
     #search::placeholder { color: var(--muted); }
@@ -68,7 +71,8 @@
     .hero p { font-size: 0.9rem; color: var(--muted); max-width: 560px; line-height: 1.6; }
 
     /* ── Main layout ── */
-    main { max-width: 800px; margin: 0 auto; padding: 2rem 3rem 4rem; }
+    main { max-width: 800px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+    @media (min-width: 700px) { main { padding: 2rem 3rem 4rem; } }
 
     /* ── Column headers ── */
     .col-header { margin-bottom: 0.85rem; }
@@ -102,15 +106,6 @@
     .scrollable::-webkit-scrollbar-track { background: transparent; }
     .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
-    .nav-link {
-      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
-      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
-      transition: color 0.15s, background 0.15s; white-space: nowrap;
-    }
-    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
-    .nav-link.active { color: var(--accent); font-weight: 500; }
-    @media (max-width: 600px) { .nav-links { display: none; } }
     /* ── Footer ── */
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
 
@@ -123,21 +118,29 @@
 <body>
 
 <header>
-  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
-    <div class="brand">
-      <a class="brand-name" href="index.html">13FAI</a>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link active" href="index.html">Funds</a>
+        <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+        <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      </nav>
     </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link active" href="index.html">Funds</a>
-      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
-      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+      <a class="nav-link" href="top-holdings.html">Top 10</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100</a>
       <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
     </nav>
-  </div>
-  <div class="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
-    <div class="search-results" id="search-results"></div>
   </div>
 </header>
 
