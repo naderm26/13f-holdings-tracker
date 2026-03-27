@@ -247,6 +247,15 @@
     return "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
+  function fmtChg(val) {
+    if (val === null || val === undefined) return `<span class="chg na">—</span>`;
+    if (!isFinite(val))                    return `<span class="chg na">—</span>`;
+    if (Math.abs(val) < 0.005)             return `<span class="chg na">—</span>`;
+    const sign = val >= 0 ? "+" : "";
+    const cls  = val >= 0 ? "pos" : "neg";
+    return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
+  }
+
   function stockCell(r) {
     const href = r.ticker
       ? `stock.html?ticker=${encodeURIComponent(r.ticker)}`
@@ -259,42 +268,52 @@
 
   const COLS = {
     new:  [
-      { label: "#",                      sortKey: null },
-      { label: "Company",                sortKey: "name" },
-      { label: "Funds Initiating",       sortKey: "fundCount" },
-      { label: "Aggregate Shares",       sortKey: "totalShares" },
-      { label: "Aggregate Value",        sortKey: "totalValue" },
-      { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "#",                        sortKey: null },
+      { label: "Company",                  sortKey: "name" },
+      { label: "Funds Initiating",         sortKey: "fundCount" },
+      { label: "Aggregate Shares",         sortKey: "totalShares" },
+      { label: "Shares vs Prior Quarter",  sortKey: "chgQtr" },
+      { label: "Shares vs Prior Year",     sortKey: "chgYr" },
+      { label: "Aggregate Value",          sortKey: "totalValue" },
+      { label: "Price at Last Filing *",   sortKey: "price" }
     ],
     buy:  [
-      { label: "#",                      sortKey: null },
-      { label: "Company",                sortKey: "name" },
-      { label: "Funds Adding",           sortKey: "fundCount" },
-      { label: "Net Shares Added",       sortKey: "netShares" },
-      { label: "Aggregate Value",        sortKey: "totalValue" },
-      { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "#",                        sortKey: null },
+      { label: "Company",                  sortKey: "name" },
+      { label: "Funds Adding",             sortKey: "fundCount" },
+      { label: "Net Shares Added",         sortKey: "netShares" },
+      { label: "Shares vs Prior Quarter",  sortKey: "chgQtr" },
+      { label: "Shares vs Prior Year",     sortKey: "chgYr" },
+      { label: "Aggregate Value",          sortKey: "totalValue" },
+      { label: "Price at Last Filing *",   sortKey: "price" }
     ],
     sell: [
-      { label: "#",                      sortKey: null },
-      { label: "Company",                sortKey: "name" },
-      { label: "Funds Reducing",         sortKey: "fundCount" },
-      { label: "Net Shares Removed",     sortKey: "netShares" },
-      { label: "Aggregate Value",        sortKey: "totalValue" },
-      { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "#",                        sortKey: null },
+      { label: "Company",                  sortKey: "name" },
+      { label: "Funds Reducing",           sortKey: "fundCount" },
+      { label: "Net Shares Removed",       sortKey: "netShares" },
+      { label: "Shares vs Prior Quarter",  sortKey: "chgQtr" },
+      { label: "Shares vs Prior Year",     sortKey: "chgYr" },
+      { label: "Aggregate Value",          sortKey: "totalValue" },
+      { label: "Price at Last Filing *",   sortKey: "price" }
     ],
     exit: [
-      { label: "#",                      sortKey: null },
-      { label: "Company",                sortKey: "name" },
-      { label: "Funds Exiting",          sortKey: "fundCount" },
-      { label: "Shares Removed",         sortKey: "totalShares" },
-      { label: "Prior Quarter Value",    sortKey: "totalValue" },
-      { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "#",                        sortKey: null },
+      { label: "Company",                  sortKey: "name" },
+      { label: "Funds Exiting",            sortKey: "fundCount" },
+      { label: "Shares Removed",           sortKey: "totalShares" },
+      { label: "Shares vs Prior Quarter",  sortKey: "chgQtr" },
+      { label: "Shares vs Prior Year",     sortKey: "chgYr" },
+      { label: "Prior Quarter Value",      sortKey: "totalValue" },
+      { label: "Price at Last Filing *",   sortKey: "price" }
     ]
   };
 
   function getSortVal(r, key) {
-    if (key === "name")  return r.name.toLowerCase();
-    if (key === "price") return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
+    if (key === "name")    return r.name.toLowerCase();
+    if (key === "price")   return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
+    if (key === "chgQtr")  return r.prevTotal1 > 0 ? r.netShares1 / r.prevTotal1 : 0;
+    if (key === "chgYr")   return r.prevTotal4 > 0 ? r.netShares4 / r.prevTotal4 : 0;
     return r[key] || 0;
   }
 
@@ -322,16 +341,19 @@
     }).join("");
 
     const rowsHtml = sorted.map((r, i) => {
+      const chgQtr  = r.prevTotal1 > 0 ? (r.netShares1 / r.prevTotal1) * 100 : null;
+      const chgYr   = r.prevTotal4 > 0 ? (r.netShares4 / r.prevTotal4) * 100 : null;
+      const chgCols = `<td class="num">${fmtChg(chgQtr)}</td><td class="num">${fmtChg(chgYr)}</td>`;
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
       let midCols;
       if (type === "new") {
-        midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num">${fmtShares(r.totalShares)}</td><td class="num">${fmtValue(r.totalValue)}</td>`;
+        midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       } else if (type === "buy") {
-        midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td><td class="num">${fmtValue(r.totalValue)}</td>`;
+        midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       } else if (type === "sell") {
-        midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td><td class="num">${fmtValue(r.totalValue)}</td>`;
+        midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       } else {
-        midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td><td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
+        midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
       }
       return `<tr><td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td><td class="col-company">${stockCell(r)}</td>${midCols}${priceTd}</tr>`;
     }).join("");
@@ -385,9 +407,14 @@
 
         const stockKey = ticker || cusip || key;
         const ensure = (map) => {
-          if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0 };
+          if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0, netShares1: 0, prevTotal1: 0, netShares4: 0, prevTotal4: 0 };
           return map[stockKey];
         };
+
+        // Compute prev quarter and prev year labels relative to stockLatestQ
+        const prevYrLabel = (parseInt(yr) - 1) + "Q" + qn;
+        const prev1 = quarters[prevQLabel] || null;
+        const prev4 = quarters[prevYrLabel] || null;
 
         if (stockLatestQ !== latestQ) {
           if (sharesNow > 0) { const e = ensure(exitMap); e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow; }
@@ -396,12 +423,20 @@
 
         if (sharesNow > 0 && (sharesPrev === null || sharesPrev === 0)) {
           const e = ensure(newMap); e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
+          if (prev1 && prev1.shares > 0) { e.netShares1 += sharesNow - prev1.shares; e.prevTotal1 += prev1.shares; }
+          if (prev4 && prev4.shares > 0) { e.netShares4 += sharesNow - prev4.shares; e.prevTotal4 += prev4.shares; }
         } else if (sharesNow === 0 && sharesPrev > 0) {
           const e = ensure(exitMap); e.fundCount++; e.totalShares += sharesPrev; e.totalValue += valuePrev;
+          if (prev1 && prev1.shares > 0) { e.netShares1 += 0 - prev1.shares; e.prevTotal1 += prev1.shares; }
+          if (prev4 && prev4.shares > 0) { e.netShares4 += 0 - prev4.shares; e.prevTotal4 += prev4.shares; }
         } else if (sharesNow > 0 && sharesPrev > 0 && sharesNow > sharesPrev) {
           const e = ensure(buyMap); e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.totalShares += sharesNow; e.totalValue += valueNow;
+          if (prev1 && prev1.shares > 0) { e.netShares1 += sharesNow - prev1.shares; e.prevTotal1 += prev1.shares; }
+          if (prev4 && prev4.shares > 0) { e.netShares4 += sharesNow - prev4.shares; e.prevTotal4 += prev4.shares; }
         } else if (sharesNow > 0 && sharesPrev > 0 && sharesNow < sharesPrev) {
           const e = ensure(sellMap); e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.totalShares += sharesNow; e.totalValue += valueNow;
+          if (prev1 && prev1.shares > 0) { e.netShares1 += sharesNow - prev1.shares; e.prevTotal1 += prev1.shares; }
+          if (prev4 && prev4.shares > 0) { e.netShares4 += sharesNow - prev4.shares; e.prevTotal4 += prev4.shares; }
         }
       }
     }
