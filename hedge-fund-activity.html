@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Top Hedge Fund Buys &amp; Sells This Quarter (13F Filings) | 13FAI</title>
+  <title>Hedge Fund Activity: Top Consensus Buys and Sells (Latest 13F Data) | 13FAI</title>
   <meta name="description" content="See which stocks hedge funds are buying and selling this quarter based on 13F filings. New positions, top increases, top reductions, and exits by consensus."/>
-  <meta property="og:title" content="Top Hedge Fund Buys &amp; Sells This Quarter (13F Filings)"/>
+  <meta property="og:title" content="Hedge Fund Activity: Top Consensus Buys and Sells (Latest 13F Data)"/>
   <meta property="og:description" content="See which stocks hedge funds are buying and selling this quarter based on 13F filings."/>
   <meta property="og:type" content="website"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -66,9 +66,7 @@
     .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
 
     main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
-    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.25rem; }
-    .section-sublabel { font-size: 1rem; color: var(--muted); font-weight: 400; margin-bottom: 0.5rem; }
-    .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 1.75rem; }
 
     /* Section blocks */
     .activity-section { margin-bottom: 3rem; }
@@ -78,31 +76,40 @@
       padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
     }
 
-    /* Table — identical classes to top-holdings */
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: block; table-layout: fixed; }
-    thead { display: table; width: 100%; table-layout: fixed; }
-    tbody { display: table; width: 100%; table-layout: fixed; }
+    /* Table — no display:block, proper table layout */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 6px; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); table-layout: fixed; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
-    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: normal; line-height: 1.4; overflow: hidden; }
-    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th {
+      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em;
+      font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem;
+      text-align: center; white-space: normal; line-height: 1.4;
+      cursor: pointer; user-select: none;
+    }
+    th:hover { color: var(--text); }
+    th.sorted { color: var(--accent); }
+    th.col-num  { width: 2.5rem; text-align: center; }
     th.col-company { text-align: left; width: 22%; }
-    th.col-data { width: 10%; text-align: center; }
-    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; overflow: hidden; }
-    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-data { width: 13%; text-align: center; }
+    td {
+      padding: 0.85rem 0.6rem; font-size: 0.875rem;
+      border-bottom: 1px solid var(--border); vertical-align: middle;
+      white-space: nowrap; text-align: center;
+    }
+    td.col-num  { width: 2.5rem; text-align: center; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
     td.col-company { text-align: left; white-space: normal; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; text-align: center; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
     .company-name { font-weight: 500; color: var(--text); white-space: normal; }
     .ticker-sub { color: #2563eb; font-weight: 600; font-size: 0.78rem; font-family: var(--mono); margin-top: 0.1rem; }
-    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
     .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
     .chg.pos { color: var(--green); }
     .chg.neg { color: var(--red); }
     .chg.na  { color: var(--muted); }
-    .loading { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); padding: 2rem 0; text-align: center; }
-    .error   { font-family: var(--mono); font-size: 0.82rem; color: var(--red);   padding: 2rem 0; text-align: center; }
-    .footnote { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); line-height: 1.5; margin-top: 0.5rem; }
+    .loading { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); padding: 2rem; text-align: center; }
+    .error   { font-family: var(--mono); font-size: 0.82rem; color: var(--red);   padding: 2rem; text-align: center; }
+    .footnote { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); line-height: 1.6; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
@@ -127,30 +134,28 @@
 </header>
 
 <main>
-  <h1 class="section-label" id="page-title">Hedge Fund Activity: Top Buys &amp; Sells</h1>
-  <div class="section-sublabel">Ranked by consensus — number of funds acting on each stock</div>
-  <div class="period-line" id="period-line">Loading...</div>
+  <h1 class="section-label">Hedge Fund Activity: Top Consensus Buys and Sells (Latest 13F Data)</h1>
 
   <div class="activity-section">
-    <div class="activity-section-title">Top New Positions (by consensus)</div>
+    <div class="activity-section-title">Top New Positions</div>
     <div id="tbl-new"><div class="loading">Fetching data...</div></div>
     <p class="footnote" id="fn-new" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds.</p>
   </div>
 
   <div class="activity-section">
-    <div class="activity-section-title">Top Increases (by consensus)</div>
+    <div class="activity-section-title">Top Increases</div>
     <div id="tbl-buy"><div class="loading">Fetching data...</div></div>
-    <p class="footnote" id="fn-buy" style="display:none">* Excludes new positions. Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+    <p class="footnote" id="fn-buy" style="display:none">Excludes new positions.<br>* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
   </div>
 
   <div class="activity-section">
-    <div class="activity-section-title">Top Reductions (by consensus)</div>
+    <div class="activity-section-title">Top Reductions</div>
     <div id="tbl-sell"><div class="loading">Fetching data...</div></div>
-    <p class="footnote" id="fn-sell" style="display:none">* Excludes full exits. Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+    <p class="footnote" id="fn-sell" style="display:none">Excludes full exits.<br>* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
   </div>
 
   <div class="activity-section">
-    <div class="activity-section-title">Most Exited (by consensus)</div>
+    <div class="activity-section-title">Most Exited</div>
     <div id="tbl-exit"><div class="loading">Fetching data...</div></div>
     <p class="footnote" id="fn-exit" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the prior quarter, calculated by dividing the reported value by shares held, aggregated across all funds.</p>
   </div>
@@ -162,6 +167,11 @@
 
 <script>
   const PAGES = "/13f-holdings-tracker";
+
+  // Per-table sort state: { col, asc }
+  const sortState = { new: { col: 2, asc: false }, buy: { col: 2, asc: false }, sell: { col: 2, asc: false }, exit: { col: 2, asc: false } };
+  // Stored rows per table for re-sorting
+  const tableData = { new: [], buy: [], sell: [], exit: [] };
 
   // ── Formatters — identical logic to top-holdings ──────────────
   function fmtShares(n) {
@@ -179,7 +189,6 @@
   }
 
   function fmtValue(v) {
-    // totalValue in stock_index is already in dollars (fund_totals has multiplier applied)
     if (!v || v === 0) return "—";
     if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
     if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
@@ -187,7 +196,6 @@
   }
 
   function fmtPrice(totalShares, totalValue) {
-    // Same as top-holdings: totalValue / totalShares, both already in correct units
     if (!totalShares || !totalValue || totalShares <= 0 || totalValue <= 0) return "—";
     const price = totalValue / totalShares;
     return "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -208,62 +216,130 @@
     </a>`;
   }
 
-  function buildTable(rows, type) {
+  // Column definitions per table type
+  // Each col: { label, sortKey, dir } — dir: 1=asc default, -1=desc default
+  const COLS = {
+    new:  [
+      { label: "#",                  sortKey: null },
+      { label: "Company",            sortKey: "name" },
+      { label: "Funds Initiating",   sortKey: "fundCount" },
+      { label: "Aggregate Shares",   sortKey: "totalShares" },
+      { label: "Aggregate Value",    sortKey: "totalValue" },
+      { label: "Price at Last Filing *", sortKey: "price" }
+    ],
+    buy:  [
+      { label: "#",                  sortKey: null },
+      { label: "Company",            sortKey: "name" },
+      { label: "Funds Adding",       sortKey: "fundCount" },
+      { label: "Net Shares Added",   sortKey: "netShares" },
+      { label: "Aggregate Value",    sortKey: "totalValue" },
+      { label: "Price at Last Filing *", sortKey: "price" }
+    ],
+    sell: [
+      { label: "#",                  sortKey: null },
+      { label: "Company",            sortKey: "name" },
+      { label: "Funds Reducing",     sortKey: "fundCount" },
+      { label: "Net Shares Removed", sortKey: "netShares" },
+      { label: "Aggregate Value",    sortKey: "totalValue" },
+      { label: "Price at Last Filing *", sortKey: "price" }
+    ],
+    exit: [
+      { label: "#",                  sortKey: null },
+      { label: "Company",            sortKey: "name" },
+      { label: "Funds Exiting",      sortKey: "fundCount" },
+      { label: "Shares Removed",     sortKey: "totalShares" },
+      { label: "Prior Quarter Value",sortKey: "totalValue" },
+      { label: "Price at Last Filing *", sortKey: "price" }
+    ]
+  };
+
+  function getSortValue(r, key) {
+    if (key === "name")    return r.name.toLowerCase();
+    if (key === "price")   return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
+    return r[key] || 0;
+  }
+
+  function buildTable(type) {
+    const rows = tableData[type];
+    const cols = COLS[type];
+    const st   = sortState[type];
+
     if (!rows || rows.length === 0) return `<div class="loading" style="color:var(--muted)">No data available.</div>`;
 
-    // Column headers per table type
-    const headsByType = {
-      new:  ["#", "Company", "Funds Initiating", "Aggregate Shares", "Aggregate Value", "Price at Last Filing *"],
-      buy:  ["#", "Company", "Funds Adding",     "Net Shares Added",  "Aggregate Value", "Price at Last Filing *"],
-      sell: ["#", "Company", "Funds Reducing",   "Net Shares Removed","Aggregate Value", "Price at Last Filing *"],
-      exit: ["#", "Company", "Funds Exiting",    "Shares Removed",    "Prior Quarter Value", "Price at Last Filing *"]
-    };
+    // Sort
+    const sorted = [...rows].sort((a, b) => {
+      const col = cols[st.col];
+      if (!col || !col.sortKey) return 0;
+      const av = getSortValue(a, col.sortKey);
+      const bv = getSortValue(b, col.sortKey);
+      if (typeof av === "string") return st.asc ? av.localeCompare(bv) : bv.localeCompare(av);
+      return st.asc ? av - bv : bv - av;
+    });
 
-    const heads = headsByType[type].map((h, i) => {
-      if (i === 0) return `<th class="col-num" style="color:var(--muted);width:2.5rem;min-width:2.5rem;max-width:2.5rem">${h}</th>`;
-      if (i === 1) return `<th class="col-company">${h}</th>`;
-      return `<th class="col-data num">${h}</th>`;
+    // Headers
+    const heads = cols.map((col, i) => {
+      const cls      = i === 0 ? "col-num" : i === 1 ? "col-company" : "col-data";
+      const isSorted = st.col === i && col.sortKey;
+      const arrow    = !col.sortKey ? "" : isSorted ? (st.asc ? " ↑" : " ↓") : `<span style="opacity:0.3"> ↕</span>`;
+      const sortedCls = isSorted ? " sorted" : "";
+      const onclick  = col.sortKey ? `onclick="sortTable('${type}', ${i})"` : "";
+      return `<th class="${cls}${sortedCls}" ${onclick}>${col.label}${arrow}</th>`;
     }).join("");
 
-    const rowsHtml = rows.map((r, i) => {
-      const numCls    = `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i + 1}</td>`;
-      const companyCl = `<td class="col-company">${stockCell(r)}</td>`;
-      const priceTd   = `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
+    // Rows
+    const rowsHtml = sorted.map((r, i) => {
+      const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
 
       let midCols;
       if (type === "new") {
         midCols = [
-          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
-          `<td class="col-data num">${fmtShares(r.totalShares)}</td>`,
-          `<td class="col-data num">${fmtValue(r.totalValue)}</td>`
+          `<td class="num"><span class="chg pos">${r.fundCount}</span></td>`,
+          `<td class="num">${fmtShares(r.totalShares)}</td>`,
+          `<td class="num">${fmtValue(r.totalValue)}</td>`
         ].join("");
       } else if (type === "buy") {
         midCols = [
-          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
-          `<td class="col-data num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>`,
-          `<td class="col-data num">${fmtValue(r.totalValue)}</td>`
+          `<td class="num"><span class="chg pos">${r.fundCount}</span></td>`,
+          `<td class="num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>`,
+          `<td class="num">${fmtValue(r.totalValue)}</td>`
         ].join("");
       } else if (type === "sell") {
         midCols = [
-          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
-          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>`,
-          `<td class="col-data num">${fmtValue(r.totalValue)}</td>`
+          `<td class="num"><span class="chg neg">${r.fundCount}</span></td>`,
+          `<td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>`,
+          `<td class="num">${fmtValue(r.totalValue)}</td>`
         ].join("");
-      } else { // exit
+      } else {
         midCols = [
-          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
-          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>`,
-          `<td class="col-data num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`
+          `<td class="num"><span class="chg neg">${r.fundCount}</span></td>`,
+          `<td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>`,
+          `<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`
         ].join("");
       }
 
-      return `<tr>${numCls}${companyCl}${midCols}${priceTd}</tr>`;
+      return `<tr>
+        <td class="col-num">${i + 1}</td>
+        <td class="col-company">${stockCell(r)}</td>
+        ${midCols}${priceTd}
+      </tr>`;
     }).join("");
 
     return `<div class="table-wrap"><table>
       <thead><tr>${heads}</tr></thead>
       <tbody>${rowsHtml}</tbody>
     </table></div>`;
+  }
+
+  function sortTable(type, colIdx) {
+    const st = sortState[type];
+    if (st.col === colIdx) {
+      st.asc = !st.asc;
+    } else {
+      st.col = colIdx;
+      // Default: desc for all numeric cols, asc for name
+      st.asc = COLS[type][colIdx].sortKey === "name";
+    }
+    document.getElementById(`tbl-${type}`).innerHTML = buildTable(type);
   }
 
   // ── Bootstrap ──────────────────────────────────────────────────
@@ -274,19 +350,7 @@
     const stockIndex  = stockIndexRaw.stocks       || stockIndexRaw;
     const fundLatestQ = stockIndexRaw.fund_latest_q || {};
 
-    // Mode quarter for page title
-    const qCounts = {};
-    for (const q of Object.values(fundLatestQ)) qCounts[q] = (qCounts[q] || 0) + 1;
-    const modeQ = Object.entries(qCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
-    if (modeQ) {
-      const ql = quarterLabel(modeQ);
-      document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Buys & Sells (${ql})`;
-      document.title = `Top Hedge Fund Buys & Sells ${ql} (13F Filings) | 13FAI`;
-      document.getElementById("period-line").textContent = `Based on ${ql} 13F filings · Ranked by consensus (number of funds)`;
-    }
-
     // ── Compute activity ──────────────────────────────────────────
-    // Maps keyed by stockKey (ticker || cusip || raw key)
     const newMap  = {};
     const buyMap  = {};
     const sellMap = {};
@@ -300,24 +364,19 @@
         const latestQ = fundLatestQ[fid];
         if (!latestQ) continue;
 
-        const quarters  = fundData.quarters || {};
-        const sortedQs  = Object.keys(quarters).sort().reverse();
-
-        // latestQ is the fund's most recent quarter from fund_latest_q.
-        // The stock may only appear in a subset of those quarters.
-        // Find the most recent quarter this stock has data for this fund.
+        const quarters     = fundData.quarters || {};
+        const sortedQs     = Object.keys(quarters).sort().reverse();
         const stockLatestQ = sortedQs[0];
         if (!stockLatestQ) continue;
 
-        // Determine previous quarter label (calendar quarter before stockLatestQ)
+        // Compute prev quarter label
         const [yr, qn] = stockLatestQ.split("Q");
         let pqNum = parseInt(qn) - 1, pqYr = parseInt(yr);
         if (pqNum === 0) { pqNum = 4; pqYr--; }
         const prevQLabel = pqYr + "Q" + pqNum;
 
         const latestData = quarters[stockLatestQ];
-        const prevData   = quarters[prevQLabel] || null; // null if fund didn't hold it last quarter
-
+        const prevData   = quarters[prevQLabel] || null;
         if (!latestData) continue;
 
         const sharesNow  = latestData.shares || 0;
@@ -325,78 +384,61 @@
         const valueNow   = latestData.value  || 0;
         const valuePrev  = prevData ? (prevData.value  || 0) : null;
 
-        // Only process activity in the fund's actual latest quarter
-        // (avoids counting stale data for funds that have filed a newer quarter)
-        if (stockLatestQ !== latestQ) {
-          // Stock's latest data for this fund is older than the fund's actual latest quarter
-          // → fund exited this stock (it was in a prior quarter but not the latest filing)
-          if (sharesNow > 0) {
-            // The stock was held in stockLatestQ, but the fund's latestQ is newer — it's an exit
-            const stockKey = ticker || cusip || key;
-            const ensure = (map) => {
-              if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0 };
-              return map[stockKey];
-            };
-            const e = ensure(exitMap);
-            e.fundCount++;
-            e.totalShares += sharesNow;
-            e.totalValue  += valueNow;
-          }
-          continue;
-        }
-
         const stockKey = ticker || cusip || key;
         const ensure = (map) => {
           if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0 };
           return map[stockKey];
         };
 
-        // NEW: has shares now, no prior quarter data (fund didn't hold it last quarter)
-        if (sharesNow > 0 && sharesPrev === null) {
+        // Fund has filed a newer quarter without this stock → exit
+        if (stockLatestQ !== latestQ) {
+          if (sharesNow > 0) {
+            const e = ensure(exitMap);
+            e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
+          }
+          continue;
+        }
+
+        // NEW: present now, no/zero prior data
+        if (sharesNow > 0 && (sharesPrev === null || sharesPrev === 0)) {
           const e = ensure(newMap);
           e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
         }
-        // NEW: has shares now, prior quarter had 0 shares
-        else if (sharesNow > 0 && sharesPrev === 0) {
-          const e = ensure(newMap);
-          e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
-        }
-        // EXITED: 0 shares now, had shares before
+        // EXITED: zero now, had shares before
         else if (sharesNow === 0 && sharesPrev !== null && sharesPrev > 0) {
           const e = ensure(exitMap);
           e.fundCount++; e.totalShares += sharesPrev; e.totalValue += valuePrev;
         }
         // INCREASED existing position
-        else if (sharesNow > 0 && sharesPrev !== null && sharesPrev > 0 && sharesNow > sharesPrev) {
+        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow > sharesPrev) {
           const e = ensure(buyMap);
           e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.totalShares += sharesNow; e.totalValue += valueNow;
         }
-        // REDUCED existing position (not exited)
-        else if (sharesNow > 0 && sharesPrev !== null && sharesPrev > 0 && sharesNow < sharesPrev) {
+        // REDUCED existing position
+        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow < sharesPrev) {
           const e = ensure(sellMap);
           e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.totalShares += sharesNow; e.totalValue += valueNow;
         }
       }
     }
 
-    // Sort: primary = fundCount desc, tiebreak = aggregate shares desc
     const sortAndSlice = (map, tiebreak = "totalShares") =>
       Object.values(map)
         .sort((a, b) => b.fundCount - a.fundCount || b[tiebreak] - a[tiebreak])
         .slice(0, 10);
 
-    const newRows  = sortAndSlice(newMap);
-    const buyRows  = sortAndSlice(buyMap,  "netShares");
-    const sellRows = sortAndSlice(sellMap, "netShares");
-    const exitRows = sortAndSlice(exitMap);
+    tableData.new  = sortAndSlice(newMap);
+    tableData.buy  = sortAndSlice(buyMap,  "netShares");
+    tableData.sell = sortAndSlice(sellMap, "netShares");
+    tableData.exit = sortAndSlice(exitMap);
 
-    document.getElementById("tbl-new").innerHTML  = buildTable(newRows,  "new");
-    document.getElementById("tbl-buy").innerHTML  = buildTable(buyRows,  "buy");
-    document.getElementById("tbl-sell").innerHTML = buildTable(sellRows, "sell");
-    document.getElementById("tbl-exit").innerHTML = buildTable(exitRows, "exit");
+    document.getElementById("tbl-new").innerHTML  = buildTable("new");
+    document.getElementById("tbl-buy").innerHTML  = buildTable("buy");
+    document.getElementById("tbl-sell").innerHTML = buildTable("sell");
+    document.getElementById("tbl-exit").innerHTML = buildTable("exit");
 
     ["fn-new","fn-buy","fn-sell","fn-exit"].forEach((id, i) => {
-      document.getElementById(id).style.display = [newRows, buyRows, sellRows, exitRows][i].length ? "" : "none";
+      document.getElementById(id).style.display = [tableData.new, tableData.buy, tableData.sell, tableData.exit][i].length ? "" : "none";
     });
 
   }).catch(err => {
@@ -404,7 +446,6 @@
     ["tbl-new","tbl-buy","tbl-sell","tbl-exit"].forEach(id => {
       document.getElementById(id).innerHTML = `<div class="error">Failed to load data. Please try again.</div>`;
     });
-    document.getElementById("period-line").textContent = "";
   });
 
   // ── Search ─────────────────────────────────────────────────────
