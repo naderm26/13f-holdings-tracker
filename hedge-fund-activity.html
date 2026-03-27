@@ -2,563 +2,404 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Top Hedge Fund Buys &amp; Sells This Quarter (13F Filings)</title>
-  <meta name="description" content="See which stocks hedge funds are buying and selling this quarter based on 13F filings. New positions, top increases, top reductions, and exits by consensus." />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Hedge Fund Buys &amp; Sells This Quarter (13F Filings) | 13FAI</title>
+  <meta name="description" content="See which stocks hedge funds are buying and selling this quarter based on 13F filings. New positions, top increases, top reductions, and exits by consensus."/>
+  <meta property="og:title" content="Top Hedge Fund Buys &amp; Sells This Quarter (13F Filings)"/>
+  <meta property="og:description" content="See which stocks hedge funds are buying and selling this quarter based on 13F filings."/>
+  <meta property="og:type" content="website"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #ffffff;
-      --surface: #f0f0f0;
-      --border: #dedede;
-      --accent: #2d5a3d;
-      --accent-light: #e8f0ea;
-      --text: #1a1a1a;
-      --muted: #666;
-      --blue: #2563eb;
-      --green: #16a34a;
-      --red: #dc2626;
-      --new-bg: #f0fdf4;
-      --exit-bg: #fef2f2;
-      --increase-bg: #eff6ff;
-      --reduce-bg: #fff7ed;
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      font-size: 14px;
-      line-height: 1.5;
-    }
-
-    /* NAV */
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
     header {
-      border-bottom: 1px solid var(--border);
-      background: var(--bg);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1.5rem 3rem; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
     }
-    .header-inner {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 48px;
-      gap: 16px;
+    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+    .nav-link {
+      font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
+      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
+      transition: color 0.15s, background 0.15s; white-space: nowrap;
     }
-    .site-name {
-      font-weight: 700;
-      font-size: 15px;
-      color: var(--accent);
-      text-decoration: none;
-      letter-spacing: -0.3px;
-      white-space: nowrap;
-    }
-    nav { display: flex; gap: 4px; align-items: center; }
-    nav a {
-      font-size: 13px;
-      color: var(--muted);
-      text-decoration: none;
-      padding: 4px 10px;
-      border-radius: 4px;
-      transition: background 0.15s, color 0.15s;
-      white-space: nowrap;
-    }
-    nav a:hover { background: var(--surface); color: var(--text); }
-    nav a.active { color: var(--accent); font-weight: 600; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    @media (max-width: 600px) { .nav-links { display: none; } }
 
-    /* MAIN */
-    main {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 20px 64px;
+    /* Search */
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 300px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+    }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+
+    main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
+    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.25rem; }
+    .section-sublabel { font-size: 1rem; color: var(--muted); font-weight: 400; margin-bottom: 0.5rem; }
+    .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+
+    /* Section blocks */
+    .activity-section { margin-bottom: 3rem; }
+    .activity-section-title {
+      font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.5rem;
+      padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
     }
 
-    .page-header { margin-bottom: 28px; }
-    h1 {
-      font-size: 22px;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-      color: var(--text);
-      line-height: 1.3;
-    }
-    .page-subtitle {
-      color: var(--muted);
-      font-size: 13px;
-      margin-top: 5px;
-    }
-
-    /* SECTION */
-    .section { margin-bottom: 40px; }
-    .section-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      margin-bottom: 10px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .dot-new    { background: var(--green); }
-    .dot-buy    { background: var(--blue); }
-    .dot-sell   { background: var(--red); }
-    .dot-exit   { background: #9ca3af; }
-
-    /* TABLE */
-    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-    thead th {
-      background: var(--surface);
-      text-align: left;
-      padding: 9px 12px;
-      font-weight: 600;
-      color: var(--muted);
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-      cursor: pointer;
-      user-select: none;
-    }
-    thead th:hover { color: var(--text); }
-    thead th.sorted { color: var(--accent); }
-    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
-    tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: #fafafa; }
-    td { padding: 9px 12px; vertical-align: middle; }
-
-    .rank { color: var(--muted); font-size: 12px; font-weight: 600; width: 32px; }
-    .stock-name { font-weight: 600; font-size: 13px; color: var(--text); }
-    .stock-ticker {
-      font-size: 11px;
-      color: var(--blue);
-      font-weight: 500;
-      margin-top: 1px;
-    }
-    .stock-cell a { text-decoration: none; color: inherit; }
-    .stock-cell a:hover .stock-name { text-decoration: underline; }
-
-    .num { text-align: right; font-variant-numeric: tabular-nums; }
-    .funds-count {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-weight: 600;
-    }
-    .chg-pos { color: var(--green); }
-    .chg-neg { color: var(--red); }
-    .muted-val { color: var(--muted); }
-
-    /* row accent strips */
-    .row-new   { border-left: 3px solid var(--green); }
-    .row-buy   { border-left: 3px solid var(--blue); }
-    .row-sell  { border-left: 3px solid var(--red); }
-    .row-exit  { border-left: 3px solid #9ca3af; }
-
-    /* loading / error */
-    .status {
-      text-align: center;
-      padding: 40px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .loading-spinner {
-      display: inline-block;
-      width: 18px; height: 18px;
-      border: 2px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin-right: 8px;
-      vertical-align: middle;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* footnote */
-    .footnote {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 8px;
-    }
+    /* Table — identical to top-holdings */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: block; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: normal; line-height: 1.4; }
+    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-company { text-align: left; width: 22%; }
+    th.col-data { width: 10%; text-align: center; }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
+    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    td.col-company { text-align: left; white-space: normal; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    .company-name { font-weight: 500; color: var(--text); white-space: normal; }
+    .ticker-sub { color: #2563eb; font-weight: 600; font-size: 0.78rem; font-family: var(--mono); margin-top: 0.1rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
+    .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .chg.pos { color: var(--green); }
+    .chg.neg { color: var(--red); }
+    .chg.na  { color: var(--muted); }
+    .loading { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); padding: 2rem 0; text-align: center; }
+    .error   { font-family: var(--mono); font-size: 0.82rem; color: var(--red);   padding: 2rem 0; text-align: center; }
+    .footnote { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); line-height: 1.5; margin-top: 0.5rem; }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-inner">
-    <a class="site-name" href="/13f-holdings-tracker/">13FAI</a>
-    <nav>
-      <a href="/13f-holdings-tracker/">Funds</a>
-      <a href="/13f-holdings-tracker/top-holdings.html">Top 10 Holdings</a>
-      <a href="/13f-holdings-tracker/top-holdings.html#top100">Top 100 Holdings</a>
-      <a href="/13f-holdings-tracker/hedge-fund-activity.html" class="active">Activity</a>
+  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
+    <div class="brand">
+      <a class="brand-name" href="index.html">13FAI</a>
+    </div>
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+      <a class="nav-link active" href="hedge-fund-activity.html">Activity</a>
     </nav>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+    <div class="search-results" id="search-results"></div>
   </div>
 </header>
 
 <main>
-  <div class="page-header">
-    <h1 id="page-title">Hedge Fund Activity: Top Buys &amp; Sells</h1>
-    <p class="page-subtitle" id="page-subtitle">Based on 13F filings from tracked hedge funds. Ranked by number of funds (consensus).</p>
+  <h1 class="section-label" id="page-title">Hedge Fund Activity: Top Buys &amp; Sells</h1>
+  <div class="section-sublabel">Ranked by consensus — number of funds acting on each stock</div>
+  <div class="period-line" id="period-line">Loading...</div>
+
+  <div class="activity-section">
+    <div class="activity-section-title">New Positions (by consensus)</div>
+    <div id="tbl-new"><div class="loading">Fetching data...</div></div>
+    <p class="footnote" id="fn-new" style="display:none">* Price at last filing = aggregate value ÷ aggregate shares (implied average, not actual trade price)</p>
   </div>
 
-  <!-- NEW POSITIONS -->
-  <div class="section" id="section-new">
-    <div class="section-title">
-      <span class="section-dot dot-new"></span>
-      New Positions <span style="color:var(--muted);font-weight:400;font-size:12px" id="new-count"></span>
-    </div>
-    <div class="table-wrap">
-      <table id="tbl-new">
-        <thead>
-          <tr>
-            <th class="rank">#</th>
-            <th>Stock</th>
-            <th class="num" title="Number of funds initiating this position">Funds</th>
-            <th class="num">Aggregate Shares</th>
-            <th class="num">Aggregate Value</th>
-            <th class="num">Price at Filing*</th>
-          </tr>
-        </thead>
-        <tbody><tr><td colspan="6" class="status"><span class="loading-spinner"></span>Loading…</td></tr></tbody>
-      </table>
-    </div>
-    <p class="footnote">* Price at filing = aggregate value ÷ aggregate shares (implied average, not actual trade price)</p>
+  <div class="activity-section">
+    <div class="activity-section-title">Top Increases (by consensus)</div>
+    <div id="tbl-buy"><div class="loading">Fetching data...</div></div>
+    <p class="footnote" id="fn-buy" style="display:none">* Excludes new positions. Price at last filing = aggregate value ÷ aggregate shares.</p>
   </div>
 
-  <!-- TOP INCREASES -->
-  <div class="section" id="section-buy">
-    <div class="section-title">
-      <span class="section-dot dot-buy"></span>
-      Top Increases <span style="color:var(--muted);font-weight:400;font-size:12px" id="buy-count"></span>
-    </div>
-    <div class="table-wrap">
-      <table id="tbl-buy">
-        <thead>
-          <tr>
-            <th class="rank">#</th>
-            <th>Stock</th>
-            <th class="num">Funds Adding</th>
-            <th class="num">Net Shares Added</th>
-            <th class="num">Aggregate Value</th>
-            <th class="num">Price at Filing*</th>
-          </tr>
-        </thead>
-        <tbody><tr><td colspan="6" class="status"><span class="loading-spinner"></span>Loading…</td></tr></tbody>
-      </table>
-    </div>
-    <p class="footnote">* Excludes new positions. Price at filing = aggregate value ÷ aggregate shares.</p>
+  <div class="activity-section">
+    <div class="activity-section-title">Top Reductions (by consensus)</div>
+    <div id="tbl-sell"><div class="loading">Fetching data...</div></div>
+    <p class="footnote" id="fn-sell" style="display:none">* Excludes full exits. Price at last filing = aggregate value ÷ aggregate shares.</p>
   </div>
 
-  <!-- TOP REDUCTIONS -->
-  <div class="section" id="section-sell">
-    <div class="section-title">
-      <span class="section-dot dot-sell"></span>
-      Top Reductions <span style="color:var(--muted);font-weight:400;font-size:12px" id="sell-count"></span>
-    </div>
-    <div class="table-wrap">
-      <table id="tbl-sell">
-        <thead>
-          <tr>
-            <th class="rank">#</th>
-            <th>Stock</th>
-            <th class="num">Funds Reducing</th>
-            <th class="num">Net Shares Removed</th>
-            <th class="num">Aggregate Value</th>
-            <th class="num">Price at Filing*</th>
-          </tr>
-        </thead>
-        <tbody><tr><td colspan="6" class="status"><span class="loading-spinner"></span>Loading…</td></tr></tbody>
-      </table>
-    </div>
-    <p class="footnote">* Excludes full exits. Price at filing = aggregate value ÷ aggregate shares.</p>
-  </div>
-
-  <!-- MOST EXITED -->
-  <div class="section" id="section-exit">
-    <div class="section-title">
-      <span class="section-dot dot-exit"></span>
-      Most Exited <span style="color:var(--muted);font-weight:400;font-size:12px" id="exit-count"></span>
-    </div>
-    <div class="table-wrap">
-      <table id="tbl-exit">
-        <thead>
-          <tr>
-            <th class="rank">#</th>
-            <th>Stock</th>
-            <th class="num">Funds Exiting</th>
-            <th class="num">Shares Removed</th>
-            <th class="num">Prior Quarter Value</th>
-            <th class="num">Price at Filing*</th>
-          </tr>
-        </thead>
-        <tbody><tr><td colspan="6" class="status"><span class="loading-spinner"></span>Loading…</td></tr></tbody>
-      </table>
-    </div>
-    <p class="footnote">* Price at filing = prior quarter value ÷ prior quarter shares.</p>
+  <div class="activity-section">
+    <div class="activity-section-title">Most Exited (by consensus)</div>
+    <div id="tbl-exit"><div class="loading">Fetching data...</div></div>
+    <p class="footnote" id="fn-exit" style="display:none">* Price at last filing = prior quarter value ÷ prior quarter shares.</p>
   </div>
 </main>
 
-<script>
-  const PAGES = 'https://naderm26.github.io/13f-holdings-tracker';
+<footer style="text-align:center; padding:2rem; font-family:'DM Mono',monospace; font-size:0.7rem; color:#8a8780; border-top:1px solid #dedede; margin-top:2rem;">
+  Data sourced from 13F filings · For informational purposes only · <a href="disclaimer.html" style="color:#8a8780; text-decoration:none">Disclaimer</a>
+</footer>
 
-  function fmtNum(n) {
-    if (n == null || isNaN(n)) return '—';
-    if (Math.abs(n) >= 1e9) return (n / 1e9).toFixed(2) + 'B';
-    if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-    if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(0) + 'K';
+<script>
+  const PAGES = "/13f-holdings-tracker";
+
+  function fmtValue(v) {
+    const d = v * 1000; // stock_index values are in $thousands
+    if (d >= 1e9) return "$" + (d / 1e9).toFixed(2) + "B";
+    if (d >= 1e6) return "$" + (d / 1e6).toFixed(1) + "M";
+    if (d >= 1e3) return "$" + (d / 1e3).toFixed(0) + "K";
+    return "$" + d.toLocaleString();
+  }
+
+  function fmtShares(n) {
+    if (!n && n !== 0) return "—";
+    const abs = Math.abs(n);
+    if (abs >= 1e9) return (n / 1e9).toFixed(2) + "B";
+    if (abs >= 1e6) return (n / 1e6).toFixed(2) + "M";
+    if (abs >= 1e3) return (n / 1e3).toFixed(0) + "K";
     return n.toLocaleString();
   }
 
-  function fmtVal(v) {
-    if (v == null || isNaN(v)) return '—';
-    // values in stock_index are in thousands
-    const dollars = v * 1000;
-    if (dollars >= 1e9) return '$' + (dollars / 1e9).toFixed(2) + 'B';
-    if (dollars >= 1e6) return '$' + (dollars / 1e6).toFixed(1) + 'M';
-    return '$' + (dollars / 1e3).toFixed(0) + 'K';
-  }
-
-  function fmtPrice(price) {
-    if (!price || isNaN(price)) return '—';
-    return '$' + price.toFixed(2);
+  function fmtPrice(shares, value) {
+    if (!shares || !value || shares <= 0 || value <= 0) return "—";
+    const price = (value * 1000) / shares;
+    return "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
   function quarterLabel(q) {
-    // "2025Q4" → "Q4 2025"
     const m = q.match(/^(\d{4})Q(\d)$/);
     return m ? `Q${m[2]} ${m[1]}` : q;
   }
 
-  function stockLink(ticker, cusip, name) {
-    const key = ticker || cusip;
-    return `/13f-holdings-tracker/stock.html?ticker=${encodeURIComponent(key)}`;
+  function stockCell(r) {
+    const href = r.ticker
+      ? `stock.html?ticker=${encodeURIComponent(r.ticker)}`
+      : `stock.html?cusip=${encodeURIComponent(r.cusip || r.key)}`;
+    return `<a href="${href}" style="text-decoration:none; color:inherit">
+      <div class="company-name">${r.name}</div>
+      ${r.ticker ? `<div class="ticker-sub">${r.ticker}</div>` : ""}
+    </a>`;
   }
 
-  function renderTable(tbodyId, rows, type) {
-    const tbody = document.querySelector(`#${tbodyId} tbody`);
-    if (!rows || rows.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="6" class="status muted-val">No data available.</td></tr>`;
-      return;
+  function buildTable(rows, type) {
+    if (!rows || rows.length === 0) return `<div class="loading" style="color:var(--muted)">No data available.</div>`;
+
+    const configs = {
+      new: {
+        heads: ["#","Company","Funds Initiating","Aggregate Shares","Aggregate Value","Price at Filing *"],
+        row: (r, i) => [
+          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
+          `<td class="col-company">${stockCell(r)}</td>`,
+          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
+          `<td class="col-data num">${fmtShares(r.shares)}</td>`,
+          `<td class="col-data num">${fmtValue(r.value)}</td>`,
+          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
+        ].join("")
+      },
+      buy: {
+        heads: ["#","Company","Funds Adding","Net Shares Added","Aggregate Value","Price at Filing *"],
+        row: (r, i) => [
+          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
+          `<td class="col-company">${stockCell(r)}</td>`,
+          `<td class="col-data num"><span class="chg pos">${r.fundCount}</span></td>`,
+          `<td class="col-data num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>`,
+          `<td class="col-data num">${fmtValue(r.value)}</td>`,
+          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
+        ].join("")
+      },
+      sell: {
+        heads: ["#","Company","Funds Reducing","Net Shares Removed","Aggregate Value","Price at Filing *"],
+        row: (r, i) => [
+          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
+          `<td class="col-company">${stockCell(r)}</td>`,
+          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
+          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>`,
+          `<td class="col-data num">${fmtValue(r.value)}</td>`,
+          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
+        ].join("")
+      },
+      exit: {
+        heads: ["#","Company","Funds Exiting","Shares Removed","Prior Quarter Value","Price at Filing *"],
+        row: (r, i) => [
+          `<td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>`,
+          `<td class="col-company">${stockCell(r)}</td>`,
+          `<td class="col-data num"><span class="chg neg">${r.fundCount}</span></td>`,
+          `<td class="col-data num"><span class="chg neg">-${fmtShares(r.shares)}</span></td>`,
+          `<td class="col-data num" style="color:var(--muted)">${fmtValue(r.value)}</td>`,
+          `<td class="col-data num" style="color:var(--muted)">${fmtPrice(r.shares, r.value)}</td>`
+        ].join("")
+      }
+    };
+
+    const cfg = configs[type];
+    const thClass = (i) => i === 0 ? "col-num" : i === 1 ? "col-company" : "col-data num";
+    const heads = cfg.heads.map((h, i) => `<th class="${thClass(i)}">${h}</th>`).join("");
+    const rowsHtml = rows.map((r, i) => `<tr>${cfg.row(r, i)}</tr>`).join("");
+
+    return `<div class="table-wrap"><table>
+      <thead><tr>${heads}</tr></thead>
+      <tbody>${rowsHtml}</tbody>
+    </table></div>`;
+  }
+
+  // ── Bootstrap ──────────────────────────────────────────────────
+  Promise.all([
+    fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
+    fetch(`${PAGES}/funds.json`).then(r => r.json())
+  ]).then(([stockIndexRaw, funds]) => {
+    const stockIndex  = stockIndexRaw.stocks       || stockIndexRaw;
+    const fundLatestQ = stockIndexRaw.fund_latest_q || {};
+
+    // Mode quarter for page title
+    const qCounts = {};
+    for (const q of Object.values(fundLatestQ)) qCounts[q] = (qCounts[q] || 0) + 1;
+    const modeQ = Object.entries(qCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+    if (modeQ) {
+      const ql = quarterLabel(modeQ);
+      document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Buys & Sells (${ql})`;
+      document.title = `Top Hedge Fund Buys & Sells ${ql} (13F Filings) | 13FAI`;
+      document.getElementById("period-line").textContent = `Based on ${ql} 13F filings · Ranked by consensus (number of funds)`;
     }
 
-    const rowClass = { new: 'row-new', buy: 'row-buy', sell: 'row-sell', exit: 'row-exit' }[type];
+    // ── Compute activity ──────────────────────────────────────────
+    const newMap  = {};
+    const buyMap  = {};
+    const sellMap = {};
+    const exitMap = {};
 
-    tbody.innerHTML = rows.map((r, i) => {
-      const href = stockLink(r.ticker, r.cusip, r.name);
-      const nameCell = `
-        <td class="stock-cell">
-          <a href="${href}">
-            <div class="stock-name">${r.name}</div>
-            ${r.ticker ? `<div class="stock-ticker">${r.ticker}</div>` : ''}
-          </a>
-        </td>`;
+    for (const [key, stock] of Object.entries(stockIndex)) {
+      const { name, ticker, cusip, funds: stockFunds } = stock;
+      if (!stockFunds) continue;
 
-      if (type === 'new') {
-        return `<tr class="${rowClass}">
-          <td class="rank">${i + 1}</td>
-          ${nameCell}
-          <td class="num funds-count chg-pos">${r.fundCount}</td>
-          <td class="num">${fmtNum(r.shares)}</td>
-          <td class="num">${fmtVal(r.value)}</td>
-          <td class="num muted-val">${fmtPrice(r.priceAtFiling)}</td>
-        </tr>`;
-      }
-      if (type === 'buy') {
-        return `<tr class="${rowClass}">
-          <td class="rank">${i + 1}</td>
-          ${nameCell}
-          <td class="num funds-count chg-pos">${r.fundCount}</td>
-          <td class="num chg-pos">+${fmtNum(r.netSharesAdded)}</td>
-          <td class="num">${fmtVal(r.value)}</td>
-          <td class="num muted-val">${fmtPrice(r.priceAtFiling)}</td>
-        </tr>`;
-      }
-      if (type === 'sell') {
-        return `<tr class="${rowClass}">
-          <td class="rank">${i + 1}</td>
-          ${nameCell}
-          <td class="num funds-count chg-neg">${r.fundCount}</td>
-          <td class="num chg-neg">-${fmtNum(Math.abs(r.netSharesRemoved))}</td>
-          <td class="num">${fmtVal(r.value)}</td>
-          <td class="num muted-val">${fmtPrice(r.priceAtFiling)}</td>
-        </tr>`;
-      }
-      if (type === 'exit') {
-        return `<tr class="${rowClass}">
-          <td class="rank">${i + 1}</td>
-          ${nameCell}
-          <td class="num funds-count chg-neg">${r.fundCount}</td>
-          <td class="num chg-neg">-${fmtNum(r.sharesRemoved)}</td>
-          <td class="num muted-val">${fmtVal(r.priorValue)}</td>
-          <td class="num muted-val">${fmtPrice(r.priceAtFiling)}</td>
-        </tr>`;
-      }
-    }).join('');
-  }
+      for (const [fid, fundData] of Object.entries(stockFunds)) {
+        const latestQ = fundLatestQ[fid];
+        if (!latestQ) continue;
 
-  async function init() {
-    let stockIndex;
-    try {
-      const res = await fetch(`${PAGES}/stock_index.json`);
-      const raw = await res.json();
-      stockIndex = raw.stocks || raw;
-      const fundLatestQ = raw.fund_latest_q || {};
+        const quarters  = fundData.quarters || {};
+        const sortedQs  = Object.keys(quarters).sort().reverse();
+        const latestIdx = sortedQs.indexOf(latestQ);
+        if (latestIdx === -1) continue;
 
-      // Find mode quarter for page title
-      const qCounts = {};
-      for (const q of Object.values(fundLatestQ)) {
-        qCounts[q] = (qCounts[q] || 0) + 1;
-      }
-      const modeQ = Object.entries(qCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
-      if (modeQ) {
-        document.getElementById('page-title').textContent =
-          `Hedge Fund Activity: Top Buys & Sells (${quarterLabel(modeQ)})`;
-        document.title = `Top Hedge Fund Buys & Sells This Quarter (13F Filings)`;
-        document.getElementById('page-subtitle').textContent =
-          `Based on ${quarterLabel(modeQ)} 13F filings from tracked hedge funds. Ranked by consensus (number of funds).`;
-      }
+        const prevQ      = sortedQs[latestIdx + 1] || null;
+        const latestData = quarters[latestQ];
+        const prevData   = prevQ ? quarters[prevQ] : null;
+        if (!latestData) continue;
 
-      // --- Compute activity per stock ---
-      const newMap    = {}; // ticker/cusip → {name, ticker, cusip, fundCount, shares, value}
-      const buyMap    = {};
-      const sellMap   = {};
-      const exitMap   = {};
+        const sharesNow  = latestData.shares || 0;
+        const sharesPrev = prevData ? (prevData.shares || 0) : null;
+        const valueNow   = latestData.value  || 0;
+        const valuePrev  = prevData ? (prevData.value  || 0) : null;
+        const stockKey   = ticker || cusip || key;
 
-      for (const [key, stock] of Object.entries(stockIndex)) {
-        const { name, ticker, cusip, funds } = stock;
-        if (!funds) continue;
+        const ensure = (map) => {
+          if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, shares: 0, value: 0, netShares: 0 };
+          return map[stockKey];
+        };
 
-        for (const [fid, fundData] of Object.entries(funds)) {
-          const latestQ = fundLatestQ[fid];
-          if (!latestQ) continue;
-
-          const quarters = fundData.quarters || {};
-          const sortedQs = Object.keys(quarters).sort().reverse();
-          // find the index of latestQ
-          const latestIdx = sortedQs.indexOf(latestQ);
-          if (latestIdx === -1) continue; // fund doesn't have latestQ for this stock
-
-          const prevQ = sortedQs[latestIdx + 1] || null;
-          const latestData = quarters[latestQ];
-          const prevData   = prevQ ? quarters[prevQ] : null;
-
-          if (!latestData) continue;
-
-          const sharesNow  = latestData.shares || 0;
-          const sharesPrev = prevData ? (prevData.shares || 0) : null;
-          const valueNow   = latestData.value  || 0;
-          const valuePrev  = prevData ? (prevData.value  || 0) : null;
-
-          const stockKey = ticker || cusip || key;
-
-          const ensure = (map) => {
-            if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, fundCount: 0, shares: 0, value: 0 };
-            return map[stockKey];
-          };
-
-          // NEW: in latestQ, not in prevQ (or fund has no prevQ but latestQ exists)
-          if (sharesNow > 0 && (sharesPrev === null || sharesPrev === 0)) {
-            // only count as new if fund did have a prior quarter (to avoid new funds inflating)
-            if (prevQ !== null || sharesPrev !== null) {
-              const e = ensure(newMap);
-              e.fundCount++;
-              e.shares += sharesNow;
-              e.value  += valueNow;
-            }
-          }
-          // EXITED: was in prevQ, not in latestQ
-          else if (sharesNow === 0 && prevData && sharesPrev > 0) {
-            const e = ensure(exitMap);
-            e.fundCount++;
-            e.shares     = (e.shares || 0) + sharesPrev;
-            e.priorValue = (e.priorValue || 0) + valuePrev;
-            e.value      = (e.value || 0) + valuePrev;
-          }
-          // INCREASED (not new)
-          else if (sharesNow > 0 && sharesPrev !== null && sharesPrev > 0 && sharesNow > sharesPrev) {
-            const e = ensure(buyMap);
-            e.fundCount++;
-            e.netSharesAdded = (e.netSharesAdded || 0) + (sharesNow - sharesPrev);
-            e.shares += sharesNow;
-            e.value  += valueNow;
-          }
-          // REDUCED (not exited)
-          else if (sharesNow > 0 && sharesPrev !== null && sharesPrev > 0 && sharesNow < sharesPrev) {
-            const e = ensure(sellMap);
-            e.fundCount++;
-            e.netSharesRemoved = (e.netSharesRemoved || 0) + (sharesPrev - sharesNow);
-            e.shares += sharesNow;
-            e.value  += valueNow;
-          }
+        // NEW: present now, absent/zero in prev, fund had a prior quarter on record
+        if (sharesNow > 0 && prevQ !== null && (sharesPrev === 0 || sharesPrev === null)) {
+          const e = ensure(newMap);
+          e.fundCount++; e.shares += sharesNow; e.value += valueNow;
+        }
+        // EXITED: zero now, had shares in prev
+        else if (sharesNow === 0 && prevData && sharesPrev > 0) {
+          const e = ensure(exitMap);
+          e.fundCount++; e.shares += sharesPrev; e.value += valuePrev;
+        }
+        // INCREASED (existing position only)
+        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow > sharesPrev) {
+          const e = ensure(buyMap);
+          e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.shares += sharesNow; e.value += valueNow;
+        }
+        // REDUCED (existing position only, not exited)
+        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow < sharesPrev) {
+          const e = ensure(sellMap);
+          e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.shares += sharesNow; e.value += valueNow;
         }
       }
-
-      // Add priceAtFiling to each
-      const addPrice = (map, sharesField = 'shares', valueField = 'value') => {
-        for (const e of Object.values(map)) {
-          const s = e[sharesField];
-          const v = e[valueField];
-          // value is in $thousands in stock_index
-          e.priceAtFiling = (s > 0 && v > 0) ? (v * 1000) / s : null;
-        }
-      };
-      addPrice(newMap);
-      addPrice(buyMap);
-      addPrice(sellMap);
-      addPrice(exitMap, 'shares', 'priorValue');
-
-      // Sort: primary = fundCount desc, tiebreak = aggregate shares desc
-      const sort = (map, sharesField = 'shares') =>
-        Object.values(map).sort((a, b) =>
-          b.fundCount - a.fundCount || b[sharesField] - a[sharesField]
-        ).slice(0, 10);
-
-      const newRows  = sort(newMap);
-      const buyRows  = sort(buyMap, 'netSharesAdded');
-      const sellRows = sort(sellMap, 'netSharesRemoved');
-      const exitRows = sort(exitMap, 'shares');
-
-      // Update counts
-      const total = (map) => Object.keys(map).length;
-      document.getElementById('new-count').textContent  = `(${total(newMap)} stocks)`;
-      document.getElementById('buy-count').textContent  = `(${total(buyMap)} stocks)`;
-      document.getElementById('sell-count').textContent = `(${total(sellMap)} stocks)`;
-      document.getElementById('exit-count').textContent = `(${total(exitMap)} stocks)`;
-
-      renderTable('tbl-new',  newRows,  'new');
-      renderTable('tbl-buy',  buyRows,  'buy');
-      renderTable('tbl-sell', sellRows, 'sell');
-      renderTable('tbl-exit', exitRows, 'exit');
-
-    } catch (err) {
-      console.error(err);
-      ['tbl-new','tbl-buy','tbl-sell','tbl-exit'].forEach(id => {
-        document.querySelector(`#${id} tbody`).innerHTML =
-          `<tr><td colspan="6" class="status">Failed to load data. Please try again later.</td></tr>`;
-      });
     }
-  }
 
-  init();
+    const sortAndSlice = (map, tiebreak = "shares") =>
+      Object.values(map).sort((a, b) => b.fundCount - a.fundCount || b[tiebreak] - a[tiebreak]).slice(0, 10);
+
+    const newRows  = sortAndSlice(newMap);
+    const buyRows  = sortAndSlice(buyMap,  "netShares");
+    const sellRows = sortAndSlice(sellMap, "netShares");
+    const exitRows = sortAndSlice(exitMap);
+
+    document.getElementById("tbl-new").innerHTML  = buildTable(newRows,  "new");
+    document.getElementById("tbl-buy").innerHTML  = buildTable(buyRows,  "buy");
+    document.getElementById("tbl-sell").innerHTML = buildTable(sellRows, "sell");
+    document.getElementById("tbl-exit").innerHTML = buildTable(exitRows, "exit");
+
+    ["fn-new","fn-buy","fn-sell","fn-exit"].forEach((id, i) => {
+      const rows = [newRows, buyRows, sellRows, exitRows][i];
+      document.getElementById(id).style.display = rows.length ? "" : "none";
+    });
+
+  }).catch(err => {
+    console.error(err);
+    ["tbl-new","tbl-buy","tbl-sell","tbl-exit"].forEach(id => {
+      document.getElementById(id).innerHTML = `<div class="error">Failed to load data. Please try again.</div>`;
+    });
+    document.getElementById("period-line").textContent = "";
+  });
+
+  // ── Search ─────────────────────────────────────────────────────
+  let allFundsForSearch = [];
+  let stockIndexForSearch = {};
+  fetch(`${PAGES}/funds.json`).then(r => r.json()).then(d => { allFundsForSearch = d; }).catch(() => {});
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d.stocks || d; }).catch(() => {});
+
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove("visible"); return; }
+
+    const fundMatches = allFundsForSearch
+      .filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
+      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}">
+        <span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
+
+    const stockMatches = [];
+    for (const [key, stock] of Object.entries(stockIndexForSearch)) {
+      if (stockMatches.length >= 4) break;
+      if ((stock.ticker && stock.ticker.toLowerCase().includes(q)) || (stock.name && stock.name.toLowerCase().includes(q))) {
+        stockMatches.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
+          <span class="search-result-num">Stock</span>
+          <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
+        </a>`);
+      }
+    }
+
+    const all = [...fundMatches, ...stockMatches];
+    searchResults.innerHTML = all.length ? all.join("") : `<div class="no-results">No results found</div>`;
+    searchResults.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) searchResults.classList.remove("visible");
+  });
 </script>
 </body>
 </html>
