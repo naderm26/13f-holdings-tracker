@@ -189,8 +189,7 @@
       <!-- Desktop nav: hidden on mobile via CSS -->
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
-        <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
-        <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link active" href="hedge-fund-activity.html">Activity</a>
       </nav>
     </div>
@@ -204,8 +203,7 @@
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
-      <a class="nav-link" href="top-holdings.html">Top 10</a>
-      <a class="nav-link" href="top-holdings.html#top100">Top 100</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link active" href="hedge-fund-activity.html">Activity</a>
     </nav>
   </div>
@@ -221,8 +219,6 @@
       <a class="side-nav-link active" href="#sec-netAdd">Top Net Additions</a>
       <a class="side-nav-link" href="#sec-netDec">Top Net Decreases</a>
       <a class="side-nav-link" href="#sec-new">Top New Positions</a>
-      <a class="side-nav-link" href="#sec-buy">Top Increases</a>
-      <a class="side-nav-link" href="#sec-sell">Top Reductions</a>
       <a class="side-nav-link" href="#sec-exit">Most Exited</a>
     </div>
   </aside>
@@ -232,14 +228,14 @@
 
       <div class="activity-section" id="sec-netAdd">
         <div class="activity-section-title">Top Net Additions</div>
-        <div class="activity-section-subtitle">Aggregate net share increases across new positions, increases, reductions, and exits from all tracked funds. Only stocks with a net positive change are included. Ranked by aggregate net shares added.</div>
+        <div class="activity-section-subtitle">Aggregate net share increases across new positions, increases, reductions, and exits from all tracked funds. Ranked by aggregate net shares added.</div>
         <div id="tbl-netAdd"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-netDec">
         <div class="activity-section-title">Top Net Decreases</div>
-        <div class="activity-section-subtitle">Aggregate net share decreases across new positions, increases, reductions, and exits from all tracked funds. Only stocks with a net negative change are included. Ranked by aggregate net shares removed.</div>
+        <div class="activity-section-subtitle">Aggregate net share decreases across new positions, increases, reductions, and exits from all tracked funds. Ranked by aggregate net shares removed.</div>
         <div id="tbl-netDec"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
@@ -249,20 +245,6 @@
         <div class="activity-section-subtitle">Stocks newly initiated by the most funds this quarter. Ranked by number of funds initiating.</div>
         <div id="tbl-new"><div class="loading">Fetching data...</div></div>
         <p class="footnote" id="fn-new" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds.</p>
-      </div>
-
-      <div class="activity-section" id="sec-buy">
-        <div class="activity-section-title">Top Increases</div>
-        <div class="activity-section-subtitle">Stocks with the most funds increasing an existing position this quarter. Excludes new positions. Ranked by number of funds adding.</div>
-        <div id="tbl-buy"><div class="loading">Fetching data...</div></div>
-        <p class="footnote" id="fn-buy" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
-      </div>
-
-      <div class="activity-section" id="sec-sell">
-        <div class="activity-section-title">Top Reductions</div>
-        <div class="activity-section-subtitle">Stocks with the most funds reducing an existing position this quarter. Excludes full exits. Ranked by number of funds reducing.</div>
-        <div id="tbl-sell"><div class="loading">Fetching data...</div></div>
-        <p class="footnote" id="fn-sell" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-exit">
@@ -287,11 +269,9 @@
     netAdd: { col: 3, asc: false },
     netDec: { col: 3, asc: false },
     new:  { col: 2, asc: false },
-    buy:  { col: 2, asc: false },
-    sell: { col: 2, asc: false },
     exit: { col: 2, asc: false }
   };
-  const tableData = { netAdd: [], netDec: [], new: [], buy: [], sell: [], exit: [] };
+  const tableData = { netAdd: [], netDec: [], new: [], exit: [] };
 
   // ── Formatters — identical to top-holdings ────────────────────
   function fmtShares(n) {
@@ -373,26 +353,6 @@
       { label: "Aggregate Value",          sortKey: "totalValue" },
       { label: "Price at Last Filing *",   sortKey: "price" }
     ],
-    buy:  [
-      { label: "#",                        sortKey: null },
-      { label: "Company",                  sortKey: "name" },
-      { label: "Funds Adding",             sortKey: "fundCount" },
-      { label: "Net Shares Added",         sortKey: "netShares" },
-      { label: "Shares vs Prior Quarter",  sortKey: "chgQtr" },
-      { label: "Shares vs Prior Year",     sortKey: "chgYr" },
-      { label: "Aggregate Value",          sortKey: "totalValue" },
-      { label: "Price at Last Filing *",   sortKey: "price" }
-    ],
-    sell: [
-      { label: "#",                        sortKey: null },
-      { label: "Company",                  sortKey: "name" },
-      { label: "Funds Reducing",           sortKey: "fundCount" },
-      { label: "Net Shares Removed",       sortKey: "netShares" },
-      { label: "Shares vs Prior Quarter",  sortKey: "chgQtr" },
-      { label: "Shares vs Prior Year",     sortKey: "chgYr" },
-      { label: "Aggregate Value",          sortKey: "totalValue" },
-      { label: "Price at Last Filing *",   sortKey: "price" }
-    ],
     exit: [
       { label: "#",                        sortKey: null },
       { label: "Company",                  sortKey: "name" },
@@ -453,10 +413,6 @@
         midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       } else if (type === "new") {
         midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      } else if (type === "buy") {
-        midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      } else if (type === "sell") {
-        midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       } else {
         midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
       }
@@ -605,30 +561,26 @@
     tableData.netAdd = sortAndSlice(netAddMap, "netShares");
     tableData.netDec = sortAndSlice(netDecMap, "netShares");
     tableData.new  = sortAndSlice(newMap);
-    tableData.buy  = sortAndSlice(buyMap,  "netShares");
-    tableData.sell = sortAndSlice(sellMap, "netShares");
     tableData.exit = sortAndSlice(exitMap);
 
     document.getElementById("tbl-netAdd").innerHTML = buildTable("netAdd");
     document.getElementById("tbl-netDec").innerHTML = buildTable("netDec");
     document.getElementById("tbl-new").innerHTML  = buildTable("new");
-    document.getElementById("tbl-buy").innerHTML  = buildTable("buy");
-    document.getElementById("tbl-sell").innerHTML = buildTable("sell");
     document.getElementById("tbl-exit").innerHTML = buildTable("exit");
 
-    ["fn-new","fn-buy","fn-sell","fn-exit"].forEach((id, i) => {
-      document.getElementById(id).style.display = [tableData.new, tableData.buy, tableData.sell, tableData.exit][i].length ? "" : "none";
+    ["fn-new","fn-exit"].forEach((id, i) => {
+      document.getElementById(id).style.display = [tableData.new, tableData.exit][i].length ? "" : "none";
     });
 
   }).catch(err => {
     console.error(err);
-    ["tbl-new","tbl-buy","tbl-sell","tbl-exit"].forEach(id => {
+    ["tbl-netAdd","tbl-netDec","tbl-new","tbl-exit"].forEach(id => {
       document.getElementById(id).innerHTML = `<div class="error">Failed to load data. Please try again.</div>`;
     });
   });
 
   // ── Side nav scroll spy ────────────────────────────────────────
-  const sections = ["sec-netAdd","sec-netDec","sec-new","sec-buy","sec-sell","sec-exit"];
+  const sections = ["sec-netAdd","sec-netDec","sec-new","sec-exit"];
   const navLinks = document.querySelectorAll(".side-nav-link");
   window.addEventListener("scroll", () => {
     let current = sections[0];
