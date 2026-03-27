@@ -99,19 +99,25 @@
     /* Section blocks */
     .activity-section { margin-bottom: 2.5rem; scroll-margin-top: 1.5rem; }
     .activity-section-title {
-      font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase;
-      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.5rem;
-      padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+      font-size: 1rem; font-weight: 600; letter-spacing: -0.01em;
+      color: var(--text); margin-bottom: 0.25rem;
+    }
+    .activity-section-subtitle {
+      font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+      line-height: 1.5; margin-bottom: 0.75rem;
     }
 
-    /* ── Two-column page layout ── */
-    .page-layout { display: flex; gap: 2rem; align-items: flex-start; }
-    .tables-col  { flex: 1; min-width: 0; }
+    /* ── Page layout: tables centered, side nav floats left ── */
+    .page-layout { position: relative; }
+    .tables-col  { max-width: 100%; }
 
-    /* ── Side nav ── */
-    .side-nav { width: 160px; flex-shrink: 0; }
+    /* ── Side nav — sticky, positioned to left of main ── */
+    .side-nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      left: max(0.75rem, calc(50% - 640px - 180px));
+      width: 160px; z-index: 10;
+    }
     .side-nav-inner {
-      position: sticky; top: 1.5rem;
       display: flex; flex-direction: column; gap: 0.15rem;
     }
     .side-nav-label {
@@ -126,13 +132,10 @@
       display: block;
     }
     .side-nav-link:hover { color: var(--accent); background: var(--accent-light); }
-    .side-nav-link.active { color: var(--accent); font-weight: 500; }
+    .side-nav-link.active { color: var(--accent); font-weight: 500; background: var(--accent-light); }
 
-    /* Hide side nav on mobile — tables take full width */
-    @media (max-width: 699px) {
-      .page-layout { flex-direction: column; gap: 0; }
-      .side-nav { display: none; }
-    }
+    /* Hide side nav on mobile */
+    @media (max-width: 1100px) { .side-nav { display: none; } }
 
     /* ── Table — exact same approach as top-holdings ── */
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -211,61 +214,66 @@
 <main>
   <h1 class="section-label">Hedge Fund Activity: Top Consensus Buys and Sells (Latest 13F Data)</h1>
 
-  <div class="page-layout">
-    <!-- Left sticky nav -->
-    <aside class="side-nav">
-      <div class="side-nav-inner">
-        <div class="side-nav-label">Jump to</div>
-        <a class="side-nav-link active" href="#sec-netAdd">Top Net Additions</a>
-        <a class="side-nav-link" href="#sec-netDec">Top Net Decreases</a>
-        <a class="side-nav-link" href="#sec-new">Top New Positions</a>
-        <a class="side-nav-link" href="#sec-buy">Top Increases</a>
-        <a class="side-nav-link" href="#sec-sell">Top Reductions</a>
-        <a class="side-nav-link" href="#sec-exit">Most Exited</a>
-      </div>
-    </aside>
+  <!-- Side nav — fixed position, shows on wide screens -->
+  <aside class="side-nav">
+    <div class="side-nav-inner">
+      <div class="side-nav-label">Jump to</div>
+      <a class="side-nav-link active" href="#sec-netAdd">Top Net Additions</a>
+      <a class="side-nav-link" href="#sec-netDec">Top Net Decreases</a>
+      <a class="side-nav-link" href="#sec-new">Top New Positions</a>
+      <a class="side-nav-link" href="#sec-buy">Top Increases</a>
+      <a class="side-nav-link" href="#sec-sell">Top Reductions</a>
+      <a class="side-nav-link" href="#sec-exit">Most Exited</a>
+    </div>
+  </aside>
 
-    <!-- Tables -->
+  <div class="page-layout">
     <div class="tables-col">
 
       <div class="activity-section" id="sec-netAdd">
         <div class="activity-section-title">Top Net Additions</div>
+        <div class="activity-section-subtitle">Aggregate net share increases across new positions, increases, reductions, and exits from all tracked funds. Only stocks with a net positive change are included. Ranked by aggregate net shares added.</div>
         <div id="tbl-netAdd"><div class="loading">Fetching data...</div></div>
-        <p class="footnote">Includes net share increases from new positions, increased positions, reduced positions, and exits across all tracked funds. Ranked by aggregate net shares added.<br>* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+        <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-netDec">
         <div class="activity-section-title">Top Net Decreases</div>
+        <div class="activity-section-subtitle">Aggregate net share decreases across new positions, increases, reductions, and exits from all tracked funds. Only stocks with a net negative change are included. Ranked by aggregate net shares removed.</div>
         <div id="tbl-netDec"><div class="loading">Fetching data...</div></div>
-        <p class="footnote">Includes net share decreases from new positions, increased positions, reduced positions, and exits across all tracked funds. Ranked by aggregate net shares removed.<br>* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+        <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-new">
         <div class="activity-section-title">Top New Positions</div>
+        <div class="activity-section-subtitle">Stocks newly initiated by the most funds this quarter. Ranked by number of funds initiating.</div>
         <div id="tbl-new"><div class="loading">Fetching data...</div></div>
         <p class="footnote" id="fn-new" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-buy">
         <div class="activity-section-title">Top Increases</div>
+        <div class="activity-section-subtitle">Stocks with the most funds increasing an existing position this quarter. Excludes new positions. Ranked by number of funds adding.</div>
         <div id="tbl-buy"><div class="loading">Fetching data...</div></div>
-        <p class="footnote" id="fn-buy" style="display:none">Excludes new positions.<br>* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+        <p class="footnote" id="fn-buy" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-sell">
         <div class="activity-section-title">Top Reductions</div>
+        <div class="activity-section-subtitle">Stocks with the most funds reducing an existing position this quarter. Excludes full exits. Ranked by number of funds reducing.</div>
         <div id="tbl-sell"><div class="loading">Fetching data...</div></div>
-        <p class="footnote" id="fn-sell" style="display:none">Excludes full exits.<br>* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+        <p class="footnote" id="fn-sell" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-exit">
         <div class="activity-section-title">Most Exited</div>
+        <div class="activity-section-subtitle">Stocks fully exited by the most funds this quarter. Ranked by number of funds exiting.</div>
         <div id="tbl-exit"><div class="loading">Fetching data...</div></div>
         <p class="footnote" id="fn-exit" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the prior quarter, calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
-    </div><!-- end tables-col -->
-  </div><!-- end page-layout -->
+    </div>
+  </div>
 </main>
 
 <footer style="text-align:center; padding:2rem; font-family:'DM Mono',monospace; font-size:0.7rem; color:#8a8780; border-top:1px solid #dedede; margin-top:2rem;">
@@ -473,7 +481,10 @@
     const stockIndex  = stockIndexRaw.stocks       || stockIndexRaw;
     const fundLatestQ = stockIndexRaw.fund_latest_q || {};
 
-    const newMap = {}, buyMap = {}, sellMap = {}, exitMap = {}, netAddMap = {}, netDecMap = {};
+    const newMap = {}, buyMap = {}, sellMap = {}, exitMap = {};
+    // For net maps: track per-stock per-fund deltas, then classify after inner loop
+    // perFundDelta[stockKey][fid] = { delta, sharesRef, valueRef, prev1, prev4 }
+    const perFundDelta = {};
 
     for (const [key, stock] of Object.entries(stockIndex)) {
       const { name, ticker, cusip, funds: stockFunds } = stock;
@@ -508,64 +519,83 @@
           return map[stockKey];
         };
 
-        // Compute prev quarter and prev year labels relative to stockLatestQ
         const prevYrLabel = (parseInt(yr) - 1) + "Q" + qn;
         const prev1 = quarters[prevQLabel] || null;
         const prev4 = quarters[prevYrLabel] || null;
 
+        // Compute this fund's net delta for this stock
+        let fundDelta = 0;
+        let sharesRef = sharesNow;
+        let valueRef  = valueNow;
+
         if (stockLatestQ !== latestQ) {
+          // Fund filed a newer quarter without this stock — full exit
           if (sharesNow > 0) {
             const e = ensure(exitMap); e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
-            // Net: full exit = -sharesNow
-            const stockKey2 = stockKey;
-            if (!netDecMap[stockKey2]) netDecMap[stockKey2] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0, netShares1: 0, prevTotal1: 0, netShares4: 0, prevTotal4: 0 };
-            netDecMap[stockKey2].netShares += sharesNow;
-            netDecMap[stockKey2].totalShares += sharesNow;
-            netDecMap[stockKey2].totalValue  += valueNow;
-            netDecMap[stockKey2].fundCount++;
-            if (prev1 && prev1.shares > 0) { netDecMap[stockKey2].netShares1 += 0 - prev1.shares; netDecMap[stockKey2].prevTotal1 += prev1.shares; }
-            if (prev4 && prev4.shares > 0) { netDecMap[stockKey2].netShares4 += 0 - prev4.shares; netDecMap[stockKey2].prevTotal4 += prev4.shares; }
-          }
-          continue;
-        }
-
-        if (sharesNow > 0 && (sharesPrev === null || sharesPrev === 0)) {
+            if (prev1 && prev1.shares > 0) { e.netShares1 += 0 - prev1.shares; e.prevTotal1 += prev1.shares; }
+            if (prev4 && prev4.shares > 0) { e.netShares4 += 0 - prev4.shares; e.prevTotal4 += prev4.shares; }
+            fundDelta = -sharesNow; sharesRef = sharesNow; valueRef = valueNow;
+          } else { continue; }
+        } else if (sharesNow > 0 && (sharesPrev === null || sharesPrev === 0)) {
+          // NEW
           const e = ensure(newMap); e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
           if (prev1 && prev1.shares > 0) { e.netShares1 += sharesNow - prev1.shares; e.prevTotal1 += prev1.shares; }
           if (prev4 && prev4.shares > 0) { e.netShares4 += sharesNow - prev4.shares; e.prevTotal4 += prev4.shares; }
-          // Net: new position = +sharesNow
-          if (!netAddMap[stockKey]) netAddMap[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0, netShares1: 0, prevTotal1: 0, netShares4: 0, prevTotal4: 0 };
-          netAddMap[stockKey].netShares += sharesNow; netAddMap[stockKey].totalShares += sharesNow; netAddMap[stockKey].totalValue += valueNow; netAddMap[stockKey].fundCount++;
-          if (prev1 && prev1.shares > 0) { netAddMap[stockKey].netShares1 += sharesNow - prev1.shares; netAddMap[stockKey].prevTotal1 += prev1.shares; }
-          if (prev4 && prev4.shares > 0) { netAddMap[stockKey].netShares4 += sharesNow - prev4.shares; netAddMap[stockKey].prevTotal4 += prev4.shares; }
+          fundDelta = +sharesNow;
         } else if (sharesNow === 0 && sharesPrev > 0) {
+          // EXITED
           const e = ensure(exitMap); e.fundCount++; e.totalShares += sharesPrev; e.totalValue += valuePrev;
           if (prev1 && prev1.shares > 0) { e.netShares1 += 0 - prev1.shares; e.prevTotal1 += prev1.shares; }
           if (prev4 && prev4.shares > 0) { e.netShares4 += 0 - prev4.shares; e.prevTotal4 += prev4.shares; }
-          // Net: exit = -sharesPrev
-          if (!netDecMap[stockKey]) netDecMap[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0, netShares1: 0, prevTotal1: 0, netShares4: 0, prevTotal4: 0 };
-          netDecMap[stockKey].netShares += sharesPrev; netDecMap[stockKey].totalShares += sharesPrev; netDecMap[stockKey].totalValue += valuePrev; netDecMap[stockKey].fundCount++;
-          if (prev1 && prev1.shares > 0) { netDecMap[stockKey].netShares1 += 0 - prev1.shares; netDecMap[stockKey].prevTotal1 += prev1.shares; }
-          if (prev4 && prev4.shares > 0) { netDecMap[stockKey].netShares4 += 0 - prev4.shares; netDecMap[stockKey].prevTotal4 += prev4.shares; }
+          fundDelta = -sharesPrev; sharesRef = sharesPrev; valueRef = valuePrev;
         } else if (sharesNow > 0 && sharesPrev > 0 && sharesNow > sharesPrev) {
+          // INCREASED
           const e = ensure(buyMap); e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.totalShares += sharesNow; e.totalValue += valueNow;
           if (prev1 && prev1.shares > 0) { e.netShares1 += sharesNow - prev1.shares; e.prevTotal1 += prev1.shares; }
           if (prev4 && prev4.shares > 0) { e.netShares4 += sharesNow - prev4.shares; e.prevTotal4 += prev4.shares; }
-          // Net: increase = +(sharesNow - sharesPrev)
-          if (!netAddMap[stockKey]) netAddMap[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0, netShares1: 0, prevTotal1: 0, netShares4: 0, prevTotal4: 0 };
-          netAddMap[stockKey].netShares += (sharesNow - sharesPrev); netAddMap[stockKey].totalShares += sharesNow; netAddMap[stockKey].totalValue += valueNow; netAddMap[stockKey].fundCount++;
-          if (prev1 && prev1.shares > 0) { netAddMap[stockKey].netShares1 += sharesNow - prev1.shares; netAddMap[stockKey].prevTotal1 += prev1.shares; }
-          if (prev4 && prev4.shares > 0) { netAddMap[stockKey].netShares4 += sharesNow - prev4.shares; netAddMap[stockKey].prevTotal4 += prev4.shares; }
+          fundDelta = +(sharesNow - sharesPrev);
         } else if (sharesNow > 0 && sharesPrev > 0 && sharesNow < sharesPrev) {
+          // REDUCED
           const e = ensure(sellMap); e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.totalShares += sharesNow; e.totalValue += valueNow;
           if (prev1 && prev1.shares > 0) { e.netShares1 += sharesNow - prev1.shares; e.prevTotal1 += prev1.shares; }
           if (prev4 && prev4.shares > 0) { e.netShares4 += sharesNow - prev4.shares; e.prevTotal4 += prev4.shares; }
-          // Net: reduction = +(sharesPrev - sharesNow)
-          if (!netDecMap[stockKey]) netDecMap[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0, netShares1: 0, prevTotal1: 0, netShares4: 0, prevTotal4: 0 };
-          netDecMap[stockKey].netShares += (sharesPrev - sharesNow); netDecMap[stockKey].totalShares += sharesNow; netDecMap[stockKey].totalValue += valueNow; netDecMap[stockKey].fundCount++;
-          if (prev1 && prev1.shares > 0) { netDecMap[stockKey].netShares1 += sharesNow - prev1.shares; netDecMap[stockKey].prevTotal1 += prev1.shares; }
-          if (prev4 && prev4.shares > 0) { netDecMap[stockKey].netShares4 += sharesNow - prev4.shares; netDecMap[stockKey].prevTotal4 += prev4.shares; }
-        }
+          fundDelta = -(sharesPrev - sharesNow);
+        } else { continue; }
+
+        // Accumulate per-fund delta for net maps
+        if (!perFundDelta[stockKey]) perFundDelta[stockKey] = { name, ticker, cusip, key, funds: {} };
+        perFundDelta[stockKey].funds[fid] = {
+          delta: fundDelta, sharesRef, valueRef,
+          prev1shares: prev1 ? prev1.shares : 0,
+          prev4shares: prev4 ? prev4.shares : 0,
+          prev1: prev1 ? prev1.shares : 0,
+          prev4: prev4 ? prev4.shares : 0
+        };
+      }
+    }
+
+    // Build netAddMap and netDecMap from perFundDelta
+    // fundCount = only funds that are net buyers (delta > 0) for netAdd, net sellers (delta < 0) for netDec
+    const netAddMap = {}, netDecMap = {};
+    for (const [stockKey, sd] of Object.entries(perFundDelta)) {
+      const { name, ticker, cusip, key, funds: fds } = sd;
+      let netShares = 0;
+      for (const f of Object.values(fds)) netShares += f.delta;
+      if (netShares === 0) continue;
+
+      const map = netShares > 0 ? netAddMap : netDecMap;
+      if (!map[stockKey]) map[stockKey] = { name, ticker, cusip, key, fundCount: 0, totalShares: 0, totalValue: 0, netShares: 0, netShares1: 0, prevTotal1: 0, netShares4: 0, prevTotal4: 0 };
+      const e = map[stockKey];
+      e.netShares = Math.abs(netShares);
+
+      for (const f of Object.values(fds)) {
+        // fundCount: only count this fund if it contributes in the correct direction
+        if (netShares > 0 && f.delta > 0) e.fundCount++;
+        if (netShares < 0 && f.delta < 0) e.fundCount++;
+        e.totalShares += f.sharesRef;
+        e.totalValue  += f.valueRef;
+        if (f.prev1 > 0) { e.netShares1 += f.delta > 0 ? f.sharesRef - f.prev1 : 0 - f.prev1; e.prevTotal1 += f.prev1; }
+        if (f.prev4 > 0) { e.netShares4 += f.delta > 0 ? f.sharesRef - f.prev4 : 0 - f.prev4; e.prevTotal4 += f.prev4; }
       }
     }
 
