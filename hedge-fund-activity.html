@@ -19,22 +19,46 @@
       --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* ── Header ── */
     header {
       background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 1.5rem 3rem; display: flex; align-items: center;
-      justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+      padding: 1rem 1.5rem;
     }
-    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
-    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
-    .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+    .header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.75rem;
+    }
+    .brand-name {
+      font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; text-decoration: none; color: var(--text);
+    }
+    /* Mobile nav — shown below header-top on small screens */
+    .nav-links {
+      display: flex; align-items: center; gap: 0.25rem;
+      flex-wrap: wrap;
+    }
     .nav-link {
       font-family: var(--mono); font-size: 0.72rem; color: var(--muted);
-      text-decoration: none; padding: 0.35rem 0.75rem; border-radius: 4px;
+      text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px;
       transition: color 0.15s, background 0.15s; white-space: nowrap;
     }
     .nav-link:hover { color: var(--accent); background: var(--accent-light); }
     .nav-link.active { color: var(--accent); font-weight: 500; }
-    @media (max-width: 600px) { .nav-links { display: none; } }
+    .header-nav-row {
+      margin-top: 0.6rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.6rem;
+    }
+    @media (min-width: 700px) {
+      header { padding: 1.5rem 3rem; }
+      .header-top { flex-wrap: nowrap; }
+      .header-nav-row { display: none; }
+      .desktop-nav { display: flex !important; }
+    }
+    @media (max-width: 699px) {
+      .desktop-nav { display: none !important; }
+    }
 
     /* Search */
     .search-wrap { position: relative; }
@@ -43,8 +67,9 @@
       padding: 0.6rem 1rem 0.6rem 2.25rem;
       border: 1px solid var(--border); border-radius: 6px;
       background: var(--bg); color: var(--text);
-      width: 300px; outline: none; transition: border 0.15s;
+      width: 240px; outline: none; transition: border 0.15s;
     }
+    @media (min-width: 700px) { #search { width: 300px; } }
     #search:focus { border-color: var(--accent); background: var(--surface); }
     #search::placeholder { color: var(--muted); }
     .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
@@ -65,44 +90,52 @@
     .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
     .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
 
-    main { padding: 2.5rem 3rem; max-width: 1200px; margin: 0 auto; }
-    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 1.75rem; }
+    /* ── Main ── */
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem 4rem; } }
+    .section-label { font-size: 1.2rem; letter-spacing: 0.01em; color: var(--text); font-weight: 500; margin-bottom: 1.75rem; line-height: 1.4; }
+    @media (min-width: 700px) { .section-label { font-size: 1.4rem; } }
 
     /* Section blocks */
-    .activity-section { margin-bottom: 3rem; }
+    .activity-section { margin-bottom: 2.5rem; }
     .activity-section-title {
       font-family: var(--mono); font-size: 0.72rem; text-transform: uppercase;
       letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.5rem;
       padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
     }
 
-    /* Table — no display:block, proper table layout */
-    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 6px; }
-    table { width: 100%; border-collapse: collapse; background: var(--surface); table-layout: fixed; }
+    /* ── Table — exact same approach as top-holdings ── */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table {
+      width: 100%; min-width: 600px; /* forces scroll on narrow screens */
+      border-collapse: collapse; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 6px;
+      overflow: hidden; display: block;
+    }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th {
       font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em;
       font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem;
-      text-align: center; white-space: normal; line-height: 1.4;
-      cursor: pointer; user-select: none;
+      text-align: center; cursor: pointer; user-select: none;
+      white-space: normal; line-height: 1.4;
     }
     th:hover { color: var(--text); }
     th.sorted { color: var(--accent); }
-    th.col-num  { width: 2.5rem; text-align: center; }
+    th.col-num     { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
     th.col-company { text-align: left; width: 22%; }
-    th.col-data { width: 13%; text-align: center; }
+    th.col-data    { width: 13%; text-align: center; }
     td {
       padding: 0.85rem 0.6rem; font-size: 0.875rem;
-      border-bottom: 1px solid var(--border); vertical-align: middle;
-      white-space: nowrap; text-align: center;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle; white-space: nowrap; text-align: center;
     }
-    td.col-num  { width: 2.5rem; text-align: center; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+    td.col-num     { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
     td.col-company { text-align: left; white-space: normal; }
-    td.num { font-family: var(--mono); font-size: 0.82rem; text-align: center; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
     .company-name { font-weight: 500; color: var(--text); white-space: normal; }
     .ticker-sub { color: #2563eb; font-weight: 600; font-size: 0.78rem; font-family: var(--mono); margin-top: 0.1rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
     .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
     .chg.pos { color: var(--green); }
     .chg.neg { color: var(--red); }
@@ -115,21 +148,31 @@
 <body>
 
 <header>
-  <div style="display:flex; align-items:center; gap:1.75rem; flex-wrap:wrap;">
-    <div class="brand">
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
       <a class="brand-name" href="index.html">13FAI</a>
+      <!-- Desktop nav: hidden on mobile via CSS -->
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
+        <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+        <a class="nav-link active" href="hedge-fund-activity.html">Activity</a>
+      </nav>
     </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <!-- Mobile nav: shown below on small screens -->
+  <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
-      <a class="nav-link" href="top-holdings.html">Top 10 Holdings</a>
-      <a class="nav-link" href="top-holdings.html#top100">Top 100 Holdings</a>
+      <a class="nav-link" href="top-holdings.html">Top 10</a>
+      <a class="nav-link" href="top-holdings.html#top100">Top 100</a>
       <a class="nav-link active" href="hedge-fund-activity.html">Activity</a>
     </nav>
-  </div>
-  <div class="search-wrap">
-    <span class="search-icon">⌕</span>
-    <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
-    <div class="search-results" id="search-results"></div>
   </div>
 </header>
 
@@ -168,12 +211,15 @@
 <script>
   const PAGES = "/13f-holdings-tracker";
 
-  // Per-table sort state: { col, asc }
-  const sortState = { new: { col: 2, asc: false }, buy: { col: 2, asc: false }, sell: { col: 2, asc: false }, exit: { col: 2, asc: false } };
-  // Stored rows per table for re-sorting
+  const sortState = {
+    new:  { col: 2, asc: false },
+    buy:  { col: 2, asc: false },
+    sell: { col: 2, asc: false },
+    exit: { col: 2, asc: false }
+  };
   const tableData = { new: [], buy: [], sell: [], exit: [] };
 
-  // ── Formatters — identical logic to top-holdings ──────────────
+  // ── Formatters — identical to top-holdings ────────────────────
   function fmtShares(n) {
     if (!n || n === 0) return "—";
     let scaled, suffix;
@@ -201,11 +247,6 @@
     return "$" + price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   }
 
-  function quarterLabel(q) {
-    const m = q.match(/^(\d{4})Q(\d)$/);
-    return m ? `Q${m[2]} ${m[1]}` : q;
-  }
-
   function stockCell(r) {
     const href = r.ticker
       ? `stock.html?ticker=${encodeURIComponent(r.ticker)}`
@@ -216,46 +257,44 @@
     </a>`;
   }
 
-  // Column definitions per table type
-  // Each col: { label, sortKey, dir } — dir: 1=asc default, -1=desc default
   const COLS = {
     new:  [
-      { label: "#",                  sortKey: null },
-      { label: "Company",            sortKey: "name" },
-      { label: "Funds Initiating",   sortKey: "fundCount" },
-      { label: "Aggregate Shares",   sortKey: "totalShares" },
-      { label: "Aggregate Value",    sortKey: "totalValue" },
+      { label: "#",                      sortKey: null },
+      { label: "Company",                sortKey: "name" },
+      { label: "Funds Initiating",       sortKey: "fundCount" },
+      { label: "Aggregate Shares",       sortKey: "totalShares" },
+      { label: "Aggregate Value",        sortKey: "totalValue" },
       { label: "Price at Last Filing *", sortKey: "price" }
     ],
     buy:  [
-      { label: "#",                  sortKey: null },
-      { label: "Company",            sortKey: "name" },
-      { label: "Funds Adding",       sortKey: "fundCount" },
-      { label: "Net Shares Added",   sortKey: "netShares" },
-      { label: "Aggregate Value",    sortKey: "totalValue" },
+      { label: "#",                      sortKey: null },
+      { label: "Company",                sortKey: "name" },
+      { label: "Funds Adding",           sortKey: "fundCount" },
+      { label: "Net Shares Added",       sortKey: "netShares" },
+      { label: "Aggregate Value",        sortKey: "totalValue" },
       { label: "Price at Last Filing *", sortKey: "price" }
     ],
     sell: [
-      { label: "#",                  sortKey: null },
-      { label: "Company",            sortKey: "name" },
-      { label: "Funds Reducing",     sortKey: "fundCount" },
-      { label: "Net Shares Removed", sortKey: "netShares" },
-      { label: "Aggregate Value",    sortKey: "totalValue" },
+      { label: "#",                      sortKey: null },
+      { label: "Company",                sortKey: "name" },
+      { label: "Funds Reducing",         sortKey: "fundCount" },
+      { label: "Net Shares Removed",     sortKey: "netShares" },
+      { label: "Aggregate Value",        sortKey: "totalValue" },
       { label: "Price at Last Filing *", sortKey: "price" }
     ],
     exit: [
-      { label: "#",                  sortKey: null },
-      { label: "Company",            sortKey: "name" },
-      { label: "Funds Exiting",      sortKey: "fundCount" },
-      { label: "Shares Removed",     sortKey: "totalShares" },
-      { label: "Prior Quarter Value",sortKey: "totalValue" },
+      { label: "#",                      sortKey: null },
+      { label: "Company",                sortKey: "name" },
+      { label: "Funds Exiting",          sortKey: "fundCount" },
+      { label: "Shares Removed",         sortKey: "totalShares" },
+      { label: "Prior Quarter Value",    sortKey: "totalValue" },
       { label: "Price at Last Filing *", sortKey: "price" }
     ]
   };
 
-  function getSortValue(r, key) {
-    if (key === "name")    return r.name.toLowerCase();
-    if (key === "price")   return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
+  function getSortVal(r, key) {
+    if (key === "name")  return r.name.toLowerCase();
+    if (key === "price") return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
     return r[key] || 0;
   }
 
@@ -263,82 +302,47 @@
     const rows = tableData[type];
     const cols = COLS[type];
     const st   = sortState[type];
-
     if (!rows || rows.length === 0) return `<div class="loading" style="color:var(--muted)">No data available.</div>`;
 
-    // Sort
     const sorted = [...rows].sort((a, b) => {
       const col = cols[st.col];
       if (!col || !col.sortKey) return 0;
-      const av = getSortValue(a, col.sortKey);
-      const bv = getSortValue(b, col.sortKey);
+      const av = getSortVal(a, col.sortKey);
+      const bv = getSortVal(b, col.sortKey);
       if (typeof av === "string") return st.asc ? av.localeCompare(bv) : bv.localeCompare(av);
       return st.asc ? av - bv : bv - av;
     });
 
-    // Headers
     const heads = cols.map((col, i) => {
       const cls      = i === 0 ? "col-num" : i === 1 ? "col-company" : "col-data";
       const isSorted = st.col === i && col.sortKey;
       const arrow    = !col.sortKey ? "" : isSorted ? (st.asc ? " ↑" : " ↓") : `<span style="opacity:0.3"> ↕</span>`;
-      const sortedCls = isSorted ? " sorted" : "";
-      const onclick  = col.sortKey ? `onclick="sortTable('${type}', ${i})"` : "";
-      return `<th class="${cls}${sortedCls}" ${onclick}>${col.label}${arrow}</th>`;
+      const onclick  = col.sortKey ? `onclick="sortTable('${type}',${i})"` : "";
+      return `<th class="${cls}${isSorted ? " sorted" : ""}" ${onclick}>${col.label}${arrow}</th>`;
     }).join("");
 
-    // Rows
     const rowsHtml = sorted.map((r, i) => {
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
-
       let midCols;
       if (type === "new") {
-        midCols = [
-          `<td class="num"><span class="chg pos">${r.fundCount}</span></td>`,
-          `<td class="num">${fmtShares(r.totalShares)}</td>`,
-          `<td class="num">${fmtValue(r.totalValue)}</td>`
-        ].join("");
+        midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num">${fmtShares(r.totalShares)}</td><td class="num">${fmtValue(r.totalValue)}</td>`;
       } else if (type === "buy") {
-        midCols = [
-          `<td class="num"><span class="chg pos">${r.fundCount}</span></td>`,
-          `<td class="num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>`,
-          `<td class="num">${fmtValue(r.totalValue)}</td>`
-        ].join("");
+        midCols = `<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td><td class="num">${fmtValue(r.totalValue)}</td>`;
       } else if (type === "sell") {
-        midCols = [
-          `<td class="num"><span class="chg neg">${r.fundCount}</span></td>`,
-          `<td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>`,
-          `<td class="num">${fmtValue(r.totalValue)}</td>`
-        ].join("");
+        midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td><td class="num">${fmtValue(r.totalValue)}</td>`;
       } else {
-        midCols = [
-          `<td class="num"><span class="chg neg">${r.fundCount}</span></td>`,
-          `<td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>`,
-          `<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`
-        ].join("");
+        midCols = `<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td><td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
       }
-
-      return `<tr>
-        <td class="col-num">${i + 1}</td>
-        <td class="col-company">${stockCell(r)}</td>
-        ${midCols}${priceTd}
-      </tr>`;
+      return `<tr><td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td><td class="col-company">${stockCell(r)}</td>${midCols}${priceTd}</tr>`;
     }).join("");
 
-    return `<div class="table-wrap"><table>
-      <thead><tr>${heads}</tr></thead>
-      <tbody>${rowsHtml}</tbody>
-    </table></div>`;
+    return `<div class="table-wrap"><table><thead><tr>${heads}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
   }
 
   function sortTable(type, colIdx) {
     const st = sortState[type];
-    if (st.col === colIdx) {
-      st.asc = !st.asc;
-    } else {
-      st.col = colIdx;
-      // Default: desc for all numeric cols, asc for name
-      st.asc = COLS[type][colIdx].sortKey === "name";
-    }
+    if (st.col === colIdx) { st.asc = !st.asc; }
+    else { st.col = colIdx; st.asc = COLS[type][colIdx].sortKey === "name"; }
     document.getElementById(`tbl-${type}`).innerHTML = buildTable(type);
   }
 
@@ -350,18 +354,14 @@
     const stockIndex  = stockIndexRaw.stocks       || stockIndexRaw;
     const fundLatestQ = stockIndexRaw.fund_latest_q || {};
 
-    // ── Compute activity ──────────────────────────────────────────
-    const newMap  = {};
-    const buyMap  = {};
-    const sellMap = {};
-    const exitMap = {};
+    const newMap = {}, buyMap = {}, sellMap = {}, exitMap = {};
 
     for (const [key, stock] of Object.entries(stockIndex)) {
       const { name, ticker, cusip, funds: stockFunds } = stock;
       if (!stockFunds) continue;
 
       for (const [fid, fundData] of Object.entries(stockFunds)) {
-        const latestQ = fundLatestQ[fid];
+        const latestQ  = fundLatestQ[fid];
         if (!latestQ) continue;
 
         const quarters     = fundData.quarters || {};
@@ -369,7 +369,6 @@
         const stockLatestQ = sortedQs[0];
         if (!stockLatestQ) continue;
 
-        // Compute prev quarter label
         const [yr, qn] = stockLatestQ.split("Q");
         let pqNum = parseInt(qn) - 1, pqYr = parseInt(yr);
         if (pqNum === 0) { pqNum = 4; pqYr--; }
@@ -390,42 +389,25 @@
           return map[stockKey];
         };
 
-        // Fund has filed a newer quarter without this stock → exit
         if (stockLatestQ !== latestQ) {
-          if (sharesNow > 0) {
-            const e = ensure(exitMap);
-            e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
-          }
+          if (sharesNow > 0) { const e = ensure(exitMap); e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow; }
           continue;
         }
 
-        // NEW: present now, no/zero prior data
         if (sharesNow > 0 && (sharesPrev === null || sharesPrev === 0)) {
-          const e = ensure(newMap);
-          e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
-        }
-        // EXITED: zero now, had shares before
-        else if (sharesNow === 0 && sharesPrev !== null && sharesPrev > 0) {
-          const e = ensure(exitMap);
-          e.fundCount++; e.totalShares += sharesPrev; e.totalValue += valuePrev;
-        }
-        // INCREASED existing position
-        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow > sharesPrev) {
-          const e = ensure(buyMap);
-          e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.totalShares += sharesNow; e.totalValue += valueNow;
-        }
-        // REDUCED existing position
-        else if (sharesNow > 0 && sharesPrev > 0 && sharesNow < sharesPrev) {
-          const e = ensure(sellMap);
-          e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.totalShares += sharesNow; e.totalValue += valueNow;
+          const e = ensure(newMap); e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
+        } else if (sharesNow === 0 && sharesPrev > 0) {
+          const e = ensure(exitMap); e.fundCount++; e.totalShares += sharesPrev; e.totalValue += valuePrev;
+        } else if (sharesNow > 0 && sharesPrev > 0 && sharesNow > sharesPrev) {
+          const e = ensure(buyMap); e.fundCount++; e.netShares += (sharesNow - sharesPrev); e.totalShares += sharesNow; e.totalValue += valueNow;
+        } else if (sharesNow > 0 && sharesPrev > 0 && sharesNow < sharesPrev) {
+          const e = ensure(sellMap); e.fundCount++; e.netShares += (sharesPrev - sharesNow); e.totalShares += sharesNow; e.totalValue += valueNow;
         }
       }
     }
 
-    const sortAndSlice = (map, tiebreak = "totalShares") =>
-      Object.values(map)
-        .sort((a, b) => b.fundCount - a.fundCount || b[tiebreak] - a[tiebreak])
-        .slice(0, 10);
+    const sortAndSlice = (map, tie = "totalShares") =>
+      Object.values(map).sort((a, b) => b.fundCount - a.fundCount || b[tie] - a[tie]).slice(0, 10);
 
     tableData.new  = sortAndSlice(newMap);
     tableData.buy  = sortAndSlice(buyMap,  "netShares");
@@ -463,17 +445,13 @@
 
     const fundMatches = allFundsForSearch
       .filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
-      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}">
-        <span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
+      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}"><span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
 
     const stockMatches = [];
     for (const [key, stock] of Object.entries(stockIndexForSearch)) {
       if (stockMatches.length >= 4) break;
       if ((stock.ticker && stock.ticker.toLowerCase().includes(q)) || (stock.name && stock.name.toLowerCase().includes(q))) {
-        stockMatches.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
-          <span class="search-result-num">Stock</span>
-          <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
-        </a>`);
+        stockMatches.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}"><span class="search-result-num">Stock</span><span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span></a>`);
       }
     }
 
