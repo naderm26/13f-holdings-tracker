@@ -74,6 +74,10 @@
 
     /* Quarter selector */
     .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .q-btn { font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
     /* Table */
     .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 6px; }
@@ -152,6 +156,7 @@
 
 <main>
   <div id="stock-header"><div class="loading">Loading stock data...</div></div>
+  <div id="quarter-selector-wrap"></div>
   <div class="insights-wrap"><div class="insights" id="insights"></div></div>
   <div id="table-container"></div>
 </main>
@@ -166,14 +171,13 @@
   const key    = params.get("ticker") || params.get("cusip") || "";
   let sortCol  = 1;
   let sortAsc  = false;
-  let stockData  = null;
-  let fundsData  = null;
-  let fundTotals = {};
-  let fundActualQ = {};
-  let fundCount  = 0;
-  let fundPriorTotals = {}; // fid -> total portfolio value at the quarter stock was last held
-  let fundHasFiledQ   = {}; // fid -> Set of quarter labels the fund has filed
+  let stockData    = null;
+  let fundsData    = null;
+  let fundTotals   = {};   // from stock_index fund_totals[fid][q]
+  let allQuarters  = [];   // all quarter labels available for this stock, desc
+  let activeQ      = null; // currently selected quarter
 
+  // ── Formatters ────────────────────────────────────────────────
   function fmtChg(val) {
     if (val === null)     return `<span class="chg na">—</span>`;
     if (val === "NEW")    return `<span class="chg new">NEW</span>`;
@@ -182,113 +186,61 @@
     const cls  = val >= 0 ? "pos" : "neg";
     return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
   }
-
-  function getChg(currentShares, prevData, hasPriorQuarter) {
-    if (!prevData) return (hasPriorQuarter && currentShares > 0) ? "NEW" : null;
-    if (!prevData.shares && currentShares > 0) return "NEW";
-    if (currentShares === 0 && prevData.shares > 0) return "EXITED";
-    if (!prevData.shares) return null;
-    return ((currentShares - prevData.shares) / prevData.shares) * 100;
-  }
-
   function fmtVal(v) {
     if (!v) return "—";
-    if (v >= 1e9)  return "$" + (v / 1e9).toFixed(2) + "B";
-    if (v >= 1e6)  return "$" + (v / 1e6).toFixed(1) + "M";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
     return "$" + v.toLocaleString();
   }
-
   function fmtPct(val) {
     if (!val || isNaN(val) || val === 0) return "—";
     return val.toFixed(2) + "%";
   }
-
-  // Smart rounding: whole number unless rounds to 0, then 1 decimal
   function smartRound(v) {
     const r = Math.round(v);
     if (r === 0 && Math.abs(v) >= 0.05) return parseFloat(v.toFixed(1)).toString();
     return r.toString();
   }
-
   function fmtShares(n) {
     if (!n || n === 0) return "—";
     let scaled, suffix;
     if (n >= 1e6)      { scaled = n / 1e6; suffix = "M"; }
     else if (n >= 1e3) { scaled = n / 1e3; suffix = "K"; }
     else               { return n.toString(); }
-    // Round to 3 significant figures
     const mag = Math.floor(Math.log10(Math.abs(scaled)));
     const factor = Math.pow(10, 2 - mag);
     const rounded = Math.round(scaled * factor) / factor;
-    // Format: remove trailing zeros after decimal
     const str = rounded % 1 === 0 ? rounded.toString() : rounded.toPrecision(3).replace(/\.?0+$/, "");
     return str + suffix;
   }
-
+  function quarterLabel(q) {
+    const m = q.match(/^(\d{4})Q(\d)$/);
+    return m ? `Q${m[2]} ${m[1]}` : q;
+  }
+  function prevQuarter(q) {
+    const [yr, qn] = q.split("Q");
+    let pq = parseInt(qn) - 1, py = parseInt(yr);
+    if (pq === 0) { pq = 4; py--; }
+    return py + "Q" + pq;
+  }
+  function prevYearQuarter(q) {
+    const [yr, qn] = q.split("Q");
+    return (parseInt(yr) - 1) + "Q" + qn;
+  }
   function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
-
   function sort(col) {
     if (sortCol === col) sortAsc = !sortAsc;
     else { sortCol = col; sortAsc = false; }
     renderTable();
   }
 
-  // Build list of quarter labels from today going back 12 quarters
-  function recentQuarters() {
-    const now = new Date();
-    let year = now.getFullYear();
-    let q = Math.ceil((now.getMonth() + 1) / 3) - 1;
-    if (q === 0) { q = 4; year--; }
-    const out = [];
-    for (let i = 0; i < 12; i++) {
-      out.push(`${year}Q${q}`);
-      q--; if (q === 0) { q = 4; year--; }
-    }
-    return out;
-  }
-  const RECENT_QUARTERS = recentQuarters();
-
-  // Probe actual CSV files to find the true latest quarter for a fund
-  async function findFundActualLatestQ(fid) {
-    for (const label of RECENT_QUARTERS) {
-      try {
-        const r = await fetch(`${PAGES}/data/${fid}_${label}.csv`, { method: 'HEAD' });
-        if (r.ok) return label;
-      } catch(e) { /* skip */ }
-    }
-    return null;
-  }
-
-  // Fetch CSV total adjusted value for a fund/quarter
-  async function fetchFundTotal(fid, quarter, mult) {
-    try {
-      const r = await fetch(`${PAGES}/data/${fid}_${quarter}.csv`);
-      if (!r.ok) return 0;
-      const lines = (await r.text()).trim().split("\n").slice(1);
-      let total = 0;
-      for (const line of lines) {
-        const cols = line.split(",");
-        const shares = parseInt(cols[2]) || 0;
-        const value  = parseInt(cols[3]) || 0;
-        if (shares > 0) total += value;
-      }
-      return total * mult;
-    } catch(e) { return 0; }
-  }
-
-  function renderStockInsights(holdingFunds, stock, fundMap, fundCount, totalFunds) {
+  // ── Insights ──────────────────────────────────────────────────
+  function renderStockInsights(holdingFunds, stock, fundMap, fundCount, totalFunds, selectedQ) {
     const el = document.getElementById("insights");
     if (!el) return;
-
-    // Full name for S1, ticker only for all subsequent sentences
-    const stockLabel = stock.ticker && stock.ticker !== stock.name
-      ? `${stock.name} (${stock.ticker})`
-      : stock.name;
+    const stockLabel  = stock.ticker && stock.ticker !== stock.name ? `${stock.name} (${stock.ticker})` : stock.name;
     const shortTicker = stock.ticker || stock.name;
-
-    const sentences = [];
-
-    // Fund link helper — full fund short name, blue, links to fund page
+    const sentences   = [];
     const fundLink = fid => {
       const f = fundMap[fid];
       if (!f) return fid;
@@ -296,465 +248,311 @@
       return `<a class="ins-fund" href="fund.html?fund=${fid}">${nm}</a>`;
     };
 
-    // ── S1: Concentration ────────────────────────────────────────
-    const byPct = [...holdingFunds]
-      .filter(x => fundTotals[x.fid] > 0)
-      .sort((a, b) => (b.latest.value / fundTotals[b.fid]) - (a.latest.value / fundTotals[a.fid]));
-
+    // S1: Concentration
+    const byPct = [...holdingFunds].filter(x => fundTotals[x.fid]?.[selectedQ] > 0)
+      .sort((a, b) => (b.latest.value / fundTotals[b.fid][selectedQ]) - (a.latest.value / fundTotals[a.fid][selectedQ]));
     const top2 = byPct.slice(0, 2);
     const fmtHolder = x => {
-      const pct = smartRound((x.latest.value / fundTotals[x.fid]) * 100);
+      const ft = fundTotals[x.fid]?.[selectedQ] || 0;
+      const pct = smartRound((x.latest.value / ft) * 100);
       return `${fundLink(x.fid)} (<b>${pct}%</b>)`;
     };
     let holdStr = "";
     if (top2.length === 1)     holdStr = `, with ${fmtHolder(top2[0])} holding the largest stake`;
     else if (top2.length >= 2) holdStr = `, with ${fmtHolder(top2[0])} and ${fmtHolder(top2[1])} holding the largest stakes`;
     const ownershipRatio = totalFunds > 0 ? (fundCount / totalFunds) * 100 : 0;
-    const interestTier = ownershipRatio >= 30 ? "high"
-                       : ownershipRatio >= 20 ? "elevated"
-                       : ownershipRatio >= 10 ? "moderate"
-                       : "limited";
+    const interestTier = ownershipRatio >= 30 ? "high" : ownershipRatio >= 20 ? "elevated" : ownershipRatio >= 10 ? "moderate" : "limited";
     sentences.push(`${stockLabel} is held by <b>${fundCount}</b> of <b>${totalFunds}</b> tracked hedge funds${holdStr}, indicating ${interestTier} hedge fund interest relative to peers.`);
 
-    // ── S2: New positions (weight >= 1%, top 3) ──────────────────
-    const newPos = holdingFunds
-      .filter(x => {
-        const prev = x.prev1;
-        const isNew = !prev || prev.shares === 0;
-        if (!isNew) return false;
-        const portPct = fundTotals[x.fid] > 0 ? (x.latest.value / fundTotals[x.fid]) * 100 : 0;
-        return portPct >= 1;
-      })
-      .sort((a, b) => (b.latest.value / (fundTotals[b.fid] || 1)) - (a.latest.value / (fundTotals[a.fid] || 1)))
-      .slice(0, 3);
-
+    // S2: New positions
+    const prevQ = prevQuarter(selectedQ);
+    const newPos = holdingFunds.filter(x => {
+      const prev = x.prev1;
+      if (prev && prev.shares > 0) return false;
+      const ft = fundTotals[x.fid]?.[selectedQ] || 0;
+      return ft > 0 && (x.latest.value / ft) * 100 >= 1;
+    }).sort((a, b) => (b.latest.value / (fundTotals[b.fid]?.[selectedQ] || 1)) - (a.latest.value / (fundTotals[a.fid]?.[selectedQ] || 1))).slice(0, 3);
     if (newPos.length > 0) {
-      const fmtNew = x => {
-        const pct = smartRound((x.latest.value / fundTotals[x.fid]) * 100);
-        return `${fundLink(x.fid)} (<b>${pct}%</b>)`;
-      };
-      const parts  = newPos.map(fmtNew);
-      const joined = parts.length === 1 ? parts[0]
-        : parts.slice(0, -1).join(", ") + ", and " + parts[parts.length - 1];
-      const noun = parts.length === 1 ? "New position" : "New positions";
-      const verb = parts.length === 1 ? "was initiated" : "were initiated";
-      sentences.push(`${noun} in ${shortTicker} stock ${verb} by ${joined}.`);
+      const parts = newPos.map(x => { const ft = fundTotals[x.fid]?.[selectedQ] || 0; return `${fundLink(x.fid)} (<b>${smartRound((x.latest.value / ft) * 100)}%</b>)`; });
+      const joined = parts.length === 1 ? parts[0] : parts.slice(0, -1).join(", ") + ", and " + parts[parts.length - 1];
+      sentences.push(`${parts.length === 1 ? "New position" : "New positions"} in ${shortTicker} stock ${parts.length === 1 ? "was initiated" : "were initiated"} by ${joined}.`);
     }
 
-    // ── S3: Biggest increases (shares up, no new positions, top 2) ──
+    // S3: Biggest increases
     const increases = holdingFunds.map(x => {
       const prev = x.prev1;
       if (!prev || prev.shares === 0 || x.latest.shares <= prev.shares) return null;
-      const shareChange = x.latest.shares - prev.shares;
+      const delta = x.latest.shares - prev.shares;
       const price = x.latest.shares > 0 ? x.latest.value / x.latest.shares : 0;
-      const dollarImpact = shareChange * price;
-      const sharePct = (shareChange / prev.shares) * 100;
-      return { fid: x.fid, sharePct, dollarImpact };
+      return { fid: x.fid, sharePct: (delta / prev.shares) * 100, dollarImpact: delta * price };
     }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
-
     if (increases.length > 0) {
-      const parts = increases.map(x =>
-        `${fundLink(x.fid)} (<span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>)`
-      );
-      const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
-      sentences.push(`The biggest increases in ${shortTicker} holdings came from ${joined}, highlighting conviction.`);
+      const parts = increases.map(x => `${fundLink(x.fid)} (<span class="ins-green"><b>+${smartRound(x.sharePct)}%</b></span>)`);
+      sentences.push(`The biggest increases in ${shortTicker} holdings came from ${parts.length === 1 ? parts[0] : parts[0] + " and " + parts[1]}, highlighting conviction.`);
     }
 
-    // ── S4: Biggest decreases (shares down, not exits, top 2) ────
+    // S4: Biggest decreases
     const decreases = holdingFunds.map(x => {
       const prev = x.prev1;
       if (!prev || prev.shares === 0 || x.latest.shares >= prev.shares) return null;
-      const shareChange = x.latest.shares - prev.shares;
+      const delta = x.latest.shares - prev.shares;
       const price = x.latest.shares > 0 ? x.latest.value / x.latest.shares : (prev.value / prev.shares);
-      const dollarImpact = Math.abs(shareChange) * price;
-      const sharePct = (shareChange / prev.shares) * 100;
-      return { fid: x.fid, sharePct, dollarImpact };
+      return { fid: x.fid, sharePct: (delta / prev.shares) * 100, dollarImpact: Math.abs(delta) * price };
     }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 2);
-
     if (decreases.length > 0) {
-      const parts = decreases.map(x =>
-        `${fundLink(x.fid)} (<span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>)`
-      );
-      const joined = parts.length === 1 ? parts[0] : `${parts[0]} and ${parts[1]}`;
-      sentences.push(`The biggest decreases in ${shortTicker} holdings came from ${joined}, suggesting profit-taking or de-risking.`);
+      const parts = decreases.map(x => `${fundLink(x.fid)} (<span class="ins-red"><b>${smartRound(x.sharePct)}%</b></span>)`);
+      sentences.push(`The biggest decreases in ${shortTicker} holdings came from ${parts.length === 1 ? parts[0] : parts[0] + " and " + parts[1]}, suggesting profit-taking or de-risking.`);
     }
 
-    // ── S5: Exits ────────────────────────────────────────────────
+    // S5: Exits (funds with prevQ data but no selectedQ data)
     const exitedFids = Object.keys(stock.funds).filter(fid => {
-      const actualLatestQ = fundActualQ[fid];
-      const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
-      const stockLatestQ = stockQs[0];
-      const latestEntry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
-      if (!actualLatestQ || !latestEntry || !latestEntry.shares) return false;
-      if (actualLatestQ === stockLatestQ) return false;
-      const stockLatestQIdx = RECENT_QUARTERS.indexOf(stockLatestQ);
-      const actualQIdx = RECENT_QUARTERS.indexOf(actualLatestQ);
-      return actualQIdx >= 0 && stockLatestQIdx >= 0 && actualQIdx === stockLatestQIdx - 1;
+      const qData = stock.funds[fid].quarters;
+      return qData[prevQ] && qData[prevQ].shares > 0 && (!qData[selectedQ] || qData[selectedQ].shares === 0);
     });
-
     if (exitedFids.length > 0) {
-      // Sort by prior quarter portfolio weight, show top 2
       const exitsSorted = exitedFids.map(fid => {
-        const stockQs = Object.keys(stock.funds[fid].quarters).sort().reverse();
-        const stockLatestQ = stockQs[0];
-        const entry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
-        const priorTotal = fundPriorTotals[fid] || fundTotals[fid] || 0;
-        const prevPortPct = (entry && priorTotal > 0)
-          ? (entry.value / priorTotal) * 100
-          : 0;
-        return { fid, entry, prevPortPct };
+        const entry = stock.funds[fid].quarters[prevQ];
+        const ft = fundTotals[fid]?.[prevQ] || 0;
+        return { fid, prevPortPct: ft > 0 ? (entry.value / ft) * 100 : 0 };
       }).sort((a, b) => b.prevPortPct - a.prevPortPct);
-
-      if (exitsSorted.length > 0) {
-        const exitCount = exitsSorted.length; // count ALL exits
-        const fundWord  = exitCount === 1 ? "hedge fund" : "hedge funds";
-        // Only list funds with prior weight >= 1% in "led by"
-        const notable   = exitsSorted.filter(x => x.prevPortPct >= 1).slice(0, 2);
-        const fmtExit   = x => `${fundLink(x.fid)} (<b>${smartRound(x.prevPortPct)}%</b>)`;
-        let ledBy = "";
-        if (notable.length > 0) {
-          const listed = notable.length === 1
-            ? fmtExit(notable[0])
-            : `${fmtExit(notable[0])} and ${fmtExit(notable[1])}`;
-          ledBy = `, led by ${listed}`;
-        }
-        sentences.push(`<b>${exitCount}</b> ${fundWord} exited ${shortTicker}${ledBy}.`);
-      }
+      const notable = exitsSorted.filter(x => x.prevPortPct >= 1).slice(0, 2);
+      const ledBy = notable.length > 0 ? `, led by ${notable.map(x => `${fundLink(x.fid)} (<b>${smartRound(x.prevPortPct)}%</b>)`).join(" and ")}` : "";
+      sentences.push(`<b>${exitedFids.length}</b> ${exitedFids.length === 1 ? "hedge fund" : "hedge funds"} exited ${shortTicker}${ledBy}.`);
     }
 
-    // ── Net trend (S after exits) ─────────────────────────────────
-    let netShares1 = 0, prevTotal1 = 0;
-    let netShares4 = 0, prevTotal4 = 0;
+    // Net trend
+    let ns1 = 0, pt1 = 0, ns4 = 0, pt4 = 0;
     for (const x of holdingFunds) {
-      if (x.prev1 && x.prev1.shares > 0) {
-        netShares1 += x.latest.shares - x.prev1.shares;
-        prevTotal1 += x.prev1.shares;
-      }
-      if (x.prev4 && x.prev4.shares > 0) {
-        netShares4 += x.latest.shares - x.prev4.shares;
-        prevTotal4 += x.prev4.shares;
-      }
+      if (x.prev1?.shares > 0) { ns1 += x.latest.shares - x.prev1.shares; pt1 += x.prev1.shares; }
+      if (x.prev4?.shares > 0) { ns4 += x.latest.shares - x.prev4.shares; pt4 += x.prev4.shares; }
     }
-    if (prevTotal1 > 0) {
-      const netPct1 = (netShares1 / prevTotal1) * 100;
-      const sign1   = netPct1 >= 0 ? "+" : "";
-      const color1  = netPct1 >= 0 ? "var(--green)" : "var(--red)";
-      const verb    = netPct1 >= 0 ? "increased" : "decreased";
-      const qStr    = `<span style="color:${color1}"><b>${sign1}${smartRound(netPct1)}%</b></span> vs the prior quarter`;
-      let yearStr   = "";
-      if (prevTotal4 > 0) {
-        const netPct4 = (netShares4 / prevTotal4) * 100;
-        const sign4   = netPct4 >= 0 ? "+" : "";
-        const color4  = netPct4 >= 0 ? "var(--green)" : "var(--red)";
-        yearStr = ` and <span style="color:${color4}"><b>${sign4}${smartRound(netPct4)}%</b></span> vs prior year`;
+    // include exits in net trend
+    for (const fid of exitedFids) {
+      const prev1data = stock.funds[fid].quarters[prevQ];
+      const prevYrQ = prevYearQuarter(selectedQ);
+      const prev4data = stock.funds[fid].quarters[prevYrQ];
+      if (prev1data?.shares > 0) { ns1 += 0 - prev1data.shares; pt1 += prev1data.shares; }
+      if (prev4data?.shares > 0) { ns4 += 0 - prev4data.shares; pt4 += prev4data.shares; }
+    }
+    if (pt1 > 0) {
+      const p1 = (ns1 / pt1) * 100, s1 = p1 >= 0 ? "+" : "", c1 = p1 >= 0 ? "var(--green)" : "var(--red)";
+      const verb = p1 >= 0 ? "increased" : "decreased";
+      let yearStr = "";
+      if (pt4 > 0) {
+        const p4 = (ns4 / pt4) * 100, s4 = p4 >= 0 ? "+" : "", c4 = p4 >= 0 ? "var(--green)" : "var(--red)";
+        yearStr = ` and <span style="color:${c4}"><b>${s4}${smartRound(p4)}%</b></span> vs prior year`;
       }
-      sentences.push(`Overall, hedge funds ${verb} exposure to ${stockLabel} by ${qStr}${yearStr}.`);
+      sentences.push(`Overall, hedge funds ${verb} exposure to ${stockLabel} by <span style="color:${c1}"><b>${s1}${smartRound(p1)}%</b></span> vs the prior quarter${yearStr}.`);
     }
 
     el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
   }
 
+  // ── Render table for selected quarter ─────────────────────────
   function renderTable() {
     const stock   = stockData;
     const fundMap = Object.fromEntries(fundsData.map(f => [f.id, f]));
+    const selectedQ = activeQ;
+    const prevQ     = prevQuarter(selectedQ);
+    const prevYrQ   = prevYearQuarter(selectedQ);
 
     const holdingFunds = [];
     const exitedFunds  = [];
 
-    for (const fid of Object.keys(stock.funds)) {
+    for (const [fid, fundData] of Object.entries(stock.funds)) {
       const fund = fundMap[fid];
       if (!fund) continue;
+      const qData   = fundData.quarters || {};
+      const latest  = qData[selectedQ];
+      const prev1   = qData[prevQ]   || null;
+      const prev4   = qData[prevYrQ] || null;
 
-      const actualLatestQ = fundActualQ[fid];
-      if (!actualLatestQ) continue; // fund has no data files at all
-
-      // Quarters this stock appears in for this fund, newest first
-      const stockQs       = Object.keys(stock.funds[fid].quarters).sort().reverse();
-      const stockLatestQ  = stockQs[0];  // newest quarter stock_index has for this fund+stock
-      const stockPrevQ    = stockQs[1] || null;
-      // Prior year: exact same quarter number, one year back
-      const stockPrevYearQ = stockLatestQ
-        ? (parseInt(stockLatestQ.split("Q")[0]) - 1) + "Q" + stockLatestQ.split("Q")[1]
-        : null;
-
-      const latestEntry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
-      const prev1       = stockPrevQ     ? stock.funds[fid].quarters[stockPrevQ]     : null;
-      const prev4       = stockPrevYearQ ? stock.funds[fid].quarters[stockPrevYearQ] : null;
-
-      if (actualLatestQ === stockLatestQ && latestEntry && latestEntry.shares > 0) {
-        // Fund's actual latest filing matches their latest stock_index entry → current holder
-        // hasPrev1: did fund file the quarter before stockLatestQ?
-        const sqIdx   = RECENT_QUARTERS.indexOf(stockLatestQ);
-        const prevQ   = sqIdx >= 0 && sqIdx + 1 < RECENT_QUARTERS.length ? RECENT_QUARTERS[sqIdx + 1] : null;
-        const pyQ     = sqIdx >= 0 && sqIdx + 4 < RECENT_QUARTERS.length ? RECENT_QUARTERS[sqIdx + 4] : null;
-        const hasPrev1 = prevQ   ? (fundHasFiledQ[fid]?.has(prevQ)   || false) : false;
-        const hasPrev4 = pyQ     ? (fundHasFiledQ[fid]?.has(pyQ)     || false) : false;
-        holdingFunds.push({ fid, fund, latest: latestEntry, prev1, prev4, hasPrev1, hasPrev4 });
-      } else if (latestEntry && latestEntry.shares > 0 && actualLatestQ !== stockLatestQ) {
-        // Fund has filed more recently but this stock doesn't appear → exited last quarter
-        // Only show as exited if they held it in the most recent stock_index quarter
-        // and their actual latest filing is exactly one quarter newer
-        const stockLatestQIdx = RECENT_QUARTERS.indexOf(stockLatestQ);
-        const actualQIdx      = RECENT_QUARTERS.indexOf(actualLatestQ);
-        if (actualQIdx >= 0 && stockLatestQIdx >= 0 && actualQIdx === stockLatestQIdx - 1) {
-          exitedFunds.push({ fid, fund });
-        }
-        // If more than one quarter stale, just skip them entirely (too old)
+      if (latest && latest.shares > 0) {
+        holdingFunds.push({ fid, fund, latest, prev1, prev4 });
+      } else if (prev1 && prev1.shares > 0) {
+        // held last quarter but not this one → exited
+        exitedFunds.push({ fid, fund, prev1 });
       }
-      // If latestEntry has shares === 0, skip entirely
     }
 
     // Sort
-    const sortFn = (a, b) => {
+    holdingFunds.sort((a, b) => {
       let av, bv;
-      if (sortCol === 0)      { av = (fundMap[a.fid]?.name||"").toLowerCase(); bv = (fundMap[b.fid]?.name||"").toLowerCase(); }
-      else if (sortCol === 1) { av = fundTotals[a.fid] > 0 ? a.latest.value / fundTotals[a.fid] : 0; bv = fundTotals[b.fid] > 0 ? b.latest.value / fundTotals[b.fid] : 0; }
-      else if (sortCol === 2) { av = a.latest?.shares || 0; bv = b.latest?.shares || 0; }
-      else if (sortCol === 3) { av = a.latest?.value || 0; bv = b.latest?.value || 0; }
-      else if (sortCol === 4) { const ca = getChg(a.latest?.shares||0, a.prev1, a.hasPrev1); const cb = getChg(b.latest?.shares||0, b.prev1, b.hasPrev1); av = typeof ca==='number' ? ca : (ca==="NEW"?1e9:-1e9); bv = typeof cb==='number' ? cb : (cb==="NEW"?1e9:-1e9); }
-      else if (sortCol === 5) { const ca = getChg(a.latest?.shares||0, a.prev4, a.hasPrev4); const cb = getChg(b.latest?.shares||0, b.prev4, b.hasPrev4); av = typeof ca==='number' ? ca : (ca==="NEW"?1e9:-1e9); bv = typeof cb==='number' ? cb : (cb==="NEW"?1e9:-1e9); }
-      else if (sortCol === 6) { av = a.latest?.shares > 0 ? a.latest.value / a.latest.shares : 0; bv = b.latest?.shares > 0 ? b.latest.value / b.latest.shares : 0; }
+      const ftA = fundTotals[a.fid]?.[selectedQ] || 0;
+      const ftB = fundTotals[b.fid]?.[selectedQ] || 0;
+      if      (sortCol === 0) { return (sortAsc ? 1 : -1) * (fundMap[a.fid]?.name || "").localeCompare(fundMap[b.fid]?.name || ""); }
+      else if (sortCol === 1) { av = ftA > 0 ? a.latest.value / ftA : 0; bv = ftB > 0 ? b.latest.value / ftB : 0; }
+      else if (sortCol === 2) { av = a.latest.shares; bv = b.latest.shares; }
+      else if (sortCol === 3) { av = a.latest.value;  bv = b.latest.value; }
+      else if (sortCol === 4) { av = a.prev1?.shares > 0 ? (a.latest.shares - a.prev1.shares) / a.prev1.shares : (a.prev1 ? -1e9 : 1e9); bv = b.prev1?.shares > 0 ? (b.latest.shares - b.prev1.shares) / b.prev1.shares : (b.prev1 ? -1e9 : 1e9); }
+      else if (sortCol === 5) { av = a.prev4?.shares > 0 ? (a.latest.shares - a.prev4.shares) / a.prev4.shares : (a.prev4 ? -1e9 : 1e9); bv = b.prev4?.shares > 0 ? (b.latest.shares - b.prev4.shares) / b.prev4.shares : (b.prev4 ? -1e9 : 1e9); }
+      else if (sortCol === 6) { av = a.latest.shares > 0 ? a.latest.value / a.latest.shares : 0; bv = b.latest.shares > 0 ? b.latest.value / b.latest.shares : 0; }
       else { av = 0; bv = 0; }
       return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
-    };
-    holdingFunds.sort(sortFn);
+    });
 
     const rowsHtml = holdingFunds.map((item, i) => {
-      const { fid, fund, latest, prev1, prev4, hasPrev1, hasPrev4 } = item;
-      const nameMatch   = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
-      const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
-      const managerOnly = nameMatch ? nameMatch[2].trim() : "";
-      const mult        = fund.value_multiplier || 1;
-      const adjValue    = latest.value;
-      const fundTotal   = fundTotals[fid] || 0;
-      const pctNum      = fundTotal > 0 ? (adjValue / fundTotal) * 100 : 0;
-      const pct         = fmtPct(pctNum);
-      const chg1        = getChg(latest.shares, prev1, hasPrev1);
-      const chg4        = getChg(latest.shares, prev4, hasPrev4);
+      const { fid, fund, latest, prev1, prev4 } = item;
+      const nm = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const fundOnly    = nm ? nm[1].trim() : fund.name;
+      const managerOnly = nm ? nm[2].trim() : "";
+      const ft          = fundTotals[fid]?.[selectedQ] || 0;
+      const pct         = fmtPct(ft > 0 ? (latest.value / ft) * 100 : 0);
+      // chg: NEW if no prev1 data at all; EXITED handled separately
+      const chg1Val = !prev1 ? (selectedQ !== allQuarters[allQuarters.length - 1] ? "NEW" : null)
+                    : prev1.shares === 0 ? "NEW"
+                    : ((latest.shares - prev1.shares) / prev1.shares) * 100;
+      const chg4Val = !prev4 ? null
+                    : prev4.shares === 0 ? "NEW"
+                    : ((latest.shares - prev4.shares) / prev4.shares) * 100;
       const repPrice    = latest.shares > 0 ? latest.value / latest.shares : 0;
       const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
       const putcall     = latest.putcall || "";
-      const putcallHtml = putcall
-        ? `<span class="putcall ${putcall.toLowerCase()}">${putcall.toUpperCase()}</span>`
-        : `<span class="chg na">—</span>`;
-
-      return `
-        <tr>
-          <td class="col-num num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
-          <td class="col-fund">
-            <a class="fund-link" href="fund.html?fund=${fid}">
-              <div class="fund-name-cell">${fundOnly}</div>
-              ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
-            </a>
-          </td>
-          <td class="col-data num">${pct}</td>
-          <td class="col-data num">${fmtShares(latest.shares)}</td>
-          <td class="col-data num">${fmtChg(chg1)}</td>
-          <td class="col-data num">${fmtChg(chg4)}</td>
-          <td class="col-data num">${fmtVal(adjValue)}</td>
-          <td class="col-data num">${repPriceStr}</td>
-          <td class="col-data num">${putcallHtml}</td>
-        </tr>`;
-    }).join("");
-
-    const exitedHtml = exitedFunds.map(item => {
-      const { fid, fund } = item;
-      const nameMatch   = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
-      const fundOnly    = nameMatch ? nameMatch[1].trim() : fund.name;
-      const managerOnly = nameMatch ? nameMatch[2].trim() : "";
-      return `
-        <tr class="exited">
-          <td class="col-num num" style="font-size:0.72rem">—</td>
-          <td class="col-fund">
-            <a class="fund-link" href="fund.html?fund=${fid}">
-              <div class="fund-name-cell">${fundOnly}</div>
-              ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
-            </a>
-          </td>
-          <td class="col-data num">—</td>
-          <td class="col-data num">—</td>
-          <td class="col-data num"><span class="chg exited">EXITED</span></td>
-          <td class="col-data num">—</td>
-          <td class="col-data num">—</td>
-          <td class="col-data num">—</td>
-          <td class="col-data num">—</td>
-        </tr>`;
-    }).join("");
-
-    // ── Total row ─────────────────────────────────────────────────
-    const totalShares   = holdingFunds.reduce((s, x) => s + (x.latest?.shares || 0), 0);
-    const totalValue    = holdingFunds.reduce((s, x) => s + (x.latest?.value  || 0), 0);
-
-    // vs prior quarter/year: include exited funds (sharesNow=0) for true net aggregate
-    let netShares1 = 0, prevTotal1 = 0;
-    let netShares4 = 0, prevTotal4 = 0;
-
-    // Current holders
-    for (const x of holdingFunds) {
-      if (x.prev1 && x.prev1.shares > 0) { netShares1 += x.latest.shares - x.prev1.shares; prevTotal1 += x.prev1.shares; }
-      if (x.prev4 && x.prev4.shares > 0) { netShares4 += x.latest.shares - x.prev4.shares; prevTotal4 += x.prev4.shares; }
-    }
-
-    // Exited funds — sharesNow = 0, pull prior quarter data from stock index
-    for (const x of exitedFunds) {
-      const fqData = stock.funds[x.fid]?.quarters || {};
-      const fqKeys = Object.keys(fqData).sort().reverse();
-      const fLatestQ = fqKeys[0];
-      if (!fLatestQ) continue;
-      const [yr, qn] = fLatestQ.split("Q");
-      let pqNum = parseInt(qn) - 1, pqYr = parseInt(yr);
-      if (pqNum === 0) { pqNum = 4; pqYr--; }
-      const fPrev1Q = fqData[pqYr + "Q" + pqNum];
-      const fPrev4Q = fqData[(parseInt(yr) - 1) + "Q" + qn];
-      // sharesNow = 0 (exited), so net = 0 - prev1.shares
-      if (fPrev1Q && fPrev1Q.shares > 0) { netShares1 += 0 - fPrev1Q.shares; prevTotal1 += fPrev1Q.shares; }
-      if (fPrev4Q && fPrev4Q.shares > 0) { netShares4 += 0 - fPrev4Q.shares; prevTotal4 += fPrev4Q.shares; }
-    }
-    const totalChg1 = prevTotal1 > 0 ? (netShares1 / prevTotal1) * 100 : null;
-    const totalChg4 = prevTotal4 > 0 ? (netShares4 / prevTotal4) * 100 : null;
-
-    const fmtTotalChg = v => {
-      if (v === null) return "—";
-      const sign = v >= 0 ? "+" : "";
-      const cls  = v >= 0 ? "pos" : "neg";
-      return `<span class="chg ${cls}">${sign}${smartRound(v)}%</span>`;
-    };
-
-    const totalRow = `
-      <tr class="total-row">
-        <td class="col-num num">${holdingFunds.length}</td>
-        <td class="col-fund">Total</td>
-        <td class="col-data num">—</td>
-        <td class="col-data num">${fmtShares(totalShares)}</td>
-        <td class="col-data num">${fmtTotalChg(totalChg1)}</td>
-        <td class="col-data num">${fmtTotalChg(totalChg4)}</td>
-        <td class="col-data num">${fmtVal(totalValue)}</td>
-        <td class="col-data num">—</td>
-        <td class="col-data num">—</td>
+      const putcallHtml = putcall ? `<span class="putcall ${putcall.toLowerCase()}">${putcall.toUpperCase()}</span>` : `<span class="chg na">—</span>`;
+      return `<tr>
+        <td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i + 1}</td>
+        <td class="col-fund"><a class="fund-link" href="fund.html?fund=${fid}">
+          <div class="fund-name-cell">${fundOnly}</div>
+          ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
+        </a></td>
+        <td class="col-data num">${pct}</td>
+        <td class="col-data num">${fmtShares(latest.shares)}</td>
+        <td class="col-data num">${fmtChg(chg1Val)}</td>
+        <td class="col-data num">${fmtChg(chg4Val)}</td>
+        <td class="col-data num">${fmtVal(latest.value)}</td>
+        <td class="col-data num">${repPriceStr}</td>
+        <td class="col-data num">${putcallHtml}</td>
       </tr>`;
+    }).join("");
 
-    // Call insights now that holdingFunds is fully built
-    renderStockInsights(holdingFunds, stock, fundMap, fundCount, fundsData.length);
+    const exitedHtml = exitedFunds.map(({ fid, fund }) => {
+      const nm = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const fundOnly    = nm ? nm[1].trim() : fund.name;
+      const managerOnly = nm ? nm[2].trim() : "";
+      return `<tr class="exited">
+        <td class="col-num num" style="font-size:0.72rem">—</td>
+        <td class="col-fund"><a class="fund-link" href="fund.html?fund=${fid}">
+          <div class="fund-name-cell">${fundOnly}</div>
+          ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
+        </a></td>
+        <td class="col-data num">—</td><td class="col-data num">—</td>
+        <td class="col-data num"><span class="chg exited">EXITED</span></td>
+        <td class="col-data num">—</td><td class="col-data num">—</td><td class="col-data num">—</td><td class="col-data num">—</td>
+      </tr>`;
+    }).join("");
+
+    // Total row — include exits in chgQtr/chgYr
+    const totalShares = holdingFunds.reduce((s, x) => s + x.latest.shares, 0);
+    const totalValue  = holdingFunds.reduce((s, x) => s + x.latest.value, 0);
+    let ns1 = 0, pt1 = 0, ns4 = 0, pt4 = 0;
+    for (const x of holdingFunds) {
+      if (x.prev1?.shares > 0) { ns1 += x.latest.shares - x.prev1.shares; pt1 += x.prev1.shares; }
+      if (x.prev4?.shares > 0) { ns4 += x.latest.shares - x.prev4.shares; pt4 += x.prev4.shares; }
+    }
+    for (const { fid } of exitedFunds) {
+      const prev1d = stock.funds[fid].quarters[prevQ];
+      const prev4d = stock.funds[fid].quarters[prevYrQ];
+      if (prev1d?.shares > 0) { ns1 += 0 - prev1d.shares; pt1 += prev1d.shares; }
+      if (prev4d?.shares > 0) { ns4 += 0 - prev4d.shares; pt4 += prev4d.shares; }
+    }
+    const fmtTotalChg = (ns, pt) => {
+      if (pt <= 0) return "—";
+      const v = (ns / pt) * 100, s = v >= 0 ? "+" : "", cls = v >= 0 ? "pos" : "neg";
+      return `<span class="chg ${cls}">${s}${smartRound(v)}%</span>`;
+    };
+    const totalRow = `<tr class="total-row">
+      <td class="col-num num">${holdingFunds.length}</td>
+      <td class="col-fund">Total</td>
+      <td class="col-data num">—</td>
+      <td class="col-data num">${fmtShares(totalShares)}</td>
+      <td class="col-data num">${fmtTotalChg(ns1, pt1)}</td>
+      <td class="col-data num">${fmtTotalChg(ns4, pt4)}</td>
+      <td class="col-data num">${fmtVal(totalValue)}</td>
+      <td class="col-data num">—</td><td class="col-data num">—</td>
+    </tr>`;
+
+    const fundCount = holdingFunds.length;
+    renderStockInsights(holdingFunds, stock, fundMap, fundCount, fundsData.length, selectedQ);
 
     document.getElementById("table-container").innerHTML = `
-      <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th class="col-num" style="color:var(--muted)">#</th>
-            <th class="col-fund" onclick="sort(0)">Fund${arrow(0)}</th>
-            <th class="col-data num" onclick="sort(1)">% of Portfolio${arrow(1)}</th>
-            <th class="col-data num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
-            <th class="col-data num" onclick="sort(5)">Shares vs Prior Year${arrow(5)}</th>
-            <th class="col-data num" onclick="sort(3)">Aggregate Value${arrow(3)}</th>
-            <th class="col-data num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
-            <th class="col-data num">Option</th>
-          </tr>
-        </thead>
+      <div class="table-wrap"><table>
+        <thead><tr>
+          <th class="col-num" style="color:var(--muted)">#</th>
+          <th class="col-fund" onclick="sort(0)">Fund${arrow(0)}</th>
+          <th class="col-data num" onclick="sort(1)">% of Portfolio${arrow(1)}</th>
+          <th class="col-data num" onclick="sort(2)">Shares${arrow(2)}</th>
+          <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
+          <th class="col-data num" onclick="sort(5)">Shares vs Prior Year${arrow(5)}</th>
+          <th class="col-data num" onclick="sort(3)">Aggregate Value${arrow(3)}</th>
+          <th class="col-data num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
+          <th class="col-data num">Option</th>
+        </tr></thead>
         <tbody>${rowsHtml}${exitedHtml}${totalRow}</tbody>
-      </table>
-      </div>
-      <div style="font-family:var(--mono); font-size:0.68rem; color:var(--muted); margin-top:0.75rem">
+      </table></div>
+      <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem">
         * Price at last filing is not an actual purchase or sale price. It is the price as of the last holdings date, calculated by dividing the reported value by the number of shares held.
       </div>`;
   }
 
+  // ── Quarter tab rendering ──────────────────────────────────────
+  function renderQuarterTabs() {
+    const tabs = allQuarters.slice(0, 4);
+    const wrap = document.getElementById("quarter-selector-wrap");
+    wrap.innerHTML = `<div class="quarter-selector">${
+      tabs.map(q => `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="selectQuarter('${q}')">${quarterLabel(q)}</button>`).join("")
+    }</div>`;
+  }
+
+  function selectQuarter(q) {
+    activeQ = q;
+    renderQuarterTabs();
+    renderTable();
+    // Update title
+    const stock = stockData;
+    const ql = quarterLabel(q);
+    const titleStr = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Hedge Fund Ownership ${ql}`;
+    document.title = `${titleStr} | 13F Holdings`;
+    document.getElementById("stock-header").innerHTML = `<h1 class="stock-name" style="font-size:1.4rem;font-weight:500;margin-bottom:0.3rem">${titleStr}</h1>`;
+  }
+
+  // ── Bootstrap ──────────────────────────────────────────────────
   if (!key) {
     document.getElementById("stock-header").innerHTML = `<div class="error">No stock specified.</div>`;
   } else {
     Promise.all([
       fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
       fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse)
-    ]).then(async ([stockIndexRaw, funds]) => {
-      const stockIndex = stockIndexRaw.stocks || stockIndexRaw; // support both old and new schema
+    ]).then(([stockIndexRaw, funds]) => {
+      const stockIndex = stockIndexRaw.stocks || stockIndexRaw;
       const stock = stockIndex[key];
       if (!stock) {
-        document.getElementById("stock-header").innerHTML =
-          `<div class="error">No data found for "${key}".</div>`;
+        document.getElementById("stock-header").innerHTML = `<div class="error">No data found for "${key}".</div>`;
         return;
       }
+      stockData  = stock;
+      fundsData  = funds;
+      fundTotals = stockIndexRaw.fund_totals || {};
 
-      stockData = stock;
-      fundsData = funds;
-
-      // For every fund that appears in this stock's data, probe their actual latest CSV quarter
-      // and fetch their actual total portfolio value — both needed for correct display
-      await Promise.all(Object.keys(stock.funds).map(async fid => {
-        const fund = funds.find(f => f.id === fid);
-        if (!fund) return;
-        const mult = fund.value_multiplier || 1;
-        const actualQ = await findFundActualLatestQ(fid);
-        if (!actualQ) return;
-        fundActualQ[fid] = actualQ;
-        fundTotals[fid]  = await fetchFundTotal(fid, actualQ, mult);
-
-        // Also fetch total for the quarter this stock was last held (for exit % calculation)
-        const stockQs      = Object.keys(stock.funds[fid].quarters).sort().reverse();
-        const stockLatestQ = stockQs[0];
-        if (stockLatestQ && stockLatestQ !== actualQ) {
-          fundPriorTotals[fid] = await fetchFundTotal(fid, stockLatestQ, mult);
-        } else {
-          fundPriorTotals[fid] = fundTotals[fid];
-        }
-
-        // Probe which quarters this fund has filed — check the quarter before stockLatestQ
-        // and the prior year quarter, so we can correctly show NEW vs — in the table
-        fundHasFiledQ[fid] = new Set();
-        fundHasFiledQ[fid].add(actualQ); // we know they filed this one
-        if (stockLatestQ) {
-          // Check one quarter before stockLatestQ
-          const sqIdx = RECENT_QUARTERS.indexOf(stockLatestQ);
-          if (sqIdx >= 0 && sqIdx + 1 < RECENT_QUARTERS.length) {
-            const prevQ = RECENT_QUARTERS[sqIdx + 1];
-            try {
-              const r = await fetch(`${PAGES}/data/${fid}_${prevQ}.csv`, { method: 'HEAD' });
-              if (r.ok) fundHasFiledQ[fid].add(prevQ);
-            } catch(e) { /* skip */ }
-          }
-          // Check prior year quarter (4 quarters back)
-          const pyIdx = sqIdx + 4;
-          if (pyIdx < RECENT_QUARTERS.length) {
-            const prevYearQ = RECENT_QUARTERS[pyIdx];
-            try {
-              const r = await fetch(`${PAGES}/data/${fid}_${prevYearQ}.csv`, { method: 'HEAD' });
-              if (r.ok) fundHasFiledQ[fid].add(prevYearQ);
-            } catch(e) { /* skip */ }
-          }
-        }
-      }));
-
-      // Fund count = funds currently holding
-      fundCount = 0;
-      for (const fid of Object.keys(stock.funds)) {
-        const actualQ    = fundActualQ[fid];
-        const stockQs    = Object.keys(stock.funds[fid].quarters).sort().reverse();
-        const stockLatestQ = stockQs[0];
-        const entry = stockLatestQ ? stock.funds[fid].quarters[stockLatestQ] : null;
-        if (actualQ === stockLatestQ && entry && entry.shares > 0) fundCount++;
+      // Collect all quarters across all funds for this stock
+      const qSet = new Set();
+      for (const fundData of Object.values(stock.funds)) {
+        Object.keys(fundData.quarters || {}).forEach(q => qSet.add(q));
       }
+      allQuarters = Array.from(qSet).sort().reverse();
+      activeQ = allQuarters[0];
 
-      // Derive latest quarter label for title e.g. "2025Q4" → "2025 Q4"
-      const allQ = new Set();
-      for (const fid of Object.keys(stock.funds))
-        Object.keys(stock.funds[fid].quarters).forEach(q => allQ.add(q));
-      const latestQLabel = Array.from(allQ).sort().reverse()[0] || "";
-      const qShort = latestQLabel
-        ? `${latestQLabel.split("Q")[0]} Q${latestQLabel.split("Q")[1]}`
-        : "";
-
-      const desc = `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""}${qShort ? ` as of ${qShort}` : ""}. Track position sizes, portfolio weights, and quarterly changes from 13F filings. Updated quarterly.`;
-      const titleStr = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Hedge Fund Ownership${qShort ? ` ${qShort}` : ""}`;
+      // Title
+      const ql = quarterLabel(activeQ);
+      const titleStr = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Hedge Fund Ownership ${ql}`;
       document.title = `${titleStr} | 13F Holdings`;
-      document.querySelector('meta[name="description"]').setAttribute("content", desc);
+      document.querySelector('meta[name="description"]').setAttribute("content",
+        `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} as of ${ql}. Track position sizes, portfolio weights, and quarterly changes from 13F filings.`);
+      document.getElementById("stock-header").innerHTML = `<h1 class="stock-name" style="font-size:1.4rem;font-weight:500;margin-bottom:0.3rem">${titleStr}</h1>`;
 
-      document.getElementById("stock-header").innerHTML = `
-        <h1 class="stock-name" style="font-size:1.4rem;font-weight:500;margin-bottom:0.3rem">${titleStr}</h1>`;
-
+      renderQuarterTabs();
       renderTable();
     }).catch(e => {
-      document.getElementById("stock-header").innerHTML =
-        `<div class="error">Failed to load data: ${e.message}</div>`;
+      document.getElementById("stock-header").innerHTML = `<div class="error">Failed to load data: ${e.message}</div>`;
     });
   }
 
@@ -766,50 +564,23 @@
 
   const searchInput   = document.getElementById("search");
   const searchResults = document.getElementById("search-results");
-
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.trim().toLowerCase();
     if (!q) { searchResults.classList.remove("visible"); return; }
-
-    // Search funds
-    const fundMatches = allFundsForSearch
-      .filter(f => f.name.toLowerCase().includes(q))
-      .slice(0, 4)
-      .map(f => `
-        <a class="search-result-item" href="fund.html?fund=${f.id}">
-          <span class="search-result-tag">Fund</span>
-          <span>${f.name}</span>
-        </a>`);
-
-    // Search stocks
+    const fundMatches = allFundsForSearch.filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
+      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}"><span class="search-result-tag">Fund</span><span>${f.name}</span></a>`);
     const stockMatches = [];
-    for (const [key, stock] of Object.entries(stockIndexForSearch)) {
+    for (const [k, s] of Object.entries(stockIndexForSearch)) {
       if (stockMatches.length >= 4) break;
-      if (
-        (stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
-        (stock.name && stock.name.toLowerCase().includes(q))
-      ) {
-        stockMatches.push(`
-          <a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
-            <span class="search-result-tag">Stock</span>
-            <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
-          </a>`);
-      }
+      if ((s.ticker && s.ticker.toLowerCase().includes(q)) || (s.name && s.name.toLowerCase().includes(q)))
+        stockMatches.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(k)}"><span class="search-result-tag">Stock</span><span>${s.name}${s.ticker ? ` <span style="color:#2563eb;font-weight:600">${s.ticker}</span>` : ""}</span></a>`);
     }
-
     const all = [...fundMatches, ...stockMatches];
-    if (all.length === 0) {
-      searchResults.innerHTML = `<div class="no-results">No results found</div>`;
-    } else {
-      searchResults.innerHTML = all.join("");
-    }
+    searchResults.innerHTML = all.length ? all.join("") : `<div class="no-results">No results found</div>`;
     searchResults.classList.add("visible");
   });
-
   document.addEventListener("click", e => {
-    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-      searchResults.classList.remove("visible");
-    }
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) searchResults.classList.remove("visible");
   });
 </script>
 </body>
