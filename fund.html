@@ -259,9 +259,11 @@
       showQuarters = allQuarters.slice(0, 4);
       activeQ      = showQuarters[0];
 
-      document.getElementById("quarter-selector").innerHTML = showQuarters.map(q =>
-        `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${q}</button>`
-      ).join("");
+      document.getElementById("quarter-selector").innerHTML = showQuarters.map(q => {
+        const m = q.match(/^(\d{4})Q(\d)$/);
+        const label = m ? `Q${m[2]} ${m[1]}` : q;
+        return `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${label}</button>`;
+      }).join("");
 
       renderTable();
     })
@@ -323,6 +325,14 @@
     const rounded = Math.round(scaled * factor) / factor;
     const str = rounded % 1 === 0 ? rounded.toString() : rounded.toPrecision(3).replace(/\.?0+$/, "");
     return str + suffix;
+  }
+
+  // Total row shares: always 1 decimal place
+  function fmtSharesTotal(n) {
+    if (!n || n === 0) return "—";
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+    return n.toString();
   }
 
   // ── Smart insights ────────────────────────────────────────────
@@ -746,7 +756,7 @@
     const totalShares = rows.reduce((s, r) => s + r.shares, 0);
 
     const totalValueStr = tv >= 1e9
-      ? "$" + (tv / 1e9).toFixed(2) + "B"
+      ? "$" + (tv / 1e9).toFixed(1) + "B"
       : tv >= 1e6
         ? "$" + (tv / 1e6).toFixed(1) + "M"
         : "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
@@ -756,7 +766,7 @@
         <td class="col-num num">${rows.length}</td>
         <td class="col-company">Total</td>
         <td class="col-data num">100%</td>
-        <td class="col-data num">${fmtShares(totalShares)}</td>
+        <td class="col-data num">${fmtSharesTotal(totalShares)}</td>
         <td class="col-data num">—</td>
         <td class="col-data num">—</td>
         <td class="col-data num">${totalValueStr}</td>
