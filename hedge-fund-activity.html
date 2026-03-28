@@ -233,14 +233,14 @@
 
       <div class="activity-section" id="sec-netAdd">
         <div class="activity-section-title">Consensus Buys</div>
-        <div class="activity-section-subtitle">Ranked by net number of funds buying vs selling (buyers − sellers). Tiebreaker: change in stock's aggregate value across all tracked funds.</div>
+        <div class="activity-section-subtitle">Ranked by net number of funds buying vs selling (buyers − sellers) vs the prior quarter.</div>
         <div id="tbl-netAdd"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-netDec">
         <div class="activity-section-title">Consensus Sellers</div>
-        <div class="activity-section-subtitle">Ranked by net number of funds selling vs buying (sellers − buyers). Tiebreaker: change in stock's aggregate value across all tracked funds.</div>
+        <div class="activity-section-subtitle">Ranked by net number of funds selling vs buying (sellers − buyers) vs the prior quarter.</div>
         <div id="tbl-netDec"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
@@ -309,6 +309,7 @@
     const sign = val >= 0 ? "+" : "", cls = val >= 0 ? "pos" : "neg";
     return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
   }
+  function fmtNum(n) { return n === 0 || n === null || n === undefined ? "—" : n; }
   function quarterLabel(q) { const m = q.match(/^(\d{4})Q(\d)$/); return m ? `Q${m[2]} ${m[1]}` : q; }
   function prevQuarter(q)  { const [yr,qn]=q.split("Q"); let pq=parseInt(qn)-1,py=parseInt(yr); if(pq===0){pq=4;py--;} return py+"Q"+pq; }
   function prevYrQ(q)      { const [yr,qn]=q.split("Q"); return (parseInt(yr)-1)+"Q"+qn; }
@@ -324,6 +325,7 @@
   const COLS = {
     netAdd: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
+      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds (Net Buyers)", sortKey: "netBuyers" },
       { label: "Funds (Buyers)", sortKey: "buyers" },
       { label: "Funds (Sellers)", sortKey: "sellers" },
@@ -332,6 +334,7 @@
     ],
     netDec: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
+      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds (Net Sellers)", sortKey: "netSellers" },
       { label: "Funds (Buyers)", sortKey: "buyers" },
       { label: "Funds (Sellers)", sortKey: "sellers" },
@@ -340,12 +343,14 @@
     ],
     new: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
+      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds Initiating", sortKey: "fundCount" }, { label: "Aggregate Shares", sortKey: "totalShares" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
     ],
     exit: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
+      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds Exiting", sortKey: "fundCount" }, { label: "Shares Removed", sortKey: "totalShares" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Prior Quarter Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
@@ -357,6 +362,7 @@
     if (key === "price")      return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
     if (key === "chgQtr")     return r.prevTotal1 > 0 ? r.netShares1 / r.prevTotal1 : 0;
     if (key === "chgYr")      return r.prevTotal4 > 0 ? r.netShares4 / r.prevTotal4 : 0;
+    if (key === "totalFunds") return r.totalFunds || 0;
     if (key === "netBuyers")  return r.netBuyers  || 0;
     if (key === "netSellers") return r.netSellers || 0;
     if (key === "buyers")     return r.buyers  || 0;
@@ -386,10 +392,11 @@
       const chgCols = `<td class="num">${fmtChg(chgQtr)}</td><td class="num">${fmtChg(chgYr)}</td>`;
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
       let mid;
-      if      (type==="netAdd") mid=`<td class="num"><span class="chg pos">${r.netBuyers}</span></td><td class="num"><span class="chg pos">${r.buyers}</span></td><td class="num"><span class="chg neg">${r.sellers}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else if (type==="netDec") mid=`<td class="num"><span class="chg neg">${r.netSellers}</span></td><td class="num"><span class="chg pos">${r.buyers}</span></td><td class="num"><span class="chg neg">${r.sellers}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else if (type==="new")    mid=`<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else                      mid=`<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
+      const fundsTd = `<td class="num">${fmtNum(r.totalFunds)}</td>`;
+      if      (type==="netAdd") mid=`${fundsTd}<td class="num"><span class="chg pos">${fmtNum(r.netBuyers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else if (type==="netDec") mid=`${fundsTd}<td class="num"><span class="chg neg">${fmtNum(r.netSellers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else if (type==="new")    mid=`${fundsTd}<td class="num"><span class="chg pos">${fmtNum(r.fundCount)}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else                      mid=`${fundsTd}<td class="num"><span class="chg neg">${fmtNum(r.fundCount)}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
       return `<tr><td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td><td class="col-company">${stockCell(r)}</td>${mid}${priceTd}</tr>`;
     }).join("");
     return `<div class="table-wrap"><table><thead><tr>${heads}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
@@ -419,13 +426,10 @@
       // Accumulate per-stock data across all funds
       if (!perStockDelta[stockKey]) perStockDelta[stockKey] = {
         name, ticker: ticker||null, cusip: cusip||null, key,
-        // For chgQtr/chgYr — all funds including unchanged
         ns1:0, pt1:0, ns4:0, pt4:0,
-        // For aggregate value: sum of current and prior values across all funds
         aggValueNow: 0, aggValuePrev: 0,
-        // For current totalValue (matches stock.html — only current holders)
         totalValue: 0, totalShares: 0,
-        // Per-fund activity for net direction and fundCount
+        totalFunds: 0,  // all funds holding in selectedQ
         funds: {}
       };
       const sd = perStockDelta[stockKey];
@@ -446,7 +450,7 @@
         if (prev4 && prev4.shares > 0) { sd.ns4 += sharesNow - prev4.shares; sd.pt4 += prev4.shares; }
 
         // Aggregate value now (current holders only, matches stock.html totalValue)
-        if (sharesNow > 0) { sd.totalValue += valueNow; sd.totalShares += sharesNow; }
+        if (sharesNow > 0) { sd.totalValue += valueNow; sd.totalShares += sharesNow; sd.totalFunds++; }
 
         // Aggregate value change: valueNow - valuePrev for all funds that had any position
         if (sharesNow > 0 || (prev1 && prev1.shares > 0)) {
@@ -457,7 +461,7 @@
         // Classify for new/exit maps and per-fund delta direction
         let fundDelta = 0, valueDelta = 0;
         const ensure = (map) => {
-          if (!map[stockKey]) map[stockKey] = { name, ticker: ticker||null, cusip: cusip||null, key, fundCount:0, totalShares:0, totalValue:0, netShares:0 };
+          if (!map[stockKey]) map[stockKey] = { name, ticker: ticker||null, cusip: cusip||null, key, fundCount:0, totalShares:0, totalValue:0, netShares:0, totalFunds: 0 };
           return map[stockKey];
         };
 
@@ -476,6 +480,9 @@
 
         sd.funds[fid] = { delta: fundDelta, valueDelta };
       }
+      // After inner loop: update totalFunds on any map entries for this stock
+      if (newMap[stockKey])  newMap[stockKey].totalFunds  = sd.totalFunds;
+      if (exitMap[stockKey]) exitMap[stockKey].totalFunds = sd.totalFunds;
     }
 
     // Build consensus maps — every stock gets buyers and sellers counts
@@ -497,6 +504,7 @@
         netBuyers:  Math.max(0, buyers - sellers),
         netSellers: Math.max(0, sellers - buyers),
         totalShares: sd.totalShares, totalValue: sd.totalValue,
+        totalFunds: sd.totalFunds,
         netValue: Math.abs(netValueChange),
         netShares1: sd.ns1, prevTotal1: sd.pt1,
         netShares4: sd.ns4, prevTotal4: sd.pt4
@@ -546,8 +554,8 @@
     computeForQuarter(q);
     renderAllTables();
     const ql = quarterLabel(q);
-    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Consensus Buys and Sells (${ql})`;
-    document.title = `Hedge Fund Activity: Top Consensus Buys and Sells ${ql} | 13FAI`;
+    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Consensus Buys and Sells`;
+    document.title = `Hedge Fund Activity: Top Consensus Buys and Sells | 13FAI`;
   }
 
   // ── Bootstrap ──────────────────────────────────────────────────
@@ -567,8 +575,8 @@
     activeQ = allQuarters[0];
 
     const ql = quarterLabel(activeQ);
-    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Consensus Buys and Sells (${ql})`;
-    document.title = `Hedge Fund Activity: Top Consensus Buys and Sells ${ql} | 13FAI`;
+    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Consensus Buys and Sells`;
+    document.title = `Hedge Fund Activity: Top Consensus Buys and Sells | 13FAI`;
 
     renderQuarterTabs();
     computeForQuarter(activeQ);
