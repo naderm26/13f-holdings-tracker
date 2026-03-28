@@ -233,14 +233,14 @@
 
       <div class="activity-section" id="sec-netAdd">
         <div class="activity-section-title">Top Net Additions</div>
-        <div class="activity-section-subtitle">Aggregate net value increases across new positions, increases, reductions, and exits from all tracked funds.</div>
+        <div class="activity-section-subtitle">Ranked by change in stock's aggregate value across all tracked funds.</div>
         <div id="tbl-netAdd"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-netDec">
         <div class="activity-section-title">Top Net Decreases</div>
-        <div class="activity-section-subtitle">Aggregate net value reductions across new positions, increases, reductions, and exits from all tracked funds.</div>
+        <div class="activity-section-subtitle">Ranked by change in stock's aggregate value across all tracked funds.</div>
         <div id="tbl-netDec"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
@@ -401,16 +401,27 @@
     const pQ  = prevQuarter(selectedQ);
     const pYQ = prevYrQ(selectedQ);
 
-    const newMap={}, exitMap={}, perFundDelta={};
+    const newMap={}, exitMap={}, perStockDelta={};
 
     for (const [key, stock] of Object.entries(stockIndex)) {
       const { name, ticker, cusip, funds: stockFunds } = stock;
       if (!stockFunds) continue;
 
-      // First pass: compute chgQtr/chgYr across ALL funds for this stock
-      // (matches stock.html total row methodology — all funds, not just active ones)
-      if (!perFundDelta[key]) perFundDelta[key] = { name, ticker: ticker||null, cusip: cusip||null, key, funds: {}, allFundChg: { ns1:0, pt1:0, ns4:0, pt4:0 } };
-      const stockEntry = perFundDelta[key];
+      const stockKey = ticker || cusip || key;
+
+      // Accumulate per-stock data across all funds
+      if (!perStockDelta[stockKey]) perStockDelta[stockKey] = {
+        name, ticker: ticker||null, cusip: cusip||null, key,
+        // For chgQtr/chgYr — all funds including unchanged
+        ns1:0, pt1:0, ns4:0, pt4:0,
+        // For aggregate value: sum of current and prior values across all funds
+        aggValueNow: 0, aggValuePrev: 0,
+        // For current totalValue (matches stock.html — only current holders)
+        totalValue: 0, totalShares: 0,
+        // Per-fund activity for net direction and fundCount
+        funds: {}
+      };
+      const sd = perStockDelta[stockKey];
 
       for (const [fid, fundData] of Object.entries(stockFunds)) {
         const quarters = fundData.quarters || {};
@@ -423,86 +434,77 @@
         const valueNow   = current ? (current.value  || 0) : 0;
         const valuePrev  = prev1   ? (prev1.value    || 0) : 0;
 
-        const stockKey = ticker || cusip || key;
+        // chgQtr/chgYr — ALL funds (matches stock.html)
+        if (prev1 && prev1.shares > 0) { sd.ns1 += sharesNow - prev1.shares; sd.pt1 += prev1.shares; }
+        if (prev4 && prev4.shares > 0) { sd.ns4 += sharesNow - prev4.shares; sd.pt4 += prev4.shares; }
 
-        // Accumulate chgQtr/chgYr for ALL funds (not just active) — fixes discrepancy with stock.html
-        if (prev1 && prev1.shares > 0) { stockEntry.allFundChg.ns1 += sharesNow - prev1.shares; stockEntry.allFundChg.pt1 += prev1.shares; }
-        if (prev4 && prev4.shares > 0) { stockEntry.allFundChg.ns4 += sharesNow - prev4.shares; stockEntry.allFundChg.pt4 += prev4.shares; }
+        // Aggregate value now (current holders only, matches stock.html totalValue)
+        if (sharesNow > 0) { sd.totalValue += valueNow; sd.totalShares += sharesNow; }
 
+        // Aggregate value change: valueNow - valuePrev for all funds that had any position
+        if (sharesNow > 0 || (prev1 && prev1.shares > 0)) {
+          sd.aggValueNow  += valueNow;
+          sd.aggValuePrev += valuePrev;
+        }
+
+        // Classify for new/exit maps and per-fund delta direction
+        let fundDelta = 0, valueDelta = 0;
         const ensure = (map) => {
-          if (!map[stockKey]) map[stockKey] = { name, ticker: ticker||null, cusip: cusip||null, key, fundCount:0, totalShares:0, totalValue:0, netShares:0, netValue:0 };
+          if (!map[stockKey]) map[stockKey] = { name, ticker: ticker||null, cusip: cusip||null, key, fundCount:0, totalShares:0, totalValue:0, netShares:0 };
           return map[stockKey];
         };
-
-        let fundDelta = 0, sharesRef = sharesNow, valueRef = valueNow;
-        let valueDelta = 0;
 
         if (sharesNow > 0 && (sharesPrev === null || sharesPrev === 0)) {
           // NEW
           const e = ensure(newMap); e.fundCount++; e.totalShares += sharesNow; e.totalValue += valueNow;
-          e.netValue += valueNow;
           fundDelta = +sharesNow; valueDelta = +valueNow;
         } else if (sharesNow === 0 && prev1 && sharesPrev > 0) {
           // EXITED
           const e = ensure(exitMap); e.fundCount++; e.totalShares += sharesPrev; e.totalValue += valuePrev;
-          e.netValue += valuePrev;
-          fundDelta = -sharesPrev; valueDelta = -valuePrev; sharesRef = 0; valueRef = 0;
+          fundDelta = -sharesPrev; valueDelta = -valuePrev;
         } else if (sharesNow > 0 && sharesPrev > 0 && sharesNow !== sharesPrev) {
-          // INCREASED or REDUCED
-          fundDelta = sharesNow - sharesPrev;
-          valueDelta = valueNow - valuePrev;
+          fundDelta  = sharesNow  - sharesPrev;
+          valueDelta = valueNow   - valuePrev;
         } else { continue; }
 
-        if (!stockEntry.funds[fid]) stockEntry.funds[fid] = {};
-        stockEntry.funds[fid] = { delta: fundDelta, valueDelta, sharesRef, valueRef };
-        // Update stockKey in perFundDelta (may differ from key if ticker exists)
-        if (!perFundDelta[stockKey]) perFundDelta[stockKey] = stockEntry;
+        sd.funds[fid] = { delta: fundDelta, valueDelta };
       }
     }
 
     // Build netAddMap / netDecMap
     const netAddMap = {}, netDecMap = {};
-    for (const [stockKey, sd] of Object.entries(perFundDelta)) {
-      const { name, ticker, cusip, key, funds: fds, allFundChg } = sd;
-      if (!fds || Object.keys(fds).length === 0) continue;
+    for (const [stockKey, sd] of Object.entries(perStockDelta)) {
+      if (Object.keys(sd.funds).length === 0) continue;
 
-      // Net value change across all active funds
-      let netValue = 0;
-      for (const f of Object.values(fds)) netValue += f.valueDelta;
-      if (netValue === 0) continue;
+      // Net value change = aggValueNow - aggValuePrev across all funds with any position
+      const netValueChange = sd.aggValueNow - sd.aggValuePrev;
+      if (netValueChange === 0) continue;
 
-      const map = netValue > 0 ? netAddMap : netDecMap;
+      const map = netValueChange > 0 ? netAddMap : netDecMap;
       if (!map[stockKey]) map[stockKey] = {
-        name, ticker, cusip, key,
-        fundCount: 0, totalShares: 0, totalValue: 0,
-        netShares: 0, netValue: 0,
-        // Use allFundChg for chgQtr/chgYr — matches stock.html methodology
-        netShares1: allFundChg.ns1, prevTotal1: allFundChg.pt1,
-        netShares4: allFundChg.ns4, prevTotal4: allFundChg.pt4
+        name: sd.name, ticker: sd.ticker, cusip: sd.cusip, key: sd.key,
+        fundCount: 0, totalShares: sd.totalShares, totalValue: sd.totalValue,
+        netShares: 0, netValue: Math.abs(netValueChange),
+        // chgQtr/chgYr from all-fund accumulation
+        netShares1: sd.ns1, prevTotal1: sd.pt1,
+        netShares4: sd.ns4, prevTotal4: sd.pt4
       };
       const e = map[stockKey];
-      e.netValue = Math.abs(netValue);
 
-      for (const f of Object.values(fds)) {
-        // fundCount: only funds contributing in correct direction
-        if (netValue > 0 && f.valueDelta > 0) e.fundCount++;
-        if (netValue < 0 && f.valueDelta < 0) e.fundCount++;
-        e.totalShares += f.sharesRef;
-        e.totalValue  += f.valueRef;
-        // netShares for display
-        if (netValue > 0 && f.delta > 0) e.netShares += f.delta;
-        if (netValue < 0 && f.delta < 0) e.netShares += Math.abs(f.delta);
+      for (const [fid, f] of Object.entries(sd.funds)) {
+        if (netValueChange > 0 && f.valueDelta > 0) { e.fundCount++; e.netShares += f.delta; }
+        if (netValueChange < 0 && f.valueDelta < 0) { e.fundCount++; e.netShares += Math.abs(f.delta); }
       }
     }
 
-    // Rank by net value change (primary), fundCount (tiebreaker)
-    const sortByValue = (map) =>
+    // Rank by absolute net value change (dollar impact), fundCount as tiebreaker
+    const sortByNetValue = (map) =>
       Object.values(map).sort((a,b) => b.netValue - a.netValue || b.fundCount - a.fundCount).slice(0,10);
     const sortAndSlice = (map, tie="totalShares") =>
       Object.values(map).sort((a,b) => b.fundCount-a.fundCount || b[tie]-a[tie]).slice(0,10);
 
-    tableData.netAdd = sortByValue(netAddMap);
-    tableData.netDec = sortByValue(netDecMap);
+    tableData.netAdd = sortByNetValue(netAddMap);
+    tableData.netDec = sortByNetValue(netDecMap);
     tableData.new    = sortAndSlice(newMap);
     tableData.exit   = sortAndSlice(exitMap);
   }
