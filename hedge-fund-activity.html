@@ -325,7 +325,6 @@
   const COLS = {
     netAdd: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds (Net Buyers)", sortKey: "netBuyers" },
       { label: "Funds (Buyers)", sortKey: "buyers" },
       { label: "Funds (Sellers)", sortKey: "sellers" },
@@ -334,7 +333,6 @@
     ],
     netDec: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds (Net Sellers)", sortKey: "netSellers" },
       { label: "Funds (Buyers)", sortKey: "buyers" },
       { label: "Funds (Sellers)", sortKey: "sellers" },
@@ -343,14 +341,12 @@
     ],
     new: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds Initiating", sortKey: "fundCount" }, { label: "Aggregate Shares", sortKey: "totalShares" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
     ],
     exit: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds", sortKey: "totalFunds" },
       { label: "Funds Exiting", sortKey: "fundCount" }, { label: "Shares Removed", sortKey: "totalShares" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Prior Quarter Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
@@ -392,11 +388,10 @@
       const chgCols = `<td class="num">${fmtChg(chgQtr)}</td><td class="num">${fmtChg(chgYr)}</td>`;
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
       let mid;
-      const fundsTd = `<td class="num">${fmtNum(r.totalFunds)}</td>`;
-      if      (type==="netAdd") mid=`${fundsTd}<td class="num"><span class="chg pos">${fmtNum(r.netBuyers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else if (type==="netDec") mid=`${fundsTd}<td class="num"><span class="chg neg">${fmtNum(r.netSellers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else if (type==="new")    mid=`${fundsTd}<td class="num"><span class="chg pos">${fmtNum(r.fundCount)}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else                      mid=`${fundsTd}<td class="num"><span class="chg neg">${fmtNum(r.fundCount)}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
+      if      (type==="netAdd") mid=`<td class="num"><span class="chg pos">${fmtNum(r.netBuyers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else if (type==="netDec") mid=`<td class="num"><span class="chg neg">${fmtNum(r.netSellers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else if (type==="new")    mid=`<td class="num"><span class="chg pos">${fmtNum(r.fundCount)}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else                      mid=`<td class="num"><span class="chg neg">${fmtNum(r.fundCount)}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
       return `<tr><td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td><td class="col-company">${stockCell(r)}</td>${mid}${priceTd}</tr>`;
     }).join("");
     return `<div class="table-wrap"><table><thead><tr>${heads}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
