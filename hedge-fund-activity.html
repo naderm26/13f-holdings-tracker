@@ -221,8 +221,8 @@
   <aside class="side-nav">
     <div class="side-nav-inner">
       <div class="side-nav-label">Jump to</div>
-      <a class="side-nav-link active" href="#sec-netAdd">Top Net Additions</a>
-      <a class="side-nav-link" href="#sec-netDec">Top Net Decreases</a>
+      <a class="side-nav-link active" href="#sec-netAdd">Consensus Buys</a>
+      <a class="side-nav-link" href="#sec-netDec">Consensus Sellers</a>
       <a class="side-nav-link" href="#sec-new">Top New Positions</a>
       <a class="side-nav-link" href="#sec-exit">Most Exited</a>
     </div>
@@ -232,15 +232,15 @@
     <div class="tables-col">
 
       <div class="activity-section" id="sec-netAdd">
-        <div class="activity-section-title">Top Net Additions</div>
-        <div class="activity-section-subtitle">Ranked by change in stock's aggregate value across all tracked funds.</div>
+        <div class="activity-section-title">Consensus Buys</div>
+        <div class="activity-section-subtitle">Ranked by net number of funds buying vs selling (buyers − sellers). Tiebreaker: change in stock's aggregate value across all tracked funds.</div>
         <div id="tbl-netAdd"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-netDec">
-        <div class="activity-section-title">Top Net Decreases</div>
-        <div class="activity-section-subtitle">Ranked by change in stock's aggregate value across all tracked funds.</div>
+        <div class="activity-section-title">Consensus Sellers</div>
+        <div class="activity-section-subtitle">Ranked by net number of funds selling vs buying (sellers − buyers). Tiebreaker: change in stock's aggregate value across all tracked funds.</div>
         <div id="tbl-netDec"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
@@ -275,7 +275,7 @@
   let stockIndexRaw = null;
 
   const sortState = {
-    netAdd: { col: 6, asc: false }, netDec: { col: 6, asc: false },
+    netAdd: { col: 2, asc: false }, netDec: { col: 2, asc: false },
     new:    { col: 2, asc: false }, exit:   { col: 2, asc: false }
   };
   const tableData = { netAdd: [], netDec: [], new: [], exit: [] };
@@ -324,13 +324,17 @@
   const COLS = {
     netAdd: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds (Net Buyers)", sortKey: "fundCount" }, { label: "Net Shares Added", sortKey: "netShares" },
+      { label: "Funds (Net Buyers)", sortKey: "netBuyers" },
+      { label: "Funds (Buyers)", sortKey: "buyers" },
+      { label: "Funds (Sellers)", sortKey: "sellers" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
     ],
     netDec: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds (Net Sellers)", sortKey: "fundCount" }, { label: "Net Shares Removed", sortKey: "netShares" },
+      { label: "Funds (Net Sellers)", sortKey: "netSellers" },
+      { label: "Funds (Buyers)", sortKey: "buyers" },
+      { label: "Funds (Sellers)", sortKey: "sellers" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
     ],
@@ -349,11 +353,14 @@
   };
 
   function getSortVal(r, key) {
-    if (key === "name")     return r.name.toLowerCase();
-    if (key === "price")    return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
-    if (key === "chgQtr")   return r.prevTotal1 > 0 ? r.netShares1 / r.prevTotal1 : 0;
-    if (key === "chgYr")    return r.prevTotal4 > 0 ? r.netShares4 / r.prevTotal4 : 0;
-    if (key === "netValue") return r.netValue || 0;
+    if (key === "name")       return r.name.toLowerCase();
+    if (key === "price")      return (r.totalShares > 0 && r.totalValue > 0) ? r.totalValue / r.totalShares : 0;
+    if (key === "chgQtr")     return r.prevTotal1 > 0 ? r.netShares1 / r.prevTotal1 : 0;
+    if (key === "chgYr")      return r.prevTotal4 > 0 ? r.netShares4 / r.prevTotal4 : 0;
+    if (key === "netBuyers")  return r.netBuyers  || 0;
+    if (key === "netSellers") return r.netSellers || 0;
+    if (key === "buyers")     return r.buyers  || 0;
+    if (key === "sellers")    return r.sellers || 0;
     return r[key] || 0;
   }
 
@@ -379,8 +386,8 @@
       const chgCols = `<td class="num">${fmtChg(chgQtr)}</td><td class="num">${fmtChg(chgYr)}</td>`;
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
       let mid;
-      if      (type==="netAdd") mid=`<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num"><span class="chg pos">+${fmtShares(r.netShares)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else if (type==="netDec") mid=`<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.netShares)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      if      (type==="netAdd") mid=`<td class="num"><span class="chg pos">${r.netBuyers}</span></td><td class="num"><span class="chg pos">${r.buyers}</span></td><td class="num"><span class="chg neg">${r.sellers}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else if (type==="netDec") mid=`<td class="num"><span class="chg neg">${r.netSellers}</span></td><td class="num"><span class="chg pos">${r.buyers}</span></td><td class="num"><span class="chg neg">${r.sellers}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       else if (type==="new")    mid=`<td class="num"><span class="chg pos">${r.fundCount}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       else                      mid=`<td class="num"><span class="chg neg">${r.fundCount}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
       return `<tr><td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td><td class="col-company">${stockCell(r)}</td>${mid}${priceTd}</tr>`;
@@ -471,40 +478,46 @@
       }
     }
 
-    // Build netAddMap / netDecMap
-    const netAddMap = {}, netDecMap = {};
+    // Build consensus maps — every stock gets buyers and sellers counts
+    const consensusMap = {};
     for (const [stockKey, sd] of Object.entries(perStockDelta)) {
       if (Object.keys(sd.funds).length === 0) continue;
 
-      // Net value change = aggValueNow - aggValuePrev across all funds with any position
-      const netValueChange = sd.aggValueNow - sd.aggValuePrev;
-      if (netValueChange === 0) continue;
+      let buyers = 0, sellers = 0;
+      for (const f of Object.values(sd.funds)) {
+        if (f.delta > 0) buyers++;   // more shares: new positions + increases
+        if (f.delta < 0) sellers++;  // fewer shares: exits + reductions
+      }
+      if (buyers === 0 && sellers === 0) continue;
 
-      const map = netValueChange > 0 ? netAddMap : netDecMap;
-      if (!map[stockKey]) map[stockKey] = {
+      const netValueChange = sd.aggValueNow - sd.aggValuePrev;
+      consensusMap[stockKey] = {
         name: sd.name, ticker: sd.ticker, cusip: sd.cusip, key: sd.key,
-        fundCount: 0, totalShares: sd.totalShares, totalValue: sd.totalValue,
-        netShares: 0, netValue: Math.abs(netValueChange),
-        // chgQtr/chgYr from all-fund accumulation
+        buyers, sellers,
+        netBuyers:  Math.max(0, buyers - sellers),
+        netSellers: Math.max(0, sellers - buyers),
+        totalShares: sd.totalShares, totalValue: sd.totalValue,
+        netValue: Math.abs(netValueChange),
         netShares1: sd.ns1, prevTotal1: sd.pt1,
         netShares4: sd.ns4, prevTotal4: sd.pt4
       };
-      const e = map[stockKey];
-
-      for (const [fid, f] of Object.entries(sd.funds)) {
-        if (netValueChange > 0 && f.valueDelta > 0) { e.fundCount++; e.netShares += f.delta; }
-        if (netValueChange < 0 && f.valueDelta < 0) { e.fundCount++; e.netShares += Math.abs(f.delta); }
-      }
     }
 
-    // Rank by absolute net value change (dollar impact), fundCount as tiebreaker
-    const sortByNetValue = (map) =>
-      Object.values(map).sort((a,b) => b.netValue - a.netValue || b.fundCount - a.fundCount).slice(0,10);
+    // Consensus Buys: top 10 by netBuyers desc, tiebreak by netValue desc
+    const allConsensus = Object.values(consensusMap);
+    tableData.netAdd = [...allConsensus]
+      .filter(r => r.netBuyers > 0)
+      .sort((a,b) => b.netBuyers - a.netBuyers || b.netValue - a.netValue)
+      .slice(0, 10);
+
+    // Consensus Sellers: top 10 by netSellers desc, tiebreak by netValue desc
+    tableData.netDec = [...allConsensus]
+      .filter(r => r.netSellers > 0)
+      .sort((a,b) => b.netSellers - a.netSellers || b.netValue - a.netValue)
+      .slice(0, 10);
+
     const sortAndSlice = (map, tie="totalShares") =>
       Object.values(map).sort((a,b) => b.fundCount-a.fundCount || b[tie]-a[tie]).slice(0,10);
-
-    tableData.netAdd = sortByNetValue(netAddMap);
-    tableData.netDec = sortByNetValue(netDecMap);
     tableData.new    = sortAndSlice(newMap);
     tableData.exit   = sortAndSlice(exitMap);
   }
@@ -527,7 +540,7 @@
 
   function selectQuarter(q) {
     activeQ = q;
-    sortState.netAdd = { col: 6, asc: false }; sortState.netDec = { col: 6, asc: false };
+    sortState.netAdd = { col: 2, asc: false }; sortState.netDec = { col: 2, asc: false };
     sortState.new    = { col: 2, asc: false }; sortState.exit   = { col: 2, asc: false };
     renderQuarterTabs();
     computeForQuarter(q);
