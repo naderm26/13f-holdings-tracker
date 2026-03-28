@@ -260,8 +260,8 @@
     });
     const poolTotalVal = dataset.reduce((s,x)=>s+x.totalValue,0);
     const rowsHtml = sorted.map((s,i) => {
-      const pct       = poolTotalVal>0?((s.totalValue/poolTotalVal)*100).toFixed(1)+"%":"—";
-      const maxPctStr = s._maxPct!=null?s._maxPct.toFixed(1)+"%":"—";
+      const pct       = poolTotalVal>0?((s.totalValue/poolTotalVal)*100).toFixed(2)+"%":"—";
+      const maxPctStr = s._maxPct!=null?s._maxPct.toFixed(2)+"%":"—";
       const chgQtr    = s.prevTotal1>0?(s.netShares1/s.prevTotal1)*100:null;
       const chgYr     = s.prevTotal4>0?(s.netShares4/s.prevTotal4)*100:null;
       const repPrice  = s.totalShares>0?s.totalValue/s.totalShares:0;
@@ -288,8 +288,8 @@
     const totalRow = `<tr class="total-row">
       <td class="col-num num">${totalLabel}</td><td class="col-company">Total</td>
       <td class="col-data num">—</td><td class="col-data num">100%</td><td class="col-data num">—</td>
-      <td class="col-data num">${fmtTC(totalPrevQ>0?(totalNetQ/totalPrevQ)*100:null)}</td>
-      <td class="col-data num">${fmtTC(totalPrevY>0?(totalNetY/totalPrevY)*100:null)}</td>
+      <td class="col-data num">—</td>
+      <td class="col-data num">—</td>
       <td class="col-data num">${fmtValue(poolTotalVal)}</td><td class="col-data num">—</td>
     </tr>`;
     return `<div class="period-line" style="margin-bottom:0.5rem">${title}</div>
@@ -297,7 +297,7 @@
         <thead><tr>
           <th class="col-num" style="color:var(--muted)">#</th>
           <th class="col-company" onclick="${sortFnName}(0)">Company${arrowFn(0)}</th>
-          <th class="col-data num" onclick="${sortFnName}(2)"># of Funds${arrowFn(2)}</th>
+          <th class="col-data num" onclick="${sortFnName}(2)">Funds${arrowFn(2)}</th>
           <th class="col-data num" onclick="${sortFnName}(1)">% of Portfolio${arrowFn(1)}</th>
           <th class="col-data num" onclick="${sortFnName}(3)">Highest Concentration %${arrowFn(3)}</th>
           <th class="col-data num" onclick="${sortFnName}(4)">Shares vs Prior Quarter${arrowFn(4)}</th>
