@@ -1,0 +1,537 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Hedge Fund Portfolio Overlap Tool — Compare Fund Holdings | 13FAI</title>
+  <meta name="description" content="Compare holdings across top hedge funds. See which stocks Buffett, Ackman, Druckenmiller and others own in common. Built from 13F filings."/>
+  <meta property="og:title" content="Hedge Fund Portfolio Overlap Tool"/>
+  <meta property="og:description" content="Find stocks held by multiple top hedge funds. Compare up to 5 managers side by side."/>
+  <meta property="og:type" content="website"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    /* ── Global search ── */
+    .search-wrap { position: relative; }
+    #search { font-family: var(--sans); font-size: 0.875rem; padding: 0.6rem 1rem 0.6rem 2.25rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 200px; outline: none; transition: border 0.15s; }
+    @media (min-width: 700px) { #search { width: 300px; } }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+
+    /* ── Main ── */
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem 4rem; } }
+    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.25rem; }
+    .section-sublabel { font-size: 0.9rem; color: var(--muted); font-weight: 400; margin-bottom: 1.5rem; }
+
+    /* ── Quarter tabs ── */
+    .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .q-btn { font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── Fund selector ── */
+    .fund-selector-section { margin-bottom: 1.5rem; }
+    .fund-selector-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.5rem; }
+    .fund-selector-box { border: 1px solid var(--border); border-radius: 6px; background: var(--bg); padding: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; min-height: 2.75rem; cursor: text; transition: border 0.15s; }
+    .fund-selector-box:focus-within { border-color: var(--accent); }
+    .fund-tag { display: inline-flex; align-items: center; gap: 0.3rem; background: var(--accent); color: #fff; border-radius: 4px; padding: 0.2rem 0.5rem 0.2rem 0.6rem; font-size: 0.78rem; font-weight: 500; white-space: nowrap; }
+    .fund-tag-remove { background: none; border: none; color: rgba(255,255,255,0.75); cursor: pointer; font-size: 0.9rem; line-height: 1; padding: 0; transition: color 0.1s; }
+    .fund-tag-remove:hover { color: #fff; }
+    .fund-input { border: none; outline: none; font-family: var(--sans); font-size: 0.875rem; color: var(--text); background: transparent; flex: 1; min-width: 160px; padding: 0.2rem 0.25rem; }
+    .fund-input::placeholder { color: var(--muted); }
+    .fund-dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none; max-height: 240px; overflow-y: auto; }
+    .fund-dropdown.visible { display: block; }
+    .fund-dropdown-item { display: flex; align-items: center; padding: 0.65rem 1rem; cursor: pointer; font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .fund-dropdown-item:last-child { border-bottom: none; }
+    .fund-dropdown-item:hover { background: var(--accent-light); }
+    .fund-dropdown-item.disabled { opacity: 0.4; cursor: default; pointer-events: none; }
+    .fund-selector-wrap { position: relative; }
+    .fund-hint { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.4rem; }
+
+    /* ── Results ── */
+    .results-header { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.08em; }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); font-size: 0.9rem; border: 1px dashed var(--border); border-radius: 6px; }
+    .empty-state-icon { font-size: 2rem; margin-bottom: 0.75rem; opacity: 0.4; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; min-width: 700px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: block; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
+    th:hover { color: var(--text); }
+    th.sorted { color: var(--accent); }
+    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; text-align: center; }
+    th.col-stock { text-align: left; min-width: 160px; width: 20%; }
+    th.col-count { width: 60px; min-width: 60px; }
+    th.col-fund { min-width: 80px; width: 9%; }
+    th.col-data { min-width: 80px; width: 9%; }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
+    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    td.col-stock { text-align: left; white-space: normal; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    .stock-name { font-weight: 500; color: var(--text); white-space: normal; }
+    .ticker-sub { color: #2563eb; font-weight: 600; font-size: 0.78rem; font-family: var(--mono); margin-top: 0.1rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
+    .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .chg.pos { color: var(--green); }
+    .chg.neg { color: var(--red); }
+    .chg.na  { color: var(--muted); }
+
+    /* Fund column header colored dot */
+    .fund-dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 4px; vertical-align: middle; flex-shrink: 0; }
+
+    /* Conviction dot in cell */
+    .conviction { display: inline-block; font-family: var(--mono); font-size: 0.78rem; }
+
+    .loading { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); padding: 2rem; text-align: center; }
+    .error   { font-family: var(--mono); font-size: 0.82rem; color: var(--red);   padding: 2rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <a class="brand-name" href="index.html">13FAI</a>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+        <a class="nav-link active" href="portfolio-overlap.html">Overlap</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      <a class="nav-link active" href="portfolio-overlap.html">Overlap</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1 class="section-label">Portfolio Overlap</h1>
+  <p class="section-sublabel">Compare holdings across up to 5 hedge funds. See which stocks they own in common.</p>
+
+  <!-- Quarter tabs -->
+  <div id="quarter-selector-wrap"></div>
+
+  <!-- Fund selector -->
+  <div class="fund-selector-section">
+    <div class="fund-selector-label">Select funds to compare (2–5)</div>
+    <div class="fund-selector-wrap">
+      <div class="fund-selector-box" id="fund-selector-box">
+        <input type="text" class="fund-input" id="fund-input" placeholder="Search for a fund..." autocomplete="off" maxlength="80"/>
+      </div>
+      <div class="fund-dropdown" id="fund-dropdown"></div>
+    </div>
+    <div class="fund-hint" id="fund-hint">Add at least 2 funds to see overlap.</div>
+  </div>
+
+  <!-- Results -->
+  <div id="results-wrap">
+    <div class="empty-state">
+      <div class="empty-state-icon">⊕</div>
+      Search for funds above to start comparing portfolios.
+    </div>
+  </div>
+
+  <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem;display:none" id="table-footnote">
+    * % of portfolio = stock value ÷ fund's total 13F portfolio value for the selected quarter.<br>
+    * Price at last filing is not an actual purchase price. It is the implied price calculated by dividing the reported value by shares held.
+  </div>
+</main>
+
+<footer style="text-align:center;padding:2rem;font-family:'DM Mono',monospace;font-size:0.7rem;color:#8a8780;border-top:1px solid #dedede;margin-top:2rem;">
+  Data sourced from 13F filings · For informational purposes only · <a href="disclaimer.html" style="color:#8a8780;text-decoration:none">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "/13f-holdings-tracker";
+
+  // ── Fund colors for column headers ─────────────────────────────
+  const FUND_COLORS = ["#2d5a3d","#2563eb","#b45309","#7c3aed","#be123c"];
+
+  // ── Default funds to pre-select ────────────────────────────────
+  const DEFAULT_FUNDS = ["berkshire","pershing","duquesne"];
+
+  let allFunds      = [];
+  let stockIndexRaw = null;
+  let allQuarters   = [];
+  let activeQ       = null;
+  let selectedFunds = []; // array of fund objects { id, name }
+  let sortCol = 1; // default: sort by # of funds holding (consensus)
+  let sortAsc = false;
+
+  // ── Formatters ─────────────────────────────────────────────────
+  function fmtValue(v) {
+    if (!v || v === 0) return "—";
+    if (v >= 1e9) return "$" + (v / 1e9).toFixed(2) + "B";
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+    return "$" + v.toLocaleString("en-US", { maximumFractionDigits: 0 });
+  }
+  function fmtPct(val) {
+    if (!val || isNaN(val) || val === 0) return "—";
+    return val.toFixed(2) + "%";
+  }
+  function fmtChg(val) {
+    if (val === null || val === undefined || !isFinite(val) || Math.abs(val) < 0.005) return `<span class="chg na">—</span>`;
+    const sign = val >= 0 ? "+" : "", cls = val >= 0 ? "pos" : "neg";
+    return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
+  }
+  function quarterLabel(q) { const m = q.match(/^(\d{4})Q(\d)$/); return m ? `Q${m[2]} ${m[1]}` : q; }
+  function prevQuarter(q)  { const [yr,qn] = q.split("Q"); let pq=parseInt(qn)-1, py=parseInt(yr); if(pq===0){pq=4;py--;} return py+"Q"+pq; }
+  function shortFundName(name) {
+    const m = name.match(/^(.+?)\s*\(/);
+    return m ? m[1].trim() : name;
+  }
+
+  // ── Quarter tabs ───────────────────────────────────────────────
+  function renderQuarterTabs() {
+    document.getElementById("quarter-selector-wrap").innerHTML =
+      `<div class="quarter-selector">${
+        allQuarters.slice(0,4).map(q =>
+          `<button class="q-btn${q===activeQ?" active":""}" onclick="selectQuarter('${q}')">${quarterLabel(q)}</button>`
+        ).join("")
+      }</div>`;
+  }
+  function selectQuarter(q) {
+    activeQ = q;
+    renderQuarterTabs();
+    renderResults();
+  }
+
+  // ── Fund selector ──────────────────────────────────────────────
+  const MAX_FUNDS = 5;
+
+  function renderTags() {
+    const box   = document.getElementById("fund-selector-box");
+    const input = document.getElementById("fund-input");
+    // Remove existing tags
+    box.querySelectorAll(".fund-tag").forEach(t => t.remove());
+    // Insert tags before input
+    selectedFunds.forEach((f, i) => {
+      const tag = document.createElement("span");
+      tag.className = "fund-tag";
+      tag.style.background = FUND_COLORS[i % FUND_COLORS.length];
+      tag.innerHTML = `${shortFundName(f.name)}<button class="fund-tag-remove" onclick="removeTag('${f.id}')" title="Remove">×</button>`;
+      box.insertBefore(tag, input);
+    });
+    // Update placeholder
+    input.placeholder = selectedFunds.length === 0 ? "Search for a fund..." :
+                        selectedFunds.length >= MAX_FUNDS ? "" : "Add another fund...";
+    input.style.display = selectedFunds.length >= MAX_FUNDS ? "none" : "";
+    // Update hint
+    const hint = document.getElementById("fund-hint");
+    if (selectedFunds.length >= MAX_FUNDS) {
+      hint.textContent = `Maximum ${MAX_FUNDS} funds selected.`;
+    } else if (selectedFunds.length < 2) {
+      hint.textContent = "Add at least 2 funds to see overlap.";
+    } else {
+      hint.textContent = `${selectedFunds.length} fund${selectedFunds.length>1?"s":""} selected. Add up to ${MAX_FUNDS - selectedFunds.length} more.`;
+    }
+  }
+
+  function removeTag(fundId) {
+    selectedFunds = selectedFunds.filter(f => f.id !== fundId);
+    renderTags();
+    renderResults();
+  }
+
+  function addFund(fund) {
+    if (selectedFunds.length >= MAX_FUNDS) return;
+    if (selectedFunds.find(f => f.id === fund.id)) return;
+    selectedFunds.push(fund);
+    renderTags();
+    renderResults();
+    document.getElementById("fund-input").value = "";
+    hideDropdown();
+  }
+
+  function showDropdown(items) {
+    const dd = document.getElementById("fund-dropdown");
+    if (!items.length) { dd.innerHTML = `<div class="no-results">No funds found</div>`; }
+    else {
+      dd.innerHTML = items.map(f => {
+        const already = !!selectedFunds.find(s => s.id === f.id);
+        const full    = selectedFunds.length >= MAX_FUNDS;
+        const disabled = already || full;
+        return `<div class="fund-dropdown-item${disabled?" disabled":""}" onclick="${disabled?"":` addFund({id:'${f.id}',name:${JSON.stringify(f.name)}})`}">
+          ${shortFundName(f.name)}
+          <span style="color:var(--muted);font-size:0.72rem;margin-left:auto;font-family:var(--mono)">${already?"added":""}</span>
+        </div>`;
+      }).join("");
+    }
+    dd.classList.add("visible");
+  }
+
+  function hideDropdown() {
+    document.getElementById("fund-dropdown").classList.remove("visible");
+  }
+
+  document.getElementById("fund-input").addEventListener("input", function() {
+    const q = this.value.trim().toLowerCase();
+    if (!q) { hideDropdown(); return; }
+    const matches = allFunds.filter(f => f.name.toLowerCase().includes(q)).slice(0, 8);
+    showDropdown(matches);
+  });
+
+  document.getElementById("fund-selector-box").addEventListener("click", function() {
+    document.getElementById("fund-input").focus();
+  });
+
+  document.addEventListener("click", e => {
+    const box = document.getElementById("fund-selector-box");
+    const dd  = document.getElementById("fund-dropdown");
+    if (!box.contains(e.target) && !dd.contains(e.target)) hideDropdown();
+  });
+
+  // ── Compute overlap for selected quarter ───────────────────────
+  function computeOverlap() {
+    if (!stockIndexRaw || selectedFunds.length < 2) return [];
+
+    const stockIndex = stockIndexRaw.stocks || stockIndexRaw;
+    const fundTotals = stockIndexRaw.fund_totals || {};
+    const prevQ      = prevQuarter(activeQ);
+    const results    = [];
+
+    for (const [key, stock] of Object.entries(stockIndex)) {
+      const { name, ticker, cusip, funds: stockFunds } = stock;
+      if (!stockFunds) continue;
+
+      const row = {
+        key, name, ticker: ticker||null, cusip: cusip||null,
+        holdCount: 0,      // how many selected funds hold it
+        totalValue: 0,     // aggregate value across holding funds
+        netShares1: 0, prevTotal1: 0, // for chgQtr
+        perFund: {}        // fid -> { pct, value, shares, chgQtr }
+      };
+
+      for (const sf of selectedFunds) {
+        const fd = stockFunds[sf.id];
+        if (!fd) continue;
+        const cur  = fd.quarters[activeQ];
+        const prev = fd.quarters[prevQ] || null;
+        if (!cur || cur.shares <= 0) continue;
+
+        const ft     = (fundTotals[sf.id] && fundTotals[sf.id][activeQ]) || 0;
+        const pct    = ft > 0 ? (cur.value / ft) * 100 : null;
+        const chgQtr = prev && prev.shares > 0 ? ((cur.shares - prev.shares) / prev.shares) * 100 : null;
+
+        row.holdCount++;
+        row.totalValue += cur.value;
+        if (prev && prev.shares > 0) { row.netShares1 += cur.shares - prev.shares; row.prevTotal1 += prev.shares; }
+        row.perFund[sf.id] = { pct, value: cur.value, shares: cur.shares, chgQtr };
+      }
+
+      if (row.holdCount === 0) continue;
+      results.push(row);
+    }
+
+    return results;
+  }
+
+  // ── Render results table ───────────────────────────────────────
+  function arrowFor(col) {
+    if (sortCol !== col) return `<span style="opacity:0.3"> ↕</span>`;
+    return sortAsc ? " ↑" : " ↓";
+  }
+
+  function sort(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = false; }
+    renderResults();
+  }
+
+  function renderResults() {
+    const wrap = document.getElementById("results-wrap");
+    const footnote = document.getElementById("table-footnote");
+
+    if (selectedFunds.length < 2) {
+      footnote.style.display = "none";
+      wrap.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⊕</div>Select at least 2 funds above to see their shared holdings.</div>`;
+      return;
+    }
+
+    const rows = computeOverlap();
+    const ql   = quarterLabel(activeQ);
+
+    if (!rows.length) {
+      footnote.style.display = "none";
+      wrap.innerHTML = `<div class="empty-state"><div class="empty-state-icon">∅</div>No overlapping holdings found for the selected funds in ${ql}.</div>`;
+      return;
+    }
+
+    // Sort
+    const sorted = [...rows].sort((a, b) => {
+      let av, bv;
+      if      (sortCol === 0) { av = a.name; bv = b.name; return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av); }
+      else if (sortCol === 1) { av = a.holdCount; bv = b.holdCount; }
+      else if (sortCol === 2) { av = a.totalValue; bv = b.totalValue; }
+      else if (sortCol === 3) { av = a.prevTotal1 > 0 ? a.netShares1 / a.prevTotal1 : 0; bv = b.prevTotal1 > 0 ? b.netShares1 / b.prevTotal1 : 0; }
+      else {
+        // Per-fund columns start at index 4
+        const fid = selectedFunds[sortCol - 4]?.id;
+        av = fid ? (a.perFund[fid]?.pct || 0) : 0;
+        bv = fid ? (b.perFund[fid]?.pct || 0) : 0;
+      }
+      return sortAsc ? av - bv : bv - av;
+    });
+
+    // Build dynamic fund columns
+    const fundColHeaders = selectedFunds.map((f, i) =>
+      `<th class="col-fund sorted-fund" onclick="sort(${i + 4})" style="cursor:pointer">
+        <span class="fund-dot" style="background:${FUND_COLORS[i % FUND_COLORS.length]}"></span>${shortFundName(f.name)} % ${arrowFor(i + 4)}
+      </th>`
+    ).join("");
+
+    const rowsHtml = sorted.map((r, i) => {
+      const href = r.ticker
+        ? `stock.html?ticker=${encodeURIComponent(r.ticker)}`
+        : `stock.html?cusip=${encodeURIComponent(r.cusip || r.key)}`;
+
+      const chgQtrVal = r.prevTotal1 > 0 ? (r.netShares1 / r.prevTotal1) * 100 : null;
+
+      const fundCells = selectedFunds.map((f, fi) => {
+        const pf = r.perFund[f.id];
+        if (!pf) return `<td class="num" style="color:var(--muted)">—</td>`;
+        return `<td class="num" style="color:${FUND_COLORS[fi % FUND_COLORS.length]};font-weight:600">${fmtPct(pf.pct)}</td>`;
+      }).join("");
+
+      return `<tr>
+        <td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i + 1}</td>
+        <td class="col-stock">
+          <a href="${href}" style="text-decoration:none;color:inherit">
+            <div class="stock-name">${r.name}</div>
+            ${r.ticker ? `<div class="ticker-sub">${r.ticker}</div>` : ""}
+          </a>
+        </td>
+        <td class="num col-count">${r.holdCount} / ${selectedFunds.length}</td>
+        <td class="num">${fmtValue(r.totalValue)}</td>
+        <td class="num">${fmtChg(chgQtrVal)}</td>
+        ${fundCells}
+      </tr>`;
+    }).join("");
+
+    const fundCount = selectedFunds.length;
+    const sharedCount = rows.filter(r => r.holdCount === fundCount).length;
+    const labelStr = `${sorted.length} shared holding${sorted.length !== 1 ? "s" : ""} · ${sharedCount} held by all ${fundCount} funds · ${ql}`;
+
+    wrap.innerHTML = `
+      <div class="results-header">${labelStr}</div>
+      <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th class="col-num" style="color:var(--muted)">#</th>
+          <th class="col-stock" onclick="sort(0)" style="cursor:pointer">Stock${arrowFor(0)}</th>
+          <th class="col-count" onclick="sort(1)" style="cursor:pointer">Funds${arrowFor(1)}</th>
+          <th class="col-data" onclick="sort(2)" style="cursor:pointer">Aggregate Value${arrowFor(2)}</th>
+          <th class="col-data" onclick="sort(3)" style="cursor:pointer">Shares vs Prior Quarter${arrowFor(3)}</th>
+          ${fundColHeaders}
+        </tr></thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+      </div>`;
+
+    footnote.style.display = "block";
+  }
+
+  // ── Bootstrap ──────────────────────────────────────────────────
+  Promise.all([
+    fetch(`${PAGES}/stock_index.json`).then(r => r.json()),
+    fetch(`${PAGES}/funds.json`).then(r => r.json())
+  ]).then(([raw, funds]) => {
+    stockIndexRaw = raw;
+    allFunds      = funds;
+
+    const stockIndex = raw.stocks || raw;
+
+    // Collect all quarters
+    const qSet = new Set();
+    for (const stock of Object.values(stockIndex))
+      for (const fd of Object.values(stock.funds || {}))
+        Object.keys(fd.quarters || {}).forEach(q => qSet.add(q));
+    allQuarters = Array.from(qSet).sort().reverse();
+    activeQ = allQuarters[0];
+
+    renderQuarterTabs();
+
+    // Pre-select default funds
+    DEFAULT_FUNDS.forEach(id => {
+      const f = allFunds.find(f => f.id === id);
+      if (f && selectedFunds.length < MAX_FUNDS) selectedFunds.push({ id: f.id, name: f.name });
+    });
+    renderTags();
+    renderResults();
+
+  }).catch(err => {
+    document.getElementById("results-wrap").innerHTML =
+      `<div class="error">Failed to load data: ${err.message}</div>`;
+  });
+
+  // ── Global search (header) ─────────────────────────────────────
+  let stockIndexForSearch = {};
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d.stocks || d; }).catch(() => {});
+
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove("visible"); return; }
+    const fm = allFunds.filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
+      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}"><span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
+    const sm = [];
+    for (const [k, s] of Object.entries(stockIndexForSearch)) {
+      if (sm.length >= 4) break;
+      if ((s.ticker && s.ticker.toLowerCase().includes(q)) || (s.name && s.name.toLowerCase().includes(q)))
+        sm.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(k)}"><span class="search-result-num">Stock</span><span>${s.name}${s.ticker ? ` <span style="color:#2563eb;font-weight:600">${s.ticker}</span>` : ""}</span></a>`);
+    }
+    const all = [...fm, ...sm];
+    searchResults.innerHTML = all.length ? all.join("") : `<div class="no-results">No results found</div>`;
+    searchResults.classList.add("visible");
+  });
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) searchResults.classList.remove("visible");
+  });
+</script>
+</body>
+</html>
