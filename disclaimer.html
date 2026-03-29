@@ -10,25 +10,42 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #f7f6f3; --surface: #ffffff; --border: #e8e6e1;
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
       --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
-      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+      --accent-light: #eef4f0; --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-    header {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 1.5rem 3rem; display: flex; align-items: center;
-      justify-content: space-between;
-    }
-    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .back-link { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-decoration: none; }
-    .back-link:hover { color: var(--text); }
-    main { max-width: 760px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+    /* ── Header ── */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    /* ── Content ── */
+    main { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+    @media (min-width: 700px) { main { padding: 3rem 2rem 5rem; } }
     h1 { font-size: 1.6rem; font-weight: 500; margin-bottom: 0.4rem; }
-    .updated { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 2.5rem; }
-    h2 { font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); margin: 2rem 0 0.6rem; }
-    p { font-size: 0.92rem; line-height: 1.75; color: #3a3835; margin-bottom: 0.75rem; }
-    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
+    .updated { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 2rem; }
+
+    /* Warning banner */
+    .warning-banner {
+      background: #fff7ed; border: 1px solid #f97316; border-radius: 8px;
+      padding: 1rem 1.25rem; margin-bottom: 2rem;
+      font-size: 0.88rem; line-height: 1.65; color: #7c2d12;
+    }
+    .warning-banner strong { display: block; margin-bottom: 0.3rem; font-size: 0.9rem; }
+
+    h2 { font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin: 2rem 0 0.6rem; padding-bottom: 0.35rem; border-bottom: 1px solid var(--border); }
+    p { font-size: 0.9rem; line-height: 1.75; color: #3a3835; margin-bottom: 0.75rem; }
+    p strong { color: var(--text); }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--text); }
   </style>
@@ -36,53 +53,74 @@
 <body>
 
 <header>
-  <div class="brand-name">13FAI</div>
-  <a class="back-link" href="index.html">← Back to funds</a>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <a class="brand-name" href="index.html">13FAI</a>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+        <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+      </nav>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+    </nav>
+  </div>
 </header>
 
 <main>
   <h1>Disclaimer & Terms of Use</h1>
+  <div class="updated">Last updated: March 2026</div>
+
+  <div class="warning-banner">
+    <strong>⚠ Important — Read Before Using This Site</strong>
+    Nothing on this site is financial advice. All data, calculations, presentations, and derived figures on this site may be wrong, incomplete, delayed, or misleading. Do not make any financial decision based on anything you see here. You use this site entirely at your own risk.
+  </div>
 
   <h2>No Financial Advice</h2>
-  <p>The information provided on 13FAI.com is for informational and educational purposes only. Nothing on this site constitutes investment advice, financial advice, trading advice, a recommendation to buy or sell any security, or any other type of advice. Any statements or comments made on this site represent opinions only and should not be construed as professional financial guidance.</p>
-  <p>Users are advised to conduct their own independent research into individual stocks before making any purchase or sale decision. Always consult with a qualified financial advisor before making any investment decisions.</p>
+  <p>The information provided on 13FAI.com is for informational and educational purposes only. <strong>Nothing on this site constitutes investment advice, financial advice, trading advice, a solicitation, a recommendation, or an offer to buy or sell any security or financial instrument of any kind.</strong> Nothing on this site should be construed as professional financial, legal, or tax guidance of any kind.</p>
+  <p>Any statements, figures, rankings, or commentary on this site represent the output of automated data processing and should not be construed as professional analysis or opinion. You should always conduct your own independent research and consult with a qualified, licensed financial advisor before making any investment decision.</p>
+
+  <h2>Data May Be Wrong — No Reliability Should Be Placed on Any Figure</h2>
+  <p><strong>All data, calculations, aggregations, and presentations on this site may contain errors.</strong> This includes but is not limited to: reported share counts, reported portfolio values, percentage calculations, portfolio weight calculations, quarter-over-quarter change figures, year-over-year change figures, aggregate value figures, price estimates, fund totals, rankings, and any other derived or computed figure shown anywhere on this site.</p>
+  <p>Errors may be introduced at any stage, including but not limited to: fetching data from third-party sources, parsing raw SEC filings, converting data formats, aggregating across multiple sources, applying value multipliers, mapping securities to tickers, rendering figures in the browser, or any other step in the data pipeline. <strong>No figure on this site has been independently verified for accuracy.</strong></p>
+  <p><strong>You should place no reliance — zero — on any figure, calculation, ranking, or presentation shown on this site for any financial decision.</strong> Always verify data directly with the original SEC EDGAR filing at sec.gov before acting on any information you see here.</p>
+
+  <h2>Data Is Stale By Design</h2>
+  <p>13F filings are required to be submitted within 45 days after the end of each calendar quarter. The holdings shown on this site therefore reflect positions as of a date that is at minimum 45 days in the past and potentially much older. Fund managers may have dramatically increased, reduced, or fully exited any position shown on this site since the most recent filing date. <strong>What you see here is not current — it is historical disclosure data.</strong></p>
+  <p>Additionally, this site may not have processed the most recent available filing for any given fund. Data shown may be one or more quarters out of date beyond the standard 45-day delay. The "last filed" dates shown are sourced from automated processing and may themselves be inaccurate.</p>
+
+  <h2>No Guarantee of Anything</h2>
+  <p><strong>We make no guarantee, representation, or warranty of any kind — express or implied — regarding this site or any information on it.</strong> This includes but is not limited to: the accuracy, completeness, timeliness, reliability, suitability, or availability of any data, calculation, figure, or content. We do not guarantee that the site will be available, uninterrupted, error-free, or free of harmful components at any time.</p>
+  <p>Past holdings, past performance, and past investment decisions by fund managers featured on this site do not guarantee, predict, or suggest future results. Any manager featured on this site may perform poorly in the future regardless of past track record.</p>
 
   <h2>User Responsibility</h2>
-  <p>Users of this site are solely responsible for evaluating and bearing all risks associated with the use of any content herein. You acknowledge that any reliance on information provided on this site is at your own risk.</p>
-
-  <h2>Intellectual Property</h2>
-  <p>The content, design, and presentation on 13FAI.com are proprietary and protected by applicable intellectual property laws. No republishing, reproducing, redistributing, or selling of the content is permitted. However, you are free to reference small portions of the content for non-commercial purposes, provided you cite 13FAI.com as the source and include a link to the relevant page.</p>
-  <p>SEC EDGAR 13F filing data is public domain. All other original site content is © 2026 13FAI.com. All rights reserved.</p>
-
-  <h2>Data Sources & Accuracy</h2>
-  <p>Data presented on this site is sourced from multiple sources including SEC EDGAR filings, market data providers, and other third parties. This data is processed, parsed, and aggregated using automated systems. Errors may be introduced at any stage of this process, including but not limited to incorrect values, misattributed positions, rounding errors, processing errors, or display errors, regardless of the original data source.</p>
-  <p>We make no representations or warranties — express or implied — about the completeness, accuracy, reliability, suitability, or timeliness of any information on this site, whether sourced externally or processed internally.</p>
-
-  <h2>Reporting Delays</h2>
-  <p>Institutional investment managers are required to file 13F reports within 45 days after the end of each calendar quarter. As a result, the holdings shown on this site reflect positions as of the quarter-end date and may not reflect the manager's current holdings. Positions may have been increased, reduced, or closed entirely since the filing date.</p>
-
-  <h2>No Guarantee of Results</h2>
-  <p>Past portfolio holdings and investment decisions by the fund managers featured on this site do not guarantee future results. The managers featured may have poor performance in the future regardless of past track records.</p>
+  <p>By accessing this site you acknowledge and agree that: (1) you are solely responsible for evaluating all information presented; (2) you will not rely on any data, figure, or content on this site for any financial decision; (3) any action you take based on information found on this site is taken entirely at your own risk; and (4) you have read and understood this disclaimer in full.</p>
 
   <h2>Limitation of Liability</h2>
-  <p>To the fullest extent permitted by law, 13FAI.com and its operators shall not be liable for any direct, indirect, incidental, consequential, special, or punitive damages arising out of or in connection with your use of this site or reliance on any information provided herein, regardless of whether the alleged liability is based on contract, tort, negligence, strict liability, or any other basis, and even if we have been advised of the possibility of such damages.</p>
-  <p>Your use of this site is entirely at your own risk.</p>
+  <p><strong>To the fullest extent permitted by applicable law, 13FAI.com and its operators, affiliates, contributors, and agents shall not be liable for any damages whatsoever</strong> — including without limitation any direct, indirect, incidental, special, consequential, punitive, or exemplary damages — arising out of or in connection with: your use of or inability to use this site; any data, calculation, figure, or content on this site; any errors or omissions in any data or content; any loss or damage of any kind incurred as a result of reliance on any information on this site; or any other matter relating to this site, regardless of whether such liability is based on contract, tort, strict liability, negligence, or any other legal theory, and even if we have been advised of the possibility of such damages.</p>
+  <p><strong>Your use of this site is entirely at your own risk. If you are dissatisfied with the site or any content on it, your sole remedy is to stop using the site.</strong></p>
 
-  <h2>Third-Party Data</h2>
-  <p>Market data including stock prices, 52-week highs and lows, and other market information is sourced from Yahoo Finance and other third-party providers. This data is provided "as is" and we make no warranties regarding its accuracy or timeliness. Market data may be delayed. 13FAI.com is not affiliated with Yahoo Finance or its parent company Yahoo Inc.</p>
+  <h2>Intellectual Property</h2>
+  <p>The presentation, design, organization, and original content of 13FAI.com are proprietary. SEC EDGAR 13F filing data is public domain and sourced from the U.S. Securities and Exchange Commission. All original site content, design, and code is © 2026 13FAI.com. All rights reserved. No republishing, reproducing, redistributing, or reselling of original site content is permitted without express written permission.</p>
+
+  <h2>Third-Party Data Sources</h2>
+  <p>Data on this site is sourced from SEC EDGAR, Yahoo Finance, OpenFIGI, and other third-party providers. This data is provided by those parties "as is." We make no warranties regarding the accuracy, completeness, or timeliness of data received from any third-party source. 13FAI.com is not affiliated with, endorsed by, or sponsored by the U.S. Securities and Exchange Commission, EDGAR, Yahoo Finance, Yahoo Inc., OpenFIGI, Bloomberg, or any other data provider or government agency.</p>
 
   <h2>No Warranties</h2>
-  <p>This site is provided "as is" and "as available" without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, or non-infringement. We do not warrant that the site will be uninterrupted, error-free, or free of viruses or other harmful components.</p>
+  <p>This site is provided on an "as is" and "as available" basis without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, accuracy, or non-infringement.</p>
 
   <h2>Governing Law</h2>
-  <p>These terms and your use of this site are governed by and construed in accordance with the laws of the State of California, United States, without regard to its conflict of law provisions. Any disputes arising from your use of this site shall be subject to the exclusive jurisdiction of the courts located in California.</p>
-
-  <h2>Not Affiliated with SEC or EDGAR</h2>
-  <p>13FAI.com is an independent website and is not affiliated with, endorsed by, or sponsored by the U.S. Securities and Exchange Commission or any government agency.</p>
+  <p>These terms and your use of this site are governed by and construed in accordance with the laws of the United States. Any disputes arising from your use of this site shall be resolved in accordance with applicable law. If any provision of these terms is found to be unenforceable, the remaining provisions shall continue in full force and effect.</p>
 
   <h2>Changes to This Disclaimer</h2>
-  <p>We reserve the right to update or modify this disclaimer at any time without prior notice. Continued use of the site following any changes constitutes your acceptance of the updated terms.</p>
-
+  <p>We reserve the right to update or modify this disclaimer at any time without prior notice. The date at the top of this page reflects the most recent update. Continued use of the site following any changes constitutes your acceptance of the updated terms.</p>
 
 </main>
 
