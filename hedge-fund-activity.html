@@ -4,9 +4,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Hedge Fund Activity: Top Consensus Buys and Sells (Latest 13F Data) | 13FAI</title>
+  <title>Hedge Fund Activity: Most Widely Bought, Most Widely Sold &amp; Biggest Buys | 13FAI</title>
   <meta name="description" content="See which stocks hedge funds are buying and selling this quarter based on 13F filings. New positions, top increases, top reductions, and exits by consensus."/>
-  <meta property="og:title" content="Hedge Fund Activity: Top Consensus Buys and Sells (Latest 13F Data)"/>
+  <meta property="og:title" content="Hedge Fund Activity: Most Widely Bought, Most Widely Sold &amp; Biggest Buys"/>
   <meta property="og:description" content="See which stocks hedge funds are buying and selling this quarter based on 13F filings."/>
   <meta property="og:type" content="website"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -216,17 +216,18 @@
 </header>
 
 <main>
-  <h1 class="section-label" id="page-title">Hedge Fund Activity: Top Consensus Buys and Sells (Latest 13F Data)</h1>
+  <h1 class="section-label" id="page-title">Hedge Fund Activity: Most Widely Bought, Most Widely Sold &amp; Biggest Buys</h1>
   <div id="quarter-selector-wrap"></div>
 
   <!-- Side nav — fixed position, shows on wide screens -->
   <aside class="side-nav">
     <div class="side-nav-inner">
       <div class="side-nav-label">Jump to</div>
-      <a class="side-nav-link active" href="#sec-netAdd">Consensus Buys</a>
-      <a class="side-nav-link" href="#sec-netDec">Consensus Sellers</a>
+      <a class="side-nav-link active" href="#sec-netAdd">Most Widely Bought</a>
+      <a class="side-nav-link" href="#sec-netDec">Most Widely Sold</a>
       <a class="side-nav-link" href="#sec-new">Top New Positions</a>
       <a class="side-nav-link" href="#sec-exit">Most Exited</a>
+      <a class="side-nav-link" href="#sec-bigBuys">Biggest Buys</a>
     </div>
   </aside>
 
@@ -234,15 +235,15 @@
     <div class="tables-col">
 
       <div class="activity-section" id="sec-netAdd">
-        <div class="activity-section-title">Consensus Buys</div>
-        <div class="activity-section-subtitle">Ranked by net number of funds buying vs selling (buyers − sellers) vs the prior quarter.</div>
+        <div class="activity-section-title">Most Widely Bought</div>
+        <div class="activity-section-subtitle">Ranked by net number of funds buying vs selling (buyers − sellers) vs the prior quarter. Stocks where the most funds increased or initiated positions.</div>
         <div id="tbl-netAdd"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
 
       <div class="activity-section" id="sec-netDec">
-        <div class="activity-section-title">Consensus Sellers</div>
-        <div class="activity-section-subtitle">Ranked by net number of funds selling vs buying (sellers − buyers) vs the prior quarter.</div>
+        <div class="activity-section-title">Most Widely Sold</div>
+        <div class="activity-section-subtitle">Ranked by net number of funds selling vs buying (sellers − buyers) vs the prior quarter. Stocks where the most funds reduced or exited positions.</div>
         <div id="tbl-netDec"><div class="loading">Fetching data...</div></div>
         <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
       </div>
@@ -259,6 +260,13 @@
         <div class="activity-section-subtitle">Stocks fully exited by the most funds this quarter. Ranked by number of funds exiting.</div>
         <div id="tbl-exit"><div class="loading">Fetching data...</div></div>
         <p class="footnote" id="fn-exit" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the prior quarter, calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+      </div>
+
+      <div class="activity-section" id="sec-bigBuys">
+        <div class="activity-section-title">Biggest Hedge Fund Buys This Quarter</div>
+        <div class="activity-section-subtitle">Largest percentage increases in existing positions vs the prior quarter. Minimum $1M current value. One entry per fund-stock pair. Excludes new positions.</div>
+        <div id="tbl-bigBuys"><div class="loading">Fetching data...</div></div>
+        <p class="footnote" id="fn-bigBuys" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held.</p>
       </div>
 
     </div>
@@ -278,9 +286,10 @@
 
   const sortState = {
     netAdd: { col: 2, asc: false }, netDec: { col: 2, asc: false },
-    new:    { col: 2, asc: false }, exit:   { col: 2, asc: false }
+    new:    { col: 2, asc: false }, exit:   { col: 2, asc: false },
+    bigBuys:{ col: 2, asc: false }
   };
-  const tableData = { netAdd: [], netDec: [], new: [], exit: [] };
+  const tableData = { netAdd: [], netDec: [], new: [], exit: [], bigBuys: [] };
 
   // ── Formatters ────────────────────────────────────────────────
   function fmtShares(n) {
@@ -352,8 +361,66 @@
       { label: "Funds Exiting", sortKey: "fundCount" }, { label: "Shares Removed", sortKey: "totalShares" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Prior Quarter Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
-    ]
+    ],
+
   };
+
+  // ── Big buys table — separate renderer (fund+stock per row) ───
+  function buildBigBuysTable() {
+    const rows = tableData.bigBuys;
+    if (!rows || rows.length === 0) return `<div class="loading" style="color:var(--muted)">No data available.</div>`;
+    const st = sortState.bigBuys;
+    const BIGCOLS = [
+      { label: "#",                   sortKey: null },
+      { label: "Stock",               sortKey: "stockName" },
+      { label: "Fund",                sortKey: "fundName" },
+      { label: "% Increase",          sortKey: "pctIncrease" },
+      { label: "Shares Added",        sortKey: "sharesAdded" },
+      { label: "Current Value",       sortKey: "totalValue" },
+      { label: "Price at Last Filing *", sortKey: "price" }
+    ];
+    const sorted = [...rows].sort((a, b) => {
+      const col = BIGCOLS[st.col]; if (!col || !col.sortKey) return 0;
+      const av = a[col.sortKey] ?? 0, bv = b[col.sortKey] ?? 0;
+      if (typeof av === "string") return st.asc ? av.localeCompare(bv) : bv.localeCompare(av);
+      return st.asc ? av - bv : bv - av;
+    });
+    const heads = BIGCOLS.map((col, i) => {
+      const isSorted = st.col === i && col.sortKey;
+      const arrow = !col.sortKey ? "" : isSorted ? (st.asc ? " ↑" : " ↓") : `<span style="opacity:0.3"> ↕</span>`;
+      const onclick = col.sortKey ? `onclick="sortBigBuys(${i})"` : "";
+      const cls = i === 0 ? "col-num" : i === 1 ? "col-company" : "col-data";
+      return `<th class="${cls}${isSorted ? " sorted" : ""}"${i === 0 ? ' style="color:var(--muted)"' : ""} ${onclick}>${col.label}${arrow}</th>`;
+    }).join("");
+    const rowsHtml = sorted.map((r, i) => {
+      const stockHref = r.ticker
+        ? `stock.html?ticker=${encodeURIComponent(r.ticker)}`
+        : `stock.html?cusip=${encodeURIComponent(r.cusip || r.stockKey)}`;
+      const sign = r.pctIncrease >= 0 ? "+" : "";
+      return `<tr>
+        <td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i + 1}</td>
+        <td class="col-company">
+          <a href="${stockHref}" style="text-decoration:none;color:inherit">
+            <div class="company-name">${r.stockName}</div>
+            ${r.ticker ? `<div class="ticker-sub">${r.ticker}</div>` : ""}
+          </a>
+        </td>
+        <td class="num"><a href="fund.html?fund=${r.fundId}" style="text-decoration:none;color:var(--text);font-size:0.82rem">${r.fundName}</a></td>
+        <td class="num"><span class="chg pos">${sign}${r.pctIncrease.toFixed(1)}%</span></td>
+        <td class="num"><span class="chg pos">+${fmtShares(r.sharesAdded)}</span></td>
+        <td class="num">${fmtValue(r.totalValue)}</td>
+        <td class="num" style="color:var(--muted)">${fmtPrice(r.sharesNow, r.totalValue)}</td>
+      </tr>`;
+    }).join("");
+    return `<div class="table-wrap"><table><thead><tr>${heads}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
+  }
+
+  function sortBigBuys(colIdx) {
+    const st = sortState.bigBuys;
+    if (st.col === colIdx) st.asc = !st.asc;
+    else { st.col = colIdx; st.asc = false; }
+    document.getElementById("tbl-bigBuys").innerHTML = buildBigBuysTable();
+  }
 
   function getSortVal(r, key) {
     if (key === "name")       return r.name.toLowerCase();
@@ -365,6 +432,9 @@
     if (key === "netSellers") return r.netSellers || 0;
     if (key === "buyers")     return r.buyers  || 0;
     if (key === "sellers")    return r.sellers || 0;
+    if (key === "pctIncrease") return r.pctIncrease || 0;
+    if (key === "sharesAdded") return r.sharesAdded || 0;
+    if (key === "fundName")    return (r.fundName || "").toLowerCase();
     return r[key] || 0;
   }
 
@@ -390,6 +460,7 @@
       const chgCols = `<td class="num">${fmtChg(chgQtr)}</td><td class="num">${fmtChg(chgYr)}</td>`;
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
       let mid;
+      if (type==="bigBuys") { const price = r.totalShares > 0 && r.totalValue > 0 ? "$" + (r.totalValue / r.totalShares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—"; return `<tr><td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td><td class="col-company">${stockCell(r)}</td><td class="num" style="font-size:0.78rem"><a href="fund.html?fund=${r.fundId}" style="color:var(--text);text-decoration:none">${r.fundName}</a></td><td class="num"><span class="chg pos">+${r.pctIncrease.toFixed(1)}%</span></td><td class="num"><span class="chg pos">+${fmtShares(r.sharesAdded)}</span></td><td class="num">${fmtValue(r.totalValue)}</td><td class="num" style="color:var(--muted)">${price}</td></tr>`; }
       if      (type==="netAdd") mid=`<td class="num"><span class="chg pos">${fmtNum(r.netBuyers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       else if (type==="netDec") mid=`<td class="num"><span class="chg neg">${fmtNum(r.netSellers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       else if (type==="new")    mid=`<td class="num"><span class="chg pos">${fmtNum(r.fundCount)}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
@@ -508,14 +579,14 @@
       };
     }
 
-    // Consensus Buys: top 10 by netBuyers desc, tiebreak by netValue desc
+    // Most Widely Bought: top 10 by netBuyers desc, tiebreak by netValue desc
     const allConsensus = Object.values(consensusMap);
     tableData.netAdd = [...allConsensus]
       .filter(r => r.netBuyers > 0)
       .sort((a,b) => b.netBuyers - a.netBuyers || b.netValue - a.netValue)
       .slice(0, 10);
 
-    // Consensus Sellers: top 10 by netSellers desc, tiebreak by netValue desc
+    // Most Widely Sold: top 10 by netSellers desc, tiebreak by netValue desc
     tableData.netDec = [...allConsensus]
       .filter(r => r.netSellers > 0)
       .sort((a,b) => b.netSellers - a.netSellers || b.netValue - a.netValue)
@@ -525,6 +596,41 @@
       Object.values(map).sort((a,b) => b.fundCount-a.fundCount || b[tie]-a[tie]).slice(0,10);
     tableData.new    = sortAndSlice(newMap);
     tableData.exit   = sortAndSlice(exitMap);
+
+    // ── Biggest Hedge Fund Buys ───────────────────────────────────
+    // Per fund-stock pair: existing positions only, increased, value >= $1M
+    const bigBuysList = [];
+    const fundMap = {};
+    if (stockIndexRaw._fundsRef) stockIndexRaw._fundsRef.forEach(f => { fundMap[f.id] = f; });
+
+    for (const [key, stock] of Object.entries(stockIndex)) {
+      const { name, ticker, cusip, funds: stockFunds } = stock;
+      if (!stockFunds) continue;
+      for (const [fid, fundData] of Object.entries(stockFunds)) {
+        const quarters = fundData.quarters || {};
+        const cur  = quarters[selectedQ];
+        const prev = quarters[pQ];
+        if (!cur || !prev) continue;
+        const sharesNow  = cur.shares  || 0;
+        const sharesPrev = prev.shares || 0;
+        const valueNow   = cur.value   || 0;
+        // Must be existing position (prev > 0), increased, and >= $1M current value
+        if (sharesPrev <= 0 || sharesNow <= sharesPrev || valueNow < 1000000) continue;
+        const pctIncrease = ((sharesNow - sharesPrev) / sharesPrev) * 100;
+        const fundName = stockIndexRaw._fundsRef
+          ? (stockIndexRaw._fundsRef.find(f => f.id === fid)?.name || fid)
+          : fid;
+        bigBuysList.push({
+          key, name, ticker: ticker||null, cusip: cusip||null,
+          fundId: fid, fundName,
+          pctIncrease, sharesAdded: sharesNow - sharesPrev,
+          totalShares: sharesNow, totalValue: valueNow
+        });
+      }
+    }
+    tableData.bigBuys = bigBuysList
+      .sort((a,b) => b.pctIncrease - a.pctIncrease)
+      .slice(0, 10);
   }
 
   function renderAllTables() {
@@ -532,8 +638,9 @@
     document.getElementById("tbl-netDec").innerHTML = buildTable("netDec");
     document.getElementById("tbl-new").innerHTML    = buildTable("new");
     document.getElementById("tbl-exit").innerHTML   = buildTable("exit");
-    ["fn-new","fn-exit"].forEach((id,i) => {
-      document.getElementById(id).style.display = [tableData.new,tableData.exit][i].length ? "" : "none";
+    document.getElementById("tbl-bigBuys").innerHTML = buildTable("bigBuys");
+    ["fn-new","fn-exit","fn-bigBuys"].forEach((id,i) => {
+      document.getElementById(id).style.display = [tableData.new,tableData.exit,tableData.bigBuys][i].length ? "" : "none";
     });
   }
 
@@ -545,14 +652,15 @@
 
   function selectQuarter(q) {
     activeQ = q;
-    sortState.netAdd = { col: 2, asc: false }; sortState.netDec = { col: 2, asc: false };
-    sortState.new    = { col: 2, asc: false }; sortState.exit   = { col: 2, asc: false };
+    sortState.netAdd  = { col: 2, asc: false }; sortState.netDec = { col: 2, asc: false };
+    sortState.new     = { col: 2, asc: false }; sortState.exit   = { col: 2, asc: false };
+    sortState.bigBuys = { col: 2, asc: false };
     renderQuarterTabs();
     computeForQuarter(q);
     renderAllTables();
     const ql = quarterLabel(q);
-    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Consensus Buys and Sells`;
-    document.title = `Hedge Fund Activity: Top Consensus Buys and Sells | 13FAI`;
+    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Most Widely Bought and Sells`;
+    document.title = `Hedge Fund Activity: Top Most Widely Bought and Sells | 13FAI`;
   }
 
   // ── Bootstrap ──────────────────────────────────────────────────
@@ -572,8 +680,8 @@
     activeQ = allQuarters[0];
 
     const ql = quarterLabel(activeQ);
-    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Consensus Buys and Sells`;
-    document.title = `Hedge Fund Activity: Top Consensus Buys and Sells | 13FAI`;
+    document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Most Widely Bought and Sells`;
+    document.title = `Hedge Fund Activity: Top Most Widely Bought and Sells | 13FAI`;
 
     renderQuarterTabs();
     computeForQuarter(activeQ);
@@ -587,7 +695,7 @@
   });
 
   // ── Side nav scroll spy ────────────────────────────────────────
-  const sections = ["sec-netAdd","sec-netDec","sec-new","sec-exit"];
+  const sections = ["sec-netAdd","sec-netDec","sec-new","sec-exit","sec-bigBuys"];
   const navLinks = document.querySelectorAll(".side-nav-link");
   window.addEventListener("scroll", () => {
     let current = sections[0];
