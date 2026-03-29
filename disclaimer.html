@@ -12,24 +12,25 @@
     :root {
       --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
       --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
-      --accent-light: #eef4f0; --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+      --accent-light: #edf4f0;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-
-    /* ── Header ── */
-    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
-    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    header {
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 1rem 2rem;
+    }
+    .header-top { display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: flex; align-items: center; }
     .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
     .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
     .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
     .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
     .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
     @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
     @media (max-width: 699px) { .desktop-nav { display: none !important; } }
-
-    /* ── Content ── */
-    main { max-width: 760px; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
-    @media (min-width: 700px) { main { padding: 3rem 2rem 5rem; } }
+    main { max-width: 760px; margin: 0 auto; padding: 3rem 2rem 5rem; }
     h1 { font-size: 1.6rem; font-weight: 500; margin-bottom: 0.4rem; }
     .updated { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); margin-bottom: 2rem; }
 
@@ -54,15 +55,15 @@
 
 <header>
   <div class="header-top">
-    <div style="display:flex; align-items:center; gap:1.75rem;">
+    <div class="brand">
       <a class="brand-name" href="index.html">13FAI</a>
-      <nav class="nav-links desktop-nav">
-        <a class="nav-link" href="index.html">Funds</a>
-        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
-        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
-        <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
-      </nav>
     </div>
+    <nav class="nav-links desktop-nav">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+    </nav>
   </div>
   <div class="header-nav-row">
     <nav class="nav-links">
