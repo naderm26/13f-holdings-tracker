@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -140,6 +141,7 @@
       <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Managers</a>
         <a class="nav-link" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
         <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -154,6 +156,7 @@
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Managers</a>
       <a class="nav-link" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
       <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -237,9 +240,15 @@
       FUND_CONFIG._fundOnly    = fundOnly;
       FUND_CONFIG._managerOnly = managerOnly;
 
-      // Show fund name as H1, manager name as subtitle below it
+      // Show fund name as H1, manager name as subtitle (link to bio page if available)
       document.getElementById("fund-name").textContent = fundOnly;
-      document.getElementById("fund-manager").textContent = managerOnly;
+      const bioSlug = f.bio_slug || null;
+      if (bioSlug) {
+        document.getElementById("fund-manager").innerHTML =
+          `<a href="${bioSlug}.html" style="color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--border);" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">${managerOnly} ↗</a>`;
+      } else {
+        document.getElementById("fund-manager").textContent = managerOnly;
+      }
 
       // Title set here as fallback; renderTable will update with quarter
       document.title = `${fundOnly} 13F Holdings | ${managerOnly} Portfolio`;
