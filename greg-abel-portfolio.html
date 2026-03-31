@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Greg Abel Portfolio 2025 | Berkshire Hathaway 13F Holdings</title>
+  <meta name="description" content="Track Greg Abel's latest stock picks and portfolio holdings from Berkshire Hathaway's 13F filings. See what Greg Abel is buying and selling in 2025."/>
+  <meta property="og:title" content="Greg Abel Portfolio 2025 | Berkshire Hathaway 13F Holdings"/>
+  <meta property="og:description" content="Track Greg Abel's latest stock picks and portfolio holdings from Berkshire Hathaway's 13F filings. See what Greg Abel is buying and selling in 2025."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/greg-abel-portfolio.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+    .search-wrap { position: relative; }
+    #search { font-family: var(--sans); font-size: 0.875rem; padding: 0.6rem 1rem 0.6rem 2.25rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 200px; outline: none; transition: border 0.15s; }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    @media (min-width: 700px) { #search { width: 280px; } }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 860px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+    .hero { display: flex; align-items: flex-start; gap: 1.25rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+    .avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 1.1rem; font-weight: 500; color: #fff; flex-shrink: 0; border: 2px solid var(--border); overflow: hidden; }
+    .hero-text { flex: 1; min-width: 200px; }
+    .hero-text h1 { font-size: 1.6rem; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 0.2rem; }
+    .hero-text .role { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .hero-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .tag { font-family: var(--mono); font-size: 0.68rem; padding: 0.2rem 0.55rem; border: 1px solid var(--border); border-radius: 4px; color: var(--muted); letter-spacing: 0.04em; }
+    .tag.accent { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .cta-banner { background: var(--accent-light); border: 1px solid var(--accent); border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.75rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .cta-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .cta-stat .label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.15rem; }
+    .cta-stat .value { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--text); }
+    .cta-btn { font-family: var(--mono); font-size: 0.78rem; background: var(--accent); color: #fff; padding: 0.55rem 1rem; border-radius: 4px; text-decoration: none; white-space: nowrap; transition: opacity 0.15s; }
+    .cta-btn:hover { opacity: 0.85; }
+    .stats-strip { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-bottom: 1.75rem; flex-wrap: wrap; }
+    .strip-stat { flex: 1; min-width: 130px; padding: 0.85rem 1rem; border-right: 1px solid var(--border); background: var(--surface); }
+    .strip-stat:last-child { border-right: none; }
+    .strip-stat .s-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.25rem; }
+    .strip-stat .s-value { font-family: var(--mono); font-size: 0.95rem; font-weight: 500; color: var(--text); }
+    .section-heading { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .content-section { margin-bottom: 2rem; }
+    .bio-text { font-size: 0.925rem; line-height: 1.8; color: var(--text); }
+    .bio-text p + p { margin-top: 0.9rem; }
+    blockquote { border-left: 3px solid var(--accent); padding: 0.75rem 1.25rem; margin: 0; background: var(--accent-light); border-radius: 0 4px 4px 0; }
+    blockquote p { font-size: 0.925rem; line-height: 1.75; color: var(--text); font-style: italic; }
+    blockquote cite { display: block; margin-top: 0.5rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); font-style: normal; }
+    .trades-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; }
+    .trade-card { border: 1px solid var(--border); border-radius: 6px; padding: 0.9rem 1rem; background: var(--surface); }
+    .trade-badge { font-family: var(--mono); font-size: 0.65rem; font-weight: 500; letter-spacing: 0.08em; padding: 0.15rem 0.45rem; border-radius: 3px; display: inline-block; margin-bottom: 0.5rem; }
+    .trade-badge.win { background: #dcfce7; color: var(--green); }
+    .trade-badge.loss { background: #fee2e2; color: var(--red); }
+    .trade-badge.current { background: var(--accent-light); color: var(--accent); }
+    .trade-title { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.35rem; }
+    .trade-desc { font-size: 0.8rem; line-height: 1.6; color: var(--muted); }
+    .holdings-preview { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .holdings-header { background: var(--surface); padding: 0.6rem 1rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+    .holdings-header span { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .holding-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); }
+    .holding-row:last-of-type { border-bottom: none; }
+    .h-rank { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); width: 1.25rem; flex-shrink: 0; text-align: right; }
+    .h-name { flex: 1; }
+    .h-company { font-size: 0.875rem; font-weight: 500; }
+    .h-ticker { font-family: var(--mono); font-size: 0.72rem; color: #2563eb; }
+    .h-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .h-bar { height: 100%; background: var(--accent); border-radius: 3px; }
+    .h-pct { font-family: var(--mono); font-size: 0.78rem; font-weight: 500; color: var(--accent); min-width: 2.5rem; text-align: right; }
+    .holdings-footer { padding: 0.75rem 1rem; border-top: 1px solid var(--border); background: var(--surface); text-align: center; }
+    .holdings-footer a { font-family: var(--mono); font-size: 0.75rem; color: var(--accent); text-decoration: none; }
+    .holdings-footer a:hover { text-decoration: underline; }
+    .loading-state { padding: 1.5rem 1rem; text-align: center; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div><a class="brand-name" href="/13f-holdings-tracker/index.html">13FAI</a></div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="/13f-holdings-tracker/index.html">Funds</a>
+        <a class="nav-link active" href="/13f-holdings-tracker/managers.html">Managers</a>
+        <a class="nav-link" href="/13f-holdings-tracker/top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="/13f-holdings-tracker/hedge-fund-activity.html">Activity</a>
+        <a class="nav-link" href="/13f-holdings-tracker/portfolio-overlap.html">Overlap</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="/13f-holdings-tracker/index.html">Funds</a>
+      <a class="nav-link active" href="/13f-holdings-tracker/managers.html">Managers</a>
+      <a class="nav-link" href="/13f-holdings-tracker/top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="/13f-holdings-tracker/hedge-fund-activity.html">Activity</a>
+      <a class="nav-link" href="/13f-holdings-tracker/portfolio-overlap.html">Overlap</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <div class="hero">
+    <div class="avatar">
+      <img src="/13f-holdings-tracker/images/greg-abel-portfolio.jpg" alt="Greg Abel"
+           onerror="this.style.display='none';document.getElementById('av-berkshire').style.display='flex';"
+           style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>
+      <span id="av-berkshire" style="display:none">GA</span>
+    </div>
+    <div class="hero-text">
+      <h1>Greg Abel</h1>
+      <div class="role">CEO (successor to Warren Buffett) — Berkshire Hathaway</div>
+      <div class="hero-tags">
+        <span class="tag accent">Value Investor</span>
+        <span class="tag">Value Investing</span>
+        <span class="tag">Long-Term Buy & Hold</span>
+        <span class="tag">Insurance Float</span>
+        <span class="tag">Operations</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cta-banner">
+    <div class="cta-stats">
+      <div class="cta-stat"><div class="label">AUM (13F)</div><div class="value">$274.16B</div></div>
+      <div class="cta-stat"><div class="label">Positions</div><div class="value">42</div></div>
+      <div class="cta-stat"><div class="label">Latest Filing</div><div class="value">Feb 17, 2026</div></div>
+    </div>
+    <a href="/13f-holdings-tracker/fund.html?fund=berkshire" class="cta-btn">View Full Portfolio →</a>
+  </div>
+
+    <div class="stats-strip">
+      <div class="strip-stat"><div class="s-label">Fund Founded</div><div class="s-value">1965</div></div>
+      <div class="strip-stat"><div class="s-label">Style</div><div class="s-value">Value</div></div>
+      <div class="strip-stat"><div class="s-label">Typical Positions</div><div class="s-value">40-50</div></div>
+      <div class="strip-stat"><div class="s-label">Net Worth</div><div class="s-value">$500M+</div></div>
+    </div>
+
+  <div class="content-section">
+    <div class="section-heading">Biography</div>
+    <div class="bio-text">
+      <p>Greg Abel became CEO of Berkshire Hathaway on January 1, 2026, succeeding Warren Buffett who had led the company for over 60 years. Born in Edmonton, Alberta in 1962, Abel studied accounting at the University of Alberta before beginning a career in the energy sector. He joined MidAmerican Energy in 1992 and rose to become its CEO, overseeing its transformation into one of the largest utility holding companies in the United States. Berkshire Hathaway acquired a controlling stake in MidAmerican in 1999, bringing Abel into the Berkshire orbit.</p>
+      <p>Abel was named Vice Chairman of Berkshire's non-insurance operations in 2018, and Buffett publicly identified him as his chosen successor in 2021. He is known as an extraordinarily disciplined operator — a hands-on executive who personally negotiates deals, reviews contracts, and travels constantly to the businesses he oversees. His style is quieter and more internally focused than Buffett's, and he has signaled continuity with Berkshire's core philosophy: patient capital allocation, decentralized management, permanent ownership of great businesses, and extreme conservatism on financial risk.</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="section-heading">Investment Philosophy</div>
+    <blockquote>
+      <p>Berkshire's culture is its competitive advantage. We will continue to look for great businesses run by great people, hold them for the long term, and never put the company in a position where it has to do something it doesn't want to do.</p>
+      <cite>— Greg Abel, Berkshire Hathaway</cite>
+    </blockquote>
+  </div>
+
+  <div class="content-section">
+    <div class="section-heading">Notable Trades</div>
+    <div class="trades-grid">
+      <div class="trade-card">
+        <span class="trade-badge win">WIN</span>
+        <div class="trade-title">MidAmerican Energy buildout</div>
+        <div class="trade-desc">Led MidAmerican's transformation from a regional utility into a major renewable energy platform, investing billions in wind and solar generation ahead of the sector.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge win">WIN</span>
+        <div class="trade-title">BHE renewable expansion</div>
+        <div class="trade-desc">Under Abel, Berkshire Hathaway Energy became one of the largest owners of wind and solar generation capacity in the US, a long-term positioning play.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge win">WIN</span>
+        <div class="trade-title">Berkshire non-insurance operations</div>
+        <div class="trade-desc">Oversaw a portfolio of businesses generating tens of billions in annual revenue, from BNSF railroad to See's Candies to Dairy Queen, maintaining Berkshire's decentralized culture.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge current">CURRENT</span>
+        <div class="trade-title">Inheriting Buffett's portfolio</div>
+        <div class="trade-desc">As CEO, Abel now oversees Berkshire's massive public equity portfolio including Apple, Bank of America, Coca-Cola, and Occidental Petroleum, built almost entirely by Buffett.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge current">CURRENT</span>
+        <div class="trade-title">Capital allocation decisions</div>
+        <div class="trade-desc">Abel faces the central question of what to do with Berkshire's enormous cash pile, and how to deploy capital at scale in a market where truly great businesses rarely come cheap.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="section-heading">Top Holdings — Berkshire Hathaway</div>
+    <div class="holdings-preview">
+      <div class="holdings-header">
+        <span>Top 5 Holdings · Q4 2025</span>
+        <span>Filed Feb 17, 2026</span>
+      </div>
+      <div id="holdings-list">
+      <div class="holding-row">
+        <div class="h-rank">1</div>
+        <div class="h-name">
+          <div class="h-company">APPLE INC</div>
+          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=AAPL" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">AAPL</a></div>
+        </div>
+        <div class="h-bar-wrap"><div class="h-bar" style="width:100.0%"></div></div>
+        <div class="h-pct">22.6%</div>
+      </div>
+      <div class="holding-row">
+        <div class="h-rank">2</div>
+        <div class="h-name">
+          <div class="h-company">AMERICAN EXPRESS CO</div>
+          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=AXP" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">AXP</a></div>
+        </div>
+        <div class="h-bar-wrap"><div class="h-bar" style="width:90.5%"></div></div>
+        <div class="h-pct">20.5%</div>
+      </div>
+      <div class="holding-row">
+        <div class="h-rank">3</div>
+        <div class="h-name">
+          <div class="h-company">BANK AMERICA CORP</div>
+          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=BAC" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">BAC</a></div>
+        </div>
+        <div class="h-bar-wrap"><div class="h-bar" style="width:45.9%"></div></div>
+        <div class="h-pct">10.4%</div>
+      </div>
+      <div class="holding-row">
+        <div class="h-rank">4</div>
+        <div class="h-name">
+          <div class="h-company">COCA COLA CO</div>
+          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=KO" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">KO</a></div>
+        </div>
+        <div class="h-bar-wrap"><div class="h-bar" style="width:45.1%"></div></div>
+        <div class="h-pct">10.2%</div>
+      </div>
+      <div class="holding-row">
+        <div class="h-rank">5</div>
+        <div class="h-name">
+          <div class="h-company">CHEVRON CORP NEW</div>
+          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=CVX" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">CVX</a></div>
+        </div>
+        <div class="h-bar-wrap"><div class="h-bar" style="width:32.0%"></div></div>
+        <div class="h-pct">7.2%</div>
+      </div>
+      </div>
+      <div class="holdings-footer">
+        <a href="/13f-holdings-tracker/fund.html?fund=berkshire">View all positions and full portfolio breakdown →</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F filings · For informational purposes only ·
+  <a href="/13f-holdings-tracker/disclaimer.html">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = '/13f-holdings-tracker';
+  const input = document.getElementById('search');
+  const results = document.getElementById('search-results');
+  let funds = [], stocks = [];
+
+  Promise.all([
+    fetch(PAGES + '/funds.json').then(r => r.json()).catch(() => []),
+    fetch(PAGES + '/stock_index.json').then(r => r.json()).catch(() => ({}))
+  ]).then(([f, si]) => {
+    funds  = Array.isArray(f) ? f : (f.funds || []);
+    const s = si.stocks || si;
+    stocks = Object.values(s).filter(x => x.ticker).map(x => ({ ticker: x.ticker, name: x.name }));
+  });
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove('visible'); return; }
+    const fr = funds.filter(f => f.name.toLowerCase().includes(q)).slice(0, 4);
+    const sr = stocks.filter(s => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)).slice(0, 3);
+    const all = [
+      ...fr.map(f => `<a class="search-result-item" href="${PAGES}/fund.html?fund=${f.id}"><span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);min-width:1.5rem">F</span>${f.name}</a>`),
+      ...sr.map(s => `<a class="search-result-item" href="${PAGES}/stock.html?ticker=${s.ticker}"><span style="font-family:var(--mono);font-size:0.72rem;color:#2563eb;min-width:1.5rem">${s.ticker}</span>${s.name}</a>`)
+    ];
+    results.innerHTML = all.length ? all.join('') : '<div class="no-results">No results</div>';
+    results.classList.add('visible');
+  });
+  document.addEventListener('click', e => { if (!input.contains(e.target)) results.classList.remove('visible'); });
+</script>
+</body>
+</html>
