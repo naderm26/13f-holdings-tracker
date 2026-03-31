@@ -243,11 +243,13 @@
       // Show fund name as H1, manager name as subtitle (link to bio page if available)
       document.getElementById("fund-name").textContent = fundOnly;
       const bioSlug = f.bio_slug || null;
+      const managerEl = document.getElementById("fund-manager");
       if (bioSlug) {
-        document.getElementById("fund-manager").innerHTML =
-          `<a href="${bioSlug}.html" style="color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--border);" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--muted)'">${managerOnly} ↗</a>`;
+        managerEl.innerHTML =
+          `<a href="${bioSlug}.html" style="color:#2563eb;text-decoration:none;font-size:0.95rem;">${managerOnly}</a><span style="color:var(--muted);font-size:0.78rem;"> (see Bio)</span>`;
       } else {
-        document.getElementById("fund-manager").textContent = managerOnly;
+        managerEl.style.fontSize = '0.95rem';
+        managerEl.textContent = managerOnly;
       }
 
       // Title set here as fallback; renderTable will update with quarter
