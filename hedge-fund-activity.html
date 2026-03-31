@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -638,7 +639,7 @@
     document.getElementById("tbl-netDec").innerHTML = buildTable("netDec");
     document.getElementById("tbl-new").innerHTML    = buildTable("new");
     document.getElementById("tbl-exit").innerHTML   = buildTable("exit");
-    document.getElementById("tbl-bigBuys").innerHTML = buildTable("bigBuys");
+    document.getElementById("tbl-bigBuys").innerHTML = buildBigBuysTable();
     ["fn-new","fn-exit","fn-bigBuys"].forEach((id,i) => {
       document.getElementById(id).style.display = [tableData.new,tableData.exit,tableData.bigBuys][i].length ? "" : "none";
     });
