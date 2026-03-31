@@ -79,7 +79,7 @@
       width: 64px; height: 64px; border-radius: 50%; background: var(--accent);
       display: flex; align-items: center; justify-content: center;
       font-family: var(--mono); font-size: 1.1rem; font-weight: 500; color: #fff;
-      flex-shrink: 0; border: 2px solid var(--border);
+      flex-shrink: 0; border: 2px solid var(--border); overflow: hidden;
     }
     .hero-text { flex: 1; min-width: 200px; }
     .hero-text h1 { font-size: 1.6rem; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 0.2rem; }
@@ -226,17 +226,13 @@
 
 <main>
 
-  <div class="breadcrumb">
-    <a href="index.html">Funds</a>
-    <span>›</span>
-    <a href="fund.html?fund=pershing">Pershing Square Capital Management</a>
-    <span>›</span>
-    <span style="color:var(--text)">Bill Ackman</span>
-  </div>
 
   <!-- Hero -->
   <div class="hero">
-    <div class="avatar">BA</div>
+    <div class="avatar" id="avatar">
+      <img id="avatar-img" src="images/bill-ackman.jpg" alt="Bill Ackman" onerror="this.style.display='none';document.getElementById('avatar-initials').style.display='flex';" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>
+      <span id="avatar-initials" style="display:none">BA</span>
+    </div>
     <div class="hero-text">
       <h1>Bill Ackman</h1>
       <div class="role">Founder & CEO — Pershing Square Capital Management</div>
@@ -369,14 +365,11 @@
   const PAGES = 'https://naderm26.github.io/13f-holdings-tracker';
 
   // ── Helpers ──
-  // values from EDGAR JSON are in $thousands; mult=1 for Pershing (no value_multiplier)
-  // Display matches fund.html: tv = sum(value) * mult, shown with toLocaleString (i.e. in $thousands as dollars)
+  // Match fund.html exactly: tv = sum(value) * mult, displayed as-is (values are in dollars)
   function fmtVal(v) {
-    // v is in $thousands (raw from EDGAR * mult)
-    const dollars = v * 1000;
-    if (dollars >= 1e9) return '$' + (dollars / 1e9).toFixed(1) + 'B';
-    if (dollars >= 1e6) return '$' + (dollars / 1e6).toFixed(0) + 'M';
-    return '$' + dollars.toLocaleString();
+    if (v >= 1e9) return '$' + (v / 1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return '$' + (v / 1e6).toFixed(1) + 'M';
+    return '$' + v.toLocaleString();
   }
 
   function fmtDate(d) {
@@ -421,7 +414,7 @@
       const topWeight = sorted[0] ? sorted[0].value / total * 100 : 100;
 
       // CTA stats
-      document.getElementById('cta-aum').textContent = fmtVal(total); // fmtVal handles $K → dollars conversion
+      document.getElementById('cta-aum').textContent = fmtVal(total);
       document.getElementById('cta-positions').textContent = grouped.length;
       document.getElementById('cta-filed').textContent = fmtDate(qdata.filed);
 
