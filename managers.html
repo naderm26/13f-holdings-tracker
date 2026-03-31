@@ -125,7 +125,7 @@
 <main>
   <div class="page-header">
     <h1>Hedge Fund Managers</h1>
-    <p>25 of the world's most closely watched investors — portfolios, strategies, and track records</p>
+    <p>Read the bios and see the holdings of the world's most closely watched investors.</p>
   </div>
 
   <div class="filter-bar">
@@ -186,7 +186,7 @@
       return `
         <a class="manager-card${hidden}" href="${m.slug}.html" data-style="${m.style}">
           <div class="m-avatar">
-            <img src="${PAGES}/images/${m.slug}.jpg" alt="${m.manager_name}"
+            <img src="${PAGES}/images/${m.fund_id}.jpg" alt="${m.manager_name}"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
                  style="display:block;"/>
             <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">${m.initials}</span>
