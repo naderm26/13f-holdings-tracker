@@ -96,7 +96,6 @@
     .fund-info { flex: 1; min-width: 0; }
     .fund-name { font-weight: 500; white-space: normal; word-break: break-word; }
     .fund-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; display: block; }
-    .bio-col { flex-shrink: 0; width: 2.5rem; display: flex; justify-content: flex-end; }
     .arrow { font-family: var(--mono); color: var(--border); font-size: 0.8rem; flex-shrink: 0; }
     .fund-list a:hover .arrow { color: var(--accent); }
     .loading { padding: 1.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: center; }
@@ -198,9 +197,6 @@
   }
 
   function fundItem(id, name, rank, meta, bioSlug) {
-    const bioLink = bioSlug
-      ? `<a href="${bioSlug}.html" onclick="event.stopPropagation()" style="font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:3px;padding:0.15rem 0.45rem;white-space:nowrap;">bio</a>`
-      : '';
     return `
       <li>
         <a href="fund.html?fund=${id}">
@@ -209,7 +205,6 @@
             <span class="fund-name">${name}<span class="fund-last-updated" data-fund-id="${id}" style="color:#2563eb;font-family:var(--mono);font-size:0.68rem;font-weight:400;margin-left:0.4rem;"></span></span>
             ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
           </span>
-          <span class="bio-col">${bioLink}</span>
           <span class="arrow">→</span>
         </a>
       </li>`;
