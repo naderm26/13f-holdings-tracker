@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,6 +119,7 @@
       <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
       <nav class="nav-links desktop-nav">
         <a class="nav-link active" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Managers</a>
         <a class="nav-link" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
         <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -132,6 +134,7 @@
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link active" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Managers</a>
       <a class="nav-link" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
       <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -194,13 +197,16 @@
     return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
   }
 
-  function fundItem(id, name, rank, meta) {
+  function fundItem(id, name, rank, meta, bioSlug) {
+    const bioLink = bioSlug
+      ? `<a href="${bioSlug}.html" onclick="event.stopPropagation()" style="font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:3px;padding:0.1rem 0.35rem;margin-left:0.5rem;white-space:nowrap;flex-shrink:0;">bio</a>`
+      : '';
     return `
       <li>
         <a href="fund.html?fund=${id}">
           <span class="rank">${rank}.</span>
           <span class="fund-info">
-            <span class="fund-name">${name}<span class="fund-last-updated" data-fund-id="${id}" style="color:#2563eb; font-family:var(--mono); font-size:0.68rem; font-weight:400; margin-left:0.5rem;"></span></span>
+            <span class="fund-name" style="display:flex;align-items:center;flex-wrap:wrap;gap:0.25rem;">${name}<span class="fund-last-updated" data-fund-id="${id}" style="color:#2563eb; font-family:var(--mono); font-size:0.68rem; font-weight:400;"></span>${bioLink}</span>
             ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
           </span>
           <span class="arrow">→</span>
@@ -227,12 +233,12 @@
   function renderPopular() {
     const el = document.getElementById("list-popular");
     const funds = POPULAR_IDS.map(id => allFunds.find(f => f.id === id)).filter(Boolean);
-    el.innerHTML = funds.map((f, i) => fundItem(f.id, f.name, i + 1, null)).join("");
+    el.innerHTML = funds.map((f, i) => fundItem(f.id, f.name, i + 1, null, f.bio_slug)).join("");
   }
 
   function renderAll() {
     const el = document.getElementById("list-all");
-    el.innerHTML = allFunds.map((f, i) => fundItem(f.id, f.name, i + 1, null)).join("");
+    el.innerHTML = allFunds.map((f, i) => fundItem(f.id, f.name, i + 1, null, f.bio_slug)).join("");
   }
 
   // Fetch latest filed date for each fund using new per-fund JSON format
