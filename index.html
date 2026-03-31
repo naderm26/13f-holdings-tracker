@@ -199,16 +199,17 @@
 
   function fundItem(id, name, rank, meta, bioSlug) {
     const bioLink = bioSlug
-      ? `<a href="${bioSlug}.html" onclick="event.stopPropagation()" style="font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:3px;padding:0.1rem 0.35rem;margin-left:0.5rem;white-space:nowrap;flex-shrink:0;">bio</a>`
+      ? `<a href="${bioSlug}.html" onclick="event.stopPropagation()" style="font-family:var(--mono);font-size:0.65rem;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:3px;padding:0.15rem 0.45rem;white-space:nowrap;flex-shrink:0;">bio</a>`
       : '';
     return `
       <li>
-        <a href="fund.html?fund=${id}">
+        <a href="fund.html?fund=${id}" style="display:flex;align-items:center;gap:0.75rem;">
           <span class="rank">${rank}.</span>
-          <span class="fund-info">
-            <span class="fund-name" style="display:flex;align-items:center;flex-wrap:wrap;gap:0.25rem;">${name}<span class="fund-last-updated" data-fund-id="${id}" style="color:#2563eb; font-family:var(--mono); font-size:0.68rem; font-weight:400;"></span>${bioLink}</span>
+          <span class="fund-info" style="flex:1;min-width:0;">
+            <span class="fund-name">${name}<span class="fund-last-updated" data-fund-id="${id}" style="color:#2563eb;font-family:var(--mono);font-size:0.68rem;font-weight:400;margin-left:0.4rem;"></span></span>
             ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
           </span>
+          <span style="flex-shrink:0;min-width:2.5rem;text-align:right;">${bioLink}</span>
           <span class="arrow">→</span>
         </a>
       </li>`;
