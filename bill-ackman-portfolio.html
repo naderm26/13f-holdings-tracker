@@ -1,0 +1,486 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bill Ackman Portfolio 2025 | Pershing Square Capital Management Holdings</title>
+  <meta name="description" content="Track Bill Ackman's latest stock picks and portfolio holdings from Pershing Square Capital Management's 13F filings. See what Bill Ackman is buying and selling in 2025."/>
+  <meta property="og:title" content="Bill Ackman Portfolio 2025 | Pershing Square 13F Holdings"/>
+  <meta property="og:description" content="Track Bill Ackman's latest stock picks and portfolio holdings from Pershing Square Capital Management's 13F filings."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/bill-ackman-portfolio.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 200px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    @media (min-width: 700px) { #search { width: 280px; } }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+    }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+
+    /* ── Main layout ── */
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 860px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); margin-bottom: 1.75rem; display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; }
+    .breadcrumb a { color: var(--muted); text-decoration: none; }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb span { color: var(--border); }
+
+    /* ── Hero ── */
+    .hero { display: flex; align-items: flex-start; gap: 1.25rem; margin-bottom: 1.75rem; flex-wrap: wrap; }
+    .avatar {
+      width: 64px; height: 64px; border-radius: 50%; background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--mono); font-size: 1.1rem; font-weight: 500; color: #fff;
+      flex-shrink: 0; border: 2px solid var(--border);
+    }
+    .hero-text { flex: 1; min-width: 200px; }
+    .hero-text h1 { font-size: 1.6rem; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 0.2rem; }
+    .hero-text .role { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); margin-bottom: 0.6rem; }
+    .hero-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .tag {
+      font-family: var(--mono); font-size: 0.68rem; padding: 0.2rem 0.55rem;
+      border: 1px solid var(--border); border-radius: 4px; color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .tag.accent { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* ── CTA Banner ── */
+    .cta-banner {
+      background: var(--accent-light); border: 1px solid var(--accent);
+      border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.75rem;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+    }
+    .cta-stats { display: flex; gap: 2rem; flex-wrap: wrap; }
+    .cta-stat { }
+    .cta-stat .label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.15rem; }
+    .cta-stat .value { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--text); }
+    .cta-btn {
+      font-family: var(--mono); font-size: 0.78rem;
+      background: var(--accent); color: #fff;
+      padding: 0.55rem 1rem; border-radius: 4px; text-decoration: none;
+      white-space: nowrap; transition: opacity 0.15s;
+    }
+    .cta-btn:hover { opacity: 0.85; }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      display: flex; gap: 0; border: 1px solid var(--border); border-radius: 6px;
+      overflow: hidden; margin-bottom: 1.75rem; flex-wrap: wrap;
+    }
+    .strip-stat {
+      flex: 1; min-width: 130px; padding: 0.85rem 1rem;
+      border-right: 1px solid var(--border); background: var(--surface);
+    }
+    .strip-stat:last-child { border-right: none; }
+    .strip-stat .s-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.25rem; }
+    .strip-stat .s-value { font-family: var(--mono); font-size: 0.95rem; font-weight: 500; color: var(--text); }
+
+    /* ── Section headings ── */
+    .section-heading {
+      font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.12em; color: var(--muted); margin-bottom: 0.75rem;
+      padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+    }
+    .content-section { margin-bottom: 2rem; }
+
+    /* ── Bio ── */
+    .bio-text { font-size: 0.925rem; line-height: 1.8; color: var(--text); }
+    .bio-text p + p { margin-top: 0.9rem; }
+
+    /* ── Philosophy quote ── */
+    blockquote {
+      border-left: 3px solid var(--accent); padding: 0.75rem 1.25rem;
+      margin: 0; background: var(--accent-light); border-radius: 0 4px 4px 0;
+    }
+    blockquote p { font-size: 0.925rem; line-height: 1.75; color: var(--text); font-style: italic; }
+    blockquote cite { display: block; margin-top: 0.5rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); font-style: normal; }
+
+    /* ── Notable trades ── */
+    .trades-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; }
+    .trade-card { border: 1px solid var(--border); border-radius: 6px; padding: 0.9rem 1rem; background: var(--surface); }
+    .trade-badge {
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.08em; padding: 0.15rem 0.45rem; border-radius: 3px;
+      display: inline-block; margin-bottom: 0.5rem;
+    }
+    .trade-badge.win { background: #dcfce7; color: var(--green); }
+    .trade-badge.loss { background: #fee2e2; color: var(--red); }
+    .trade-badge.current { background: var(--accent-light); color: var(--accent); }
+    .trade-title { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.35rem; }
+    .trade-desc { font-size: 0.8rem; line-height: 1.6; color: var(--muted); }
+
+    /* ── Holdings preview ── */
+    .holdings-preview { border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .holdings-header {
+      background: var(--surface); padding: 0.6rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .holdings-header span { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .holding-row {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.7rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .holding-row:last-of-type { border-bottom: none; }
+    .h-rank { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); width: 1.25rem; flex-shrink: 0; text-align: right; }
+    .h-name { flex: 1; }
+    .h-company { font-size: 0.875rem; font-weight: 500; }
+    .h-ticker { font-family: var(--mono); font-size: 0.72rem; color: #2563eb; }
+    .h-bar-wrap { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .h-bar { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.6s ease; }
+    .h-pct { font-family: var(--mono); font-size: 0.78rem; font-weight: 500; color: var(--accent); min-width: 2.5rem; text-align: right; }
+    .holdings-footer {
+      padding: 0.75rem 1rem; border-top: 1px solid var(--border);
+      background: var(--surface); text-align: center;
+    }
+    .holdings-footer a {
+      font-family: var(--mono); font-size: 0.75rem; color: var(--accent);
+      text-decoration: none;
+    }
+    .holdings-footer a:hover { text-decoration: underline; }
+
+    .loading-state { padding: 1.5rem 1rem; text-align: center; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link active" href="index.html">Funds</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+        <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link active" href="index.html">Funds</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <div class="breadcrumb">
+    <a href="index.html">Funds</a>
+    <span>›</span>
+    <a href="fund.html?fund=pershing">Pershing Square Capital Management</a>
+    <span>›</span>
+    <span style="color:var(--text)">Bill Ackman</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="avatar">BA</div>
+    <div class="hero-text">
+      <h1>Bill Ackman</h1>
+      <div class="role">Founder & CEO — Pershing Square Capital Management</div>
+      <div class="hero-tags">
+        <span class="tag accent">Activist Investor</span>
+        <span class="tag">Long/Short Equity</span>
+        <span class="tag">Concentrated Portfolio</span>
+        <span class="tag">Value Investing</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live CTA Banner -->
+  <div class="cta-banner">
+    <div class="cta-stats">
+      <div class="cta-stat">
+        <div class="label">AUM (13F)</div>
+        <div class="value" id="cta-aum">—</div>
+      </div>
+      <div class="cta-stat">
+        <div class="label">Positions</div>
+        <div class="value" id="cta-positions">—</div>
+      </div>
+      <div class="cta-stat">
+        <div class="label">Latest Filing</div>
+        <div class="value" id="cta-filed">—</div>
+      </div>
+    </div>
+    <a href="fund.html?fund=pershing" class="cta-btn">View Full Portfolio →</a>
+  </div>
+
+  <!-- Stats Strip -->
+  <div class="stats-strip">
+    <div class="strip-stat">
+      <div class="s-label">Fund Founded</div>
+      <div class="s-value">2004</div>
+    </div>
+    <div class="strip-stat">
+      <div class="s-label">Style</div>
+      <div class="s-value">Activist</div>
+    </div>
+    <div class="strip-stat">
+      <div class="s-label">Typical Positions</div>
+      <div class="s-value">8–15</div>
+    </div>
+    <div class="strip-stat">
+      <div class="s-label">Net Worth</div>
+      <div class="s-value">$9B+</div>
+    </div>
+  </div>
+
+  <!-- Biography -->
+  <div class="content-section">
+    <div class="section-heading">Biography</div>
+    <div class="bio-text">
+      <p>Bill Ackman founded Pershing Square Capital Management in 2004 after his first fund, Gotham Partners, wound down following a series of high-profile but ultimately unsuccessful activist campaigns. Born in 1966 and raised in Chappaqua, New York, Ackman graduated from Harvard College magna cum laude in 1988 and earned his MBA from Harvard Business School in 1992. He is known as one of the most vocal and media-savvy investors in the world, regularly publishing detailed investment theses and engaging publicly in debates about his positions.</p>
+      <p>Pershing Square operates with an unusually concentrated portfolio — typically holding fewer than 15 positions — and takes large, often controlling stakes in publicly traded companies with the goal of influencing management or strategy. The fund has delivered exceptional long-term returns, including the legendary COVID hedge in early 2020 that turned a $27M premium into $2.6B in profit over a matter of weeks. Ackman launched Pershing Square USA (PSUS) in 2024 as a closed-end fund, giving retail investors direct access to his strategy.</p>
+    </div>
+  </div>
+
+  <!-- Philosophy -->
+  <div class="content-section">
+    <div class="section-heading">Investment Philosophy</div>
+    <blockquote>
+      <p>We look for simple, predictable, free-cash-flow-generative businesses with dominant market positions, where we can invest at a discount to intrinsic value and where we can be an active catalyst for change.</p>
+      <cite>— Bill Ackman, Pershing Square Capital Management</cite>
+    </blockquote>
+  </div>
+
+  <!-- Notable Trades -->
+  <div class="content-section">
+    <div class="section-heading">Notable Trades</div>
+    <div class="trades-grid">
+      <div class="trade-card">
+        <span class="trade-badge win">WIN</span>
+        <div class="trade-title">COVID Hedge (2020)</div>
+        <div class="trade-desc">Turned a $27M credit default swap position into $2.6B in roughly three weeks as markets collapsed. One of the greatest single trades in hedge fund history.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge win">WIN</span>
+        <div class="trade-title">General Growth Properties (2009)</div>
+        <div class="trade-desc">Bought a significant stake in GGP while it was in bankruptcy. The company emerged and Pershing made over $1.6B on the trade.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge loss">LOSS</span>
+        <div class="trade-title">Herbalife Short (2012–2018)</div>
+        <div class="trade-desc">A very public $1B short bet that Herbalife was a pyramid scheme. The position ultimately cost Pershing around $1B after Herbalife survived and the stock held up.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge loss">LOSS</span>
+        <div class="trade-title">Valeant Pharmaceuticals (2015–2017)</div>
+        <div class="trade-desc">A concentrated long position that turned catastrophic after accounting irregularities and drug pricing controversies. Ackman eventually exited at a loss of roughly $4B.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge current">CURRENT</span>
+        <div class="trade-title">Brookfield Corp (BN)</div>
+        <div class="trade-desc">One of Pershing's largest current positions. Ackman has spoken positively about Brookfield's long-term compounding potential and asset management business.</div>
+      </div>
+      <div class="trade-card">
+        <span class="trade-badge current">CURRENT</span>
+        <div class="trade-title">Alphabet / Nike</div>
+        <div class="trade-desc">Pershing initiated positions in both Google parent Alphabet and Nike in 2023, viewing them as dominant franchises trading below intrinsic value.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Holdings Preview -->
+  <div class="content-section">
+    <div class="section-heading">Top Holdings — Pershing Square</div>
+    <div class="holdings-preview">
+      <div class="holdings-header">
+        <span id="holdings-quarter-label">Latest Quarter</span>
+        <span id="holdings-filed-label"></span>
+      </div>
+      <div id="holdings-list"><div class="loading-state">Loading holdings…</div></div>
+      <div class="holdings-footer">
+        <a href="fund.html?fund=pershing">View all positions and full portfolio breakdown →</a>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F filings · For informational purposes only ·
+  <a href="disclaimer.html">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = 'https://naderm26.github.io/13f-holdings-tracker';
+
+  // ── Helpers ──
+  function fmtVal(v) {
+    if (v >= 1e9) return '$' + (v / 1e9).toFixed(1) + 'B';
+    if (v >= 1e6) return '$' + (v / 1e6).toFixed(0) + 'M';
+    return '$' + v.toLocaleString();
+  }
+
+  function fmtDate(d) {
+    if (!d) return '—';
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const [y, m, day] = d.split('-');
+    return `${months[parseInt(m,10)-1]} ${parseInt(day,10)}, ${y}`;
+  }
+
+  function fmtQ(q) {
+    if (!q) return '';
+    const m = q.match(/(\d{4})Q(\d)/);
+    return m ? `Q${m[2]} ${m[1]}` : q;
+  }
+
+  // ── Load pershing.json and populate live data ──
+  async function loadHoldings() {
+    try {
+      const [fundJson, tickerMap, pricesJson] = await Promise.all([
+        fetch(`${PAGES}/data/pershing.json`).then(r => r.json()),
+        fetch(`${PAGES}/cusip_to_ticker.json`).then(r => r.json()).catch(() => ({})),
+        fetch(`${PAGES}/prices.json`).then(r => r.json()).catch(() => ({}))
+      ]);
+
+      const quarters = Object.keys(fundJson.quarters).sort().reverse();
+      const latestQ = quarters[0];
+      const qdata = fundJson.quarters[latestQ];
+      const holdings = qdata.holdings.filter(h => h.shares > 0 && !h.putcall);
+
+      // Group by CUSIP
+      const map = new Map();
+      for (const h of holdings) {
+        const key = h.cusip || h.company;
+        if (map.has(key)) { const g = map.get(key); g.value += h.value; g.shares += h.shares; }
+        else map.set(key, { ...h });
+      }
+      const grouped = Array.from(map.values());
+      const total = grouped.reduce((s, h) => s + h.value, 0);
+
+      // Sort by value desc, top 5
+      const sorted = grouped.sort((a, b) => b.value - a.value).slice(0, 5);
+      const topWeight = sorted[0] ? sorted[0].value / total * 100 : 100;
+
+      // CTA stats
+      document.getElementById('cta-aum').textContent = fmtVal(total * 1000); // value in $K from EDGAR
+      document.getElementById('cta-positions').textContent = grouped.length;
+      document.getElementById('cta-filed').textContent = fmtDate(qdata.filed);
+
+      // Quarter label
+      document.getElementById('holdings-quarter-label').textContent = `Top 5 Holdings · ${fmtQ(latestQ)}`;
+      document.getElementById('holdings-filed-label').textContent = qdata.filed ? `Filed ${fmtDate(qdata.filed)}` : '';
+
+      // Render rows
+      const list = document.getElementById('holdings-list');
+      list.innerHTML = sorted.map((h, i) => {
+        const ticker = tickerMap[h.cusip] || '';
+        const weight = total > 0 ? (h.value / total * 100) : 0;
+        const barPct = topWeight > 0 ? (weight / topWeight * 100) : 0;
+        return `
+          <div class="holding-row">
+            <div class="h-rank">${i + 1}</div>
+            <div class="h-name">
+              <div class="h-company">${h.company}</div>
+              ${ticker ? `<div class="h-ticker"><a href="stock.html?ticker=${ticker}" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">${ticker}</a></div>` : ''}
+            </div>
+            <div class="h-bar-wrap"><div class="h-bar" style="width:${barPct.toFixed(1)}%"></div></div>
+            <div class="h-pct">${weight.toFixed(1)}%</div>
+          </div>`;
+      }).join('');
+
+    } catch(e) {
+      document.getElementById('holdings-list').innerHTML = '<div class="loading-state">Could not load holdings data.</div>';
+    }
+  }
+
+  // ── Search (reuse pattern from fund.html) ──
+  async function initSearch() {
+    const input = document.getElementById('search');
+    const results = document.getElementById('search-results');
+    let funds = [], stocks = [];
+
+    try {
+      const [f, si] = await Promise.all([
+        fetch(`${PAGES}/funds.json`).then(r => r.json()),
+        fetch(`${PAGES}/stock_index.json`).then(r => r.json()).catch(() => ({}))
+      ]);
+      funds = Array.isArray(f) ? f : (f.funds || []);
+      const s = si.stocks || si;
+      stocks = Object.values(s).filter(x => x.ticker).map(x => ({ ticker: x.ticker, name: x.name }));
+    } catch(e) {}
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { results.classList.remove('visible'); return; }
+      const fr = funds.filter(f => f.name.toLowerCase().includes(q)).slice(0, 4);
+      const sr = stocks.filter(s => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)).slice(0, 3);
+      const all = [
+        ...fr.map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}"><span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);min-width:1.5rem">F</span>${f.name}</a>`),
+        ...sr.map(s => `<a class="search-result-item" href="stock.html?ticker=${s.ticker}"><span style="font-family:var(--mono);font-size:0.72rem;color:#2563eb;min-width:1.5rem">${s.ticker}</span>${s.name}</a>`)
+      ];
+      results.innerHTML = all.length ? all.join('') : '<div class="no-results">No results</div>';
+      results.classList.add('visible');
+    });
+    document.addEventListener('click', e => { if (!input.contains(e.target)) results.classList.remove('visible'); });
+  }
+
+  loadHoldings();
+  initSearch();
+</script>
+</body>
+</html>
