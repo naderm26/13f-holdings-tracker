@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Top Hedge Fund Managers 2025 | Portfolios & Investment Strategies</title>
+  <meta name="description" content="Explore portfolios and investment strategies of the world's top hedge fund managers — Warren Buffett, Bill Ackman, Stanley Druckenmiller, Seth Klarman, and more. Track their latest 13F holdings."/>
+  <meta property="og:title" content="Top Hedge Fund Managers 2025 | 13FAI"/>
+  <meta property="og:description" content="Explore portfolios and investment strategies of the world's top hedge fund managers. Track their latest 13F holdings."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/managers.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; }
+    #search { font-family: var(--sans); font-size: 0.875rem; padding: 0.6rem 1rem 0.6rem 2.25rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 200px; outline: none; transition: border 0.15s; }
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--muted); }
+    @media (min-width: 700px) { #search { width: 280px; } }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+
+    /* ── Main ── */
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1100px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+
+    /* ── Page header ── */
+    .page-header { margin-bottom: 2rem; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 0.35rem; }
+    .page-header p { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+
+    /* ── Filter bar ── */
+    .filter-bar { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .filter-btn { font-family: var(--mono); font-size: 0.7rem; padding: 0.3rem 0.7rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── Grid ── */
+    .managers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .manager-card { background: var(--bg); padding: 1.1rem 1.25rem; text-decoration: none; color: var(--text); display: flex; align-items: center; gap: 1rem; transition: background 0.12s; }
+    .manager-card:hover { background: var(--accent-light); }
+    .manager-card.hidden { display: none; }
+
+    /* ── Avatar ── */
+    .m-avatar { width: 42px; height: 42px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.8rem; font-weight: 500; color: #fff; flex-shrink: 0; border: 1px solid var(--border); overflow: hidden; }
+    .m-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+    /* ── Card text ── */
+    .m-info { flex: 1; min-width: 0; }
+    .m-name { font-size: 0.925rem; font-weight: 500; margin-bottom: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .m-fund { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem; }
+    .m-tag { font-family: var(--mono); font-size: 0.63rem; padding: 0.15rem 0.4rem; border: 1px solid var(--border); border-radius: 3px; color: var(--muted); display: inline-block; }
+    .m-tag.accent { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+    /* ── Arrow ── */
+    .m-arrow { font-family: var(--mono); font-size: 0.8rem; color: var(--border); flex-shrink: 0; transition: color 0.12s; }
+    .manager-card:hover .m-arrow { color: var(--accent); }
+
+    /* ── Empty state ── */
+    .empty-state { grid-column: 1/-1; padding: 2rem; text-align: center; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div><a class="brand-name" href="index.html">13FAI</a></div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link active" href="managers.html">Managers</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+        <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link active" href="managers.html">Managers</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-header">
+    <h1>Hedge Fund Managers</h1>
+    <p>25 of the world's most closely watched investors — portfolios, strategies, and track records</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" data-style="all">All</button>
+    <button class="filter-btn" data-style="Activist">Activist</button>
+    <button class="filter-btn" data-style="Value">Value</button>
+    <button class="filter-btn" data-style="Quality Growth">Quality Growth</button>
+    <button class="filter-btn" data-style="Global Macro">Macro</button>
+    <button class="filter-btn" data-style="Long/Short">Long/Short</button>
+  </div>
+
+  <div class="managers-grid" id="managers-grid">
+    <!-- Populated by JS from funds_content.json -->
+    <div class="empty-state">Loading managers…</div>
+  </div>
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F filings · For informational purposes only ·
+  <a href="disclaimer.html">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = '/13f-holdings-tracker';
+
+  // Style filter groupings — maps filter button value → styles that match
+  const STYLE_MAP = {
+    'Activist':      s => s.includes('Activist'),
+    'Value':         s => s.includes('Value') || s.includes('Deep Value') || s.includes('Distressed'),
+    'Quality Growth':s => s.includes('Quality'),
+    'Global Macro':  s => s.includes('Macro'),
+    'Long/Short':    s => s.includes('Long/Short'),
+  };
+
+  let allManagers = [];
+  let activeFilter = 'all';
+
+  async function init() {
+    const [content, funds] = await Promise.all([
+      fetch(`${PAGES}/funds_content.json`).then(r => r.json()).catch(() => []),
+      fetch(`${PAGES}/funds.json`).then(r => r.json()).catch(() => [])
+    ]);
+
+    allManagers = content;
+    renderGrid(content);
+    initSearch(funds, content);
+  }
+
+  function renderGrid(managers) {
+    const grid = document.getElementById('managers-grid');
+    if (!managers.length) {
+      grid.innerHTML = '<div class="empty-state">No managers found.</div>';
+      return;
+    }
+    grid.innerHTML = managers.map(m => {
+      const styleMatch = activeFilter === 'all' || (STYLE_MAP[activeFilter] && STYLE_MAP[activeFilter](m.style));
+      const hidden = styleMatch ? '' : ' hidden';
+      return `
+        <a class="manager-card${hidden}" href="${m.slug}.html" data-style="${m.style}">
+          <div class="m-avatar">
+            <img src="${PAGES}/images/${m.slug}.jpg" alt="${m.manager_name}"
+                 onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                 style="display:block;"/>
+            <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">${m.initials}</span>
+          </div>
+          <div class="m-info">
+            <div class="m-name">${m.manager_name}</div>
+            <div class="m-fund">${m.fund_name}</div>
+            <span class="m-tag accent">${m.primary_tag || m.tags[0]}</span>
+          </div>
+          <div class="m-arrow">→</div>
+        </a>`;
+    }).join('');
+  }
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.style;
+
+      document.querySelectorAll('.manager-card').forEach(card => {
+        if (activeFilter === 'all') {
+          card.classList.remove('hidden');
+        } else {
+          const fn = STYLE_MAP[activeFilter];
+          const match = fn && fn(card.dataset.style);
+          card.classList.toggle('hidden', !match);
+        }
+      });
+
+      // Show empty state if all hidden
+      const visible = document.querySelectorAll('.manager-card:not(.hidden)').length;
+      const existing = document.querySelector('.empty-state');
+      if (!visible && !existing) {
+        document.getElementById('managers-grid').insertAdjacentHTML('beforeend',
+          '<div class="empty-state">No managers match this filter.</div>');
+      } else if (visible && existing) {
+        existing.remove();
+      }
+    });
+  });
+
+  // Search
+  function initSearch(funds, managers) {
+    const input   = document.getElementById('search');
+    const results = document.getElementById('search-results');
+    let stocks = [];
+
+    fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(si => {
+      const s = si.stocks || si;
+      stocks = Object.values(s).filter(x => x.ticker).map(x => ({ ticker: x.ticker, name: x.name }));
+    }).catch(() => {});
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { results.classList.remove('visible'); return; }
+
+      // Search managers too
+      const mr = managers.filter(m =>
+        m.manager_name.toLowerCase().includes(q) || m.fund_name.toLowerCase().includes(q)
+      ).slice(0, 3);
+      const fr = funds.filter(f => f.name.toLowerCase().includes(q) && !mr.find(m => m.fund_id === f.id)).slice(0, 3);
+      const sr = stocks.filter(s => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)).slice(0, 3);
+
+      const all = [
+        ...mr.map(m => `<a class="search-result-item" href="${m.slug}.html"><span style="font-family:var(--mono);font-size:0.72rem;color:var(--accent);min-width:1.5rem">M</span>${m.manager_name} — ${m.fund_name}</a>`),
+        ...fr.map(f => `<a class="search-result-item" href="${PAGES}/fund.html?fund=${f.id}"><span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);min-width:1.5rem">F</span>${f.name}</a>`),
+        ...sr.map(s => `<a class="search-result-item" href="${PAGES}/stock.html?ticker=${s.ticker}"><span style="font-family:var(--mono);font-size:0.72rem;color:#2563eb;min-width:1.5rem">${s.ticker}</span>${s.name}</a>`)
+      ];
+      results.innerHTML = all.length ? all.join('') : '<div class="no-results">No results</div>';
+      results.classList.add('visible');
+    });
+
+    document.addEventListener('click', e => { if (!input.contains(e.target)) results.classList.remove('visible'); });
+  }
+
+  init();
+</script>
+</body>
+</html>
