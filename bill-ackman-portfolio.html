@@ -369,10 +369,14 @@
   const PAGES = 'https://naderm26.github.io/13f-holdings-tracker';
 
   // ── Helpers ──
+  // values from EDGAR JSON are in $thousands; mult=1 for Pershing (no value_multiplier)
+  // Display matches fund.html: tv = sum(value) * mult, shown with toLocaleString (i.e. in $thousands as dollars)
   function fmtVal(v) {
-    if (v >= 1e9) return '$' + (v / 1e9).toFixed(1) + 'B';
-    if (v >= 1e6) return '$' + (v / 1e6).toFixed(0) + 'M';
-    return '$' + v.toLocaleString();
+    // v is in $thousands (raw from EDGAR * mult)
+    const dollars = v * 1000;
+    if (dollars >= 1e9) return '$' + (dollars / 1e9).toFixed(1) + 'B';
+    if (dollars >= 1e6) return '$' + (dollars / 1e6).toFixed(0) + 'M';
+    return '$' + dollars.toLocaleString();
   }
 
   function fmtDate(d) {
@@ -400,7 +404,7 @@
       const quarters = Object.keys(fundJson.quarters).sort().reverse();
       const latestQ = quarters[0];
       const qdata = fundJson.quarters[latestQ];
-      const holdings = qdata.holdings.filter(h => h.shares > 0 && !h.putcall);
+      const holdings = qdata.holdings.filter(h => h.shares > 0 && h.putcall !== 'PUT' && h.putcall !== 'CALL');
 
       // Group by CUSIP
       const map = new Map();
@@ -417,7 +421,7 @@
       const topWeight = sorted[0] ? sorted[0].value / total * 100 : 100;
 
       // CTA stats
-      document.getElementById('cta-aum').textContent = fmtVal(total * 1000); // value in $K from EDGAR
+      document.getElementById('cta-aum').textContent = fmtVal(total); // fmtVal handles $K → dollars conversion
       document.getElementById('cta-positions').textContent = grouped.length;
       document.getElementById('cta-filed').textContent = fmtDate(qdata.filed);
 
