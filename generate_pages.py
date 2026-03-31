@@ -145,7 +145,7 @@ def render_holding_row(row, top_weight):
         <div class="h-pct">{row["weight"]:.1f}%</div>
       </div>"""
 
-def render_page(manager, live):
+def render_page(manager, live, all_managers):
     slug         = manager["slug"]
     fund_id      = manager["fund_id"]
     name         = manager["manager_name"]
@@ -161,6 +161,15 @@ def render_page(manager, live):
     bio          = manager["bio"]
     quote        = manager["philosophy_quote"]
     trades       = manager["notable_trades"]
+
+    # Co-manager cross-link (e.g. Buffett ↔ Abel for Berkshire)
+    co_slug = manager.get("co_manager_slug", "")
+    co_manager = next((m for m in all_managers if m["slug"] == co_slug), None)
+    # Also check if another manager lists this one as co
+    if not co_manager:
+        co_manager = next((m for m in all_managers if m.get("co_manager_slug") == slug), None)
+        if co_manager:
+            co_slug = co_manager["slug"]
 
     # SEO
     title       = f"{name} Portfolio 2025 | {fund_name} 13F Holdings"
@@ -196,6 +205,14 @@ def render_page(manager, live):
 
     # Trades
     trades_html = "\n".join(render_trade(t) for t in trades)
+
+    # Co-manager cross-link HTML
+    if co_manager:
+        co_name = co_manager["manager_name"]
+        co_role = co_manager["role"]
+        co_manager_html = f'<div style="margin-top:0.5rem;font-family:var(--mono);font-size:0.72rem;color:var(--muted);">Also see: <a href="{PAGES_BASE}/{co_slug}.html" style="color:#2563eb;text-decoration:none;">{co_name}</a> — {co_role}</div>'
+    else:
+        co_manager_html = ""
 
     # Stats strip
     stats_html = f"""    <div class="stats-strip">
@@ -340,7 +357,7 @@ def render_page(manager, live):
 
   <div class="hero">
     <div class="avatar">
-      <img src="{PAGES_BASE}/images/{slug}.jpg" alt="{name}"
+      <img src="{PAGES_BASE}/images/{fund_id}.jpg" alt="{name}"
            onerror="this.style.display='none';document.getElementById('av-{fund_id}').style.display='flex';"
            style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>
       <span id="av-{fund_id}" style="display:none">{initials}</span>
@@ -350,6 +367,7 @@ def render_page(manager, live):
       <div class="role">{role} — {fund_name}</div>
       <div class="hero-tags">
         {tags_html}      </div>
+      {co_manager_html}
     </div>
   </div>
 
@@ -465,7 +483,7 @@ def main():
             print(f"  ⚠️  No data for {fund_id} — generating page with placeholders")
             skipped += 1
 
-        html     = render_page(manager, live)
+        html     = render_page(manager, live, managers)
         out_path = OUTPUT_DIR / f"{slug}.html"
 
         with open(out_path, "w") as f:
