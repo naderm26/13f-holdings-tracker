@@ -312,7 +312,8 @@ def render_page(manager, live):
     <div style="display:flex; align-items:center; gap:1.75rem;">
       <div><a class="brand-name" href="{PAGES_BASE}/index.html">13FAI</a></div>
       <nav class="nav-links desktop-nav">
-        <a class="nav-link active" href="{PAGES_BASE}/index.html">Funds</a>
+        <a class="nav-link" href="{PAGES_BASE}/index.html">Funds</a>
+        <a class="nav-link active" href="{PAGES_BASE}/managers.html">Managers</a>
         <a class="nav-link" href="{PAGES_BASE}/top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="{PAGES_BASE}/hedge-fund-activity.html">Activity</a>
         <a class="nav-link" href="{PAGES_BASE}/portfolio-overlap.html">Overlap</a>
@@ -326,7 +327,8 @@ def render_page(manager, live):
   </div>
   <div class="header-nav-row">
     <nav class="nav-links">
-      <a class="nav-link active" href="{PAGES_BASE}/index.html">Funds</a>
+      <a class="nav-link" href="{PAGES_BASE}/index.html">Funds</a>
+      <a class="nav-link active" href="{PAGES_BASE}/managers.html">Managers</a>
       <a class="nav-link" href="{PAGES_BASE}/top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="{PAGES_BASE}/hedge-fund-activity.html">Activity</a>
       <a class="nav-link" href="{PAGES_BASE}/portfolio-overlap.html">Overlap</a>
