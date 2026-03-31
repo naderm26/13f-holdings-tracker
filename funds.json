@@ -2,7 +2,8 @@
   {
     "id": "abrams",
     "name": "Abrams Capital Management (David Abrams)",
-    "cik": "0001358706"
+    "cik": "0001358706",
+    "bio_slug": "abrams-capital-portfolio"
   },
   {
     "id": "akre",
@@ -13,7 +14,8 @@
     "id": "ako",
     "name": "AKO Capital (AKO Capital LLP)",
     "cik": "0001376879",
-    "value_multiplier": 1000
+    "value_multiplier": 1000,
+    "bio_slug": "ako-capital-portfolio"
   },
   {
     "id": "altarock",
@@ -23,12 +25,14 @@
   {
     "id": "appaloosa",
     "name": "Appaloosa Management (David Tepper)",
-    "cik": "0001656456"
+    "cik": "0001656456",
+    "bio_slug": "david-tepper-portfolio"
   },
   {
     "id": "ariel_focus",
     "name": "Ariel Investments (John Rogers)",
-    "cik": "0000936753"
+    "cik": "0000936753",
+    "bio_slug": "ariel-investments-portfolio"
   },
   {
     "id": "atlantic_inv",
@@ -39,12 +43,14 @@
     "id": "baupost",
     "name": "Baupost Group (Seth Klarman)",
     "cik": "0001061768",
-    "value_multiplier": 1000
+    "value_multiplier": 1000,
+    "bio_slug": "seth-klarman-portfolio"
   },
   {
     "id": "berkshire",
     "name": "Berkshire Hathaway (Warren Buffett)",
-    "cik": "0001067983"
+    "cik": "0001067983",
+    "bio_slug": "warren-buffett-portfolio"
   },
   {
     "id": "brave_warrior",
@@ -64,7 +70,8 @@
   {
     "id": "causeway",
     "name": "Causeway Capital Management (Sarah Ketterer)",
-    "cik": "0001165797"
+    "cik": "0001165797",
+    "bio_slug": "causeway-capital-portfolio"
   },
   {
     "id": "chou",
@@ -79,7 +86,8 @@
   {
     "id": "cooperman",
     "name": "Cooperman Capital (Leon Cooperman)",
-    "cik": "0000898382"
+    "cik": "0000898382",
+    "bio_slug": "leon-cooperman-portfolio"
   },
   {
     "id": "pabrai",
@@ -105,7 +113,8 @@
     "id": "duquesne",
     "name": "Duquesne Family Office (Stanley Druckenmiller)",
     "cik": "0001536411",
-    "value_multiplier": 1000
+    "value_multiplier": 1000,
+    "bio_slug": "stanley-druckenmiller-portfolio"
   },
   {
     "id": "durable_capital",
@@ -145,7 +154,8 @@
   {
     "id": "fundsmith",
     "name": "Fundsmith (Terry Smith)",
-    "cik": "0001569205"
+    "cik": "0001569205",
+    "bio_slug": "terry-smith-portfolio"
   },
   {
     "id": "gardner_russo",
@@ -155,7 +165,8 @@
   {
     "id": "gates",
     "name": "Gates Foundation Trust (Bill Gates)",
-    "cik": "0001166559"
+    "cik": "0001166559",
+    "bio_slug": "bill-gates-portfolio"
   },
   {
     "id": "giverny",
@@ -165,7 +176,8 @@
   {
     "id": "greenlight",
     "name": "DME Capital Management / Greenlight Capital (David Einhorn)",
-    "cik": "0001489933"
+    "cik": "0001489933",
+    "bio_slug": "david-einhorn-portfolio"
   },
   {
     "id": "greenlea_lane",
@@ -195,7 +207,8 @@
   {
     "id": "icahn",
     "name": "Icahn Capital (Carl Icahn)",
-    "cik": "0000921669"
+    "cik": "0000921669",
+    "bio_slug": "carl-icahn-portfolio"
   },
   {
     "id": "jensen",
@@ -210,7 +223,8 @@
   {
     "id": "lindsell_train",
     "name": "Lindsell Train (Nick Train)",
-    "cik": "0001484150"
+    "cik": "0001484150",
+    "bio_slug": "lindsell-train-portfolio"
   },
   {
     "id": "lone_pine",
@@ -220,7 +234,8 @@
   {
     "id": "longleaf",
     "name": "Longleaf Partners / Southeastern Asset Management (Mason Hawkins)",
-    "cik": "0000807985"
+    "cik": "0000807985",
+    "bio_slug": "mason-hawkins-portfolio"
   },
   {
     "id": "makaira",
@@ -245,7 +260,8 @@
   {
     "id": "mairs_power",
     "name": "Mairs & Power",
-    "cik": "0001070134"
+    "cik": "0001070134",
+    "bio_slug": "mairs-power-portfolio"
   },
   {
     "id": "miller_value",
@@ -276,12 +292,14 @@
   {
     "id": "pershing",
     "name": "Pershing Square Capital Management (Bill Ackman)",
-    "cik": "0001336528"
+    "cik": "0001336528",
+    "bio_slug": "bill-ackman-portfolio"
   },
   {
     "id": "polen",
     "name": "Polen Capital Management",
-    "cik": "0001034524"
+    "cik": "0001034524",
+    "bio_slug": "polen-capital-portfolio"
   },
   {
     "id": "punch_card",
@@ -296,12 +314,14 @@
   {
     "id": "rv_capital",
     "name": "RV Capital (Robert Vinall)",
-    "cik": "0001766596"
+    "cik": "0001766596",
+    "bio_slug": "robert-vinall-portfolio"
   },
   {
     "id": "scion",
     "name": "Scion Asset Management (Michael Burry)",
-    "cik": "0001649339"
+    "cik": "0001649339",
+    "bio_slug": "michael-burry-portfolio"
   },
   {
     "id": "semper_augustus",
@@ -326,7 +346,8 @@
   {
     "id": "tci",
     "name": "TCI Fund Management (Chris Hohn)",
-    "cik": "0001647251"
+    "cik": "0001647251",
+    "bio_slug": "chris-hohn-portfolio"
   },
   {
     "id": "third_avenue",
@@ -336,7 +357,8 @@
   {
     "id": "third_point",
     "name": "Third Point (Daniel Loeb)",
-    "cik": "0001040273"
+    "cik": "0001040273",
+    "bio_slug": "daniel-loeb-portfolio"
   },
   {
     "id": "tiger_global",
@@ -351,7 +373,8 @@
   {
     "id": "trian",
     "name": "Trian Fund Management (Nelson Peltz)",
-    "cik": "0001345471"
+    "cik": "0001345471",
+    "bio_slug": "nelson-peltz-portfolio"
   },
   {
     "id": "triple_frond",
@@ -367,7 +390,8 @@
   {
     "id": "valueact",
     "name": "ValueAct Capital (ValueAct Holdings)",
-    "cik": "0001418814"
+    "cik": "0001418814",
+    "bio_slug": "valueact-capital-portfolio"
   },
   {
     "id": "valley_forge",
@@ -398,7 +422,8 @@
   {
     "id": "thiel_macro",
     "name": "Thiel Macro (Peter Thiel)",
-    "cik": "0001562087"
+    "cik": "0001562087",
+    "bio_slug": "peter-thiel-portfolio"
   },
   {
     "id": "yacktman",
