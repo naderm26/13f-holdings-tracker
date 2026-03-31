@@ -64,7 +64,7 @@ def group_by_cusip(holdings):
             m[key] = dict(h)
     return [v for v in m.values() if v.get("shares", 0) > 0]
 
-def load_fund_data(fund_id, tickers):
+def load_fund_data(fund_id, tickers, mult=1):
     """Load per-fund JSON and return live stats + top 5 holdings."""
     path = DATA_DIR / f"{fund_id}.json"
     if not path.exists():
@@ -79,7 +79,6 @@ def load_fund_data(fund_id, tickers):
 
     latest_q = quarters[0]
     qdata    = fund_json["quarters"][latest_q]
-    mult     = fund_json.get("value_multiplier", 1)  # not in per-fund JSON but kept for safety
 
     # Filter equities only (exclude PUT/CALL options)
     holdings = [
@@ -88,17 +87,17 @@ def load_fund_data(fund_id, tickers):
     ]
     grouped = group_by_cusip(holdings)
 
-    # Total value (raw — EDGAR values are in dollars in per-fund JSON)
-    total_val = sum(h["value"] for h in grouped)
+    # Apply value_multiplier (same as fund.html: tv = sum(value) * mult)
+    total_val = sum(h["value"] for h in grouped) * mult
     positions = len(grouped)
 
-    # Top 5 by value
-    top5 = sorted(grouped, key=lambda h: h["value"], reverse=True)[:5]
+    # Top 5 by value (use multiplied value for correct ranking)
+    top5 = sorted(grouped, key=lambda h: h["value"] * mult, reverse=True)[:5]
 
     holdings_rows = []
     for i, h in enumerate(top5):
         ticker  = tickers.get(h.get("cusip", ""), "")
-        weight  = (h["value"] / total_val * 100) if total_val > 0 else 0
+        weight  = (h["value"] * mult / total_val * 100) if total_val > 0 else 0
         holdings_rows.append({
             "rank":    i + 1,
             "company": h.get("company", ""),
@@ -471,14 +470,23 @@ def main():
         with open(TICKERS_FILE) as f:
             tickers = json.load(f)
 
+    # Load value_multiplier from funds.json — same source as fund.html
+    funds_config_path = SCRIPT_DIR / "funds.json"
+    mult_map = {}
+    if funds_config_path.exists():
+        with open(funds_config_path) as f:
+            for fund in json.load(f):
+                mult_map[fund["id"]] = fund.get("value_multiplier", 1)
+
     generated = 0
     skipped   = 0
 
     for manager in managers:
         slug    = manager["slug"]
         fund_id = manager["fund_id"]
+        mult    = mult_map.get(fund_id, 1)
 
-        live = load_fund_data(fund_id, tickers)
+        live = load_fund_data(fund_id, tickers, mult)
         if not live:
             print(f"  ⚠️  No data for {fund_id} — generating page with placeholders")
             skipped += 1
