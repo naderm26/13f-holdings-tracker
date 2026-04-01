@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -135,6 +136,7 @@
       <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Managers</a>
         <a class="nav-link" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
         <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -149,6 +151,7 @@
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Managers</a>
       <a class="nav-link" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
       <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -369,6 +372,9 @@
       const latest  = qData[selectedQ];
       const prev1   = qData[prevQ]   || null;
       const prev4   = qData[prevYrQ] || null;
+
+      // Skip pure option positions (putcall set, shares/value zeroed by generate_stock_index)
+      if (latest && latest.putcall && latest.shares === 0) continue;
 
       if (latest && latest.shares > 0) {
         holdingFunds.push({ fid, fund, latest, prev1, prev4 });
