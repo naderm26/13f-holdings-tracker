@@ -75,6 +75,10 @@ for fund in funds:
             else:
                 putcall = list(g["putcall_set"])[0] if len(g["putcall_set"]) == 1 else ""
 
+            # For stock_index, only include equity shares/value (exclude pure-option positions)
+            # Options still stored with putcall tag for display, but shares/value = 0 if pure option
+            is_option_only = not g["has_stock"] and bool(g["putcall_set"])
+
             ticker = ticker_map.get(cusip, "")
             key    = ticker if ticker else cusip
 
@@ -90,8 +94,8 @@ for fund in funds:
                 stock_index[key]["funds"][fund_id] = {"quarters": {}}
 
             stock_index[key]["funds"][fund_id]["quarters"][ql] = {
-                "shares":  g["shares"],
-                "value":   g["value"],
+                "shares":  0 if is_option_only else g["shares"],
+                "value":   0 if is_option_only else g["value"],
                 "putcall": putcall
             }
 
