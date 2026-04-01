@@ -155,6 +155,7 @@ def render_page(manager, live, all_managers):
     net_worth    = manager["net_worth"]
     initials     = manager["initials"]
     role         = manager["role"]
+    photo        = manager.get("photo", fund_id)  # fallback to fund_id if no photo field
     tags         = manager["tags"]
     primary_tag  = manager.get("primary_tag", tags[0] if tags else "")
     bio          = manager["bio"]
@@ -356,7 +357,7 @@ def render_page(manager, live, all_managers):
 
   <div class="hero">
     <div class="avatar">
-      <img src="{PAGES_BASE}/images/{fund_id}.jpg" alt="{name}"
+      <img src="{PAGES_BASE}/images/{photo}.jpg" alt="{name}"
            onerror="this.style.display='none';document.getElementById('av-{fund_id}').style.display='flex';"
            style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>
       <span id="av-{fund_id}" style="display:none">{initials}</span>
