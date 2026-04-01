@@ -4,10 +4,10 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Top Hedge Fund Managers 2025 | Portfolios & Investment Strategies</title>
-  <meta name="description" content="Explore portfolios and investment strategies of the world's top hedge fund managers — Warren Buffett, Bill Ackman, Stanley Druckenmiller, Seth Klarman, and more. Track their latest 13F holdings."/>
-  <meta property="og:title" content="Top Hedge Fund Managers 2025 | 13FAI"/>
-  <meta property="og:description" content="Explore portfolios and investment strategies of the world's top hedge fund managers. Track their latest 13F holdings."/>
+  <title>Managers | Portfolios & Investment Strategies | 13FAI</title>
+  <meta name="description" content="Read the bios and see the holdings of the world's most closely watched investors — Warren Buffett, Bill Ackman, Stanley Druckenmiller, Seth Klarman, and more."/>
+  <meta property="og:title" content="Managers | 13FAI"/>
+  <meta property="og:description" content="Read the bios and see the holdings of the world's most closely watched investors."/>
   <meta property="og:type" content="website"/>
   <link rel="canonical" href="https://13fai.com/managers.html"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -77,7 +77,7 @@
     .m-name { font-size: 0.925rem; font-weight: 500; margin-bottom: 0.15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .m-fund { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 0.3rem; }
     .m-tag { font-family: var(--mono); font-size: 0.63rem; padding: 0.15rem 0.4rem; border: 1px solid var(--border); border-radius: 3px; color: var(--muted); display: inline-block; }
-    .m-tag.accent { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+    .m-tag.deceased { border-color: var(--muted); color: var(--muted); background: var(--surface); font-style: italic; }
 
     /* ── Arrow ── */
     .m-arrow { font-family: var(--mono); font-size: 0.8rem; color: var(--border); flex-shrink: 0; transition: color 0.12s; }
@@ -124,7 +124,7 @@
 
 <main>
   <div class="page-header">
-    <h1>Hedge Fund Managers</h1>
+    <h1>Managers</h1>
     <p>Read the bios and see the holdings of the world's most closely watched investors.</p>
   </div>
 
@@ -186,7 +186,7 @@
       return `
         <a class="manager-card${hidden}" href="${m.slug}.html" data-style="${m.style}">
           <div class="m-avatar">
-            <img src="${PAGES}/images/${m.fund_id}.jpg" alt="${m.manager_name}"
+            <img src="${PAGES}/images/${m.photo || m.fund_id}.jpg" alt="${m.manager_name}"
                  onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
                  style="display:block;"/>
             <span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;">${m.initials}</span>
@@ -195,6 +195,7 @@
             <div class="m-name">${m.manager_name}</div>
             <div class="m-fund">${m.fund_name}</div>
             <span class="m-tag accent">${m.primary_tag || m.tags[0]}</span>
+            ${m.deceased ? `<span class="m-tag deceased" style="margin-left:0.3rem;">Deceased</span>` : ''}
           </div>
           <div class="m-arrow">→</div>
         </a>`;
