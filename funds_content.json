@@ -110,7 +110,113 @@
         "desc": "Berkshire has aggressively accumulated OXY shares and warrants, making it a major energy sector bet at attractive valuations."
       }
     ],
-    "co_manager_slug": "greg-abel-portfolio"
+    "co_manager_slug": "greg-abel-portfolio",
+    "photo": "berkshire_buffett"
+  },
+  {
+    "manager_name": "Greg Abel",
+    "slug": "greg-abel-portfolio",
+    "fund_id": "berkshire",
+    "fund_name": "Berkshire Hathaway",
+    "fund_founded": 1965,
+    "style": "Value",
+    "typical_positions": "40-50",
+    "net_worth": "$500M+",
+    "initials": "GA",
+    "role": "CEO (successor to Warren Buffett)",
+    "tags": [
+      "Value Investing",
+      "Long-Term Buy & Hold",
+      "Insurance Float",
+      "Operations"
+    ],
+    "primary_tag": "Value Investor",
+    "bio": [
+      "Greg Abel became CEO of Berkshire Hathaway on January 1, 2026, succeeding Warren Buffett who had led the company for over 60 years. Born in Edmonton, Alberta in 1962, Abel studied accounting at the University of Alberta before beginning a career in the energy sector. He joined MidAmerican Energy in 1992 and rose to become its CEO, overseeing its transformation into one of the largest utility holding companies in the United States. Berkshire Hathaway acquired a controlling stake in MidAmerican in 1999, bringing Abel into the Berkshire orbit.",
+      "Abel was named Vice Chairman of Berkshire's non-insurance operations in 2018, and Buffett publicly identified him as his chosen successor in 2021. He is known as an extraordinarily disciplined operator \u2014 a hands-on executive who personally negotiates deals, reviews contracts, and travels constantly to the businesses he oversees. His style is quieter and more internally focused than Buffett's, and he has signaled continuity with Berkshire's core philosophy: patient capital allocation, decentralized management, permanent ownership of great businesses, and extreme conservatism on financial risk."
+    ],
+    "philosophy_quote": "Berkshire's culture is its competitive advantage. We will continue to look for great businesses run by great people, hold them for the long term, and never put the company in a position where it has to do something it doesn't want to do.",
+    "notable_trades": [
+      {
+        "badge": "WIN",
+        "title": "MidAmerican Energy buildout",
+        "desc": "Led MidAmerican's transformation from a regional utility into a major renewable energy platform, investing billions in wind and solar generation ahead of the sector."
+      },
+      {
+        "badge": "WIN",
+        "title": "BHE renewable expansion",
+        "desc": "Under Abel, Berkshire Hathaway Energy became one of the largest owners of wind and solar generation capacity in the US, a long-term positioning play."
+      },
+      {
+        "badge": "WIN",
+        "title": "Berkshire non-insurance operations",
+        "desc": "Oversaw a portfolio of businesses generating tens of billions in annual revenue, from BNSF railroad to See's Candies to Dairy Queen, maintaining Berkshire's decentralized culture."
+      },
+      {
+        "badge": "CURRENT",
+        "title": "Inheriting Buffett's portfolio",
+        "desc": "As CEO, Abel now oversees Berkshire's massive public equity portfolio including Apple, Bank of America, Coca-Cola, and Occidental Petroleum, built almost entirely by Buffett."
+      },
+      {
+        "badge": "CURRENT",
+        "title": "Capital allocation decisions",
+        "desc": "Abel faces the central question of what to do with Berkshire's enormous cash pile, and how to deploy capital at scale in a market where truly great businesses rarely come cheap."
+      }
+    ],
+    "photo": "berkshire_abel"
+  },
+  {
+    "manager_name": "Charlie Munger",
+    "slug": "charlie-munger-portfolio",
+    "fund_id": "berkshire",
+    "fund_name": "Berkshire Hathaway",
+    "fund_founded": 1965,
+    "style": "Value",
+    "typical_positions": "40\u201350",
+    "net_worth": "$2.6B (at time of passing)",
+    "initials": "CM",
+    "photo": "munger",
+    "role": "Vice Chairman (1978\u20132023, deceased)",
+    "tags": [
+      "Value Investing",
+      "Mental Models",
+      "Long-Term",
+      "Philosophy"
+    ],
+    "primary_tag": "Value Investor",
+    "bio": [
+      "Charlie Munger was the Vice Chairman of Berkshire Hathaway and Warren Buffett's closest partner for over 45 years, until his passing on November 28, 2023 at the age of 99. Born in Omaha, Nebraska in 1924, Munger studied mathematics at the University of Michigan before serving in World War II as a meteorologist. He earned his law degree from Harvard Law School in 1948 without ever completing an undergraduate degree, going on to practice law in Los Angeles where he built a successful real estate and investment business before partnering with Buffett.",
+      "Munger's intellectual influence on Buffett \u2014 and through him, on the entire field of value investing \u2014 is immeasurable. It was Munger who persuaded Buffett to evolve beyond Benjamin Graham's strict cigar-butt bargain hunting and instead pay fair prices for truly great businesses. His concept of the 'mental latticework' \u2014 using ideas from multiple disciplines to reason about the world \u2014 became one of the most influential frameworks in investing. His annual speeches at the Daily Journal Corporation shareholder meetings and his appearances at Berkshire's annual meeting in Omaha became required viewing for serious investors worldwide."
+    ],
+    "philosophy_quote": "It's not supposed to be easy. Anyone who finds it easy is stupid. It requires a broad understanding of the nature of things and the ability to apply that understanding in a rational way.",
+    "notable_trades": [
+      {
+        "badge": "WIN",
+        "title": "Berkshire partnership (1978\u20132023)",
+        "desc": "As Vice Chairman alongside Buffett, helped guide Berkshire from a struggling textile company into a $700B+ conglomerate, one of the greatest wealth creation stories in history."
+      },
+      {
+        "badge": "WIN",
+        "title": "Blue Chip Stamps / See's Candies",
+        "desc": "Munger was instrumental in the 1972 acquisition of See's Candies for $25M \u2014 a business that has since generated over $2B in cumulative pre-tax earnings and taught Buffett the power of brand and pricing."
+      },
+      {
+        "badge": "WIN",
+        "title": "Wesco Financial Corporation",
+        "desc": "Munger ran Wesco Financial as Chairman from 1984 to 2011, building it into a diversified holding company before merging it fully into Berkshire Hathaway."
+      },
+      {
+        "badge": "WIN",
+        "title": "Daily Journal Corporation",
+        "desc": "As Chairman of Daily Journal Corp, steered its investment portfolio into concentrated positions including a large Alibaba stake, demonstrating his independent conviction in later life."
+      },
+      {
+        "badge": "WIN",
+        "title": "Costco board (1997\u20132021)",
+        "desc": "A longtime Costco board member, Munger was one of the earliest and most vocal advocates for the warehouse club model as a durable, customer-obsessed business."
+      }
+    ],
+    "deceased": true
   },
   {
     "manager_name": "Michael Burry",
@@ -1033,7 +1139,7 @@
   {
     "manager_name": "Ariel Investments",
     "slug": "ariel-investments-portfolio",
-    "fund_id": "ariel",
+    "fund_id": "ariel_focus",
     "fund_name": "Ariel Investments",
     "fund_founded": 1983,
     "style": "Patient Value",
@@ -1282,57 +1388,6 @@
         "badge": "CURRENT",
         "title": "Concentrated value positions",
         "desc": "Abrams's small concentrated portfolio holds deeply researched value positions across sectors where the fund has strong conviction in intrinsic value."
-      }
-    ]
-  },
-  {
-    "manager_name": "Greg Abel",
-    "slug": "greg-abel-portfolio",
-    "fund_id": "berkshire",
-    "fund_name": "Berkshire Hathaway",
-    "fund_founded": 1965,
-    "style": "Value",
-    "typical_positions": "40-50",
-    "net_worth": "$500M+",
-    "initials": "GA",
-    "role": "CEO (successor to Warren Buffett)",
-    "tags": [
-      "Value Investing",
-      "Long-Term Buy & Hold",
-      "Insurance Float",
-      "Operations"
-    ],
-    "primary_tag": "Value Investor",
-    "bio": [
-      "Greg Abel became CEO of Berkshire Hathaway on January 1, 2026, succeeding Warren Buffett who had led the company for over 60 years. Born in Edmonton, Alberta in 1962, Abel studied accounting at the University of Alberta before beginning a career in the energy sector. He joined MidAmerican Energy in 1992 and rose to become its CEO, overseeing its transformation into one of the largest utility holding companies in the United States. Berkshire Hathaway acquired a controlling stake in MidAmerican in 1999, bringing Abel into the Berkshire orbit.",
-      "Abel was named Vice Chairman of Berkshire's non-insurance operations in 2018, and Buffett publicly identified him as his chosen successor in 2021. He is known as an extraordinarily disciplined operator \u2014 a hands-on executive who personally negotiates deals, reviews contracts, and travels constantly to the businesses he oversees. His style is quieter and more internally focused than Buffett's, and he has signaled continuity with Berkshire's core philosophy: patient capital allocation, decentralized management, permanent ownership of great businesses, and extreme conservatism on financial risk."
-    ],
-    "philosophy_quote": "Berkshire's culture is its competitive advantage. We will continue to look for great businesses run by great people, hold them for the long term, and never put the company in a position where it has to do something it doesn't want to do.",
-    "notable_trades": [
-      {
-        "badge": "WIN",
-        "title": "MidAmerican Energy buildout",
-        "desc": "Led MidAmerican's transformation from a regional utility into a major renewable energy platform, investing billions in wind and solar generation ahead of the sector."
-      },
-      {
-        "badge": "WIN",
-        "title": "BHE renewable expansion",
-        "desc": "Under Abel, Berkshire Hathaway Energy became one of the largest owners of wind and solar generation capacity in the US, a long-term positioning play."
-      },
-      {
-        "badge": "WIN",
-        "title": "Berkshire non-insurance operations",
-        "desc": "Oversaw a portfolio of businesses generating tens of billions in annual revenue, from BNSF railroad to See's Candies to Dairy Queen, maintaining Berkshire's decentralized culture."
-      },
-      {
-        "badge": "CURRENT",
-        "title": "Inheriting Buffett's portfolio",
-        "desc": "As CEO, Abel now oversees Berkshire's massive public equity portfolio including Apple, Bank of America, Coca-Cola, and Occidental Petroleum, built almost entirely by Buffett."
-      },
-      {
-        "badge": "CURRENT",
-        "title": "Capital allocation decisions",
-        "desc": "Abel faces the central question of what to do with Berkshire's enormous cash pile, and how to deploy capital at scale in a market where truly great businesses rarely come cheap."
       }
     ]
   }
