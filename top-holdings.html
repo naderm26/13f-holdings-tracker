@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -113,6 +114,7 @@
       <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Managers</a>
         <a class="nav-link active" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
         <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -127,6 +129,7 @@
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Managers</a>
       <a class="nav-link active" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
       <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -218,8 +221,8 @@
         const prev1   = qData[prevQ]   || null;
         const prev4   = qData[prevYrQ] || null;
 
-        // Current holder in selected quarter
-        if (current && current.shares > 0) {
+        // Current holder in selected quarter — skip pure options (zeroed by generate_stock_index)
+        if (current && current.shares > 0 && !current.putcall) {
           ownerCount++;
           totalShares += current.shares;
           totalValue  += current.value || 0;
@@ -228,8 +231,8 @@
           if (prev1 && prev1.shares > 0) { netShares1 += current.shares - prev1.shares; prevTotal1 += prev1.shares; }
           if (prev4 && prev4.shares > 0) { netShares4 += current.shares - prev4.shares; prevTotal4 += prev4.shares; }
         }
-        // Exited: held prevQ but not selectedQ — include in chgQtr
-        else if (!current && prev1 && prev1.shares > 0) {
+        // Exited: held prevQ but not selectedQ — include in chgQtr (equity only)
+        else if ((!current || current.shares === 0) && prev1 && prev1.shares > 0 && !prev1.putcall) {
           if (prev1 && prev1.shares > 0) { netShares1 += 0 - prev1.shares; prevTotal1 += prev1.shares; }
           if (prev4 && prev4.shares > 0) { netShares4 += 0 - prev4.shares; prevTotal4 += prev4.shares; }
         }
