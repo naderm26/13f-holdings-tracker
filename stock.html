@@ -408,12 +408,15 @@
       const ft          = fundTotals[fid]?.[selectedQ] || 0;
       const pct         = fmtPct(ft > 0 ? (latest.value / ft) * 100 : 0);
       // chg: NEW if no prev1 data at all; EXITED handled separately
-      const chg1Val = !prev1 ? (selectedQ !== allQuarters[allQuarters.length - 1] ? "NEW" : null)
-                    : prev1.shares === 0 ? "NEW"
-                    : ((latest.shares - prev1.shares) / prev1.shares) * 100;
-      const chg4Val = !prev4 ? null
-                    : prev4.shares === 0 ? "NEW"
-                    : ((latest.shares - prev4.shares) / prev4.shares) * 100;
+      // Exclude prev data if it was an option position
+      const prev1equity = prev1 && !prev1.putcall ? prev1 : null;
+      const prev4equity = prev4 && !prev4.putcall ? prev4 : null;
+      const chg1Val = !prev1equity ? (selectedQ !== allQuarters[allQuarters.length - 1] ? "NEW" : null)
+                    : prev1equity.shares === 0 ? "NEW"
+                    : ((latest.shares - prev1equity.shares) / prev1equity.shares) * 100;
+      const chg4Val = !prev4equity ? null
+                    : prev4equity.shares === 0 ? "NEW"
+                    : ((latest.shares - prev4equity.shares) / prev4equity.shares) * 100;
       const repPrice    = latest.shares > 0 ? latest.value / latest.shares : 0;
       const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
       const putcall     = latest.putcall || "";
@@ -450,19 +453,20 @@
       </tr>`;
     }).join("");
 
-    // Total row — include exits in chgQtr/chgYr
+    // Total row — include exits in chgQtr/chgYr, exclude option positions
     const totalShares = holdingFunds.reduce((s, x) => s + x.latest.shares, 0);
     const totalValue  = holdingFunds.reduce((s, x) => s + x.latest.value, 0);
     let ns1 = 0, pt1 = 0, ns4 = 0, pt4 = 0;
     for (const x of holdingFunds) {
-      if (x.prev1?.shares > 0) { ns1 += x.latest.shares - x.prev1.shares; pt1 += x.prev1.shares; }
-      if (x.prev4?.shares > 0) { ns4 += x.latest.shares - x.prev4.shares; pt4 += x.prev4.shares; }
+      // Skip if prev data is an option position
+      if (x.prev1?.shares > 0 && !x.prev1.putcall) { ns1 += x.latest.shares - x.prev1.shares; pt1 += x.prev1.shares; }
+      if (x.prev4?.shares > 0 && !x.prev4.putcall) { ns4 += x.latest.shares - x.prev4.shares; pt4 += x.prev4.shares; }
     }
     for (const { fid } of exitedFunds) {
       const prev1d = stock.funds[fid].quarters[prevQ];
       const prev4d = stock.funds[fid].quarters[prevYrQ];
-      if (prev1d?.shares > 0) { ns1 += 0 - prev1d.shares; pt1 += prev1d.shares; }
-      if (prev4d?.shares > 0) { ns4 += 0 - prev4d.shares; pt4 += prev4d.shares; }
+      if (prev1d?.shares > 0 && !prev1d.putcall) { ns1 += 0 - prev1d.shares; pt1 += prev1d.shares; }
+      if (prev4d?.shares > 0 && !prev4d.putcall) { ns4 += 0 - prev4d.shares; pt4 += prev4d.shares; }
     }
     const fmtTotalChg = (ns, pt) => {
       if (pt <= 0) return "—";
