@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -194,6 +195,7 @@
       <!-- Desktop nav: hidden on mobile via CSS -->
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Managers</a>
         <a class="nav-link" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link active" href="hedge-fund-activity.html">Activity</a>
         <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -209,6 +211,7 @@
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Managers</a>
       <a class="nav-link" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link active" href="hedge-fund-activity.html">Activity</a>
       <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
@@ -328,17 +331,11 @@
   const COLS = {
     netAdd: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds (Net Buyers)", sortKey: "netBuyers" },
-      { label: "Funds (Buyers)", sortKey: "buyers" },
-      { label: "Funds (Sellers)", sortKey: "sellers" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
     ],
     netDec: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
-      { label: "Funds (Net Sellers)", sortKey: "netSellers" },
-      { label: "Funds (Buyers)", sortKey: "buyers" },
-      { label: "Funds (Sellers)", sortKey: "sellers" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
     ],
@@ -354,7 +351,6 @@
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
       { label: "Prior Quarter Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
     ],
-
   };
 
   // ── Big buys table — separate renderer (fund+stock per row) ───
@@ -395,8 +391,8 @@
       const chgCols = `<td class="num">${fmtChg(chgQtr)}</td><td class="num">${fmtChg(chgYr)}</td>`;
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
       let mid;
-      if      (type==="netAdd") mid=`<td class="num"><span class="chg pos">${fmtNum(r.netBuyers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
-      else if (type==="netDec") mid=`<td class="num"><span class="chg neg">${fmtNum(r.netSellers)}</span></td><td class="num"><span class="chg pos">${fmtNum(r.buyers)}</span></td><td class="num"><span class="chg neg">${fmtNum(r.sellers)}</span></td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      if      (type==="netAdd") mid=`${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
+      else if (type==="netDec") mid=`${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       else if (type==="new")    mid=`<td class="num"><span class="chg pos">${fmtNum(r.fundCount)}</span></td><td class="num">${fmtShares(r.totalShares)}</td>${chgCols}<td class="num">${fmtValue(r.totalValue)}</td>`;
       else                      mid=`<td class="num"><span class="chg neg">${fmtNum(r.fundCount)}</span></td><td class="num"><span class="chg neg">-${fmtShares(r.totalShares)}</span></td>${chgCols}<td class="num" style="color:var(--muted)">${fmtValue(r.totalValue)}</td>`;
       return `<tr><td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i+1}</td><td class="col-company">${stockCell(r)}</td>${mid}${priceTd}</tr>`;
@@ -446,6 +442,10 @@
         const sharesPrev = prev1   ? (prev1.shares   || 0) : null;
         const valueNow   = current ? (current.value  || 0) : 0;
         const valuePrev  = prev1   ? (prev1.value    || 0) : 0;
+
+        // Skip pure option positions — putcall set means it's an option contract
+        if (current && current.putcall && sharesNow === 0) continue;
+        if (!current && prev1 && prev1.putcall && (sharesPrev === 0 || sharesPrev === null)) continue;
 
         // chgQtr/chgYr — ALL funds (matches stock.html)
         if (prev1 && prev1.shares > 0) { sd.ns1 += sharesNow - prev1.shares; sd.pt1 += prev1.shares; }
