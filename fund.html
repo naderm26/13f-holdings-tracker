@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -607,30 +608,39 @@
     return Array.from(map.values()).filter(r => r.shares > 0);
   }
 
+  function isOption(r) {
+    return r.putcall && (r.putcall.toUpperCase() === "PUT" || r.putcall.toUpperCase() === "CALL");
+  }
+
   // ── Render ────────────────────────────────────────────────────
   function renderTable() {
     const mult  = (FUND_CONFIG && FUND_CONFIG.value_multiplier) ? FUND_CONFIG.value_multiplier : 1;
     const rows  = groupByCompany(csvCache[activeQ] || []);
+    // Equity-only rows for AUM and weight calculations (exclude PUT/CALL)
+    const equityRows = rows.filter(r => !isOption(r));
     const idx   = allQuarters.indexOf(activeQ);
     const prev1 = idx + 1 < allQuarters.length ? groupByCompany(csvCache[allQuarters[idx + 1]] || []) : null;
+    const prev1Equity = prev1 ? prev1.filter(r => !isOption(r)) : null;
     // Prior year: find the quarter exactly 1 year back (same Q, year-1)
     const [activeYear, activeQn] = activeQ.split("Q");
     const prevYearLabel = (parseInt(activeYear) - 1) + "Q" + activeQn;
     const prev4 = allQuarters.includes(prevYearLabel) ? groupByCompany(csvCache[prevYearLabel] || []) : null;
+    const prev4Equity = prev4 ? prev4.filter(r => !isOption(r)) : null;
 
-    const tv = rows.reduce((s, r) => s + r.value, 0) * mult;
+    // AUM and portfolio value use equity-only rows
+    const tv = equityRows.reduce((s, r) => s + r.value, 0) * mult;
 
-    renderInsights(rows, prev1, mult, tv, activeQ);
+    renderInsights(equityRows, prev1Equity, mult, tv, activeQ);
 
     document.getElementById("total-value").textContent =
       "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
-    document.getElementById("total-positions").textContent = rows.length;
+    document.getElementById("total-positions").textContent = equityRows.length;
 
     // Portfolio value % change vs prior quarter
     const tvChgEl   = document.getElementById("total-value-chg");
     const tvChgYrEl = document.getElementById("total-value-chg-yr");
-    if (prev1 && prev1.length > 0) {
-      const tv1 = prev1.reduce((s, r) => s + r.value, 0) * mult;
+    if (prev1Equity && prev1Equity.length > 0) {
+      const tv1 = prev1Equity.reduce((s, r) => s + r.value, 0) * mult;
       if (tv1 > 0) {
         const chg = Math.round(((tv - tv1) / tv1) * 100);
         const sign = chg >= 0 ? "+" : "";
@@ -642,9 +652,8 @@
     } else {
       tvChgEl.innerHTML = `<span style="color:var(--muted); cursor:default; margin-left:0.75rem" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">— QoQ</span>`;
     }
-    // Portfolio value % change vs prior year (same quarter, year-1)
-    if (prev4 && prev4.length > 0) {
-      const tv4 = prev4.reduce((s, r) => s + r.value, 0) * mult;
+    if (prev4Equity && prev4Equity.length > 0) {
+      const tv4 = prev4Equity.reduce((s, r) => s + r.value, 0) * mult;
       if (tv4 > 0) {
         const chgYr = Math.round(((tv - tv4) / tv4) * 100);
         const signYr = chgYr >= 0 ? "+" : "";
@@ -700,8 +709,9 @@
 
     const rowsHtml = sorted.map((r, i) => {
       const adjValue  = r.value * mult;
-      const pctRaw    = tv > 0 ? (adjValue / tv) * 100 : 0;
-      const pct       = (pctRaw === 0) ? "—" : pctRaw.toFixed(2) + "%";
+      // Options excluded from weight/AUM — show — for their portfolio weight
+      const pctRaw    = (!isOption(r) && tv > 0) ? (adjValue / tv) * 100 : 0;
+      const pct       = isOption(r) ? "—" : (pctRaw === 0 ? "—" : pctRaw.toFixed(2) + "%");
       const repPrice  = r.shares > 0 ? adjValue / r.shares : 0;
       const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
       const valueStr  = adjValue >= 1e9
@@ -765,8 +775,8 @@
           <td class="col-data num right">—</td>
         </tr>`).join("") : "";
 
-    // ── Total row ─────────────────────────────────────────────────
-    const totalShares = rows.reduce((s, r) => s + r.shares, 0);
+    // ── Total row — equity only ───────────────────────────────────
+    const totalShares = equityRows.reduce((s, r) => s + r.shares, 0);
 
     const totalValueStr = tv >= 1e9
       ? "$" + (tv / 1e9).toFixed(1) + "B"
@@ -776,7 +786,7 @@
 
     const totalRow = `
       <tr class="total-row">
-        <td class="col-num num">${rows.length}</td>
+        <td class="col-num num">${equityRows.length}</td>
         <td class="col-company">Total</td>
         <td class="col-data num">100%</td>
         <td class="col-data num">${fmtSharesTotal(totalShares)}</td>
