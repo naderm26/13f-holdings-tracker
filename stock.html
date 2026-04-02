@@ -492,18 +492,19 @@
         <thead><tr>
           <th class="col-num" style="color:var(--muted)">#</th>
           <th class="col-fund" onclick="sort(0)">Fund${arrow(0)}</th>
-          <th class="col-data num" onclick="sort(1)">% of Portfolio${arrow(1)}</th>
-          <th class="col-data num" onclick="sort(2)">Shares${arrow(2)}</th>
-          <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
-          <th class="col-data num" onclick="sort(5)">Shares vs Prior Year${arrow(5)}</th>
-          <th class="col-data num" onclick="sort(3)">Aggregate Value${arrow(3)}</th>
-          <th class="col-data num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
+          <th class="col-data num" onclick="sort(1)">% of Portfolio †${arrow(1)}</th>
+          <th class="col-data num" onclick="sort(2)">Shares †${arrow(2)}</th>
+          <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter †${arrow(4)}</th>
+          <th class="col-data num" onclick="sort(5)">Shares vs Prior Year †${arrow(5)}</th>
+          <th class="col-data num" onclick="sort(3)">Aggregate Value †${arrow(3)}</th>
+          <th class="col-data num" onclick="sort(6)">Reported Price *${arrow(6)}</th>
           <th class="col-data num">Option</th>
         </tr></thead>
         <tbody>${rowsHtml}${exitedHtml}${totalRow}</tbody>
       </table></div>
       <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem">
-        * Price at last filing is not an actual purchase or sale price. It is the price as of the last holdings date. Portfolio value, share counts, and period-over-period changes exclude options positions (PUT/CALL), which are shown in the Option column for reference only.
+        * Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.<br/>
+        † Portfolio value, share counts, and period-over-period changes exclude options positions (PUT/CALL), which are shown in the Option column for reference only.
       </div>`;
   }
 
