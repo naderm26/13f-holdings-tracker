@@ -168,19 +168,25 @@
 <main>
   <div class="fund-identity">
     <div class="fund-name-row">
-      <div>
-        <h1 class="section-label" id="fund-name" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Loading...</h1>
-        <div id="fund-manager" style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;"></div>
+      <div style="display:flex;align-items:center;gap:0.9rem;">
+        <div id="fund-avatar" style="width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:0.85rem;font-weight:500;color:#fff;flex-shrink:0;border:1px solid var(--border);overflow:hidden;">
+          <img id="fund-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:none;"/>
+          <span id="fund-avatar-initials"></span>
+        </div>
+        <div>
+          <h1 class="section-label" id="fund-name" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Loading...</h1>
+          <div id="fund-manager" style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;"></div>
+        </div>
       </div>
       <div class="fund-stats">
         <div>
-          <div class="stat-label">Portfolio Value</div>
+          <div class="stat-label">Portfolio Value †</div>
           <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
           <div id="total-value-chg" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.15rem;"></div>
           <div id="total-value-chg-yr" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.1rem;"></div>
         </div>
         <div>
-          <div class="stat-label">Positions</div>
+          <div class="stat-label">Positions †</div>
           <div class="stat-value" id="total-positions">—</div>
         </div>
       </div>
@@ -253,6 +259,16 @@
         managerEl.style.fontSize = '0.95rem';
         managerEl.textContent = managerOnly;
       }
+
+      // Avatar — use images/{fund_id}.jpg, fallback to initials
+      const avatarImg      = document.getElementById("fund-avatar-img");
+      const avatarInitials = document.getElementById("fund-avatar-initials");
+      const initials = fundOnly.split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+      avatarInitials.textContent = initials;
+      avatarImg.alt = fundOnly;
+      avatarImg.src = `${PAGES}/images/${fundId}.jpg`;
+      avatarImg.onload  = () => { avatarImg.style.display = "block"; avatarInitials.style.display = "none"; };
+      avatarImg.onerror = () => { avatarImg.style.display = "none";  avatarInitials.style.display = ""; };
 
       // Title set here as fallback; renderTable will update with quarter
       document.title = `${fundOnly} 13F Holdings | ${managerOnly} Portfolio`;
