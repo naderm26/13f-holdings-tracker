@@ -1,0 +1,439 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>13F Filing Calendar 2025–2026 | Hedge Fund Reporting Dates | 13FAI</title>
+  <meta name="description" content="Track 13F filing deadlines for the world's top hedge funds. See last filed dates, reporting quarter, and next expected filing dates for Berkshire, Pershing Square, Duquesne, and more."/>
+  <meta property="og:title" content="13F Filing Calendar | 13FAI"/>
+  <meta property="og:description" content="Track 13F filing deadlines for the world's top hedge funds."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/filing-calendar.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* ── Header ── */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    /* ── Search ── */
+    .search-wrap { position: relative; }
+    #search { font-family: var(--sans); font-size: 0.875rem; padding: 0.6rem 1rem 0.6rem 2.25rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 200px; outline: none; transition: border 0.15s; }
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--muted); }
+    @media (min-width: 700px) { #search { width: 280px; } }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+
+    /* ── Main ── */
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1000px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+
+    /* ── Page header ── */
+    .page-header { margin-bottom: 1.5rem; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 0.5rem; }
+    .page-header p { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); line-height: 1.6; max-width: 680px; }
+
+    /* ── Filter bar ── */
+    .filter-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .filter-label { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+    .filter-btn { font-family: var(--mono); font-size: 0.7rem; padding: 0.3rem 0.7rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* ── Table ── */
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { width: 100%; min-width: 640px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; display: block; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.75rem; text-align: left; cursor: pointer; user-select: none; white-space: nowrap; }
+    th:hover { color: var(--text); }
+    th.sorted { color: var(--accent); }
+    th.right { text-align: right; }
+    td { padding: 0.8rem 0.75rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    td.mono { font-family: var(--mono); font-size: 0.82rem; }
+    td.right { text-align: right; }
+
+    /* ── Fund name cell ── */
+    .fund-link { text-decoration: none; color: var(--text); }
+    .fund-link:hover .fund-name { color: var(--accent); }
+    .fund-name { font-weight: 500; }
+    .fund-manager { font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; font-family: var(--mono); }
+
+    /* ── Status badges ── */
+    .badge { font-family: var(--mono); font-size: 0.68rem; font-weight: 500; letter-spacing: 0.05em; padding: 0.2rem 0.5rem; border-radius: 3px; display: inline-block; }
+    .badge.filed    { background: #dcfce7; color: var(--green); }
+    .badge.upcoming { background: var(--accent-light); color: var(--accent); }
+    .badge.overdue  { background: #fee2e2; color: var(--red); }
+    .badge.unknown  { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+    /* ── Days indicator ── */
+    .days-pos { color: var(--green); font-family: var(--mono); font-size: 0.82rem; }
+    .days-neg { color: var(--red); font-family: var(--mono); font-size: 0.82rem; }
+    .days-na  { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; }
+
+    /* ── Loading ── */
+    .loading { padding: 3rem; text-align: center; font-family: var(--mono); font-size: 0.8rem; color: var(--muted); }
+
+    /* ── Legend ── */
+    .legend { display: flex; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div><a class="brand-name" href="index.html">13FAI</a></div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Managers</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+        <a class="nav-link active" href="filing-calendar.html">Calendar</a>
+        <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Managers</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      <a class="nav-link active" href="filing-calendar.html">Calendar</a>
+      <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-header">
+    <h1>13F Filing Calendar</h1>
+    <p>Institutional investors managing over $100M must file a 13F with the SEC within 45 days of each quarter end — March 31, June 30, September 30, and December 31 — disclosing all US equity holdings as of that date. Expected dates below are calculated from each fund's most recent filing.</p>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label">Show:</span>
+    <button class="filter-btn active" data-filter="all">All funds</button>
+    <button class="filter-btn" data-filter="overdue">Overdue</button>
+    <button class="filter-btn" data-filter="upcoming">Due soon</button>
+    <button class="filter-btn" data-filter="filed">Filed this quarter</button>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><span class="badge filed">FILED</span> Filed this quarter</div>
+    <div class="legend-item"><span class="badge upcoming">UPCOMING</span> Due within 30 days</div>
+    <div class="legend-item"><span class="badge overdue">OVERDUE</span> Past expected date</div>
+    <div class="legend-item"><span class="badge unknown">UNKNOWN</span> No data available</div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="cal-table">
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Fund</th>
+          <th onclick="sortBy('quarter')" class="right">Latest Quarter</th>
+          <th onclick="sortBy('filed')" class="right">Filed</th>
+          <th onclick="sortBy('next')" class="right">Next Quarter End</th>
+          <th onclick="sortBy('due')" class="right">Filing Due</th>
+          <th onclick="sortBy('days')" class="right">Days Until Due</th>
+          <th class="right">Status</th>
+        </tr>
+      </thead>
+      <tbody id="cal-body">
+        <tr><td colspan="7" class="loading">Loading filing data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F filings · For informational purposes only ·
+  <a href="disclaimer.html">Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = '/13f-holdings-tracker';
+  const TODAY = new Date();
+  TODAY.setHours(0, 0, 0, 0);
+
+  // Quarter end dates — the four quarter ends
+  const QUARTER_ENDS = [
+    { q: 'Q1', month: 2,  day: 31 }, // March 31
+    { q: 'Q2', month: 5,  day: 30 }, // June 30
+    { q: 'Q3', month: 8,  day: 30 }, // September 30
+    { q: 'Q4', month: 11, day: 31 }, // December 31
+  ];
+
+  function quarterEnd(year, qIdx) {
+    const qe = QUARTER_ENDS[qIdx];
+    return new Date(year, qe.month, qe.day);
+  }
+
+  function filingDue(qEnd) {
+    // Due 45 days after quarter end
+    const d = new Date(qEnd);
+    d.setDate(d.getDate() + 45);
+    return d;
+  }
+
+  function nextQuarterEnd(lastFiledPeriod) {
+    // lastFiledPeriod is "YYYY-MM-DD" (the period end date from the JSON)
+    if (!lastFiledPeriod) return null;
+    const d = new Date(lastFiledPeriod);
+    // Find which quarter this was, then return the next one
+    const year  = d.getFullYear();
+    const month = d.getMonth(); // 0-indexed
+
+    // Map period end to quarter index
+    let qIdx;
+    if (month <= 2)       qIdx = 0; // Q1 ends Mar
+    else if (month <= 5)  qIdx = 1; // Q2 ends Jun
+    else if (month <= 8)  qIdx = 2; // Q3 ends Sep
+    else                  qIdx = 3; // Q4 ends Dec
+
+    // Next quarter
+    let nextQIdx = qIdx + 1;
+    let nextYear = year;
+    if (nextQIdx > 3) { nextQIdx = 0; nextYear++; }
+
+    return quarterEnd(nextYear, nextQIdx);
+  }
+
+  function fmtDate(d) {
+    if (!d) return '—';
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
+  function fmtQ(periodStr) {
+    if (!periodStr) return '—';
+    const d = new Date(periodStr);
+    const month = d.getMonth();
+    let q;
+    if (month <= 2)       q = 'Q1';
+    else if (month <= 5)  q = 'Q2';
+    else if (month <= 8)  q = 'Q3';
+    else                  q = 'Q4';
+    return `${q} ${d.getFullYear()}`;
+  }
+
+  function daysUntil(d) {
+    if (!d) return null;
+    return Math.round((d - TODAY) / (1000 * 60 * 60 * 24));
+  }
+
+  function statusBadge(days, filed, nextQEnd) {
+    if (!filed) return `<span class="badge unknown">UNKNOWN</span>`;
+    if (days === null) return `<span class="badge unknown">UNKNOWN</span>`;
+    // Filed this quarter = filed date is after the most recent quarter end before today
+    const filedDate = new Date(filed);
+    if (nextQEnd && filedDate >= new Date(nextQEnd.getTime() - 135 * 864e5)) {
+      // Filed recently — check if it's for current quarter
+    }
+    if (days < -1)  return `<span class="badge overdue">OVERDUE</span>`;
+    if (days <= 30) return `<span class="badge upcoming">UPCOMING</span>`;
+    return `<span class="badge filed">FILED</span>`;
+  }
+
+  function daysHtml(days) {
+    if (days === null) return `<span class="days-na">—</span>`;
+    if (days < 0)  return `<span class="days-neg">${days}d</span>`;
+    if (days <= 30) return `<span class="days-pos">+${days}d</span>`;
+    return `<span class="days-na">+${days}d</span>`;
+  }
+
+  let tableRows = [];
+  let sortCol   = 'days';
+  let sortAsc   = true;
+
+  function renderTable(filter = 'all') {
+    let rows = tableRows;
+
+    if (filter === 'overdue')  rows = rows.filter(r => r.days !== null && r.days < -1);
+    if (filter === 'upcoming') rows = rows.filter(r => r.days !== null && r.days >= -1 && r.days <= 30);
+    if (filter === 'filed')    rows = rows.filter(r => r.days !== null && r.days > 30);
+
+    const sorted = [...rows].sort((a, b) => {
+      let av = a[sortCol], bv = b[sortCol];
+      if (sortCol === 'name') {
+        av = a.name.toLowerCase(); bv = b.name.toLowerCase();
+        return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+      }
+      if (av === null) av = sortAsc ? Infinity : -Infinity;
+      if (bv === null) bv = sortAsc ? Infinity : -Infinity;
+      return sortAsc ? av - bv : bv - av;
+    });
+
+    const nm = f => f.name.match(/^(.+?)\s*\((.+?)\)$/);
+
+    document.getElementById('cal-body').innerHTML = sorted.map(r => {
+      const match   = nm(r);
+      const fund    = match ? match[1].trim() : r.name;
+      const manager = match ? match[2].trim() : '';
+      const fundHref = `fund.html?fund=${r.id}`;
+      const bioHref  = r.bio_slug ? `${r.bio_slug}.html` : null;
+      return `<tr class="${r.filterClass || ''}">
+        <td>
+          <a class="fund-link" href="${fundHref}">
+            <div class="fund-name">${fund}</div>
+            ${manager ? `<div class="fund-manager">${bioHref ? `<a href="${bioHref}" style="color:#2563eb;text-decoration:none;">${manager}</a>` : manager}</div>` : ''}
+          </a>
+        </td>
+        <td class="mono right">${r.latestQ}</td>
+        <td class="mono right">${r.filedStr}</td>
+        <td class="mono right">${r.nextQEndStr}</td>
+        <td class="mono right">${r.dueStr}</td>
+        <td class="right">${daysHtml(r.days)}</td>
+        <td class="right">${statusBadge(r.days, r.filed, r.nextQEndDate)}</td>
+      </tr>`;
+    }).join('') || `<tr><td colspan="7" style="text-align:center;padding:2rem;font-family:var(--mono);font-size:0.8rem;color:var(--muted);">No funds match this filter.</td></tr>`;
+  }
+
+  function sortBy(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = col === 'name'; }
+    // Update sorted indicators
+    document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+    event.target.classList.add('sorted');
+    renderTable(document.querySelector('.filter-btn.active').dataset.filter);
+  }
+
+  // Filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderTable(btn.dataset.filter);
+    });
+  });
+
+  async function loadCalendar() {
+    const fundsRes = await fetch(`${PAGES}/funds.json`);
+    const funds    = await fundsRes.json();
+
+    // Fetch all fund JSONs in parallel, with a concurrency limit
+    const results = await Promise.all(funds.map(async fund => {
+      try {
+        const r = await fetch(`${PAGES}/data/${fund.id}.json`);
+        if (!r.ok) return { fund, data: null };
+        const data = await r.json();
+        return { fund, data };
+      } catch(e) {
+        return { fund, data: null };
+      }
+    }));
+
+    tableRows = results.map(({ fund, data }) => {
+      let latestQ = '—', filedStr = '—', filed = null, period = null;
+      let nextQEndDate = null, dueDate = null, days = null;
+
+      if (data && data.quarters) {
+        const quarters = Object.keys(data.quarters).sort().reverse();
+        if (quarters.length > 0) {
+          const q     = quarters[0];
+          const qdata = data.quarters[q];
+          filed     = qdata.filed   || null;
+          period    = qdata.period  || null;
+          latestQ   = fmtQ(period);
+          filedStr  = filed ? fmtDate(new Date(filed)) : '—';
+          nextQEndDate = nextQuarterEnd(period);
+          dueDate      = nextQEndDate ? filingDue(nextQEndDate) : null;
+          days         = dueDate ? daysUntil(dueDate) : null;
+        }
+      }
+
+      return {
+        id:          fund.id,
+        name:        fund.name,
+        bio_slug:    fund.bio_slug || null,
+        latestQ,
+        filed,
+        filedStr,
+        period,
+        nextQEndDate,
+        nextQEndStr: nextQEndDate ? fmtDate(nextQEndDate) : '—',
+        dueStr:      dueDate      ? fmtDate(dueDate)      : '—',
+        days,
+        // sort keys
+        quarter: period ? new Date(period).getTime() : null,
+        due:     dueDate ? dueDate.getTime() : null,
+        next:    nextQEndDate ? nextQEndDate.getTime() : null,
+      };
+    });
+
+    // Default sort: days until due ascending (overdue first, then soonest)
+    sortCol = 'days'; sortAsc = true;
+    renderTable('all');
+  }
+
+  // ── Search ──
+  async function initSearch() {
+    const input   = document.getElementById('search');
+    const results = document.getElementById('search-results');
+    let funds = [], stocks = [];
+
+    try {
+      const [f, si] = await Promise.all([
+        fetch(`${PAGES}/funds.json`).then(r => r.json()),
+        fetch(`${PAGES}/stock_index.json`).then(r => r.json()).catch(() => ({}))
+      ]);
+      funds  = Array.isArray(f) ? f : [];
+      const s = si.stocks || si;
+      stocks = Object.values(s).filter(x => x.ticker).map(x => ({ ticker: x.ticker, name: x.name }));
+    } catch(e) {}
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim().toLowerCase();
+      if (!q) { results.classList.remove('visible'); return; }
+      const fr = funds.filter(f => f.name.toLowerCase().includes(q)).slice(0, 4);
+      const sr = stocks.filter(s => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)).slice(0, 3);
+      const all = [
+        ...fr.map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}"><span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);min-width:2rem">Fund</span>${f.name}</a>`),
+        ...sr.map(s => `<a class="search-result-item" href="stock.html?ticker=${s.ticker}"><span style="font-family:var(--mono);font-size:0.72rem;color:#2563eb;min-width:2rem">${s.ticker}</span>${s.name}</a>`)
+      ];
+      results.innerHTML = all.length ? all.join('') : '<div class="no-results">No results</div>';
+      results.classList.add('visible');
+    });
+    document.addEventListener('click', e => { if (!input.contains(e.target)) results.classList.remove('visible'); });
+  }
+
+  loadCalendar();
+  initSearch();
+</script>
+</body>
+</html>
