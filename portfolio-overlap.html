@@ -177,9 +177,10 @@
     </div>
   </div>
 
-  <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem;display:none" id="table-footnote">
+  <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem;line-height:1.8;display:none" id="table-footnote">
     * % of portfolio = stock value ÷ fund's total 13F portfolio value for the selected quarter.<br>
-    * Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.
+    * Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.<br>
+    † Fund counts, aggregate value, share counts, and period-over-period changes exclude options positions (PUT/CALL).
   </div>
 </main>
 
@@ -422,7 +423,7 @@
     // Build dynamic fund columns
     const fundColHeaders = selectedFunds.map((f, i) =>
       `<th class="col-fund sorted-fund" onclick="sort(${i + 4})" style="cursor:pointer">
-        <span class="fund-dot" style="background:${FUND_COLORS[i % FUND_COLORS.length]}"></span>${shortFundName(f.name)} % ${arrowFor(i + 4)}
+        <span class="fund-dot" style="background:${FUND_COLORS[i % FUND_COLORS.length]}"></span>${shortFundName(f.name)} % † ${arrowFor(i + 4)}
       </th>`
     ).join("");
 
@@ -465,9 +466,9 @@
         <thead><tr>
           <th class="col-num" style="color:var(--muted)">#</th>
           <th class="col-stock" onclick="sort(0)" style="cursor:pointer">Stock${arrowFor(0)}</th>
-          <th class="col-count" onclick="sort(1)" style="cursor:pointer">Funds${arrowFor(1)}</th>
-          <th class="col-data" onclick="sort(2)" style="cursor:pointer">Aggregate Value${arrowFor(2)}</th>
-          <th class="col-data" onclick="sort(3)" style="cursor:pointer">Shares vs Prior Quarter${arrowFor(3)}</th>
+          <th class="col-count" onclick="sort(1)" style="cursor:pointer">Funds †${arrowFor(1)}</th>
+          <th class="col-data" onclick="sort(2)" style="cursor:pointer">Aggregate Value †${arrowFor(2)}</th>
+          <th class="col-data" onclick="sort(3)" style="cursor:pointer">Shares vs Prior Quarter †${arrowFor(3)}</th>
           ${fundColHeaders}
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
