@@ -125,6 +125,22 @@
     .error { color: #c0392b; }
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
     footer a { color: var(--muted); text-decoration: none; }
+
+    /* ── Sparkline ── */
+    .sparkline-container { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1rem 0.5rem; position: relative; }
+    .sparkline-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.6rem; }
+    .sparkline-svg { width: 100%; overflow: visible; display: block; }
+    .sparkline-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    .sparkline-area { fill: var(--accent); opacity: 0.08; }
+    .sparkline-dot { fill: var(--accent); }
+    .sparkline-dot:hover { r: 5; }
+    .sparkline-tooltip {
+      position: absolute; background: var(--text); color: #fff;
+      font-family: var(--mono); font-size: 0.72rem; line-height: 1.5;
+      padding: 0.4rem 0.65rem; border-radius: 4px; pointer-events: none;
+      white-space: nowrap; opacity: 0; transition: opacity 0.1s; z-index: 10;
+      transform: translate(-50%, -100%); margin-top: -8px;
+    }
     
   </style>
 </head>
@@ -163,6 +179,7 @@
   <div id="stock-header"><div class="loading">Loading stock data...</div></div>
   <div id="quarter-selector-wrap"></div>
   <div class="insights-wrap"><div class="insights" id="insights"></div></div>
+  <div id="sparkline-wrap" style="display:none; margin-bottom:1.25rem;"></div>
   <div id="table-container"></div>
 </main>
 
@@ -405,6 +422,12 @@
       const nm = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
       const fundOnly    = nm ? nm[1].trim() : fund.name;
       const managerOnly = nm ? nm[2].trim() : "";
+      const bioSlug     = fund.bio_slug || null;
+      const managerHtml = managerOnly
+        ? bioSlug
+          ? `<div class="manager-cell"><a href="${bioSlug}.html" style="color:#2563eb;text-decoration:none;">${managerOnly}</a></div>`
+          : `<div class="manager-cell">${managerOnly}</div>`
+        : "";
       const ft          = fundTotals[fid]?.[selectedQ] || 0;
       const pct         = fmtPct(ft > 0 ? (latest.value / ft) * 100 : 0);
       // chg: NEW if no prev1 data at all; EXITED handled separately
@@ -425,7 +448,7 @@
         <td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i + 1}</td>
         <td class="col-fund"><a class="fund-link" href="fund.html?fund=${fid}">
           <div class="fund-name-cell">${fundOnly}</div>
-          ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
+          ${managerHtml}
         </a></td>
         <td class="col-data num">${pct}</td>
         <td class="col-data num">${fmtShares(latest.shares)}</td>
@@ -441,11 +464,17 @@
       const nm = fund.name.match(/^(.+?)\s*\((.+?)\)$/);
       const fundOnly    = nm ? nm[1].trim() : fund.name;
       const managerOnly = nm ? nm[2].trim() : "";
+      const exitBioSlug = fund.bio_slug || null;
+      const exitMgrHtml = managerOnly
+        ? exitBioSlug
+          ? `<div class="manager-cell"><a href="${exitBioSlug}.html" style="color:#2563eb;text-decoration:none;">${managerOnly}</a></div>`
+          : `<div class="manager-cell">${managerOnly}</div>`
+        : "";
       return `<tr class="exited">
         <td class="col-num num" style="font-size:0.72rem">—</td>
         <td class="col-fund"><a class="fund-link" href="fund.html?fund=${fid}">
           <div class="fund-name-cell">${fundOnly}</div>
-          ${managerOnly ? `<div class="manager-cell">${managerOnly}</div>` : ""}
+          ${exitMgrHtml}
         </a></td>
         <td class="col-data num">—</td><td class="col-data num">—</td>
         <td class="col-data num"><span class="chg exited">EXITED</span></td>
@@ -529,6 +558,91 @@
     document.getElementById("stock-header").innerHTML = `<h1 class="stock-name" style="font-size:1.4rem;font-weight:500;margin-bottom:0.3rem">${titleStr}</h1>`;
   }
 
+  // ── Sparkline ─────────────────────────────────────────────────
+  function renderSparkline() {
+    const wrap = document.getElementById("sparkline-wrap");
+    if (!stockData || allQuarters.length < 2) { wrap.style.display = "none"; return; }
+
+    const stock   = stockData;
+    const fundMap = Object.fromEntries(fundsData.map(f => [f.id, f]));
+
+    // Build aggregate shares per quarter across ALL funds (including exits = 0)
+    const points = [...allQuarters].reverse().map(q => {
+      let totalShares = 0, fundCount = 0;
+      for (const [fid, fundData] of Object.entries(stock.funds)) {
+        const qd = fundData.quarters?.[q];
+        if (qd && qd.shares > 0 && !qd.putcall) { totalShares += qd.shares; fundCount++; }
+      }
+      return { q, totalShares, fundCount };
+    });
+
+    const W = 100, H = 60; // viewBox units
+    const PAD = { l: 2, r: 2, t: 8, b: 20 };
+    const xs = points.map((_, i) => PAD.l + (i / (points.length - 1)) * (W - PAD.l - PAD.r));
+    const maxShares = Math.max(...points.map(p => p.totalShares), 1);
+    const ys = points.map(p => PAD.t + (1 - p.totalShares / maxShares) * (H - PAD.t - PAD.b));
+
+    const linePts  = points.map((_, i) => `${xs[i]},${ys[i]}`).join(" ");
+    const areaPts  = `${xs[0]},${H - PAD.b} ` + points.map((_, i) => `${xs[i]},${ys[i]}`).join(" ") + ` ${xs[xs.length-1]},${H - PAD.b}`;
+
+    // Quarter labels on x-axis
+    const labels = points.map((p, i) => {
+      const m = p.q.match(/(\d{4})Q(\d)/);
+      const lbl = m ? `Q${m[2]} '${m[1].slice(2)}` : p.q;
+      return `<text x="${xs[i]}" y="${H - PAD.b + 7}" text-anchor="middle" font-size="3.5" fill="var(--muted)" font-family="var(--mono)">${lbl}</text>`;
+    }).join("");
+
+    // Dots with hover areas
+    function fmtSharesK(n) {
+      if (n >= 1e9) return (n/1e9).toFixed(1)+'B';
+      if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
+      if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+      return n.toLocaleString();
+    }
+    const dots = points.map((p, i) => {
+      const m = p.q.match(/(\d{4})Q(\d)/);
+      const ql = m ? `Q${m[2]} ${m[1]}` : p.q;
+      const tip = `${ql} · ${fmtSharesK(p.totalShares)} shares · ${p.fundCount} fund${p.fundCount !== 1 ? 's' : ''}`;
+      return `<circle class="sparkline-dot" cx="${xs[i]}" cy="${ys[i]}" r="2.5" data-tip="${tip}" data-x="${xs[i]}" data-y="${ys[i]}"/>`;
+    }).join("");
+
+    wrap.style.display = "block";
+    wrap.innerHTML = `
+      <div class="sparkline-container">
+        <div class="sparkline-label">Aggregate shares held — all tracked funds</div>
+        <div class="sparkline-tooltip" id="spark-tip"></div>
+        <svg class="sparkline-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+          <polygon class="sparkline-area" points="${areaPts}"/>
+          <polyline class="sparkline-line" points="${linePts}"/>
+          ${labels}
+          ${dots}
+        </svg>
+      </div>`;
+
+    // Tooltip interaction
+    const tip = document.getElementById("spark-tip");
+    wrap.querySelectorAll(".sparkline-dot").forEach(dot => {
+      dot.addEventListener("mouseenter", e => {
+        const svgRect = dot.closest("svg").getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect();
+        const cx = parseFloat(dot.getAttribute("cx"));
+        const cy = parseFloat(dot.getAttribute("cy"));
+        const svgW = svgRect.width, svgH = svgRect.height;
+        const pxX = svgRect.left - wrapRect.left + (cx / W) * svgW;
+        const pxY = svgRect.top  - wrapRect.top  + (cy / H) * svgH;
+        tip.textContent = dot.dataset.tip;
+        tip.style.left = pxX + "px";
+        tip.style.top  = pxY + "px";
+        tip.style.opacity = "1";
+        dot.setAttribute("r", "4");
+      });
+      dot.addEventListener("mouseleave", () => {
+        tip.style.opacity = "0";
+        dot.setAttribute("r", "2.5");
+      });
+    });
+  }
+
   // ── Bootstrap ──────────────────────────────────────────────────
   if (!key) {
     document.getElementById("stock-header").innerHTML = `<div class="error">No stock specified.</div>`;
@@ -565,6 +679,7 @@
 
       renderQuarterTabs();
       renderTable();
+      renderSparkline();
     }).catch(e => {
       document.getElementById("stock-header").innerHTML = `<div class="error">Failed to load data: ${e.message}</div>`;
     });
