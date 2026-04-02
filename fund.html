@@ -252,24 +252,25 @@
       document.getElementById("fund-name").textContent = fundOnly;
       const bioSlug = f.bio_slug || null;
       const managerEl = document.getElementById("fund-manager");
+      const avatarEl  = document.getElementById("fund-avatar");
       if (bioSlug) {
-        managerEl.innerHTML =
-          `<a href="${bioSlug}.html" style="color:#2563eb;text-decoration:none;font-size:0.95rem;">${managerOnly} (see Bio)</a>`;
+        managerEl.innerHTML = `<a href="${bioSlug}.html" style="color:#2563eb !important;text-decoration:none;font-size:0.95rem;font-family:var(--mono);">${managerOnly} (see Bio)</a>`;
+        // Avatar — load image, fallback to initials
+        const avatarImg      = document.getElementById("fund-avatar-img");
+        const avatarInitials = document.getElementById("fund-avatar-initials");
+        const initials = fundOnly.split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+        avatarInitials.textContent = initials;
+        avatarImg.alt = fundOnly;
+        avatarImg.src = `${PAGES}/images/${fundId}.jpg`;
+        avatarImg.onload  = () => { avatarImg.style.display = "block"; avatarInitials.style.display = "none"; };
+        avatarImg.onerror = () => { avatarImg.style.display = "none";  avatarInitials.style.display = ""; };
       } else {
         managerEl.style.color = 'var(--muted)';
         managerEl.style.fontSize = '0.95rem';
         managerEl.textContent = managerOnly;
+        // No bio — hide avatar entirely
+        if (avatarEl) avatarEl.style.display = 'none';
       }
-
-      // Avatar — use images/{fund_id}.jpg, fallback to initials
-      const avatarImg      = document.getElementById("fund-avatar-img");
-      const avatarInitials = document.getElementById("fund-avatar-initials");
-      const initials = fundOnly.split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
-      avatarInitials.textContent = initials;
-      avatarImg.alt = fundOnly;
-      avatarImg.src = `${PAGES}/images/${fundId}.jpg`;
-      avatarImg.onload  = () => { avatarImg.style.display = "block"; avatarInitials.style.display = "none"; };
-      avatarImg.onerror = () => { avatarImg.style.display = "none";  avatarInitials.style.display = ""; };
 
       // Title set here as fallback; renderTable will update with quarter
       document.title = `${fundOnly} 13F Holdings | ${managerOnly} Portfolio`;
