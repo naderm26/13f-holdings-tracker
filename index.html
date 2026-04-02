@@ -4,7 +4,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>13FAI — Index Mockup with Hero Search</title>
+  <title>13FAI — AI-Powered Hedge Fund Holdings Tracker</title>
+  <meta name="description" content="Track 13F filings from the world's top hedge fund managers. See what Buffett, Ackman, Burry and others are buying and selling every quarter."/>
+  <meta property="og:title" content="13FAI — AI-Powered Hedge Fund Holdings Tracker"/>
+  <meta property="og:description" content="Track 13F filings from the world's top hedge fund managers. See what Buffett, Ackman, Burry and others are buying and selling every quarter."/>
+  <meta property="og:type" content="website"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -14,125 +18,102 @@
       --accent-light: #eef4f0; --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
-
-    /* Header */
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
     .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
-    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
-    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
-    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
     .nav-link.active { color: var(--accent); font-weight: 500; }
-    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } }
-
-    /* ── Hero search ── */
-    .hero-search-wrap {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 2rem 1.25rem;
-    }
-    @media (min-width: 700px) { .hero-search-wrap { padding: 2.5rem 3rem; } }
-    .hero-search-inner {
-      max-width: 600px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .hero-search-inner h2 {
-      font-size: 1.05rem;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 1rem;
-      letter-spacing: 0.01em;
-    }
-    .hero-input-wrap {
-      position: relative;
-    }
-    .hero-search-icon {
-      position: absolute; left: 1rem; top: 50%;
-      transform: translateY(-50%);
-      color: var(--muted); font-size: 1rem; pointer-events: none;
-    }
-    #hero-search {
-      width: 100%;
-      font-family: var(--sans); font-size: 1rem;
-      padding: 0.85rem 1rem 0.85rem 2.75rem;
-      border: 1.5px solid var(--border); border-radius: 8px;
-      background: var(--bg); color: var(--text);
-      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-    }
-    #hero-search:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(45,90,61,0.08);
-    }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+    .hero-search-band { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1.75rem 1.25rem; }
+    @media (min-width: 700px) { .hero-search-band { padding: 2.25rem 3rem; } }
+    .hero-search-inner { max-width: 560px; margin: 0 auto; }
+    .hero-search-inner h2 { font-size: 0.95rem; font-weight: 400; color: var(--muted); font-family: var(--mono); margin-bottom: 0.85rem; text-align: center; letter-spacing: 0.02em; }
+    .hero-input-wrap { position: relative; }
+    .hero-search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1rem; pointer-events: none; }
+    #hero-search { width: 100%; font-family: var(--sans); font-size: 1rem; padding: 0.85rem 1rem 0.85rem 2.75rem; border: 1.5px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
+    #hero-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,90,61,0.08); }
     #hero-search::placeholder { color: var(--muted); }
-    .hero-hints {
-      display: flex; justify-content: center; gap: 0.5rem;
-      flex-wrap: wrap; margin-top: 0.75rem;
-    }
-    .hero-hint {
-      font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 4px; padding: 0.2rem 0.55rem; cursor: pointer;
-      transition: border-color 0.15s, color 0.15s;
-    }
-    .hero-hint:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* Dropdown results */
-    .hero-results {
-      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 8px; overflow: hidden; z-index: 100;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; text-align: left;
-    }
+    .hero-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; z-index: 100; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; }
     .hero-results.visible { display: block; }
-    .result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
-    .result-item:last-child { border-bottom: none; }
-    .result-item:hover { background: var(--accent-light); }
-    .result-tag { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 2.5rem; }
-    .result-tag.stock { color: #2563eb; }
-
-    /* Main */
+    .hero-result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .hero-result-item:last-child { border-bottom: none; }
+    .hero-result-item:hover { background: var(--accent-light); }
+    .hero-result-tag { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 2.5rem; flex-shrink: 0; }
+    .hero-result-tag.stock { color: #2563eb; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+    .hero-hints { display: flex; justify-content: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .hero-hint { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 0.2rem 0.55rem; cursor: pointer; transition: border-color 0.12s, color 0.12s; }
+    .hero-hint:hover { border-color: var(--accent); color: var(--accent); }
     main { max-width: 800px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
     @media (min-width: 700px) { main { padding: 2rem 3rem 4rem; } }
     .col-header { margin-bottom: 0.85rem; }
     .col-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 600; }
     .col-desc { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
-    .fund-list { list-style: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
-    .fund-list li { border-bottom: 1px solid var(--border); }
+    .fund-list { list-style: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); width: 100%; }
+    .fund-list li { border-bottom: 1px solid var(--border); display: block; }
     .fund-list li:last-child { border-bottom: none; }
-    .fund-list a { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.1rem; text-decoration: none; color: var(--text); font-size: 0.855rem; transition: background 0.1s; }
+    .fund-list a { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.1rem; text-decoration: none; color: var(--text); font-size: 0.855rem; transition: background 0.1s; width: 100%; }
     .fund-list a:hover { background: var(--accent-light); }
-    .rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 1.25rem; text-align: right; }
-    .fund-name { font-weight: 500; flex: 1; }
-    .filed { color: #2563eb; font-family: var(--mono); font-size: 0.68rem; margin-left: 0.4rem; }
-    .arrow { font-family: var(--mono); color: var(--border); font-size: 0.8rem; }
+    .rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 1.5rem; text-align: right; flex-shrink: 0; }
+    .fund-info { flex: 1; min-width: 0; }
+    .fund-name { font-weight: 500; white-space: normal; word-break: break-word; }
+    .popular-tag { font-family: var(--mono); font-size: 0.6rem; font-weight: 500; letter-spacing: 0.05em; color: var(--accent); border: 1px solid var(--accent); border-radius: 3px; padding: 0.1rem 0.35rem; flex-shrink: 0; }
+    .arrow { font-family: var(--mono); color: var(--border); font-size: 0.8rem; flex-shrink: 0; }
+    .fund-list a:hover .arrow { color: var(--accent); }
+    li.list-divider { background: var(--bg); padding: 0.3rem 1.1rem; font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .scrollable { max-height: 70vh; overflow-y: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
+    .scrollable::-webkit-scrollbar { width: 4px; }
+    .scrollable::-webkit-scrollbar-track { background: transparent; }
+    .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .loading { padding: 1.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: center; }
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-top" style="max-width:1200px;margin:0 auto;">
-    <div style="display:flex;align-items:center;gap:1.75rem;">
-      <a class="brand-name" href="#">13FAI</a>
-      <nav class="nav-links">
-        <a class="nav-link active" href="#">Funds</a>
-        <a class="nav-link" href="#">Managers</a>
-        <a class="nav-link" href="#">Top Holdings</a>
-        <a class="nav-link" href="#">Activity</a>
-        <a class="nav-link" href="#">Overlap</a>
-        <a class="nav-link" href="#">Calendar</a>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link active" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Managers</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+        <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+        <a class="nav-link" href="filing-calendar.html">Calendar</a>
       </nav>
     </div>
   </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link active" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Managers</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
+      <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+      <a class="nav-link" href="filing-calendar.html">Calendar</a>
+    </nav>
+  </div>
 </header>
 
-<!-- ── Hero Search ── -->
-<div class="hero-search-wrap">
+<div class="hero-search-band">
   <div class="hero-search-inner">
     <h2>Search funds, managers, and stocks</h2>
     <div class="hero-input-wrap">
       <span class="hero-search-icon">⌕</span>
-      <input id="hero-search" type="text" placeholder="Try &quot;Berkshire&quot;, &quot;Bill Ackman&quot;, or &quot;NVDA&quot;..." autocomplete="off"/>
+      <input id="hero-search" type="text" placeholder='Try "Berkshire", "Bill Ackman", or "NVDA"...' autocomplete="off"/>
       <div class="hero-results" id="hero-results"></div>
     </div>
     <div class="hero-hints">
@@ -141,86 +122,158 @@
       <span class="hero-hint">Bill Ackman</span>
       <span class="hero-hint">NVDA</span>
       <span class="hero-hint">Michael Burry</span>
+      <span class="hero-hint">META</span>
     </div>
   </div>
 </div>
 
 <main>
-  <div>
-    <div class="col-header">
-      <div class="col-label">Most Followed</div>
-      <div class="col-desc">Managers retail investors watch closely</div>
-    </div>
-    <ul class="fund-list">
-      <li><a href="#"><span class="rank">1.</span><span class="fund-name">Berkshire Hathaway (Warren Buffett)<span class="filed">· Feb 17, 2026</span></span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">2.</span><span class="fund-name">Pershing Square Capital Management (Bill Ackman)<span class="filed">· Feb 14, 2026</span></span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">3.</span><span class="fund-name">Scion Asset Management (Michael Burry)<span class="filed">· Feb 13, 2026</span></span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">4.</span><span class="fund-name">Duquesne Family Office (Stanley Druckenmiller)<span class="filed">· Feb 14, 2026</span></span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">5.</span><span class="fund-name">Appaloosa Management (David Tepper)<span class="filed">· Feb 13, 2026</span></span><span class="arrow">→</span></a></li>
-    </ul>
-
-    <div class="col-header" style="margin-top:2rem">
-      <div class="col-label">All Funds</div>
-      <div class="col-desc">Complete list of tracked managers</div>
-    </div>
-    <ul class="fund-list">
-      <li><a href="#"><span class="rank">1.</span><span class="fund-name">Abrams Capital Management (David Abrams)</span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">2.</span><span class="fund-name">Akre Capital Management (Chuck Akre)</span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">3.</span><span class="fund-name">AKO Capital (AKO Capital LLP)</span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">4.</span><span class="fund-name">Appaloosa Management (David Tepper)</span><span class="arrow">→</span></a></li>
-      <li><a href="#"><span class="rank">5.</span><span class="fund-name">Ariel Investments (John Rogers)</span><span class="arrow">→</span></a></li>
-    </ul>
+  <div class="col-header">
+    <div class="col-label">All Funds</div>
+    <div class="col-desc">13F filings from the world's top institutional investors</div>
   </div>
+  <ul class="fund-list scrollable" id="list-all">
+    <li><div class="loading">Loading...</div></li>
+  </ul>
 </main>
 
 <footer>
-  Data sourced from 13F filings · Updated quarterly · <a href="#" style="color:var(--muted);text-decoration:none">Disclaimer</a>
+  Data sourced from 13F filings · Updated quarterly · <a href="disclaimer.html">Disclaimer</a>
 </footer>
 
 <script>
-  // Simulate search with static data for mockup
-  const FUNDS = [
-    { name: "Berkshire Hathaway (Warren Buffett)", id: "berkshire" },
-    { name: "Pershing Square Capital Management (Bill Ackman)", id: "pershing" },
-    { name: "Duquesne Family Office (Stanley Druckenmiller)", id: "duquesne" },
-    { name: "Baupost Group (Seth Klarman)", id: "baupost" },
-    { name: "Scion Asset Management (Michael Burry)", id: "scion" },
-  ];
-  const STOCKS = [
-    { ticker: "AAPL", name: "Apple Inc" },
-    { ticker: "NVDA", name: "Nvidia Corp" },
-    { ticker: "MSFT", name: "Microsoft Corp" },
-    { ticker: "AMZN", name: "Amazon.com Inc" },
-    { ticker: "META", name: "Meta Platforms Inc" },
-  ];
+  const BASE = "/13f-holdings-tracker";
 
-  const input   = document.getElementById("hero-search");
-  const results = document.getElementById("hero-results");
+  const POPULAR_IDS = new Set([
+    "berkshire", "pershing", "scion", "duquesne", "appaloosa",
+    "baupost", "third_point", "greenlight", "thiel_macro", "tci"
+  ]);
 
-  input.addEventListener("input", () => {
-    const q = input.value.trim().toLowerCase();
-    if (!q) { results.classList.remove("visible"); return; }
-    const fr = FUNDS.filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
-      .map(f => `<a class="result-item" href="#"><span class="result-tag">Fund</span>${f.name}</a>`);
-    const sr = STOCKS.filter(s => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)).slice(0, 3)
-      .map(s => `<a class="result-item" href="#"><span class="result-tag stock">${s.ticker}</span>${s.name}</a>`);
-    const all = [...fr, ...sr];
-    results.innerHTML = all.length ? all.join("") : `<div style="padding:0.75rem 1rem;font-size:0.875rem;color:var(--muted)">No results</div>`;
-    results.classList.add("visible");
-  });
+  let allFunds   = [];
+  let stockIndex = {};
 
-  // Quick-fill hints
-  document.querySelectorAll(".hero-hint").forEach(h => {
-    h.addEventListener("click", () => {
-      input.value = h.textContent;
-      input.dispatchEvent(new Event("input"));
-      input.focus();
+  function fmtDate(dateStr) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return months[parseInt(month)-1] + " " + parseInt(day) + ", " + year;
+  }
+
+  function fundItem(f, rank, isPopular) {
+    const popularTag = isPopular ? '<span class="popular-tag">Popular</span>' : '';
+    return '<li>' +
+      '<a href="fund.html?fund=' + f.id + '">' +
+        '<span class="rank">' + rank + '.</span>' +
+        '<span class="fund-info">' +
+          '<span class="fund-name">' + f.name +
+            '<span class="fund-last-updated" data-fund-id="' + f.id + '" style="color:#2563eb;font-family:var(--mono);font-size:0.68rem;font-weight:400;margin-left:0.4rem;"></span>' +
+          '</span>' +
+        '</span>' +
+        popularTag +
+        '<span class="arrow">→</span>' +
+      '</a>' +
+    '</li>';
+  }
+
+  async function loadData() {
+    const fundsRes = await fetch(BASE + "/funds.json");
+    allFunds = JSON.parse(await fundsRes.text());
+
+    try {
+      const res = await fetch(BASE + "/stock_index.json");
+      if (res.ok) { const d = await res.json(); stockIndex = d.stocks || d; }
+    } catch(e) {}
+
+    renderList();
+    loadLastUpdatedDates();
+  }
+
+  function renderList() {
+    const el = document.getElementById("list-all");
+    const popular = allFunds.filter(f => POPULAR_IDS.has(f.id));
+    const rest    = allFunds.filter(f => !POPULAR_IDS.has(f.id));
+    let html = popular.map((f, i) => fundItem(f, i + 1, true)).join("");
+    html += '<li class="list-divider">All Funds</li>';
+    html += rest.map((f, i) => fundItem(f, popular.length + i + 1, false)).join("");
+    el.innerHTML = html;
+  }
+
+  async function loadLastUpdatedDates() {
+    await Promise.all(allFunds.map(async function(fund) {
+      try {
+        const r = await fetch(BASE + "/data/" + fund.id + ".json");
+        if (!r.ok) return;
+        const data = await r.json();
+        const quarters = data.quarters || {};
+        const sortedQs = Object.keys(quarters).sort().reverse();
+        if (!sortedQs.length) return;
+        const latestQ = quarters[sortedQs[0]];
+        if (latestQ && latestQ.filed) {
+          const dateStr = "· " + fmtDate(latestQ.filed);
+          document.querySelectorAll('[data-fund-id="' + fund.id + '"]').forEach(function(el) {
+            el.textContent = dateStr;
+          });
+        }
+      } catch(e) {}
+    }));
+  }
+
+  // ── Hero search ──
+  const heroInput   = document.getElementById("hero-search");
+  const heroResults = document.getElementById("hero-results");
+
+  function runSearch(q) {
+    if (!q) { heroResults.classList.remove("visible"); return; }
+    const ql = q.toLowerCase();
+
+    const fundMatches = allFunds
+      .filter(function(f) { return f.name.toLowerCase().includes(ql); })
+      .slice(0, 5)
+      .map(function(f) {
+        return '<a class="hero-result-item" href="fund.html?fund=' + f.id + '">' +
+          '<span class="hero-result-tag">Fund</span>' +
+          '<span>' + f.name + '</span>' +
+        '</a>';
+      });
+
+    const stockMatches = [];
+    for (const key in stockIndex) {
+      if (stockMatches.length >= 4) break;
+      const s = stockIndex[key];
+      if ((s.ticker && s.ticker.toLowerCase().includes(ql)) || (s.name && s.name.toLowerCase().includes(ql))) {
+        stockMatches.push(
+          '<a class="hero-result-item" href="stock.html?ticker=' + encodeURIComponent(key) + '">' +
+            '<span class="hero-result-tag stock">' + (s.ticker || "STK") + '</span>' +
+            '<span>' + s.name + '</span>' +
+          '</a>'
+        );
+      }
+    }
+
+    const all = fundMatches.concat(stockMatches);
+    heroResults.innerHTML = all.length
+      ? all.join("")
+      : '<div class="no-results">No results found for "' + heroInput.value + '"</div>';
+    heroResults.classList.add("visible");
+  }
+
+  heroInput.addEventListener("input", function() { runSearch(heroInput.value.trim()); });
+
+  document.querySelectorAll(".hero-hint").forEach(function(h) {
+    h.addEventListener("click", function() {
+      heroInput.value = h.textContent;
+      runSearch(h.textContent);
+      heroInput.focus();
     });
   });
 
-  document.addEventListener("click", e => {
-    if (!input.contains(e.target) && !results.contains(e.target)) results.classList.remove("visible");
+  document.addEventListener("click", function(e) {
+    if (!heroInput.contains(e.target) && !heroResults.contains(e.target)) {
+      heroResults.classList.remove("visible");
+    }
   });
+
+  loadData();
 </script>
 </body>
 </html>
