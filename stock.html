@@ -127,19 +127,18 @@
     footer a { color: var(--muted); text-decoration: none; }
 
     /* ── Sparkline ── */
-    .sparkline-container { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1rem 0.5rem; position: relative; }
-    .sparkline-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.6rem; }
-    .sparkline-svg { width: 100%; overflow: visible; display: block; }
-    .sparkline-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    .sparkline-container { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem 0.6rem; position: relative; }
+    .sparkline-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.5rem; }
+    .sparkline-svg { width: 100%; height: 80px; display: block; overflow: hidden; }
+    .sparkline-line { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
     .sparkline-area { fill: var(--accent); opacity: 0.08; }
-    .sparkline-dot { fill: var(--accent); }
-    .sparkline-dot:hover { r: 5; }
+    .sparkline-dot { fill: var(--accent); cursor: pointer; }
     .sparkline-tooltip {
       position: absolute; background: var(--text); color: #fff;
-      font-family: var(--mono); font-size: 0.72rem; line-height: 1.5;
-      padding: 0.4rem 0.65rem; border-radius: 4px; pointer-events: none;
+      font-family: var(--mono); font-size: 0.7rem; line-height: 1.5;
+      padding: 0.35rem 0.6rem; border-radius: 4px; pointer-events: none;
       white-space: nowrap; opacity: 0; transition: opacity 0.1s; z-index: 10;
-      transform: translate(-50%, -100%); margin-top: -8px;
+      transform: translate(-50%, calc(-100% - 6px));
     }
     
   </style>
@@ -563,47 +562,58 @@
     const wrap = document.getElementById("sparkline-wrap");
     if (!stockData || allQuarters.length < 2) { wrap.style.display = "none"; return; }
 
-    const stock   = stockData;
-    const fundMap = Object.fromEntries(fundsData.map(f => [f.id, f]));
+    const stock = stockData;
 
     // Build aggregate shares per quarter across ALL funds (including exits = 0)
-    const points = [...allQuarters].reverse().map(q => {
-      let totalShares = 0, fundCount = 0;
-      for (const [fid, fundData] of Object.entries(stock.funds)) {
-        const qd = fundData.quarters?.[q];
-        if (qd && qd.shares > 0 && !qd.putcall) { totalShares += qd.shares; fundCount++; }
+    // Chronological order: oldest → newest
+    const pts = [...allQuarters].reverse().map(q => {
+      let shares = 0, funds = 0;
+      for (const fd of Object.values(stock.funds)) {
+        const qd = fd.quarters?.[q];
+        if (qd && qd.shares > 0 && !qd.putcall) { shares += qd.shares; funds++; }
       }
-      return { q, totalShares, fundCount };
+      return { q, shares, funds };
     });
 
-    const W = 100, H = 60; // viewBox units
-    const PAD = { l: 2, r: 2, t: 8, b: 20 };
-    const xs = points.map((_, i) => PAD.l + (i / (points.length - 1)) * (W - PAD.l - PAD.r));
-    const maxShares = Math.max(...points.map(p => p.totalShares), 1);
-    const ys = points.map(p => PAD.t + (1 - p.totalShares / maxShares) * (H - PAD.t - PAD.b));
+    // SVG dimensions — fixed pixel coords inside a viewBox
+    const VW = 600, VH = 80;
+    const PAD = { l: 4, r: 4, t: 6, b: 22 };
+    const chartW = VW - PAD.l - PAD.r;
+    const chartH = VH - PAD.t - PAD.b;
+    const n = pts.length;
+    const maxS = Math.max(...pts.map(p => p.shares), 1);
 
-    const linePts  = points.map((_, i) => `${xs[i]},${ys[i]}`).join(" ");
-    const areaPts  = `${xs[0]},${H - PAD.b} ` + points.map((_, i) => `${xs[i]},${ys[i]}`).join(" ") + ` ${xs[xs.length-1]},${H - PAD.b}`;
+    const x = i => PAD.l + (i / (n - 1)) * chartW;
+    const y = s => PAD.t + (1 - s / maxS) * chartH;
 
-    // Quarter labels on x-axis
-    const labels = points.map((p, i) => {
-      const m = p.q.match(/(\d{4})Q(\d)/);
-      const lbl = m ? `Q${m[2]} '${m[1].slice(2)}` : p.q;
-      return `<text x="${xs[i]}" y="${H - PAD.b + 7}" text-anchor="middle" font-size="3.5" fill="var(--muted)" font-family="var(--mono)">${lbl}</text>`;
-    }).join("");
+    const lineD = pts.map((p, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(p.shares).toFixed(1)}`).join(" ");
+    const areaD = `M${x(0).toFixed(1)},${(PAD.t + chartH).toFixed(1)} ` +
+                  pts.map((p, i) => `L${x(i).toFixed(1)},${y(p.shares).toFixed(1)}`).join(" ") +
+                  ` L${x(n-1).toFixed(1)},${(PAD.t + chartH).toFixed(1)} Z`;
 
-    // Dots with hover areas
-    function fmtSharesK(n) {
-      if (n >= 1e9) return (n/1e9).toFixed(1)+'B';
-      if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
-      if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+    function fmtS(n) {
+      if (n >= 1e9) return (n/1e9).toFixed(1)+"B";
+      if (n >= 1e6) return (n/1e6).toFixed(1)+"M";
+      if (n >= 1e3) return (n/1e3).toFixed(0)+"K";
       return n.toLocaleString();
     }
-    const dots = points.map((p, i) => {
+
+    // Quarter labels — only show every other one if crowded (≥6 points)
+    const labelStep = n >= 7 ? 2 : 1;
+    const labels = pts.map((p, i) => {
+      if (i % labelStep !== 0 && i !== n - 1) return "";
+      const m = p.q.match(/(\d{4})Q(\d)/);
+      const lbl = m ? `Q${m[2]}'${m[1].slice(2)}` : p.q;
+      const anchor = i === 0 ? "start" : i === n - 1 ? "end" : "middle";
+      return `<text x="${x(i).toFixed(1)}" y="${VH - 3}" text-anchor="${anchor}" font-size="8" fill="var(--muted)" font-family="var(--mono)">${lbl}</text>`;
+    }).join("");
+
+    // Dots
+    const dots = pts.map((p, i) => {
       const m = p.q.match(/(\d{4})Q(\d)/);
       const ql = m ? `Q${m[2]} ${m[1]}` : p.q;
-      const tip = `${ql} · ${fmtSharesK(p.totalShares)} shares · ${p.fundCount} fund${p.fundCount !== 1 ? 's' : ''}`;
-      return `<circle class="sparkline-dot" cx="${xs[i]}" cy="${ys[i]}" r="2.5" data-tip="${tip}" data-x="${xs[i]}" data-y="${ys[i]}"/>`;
+      const tip = `${ql}  ·  ${fmtS(p.shares)} shares  ·  ${p.funds} fund${p.funds !== 1 ? "s" : ""}`;
+      return `<circle class="sparkline-dot" cx="${x(i).toFixed(1)}" cy="${y(p.shares).toFixed(1)}" r="3" data-tip="${tip}"/>`;
     }).join("");
 
     wrap.style.display = "block";
@@ -611,39 +621,38 @@
       <div class="sparkline-container">
         <div class="sparkline-label">Aggregate shares held — all tracked funds</div>
         <div class="sparkline-tooltip" id="spark-tip"></div>
-        <svg class="sparkline-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-          <polygon class="sparkline-area" points="${areaPts}"/>
-          <polyline class="sparkline-line" points="${linePts}"/>
+        <svg class="sparkline-svg" viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="xMidYMid meet">
+          <path class="sparkline-area" d="${areaD}"/>
+          <path class="sparkline-line" d="${lineD}"/>
           ${labels}
           ${dots}
         </svg>
       </div>`;
 
-    // Tooltip interaction
     const tip = document.getElementById("spark-tip");
     wrap.querySelectorAll(".sparkline-dot").forEach(dot => {
       dot.addEventListener("mouseenter", e => {
-        const svgRect = dot.closest("svg").getBoundingClientRect();
+        const svgEl   = dot.closest("svg");
+        const svgRect = svgEl.getBoundingClientRect();
         const wrapRect = wrap.getBoundingClientRect();
         const cx = parseFloat(dot.getAttribute("cx"));
         const cy = parseFloat(dot.getAttribute("cy"));
-        const svgW = svgRect.width, svgH = svgRect.height;
-        const pxX = svgRect.left - wrapRect.left + (cx / W) * svgW;
-        const pxY = svgRect.top  - wrapRect.top  + (cy / H) * svgH;
+        const pxX = svgRect.left - wrapRect.left + (cx / VW) * svgRect.width;
+        const pxY = svgRect.top  - wrapRect.top  + (cy / VH) * svgRect.height;
         tip.textContent = dot.dataset.tip;
-        tip.style.left = pxX + "px";
-        tip.style.top  = pxY + "px";
+        tip.style.left    = pxX + "px";
+        tip.style.top     = pxY + "px";
         tip.style.opacity = "1";
-        dot.setAttribute("r", "4");
+        dot.setAttribute("r", "5");
       });
       dot.addEventListener("mouseleave", () => {
         tip.style.opacity = "0";
-        dot.setAttribute("r", "2.5");
+        dot.setAttribute("r", "3");
       });
     });
   }
 
-  // ── Bootstrap ──────────────────────────────────────────────────
+    // ── Bootstrap ──────────────────────────────────────────────────
   if (!key) {
     document.getElementById("stock-header").innerHTML = `<div class="error">No stock specified.</div>`;
   } else {
