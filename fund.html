@@ -192,8 +192,9 @@
     <div class="insights" id="insights"></div>
   </div>
   <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
-  <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.5;">
-    * Price at last filing is not an actual purchase or sale price. It is the price as of the last holdings date. Portfolio value, share counts, and period-over-period changes exclude options positions (PUT/CALL), which are shown in the Option column for reference only.
+  <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.8;">
+    * Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.<br/>
+    † Portfolio value, share counts, and period-over-period changes exclude options positions (PUT/CALL), which are shown in the Option column for reference only.
   </div>
 </main>
 
@@ -469,7 +470,7 @@
           // Single position
           const { r, isSig, inner } = enriched[0];
           const p       = repPrice(r);
-          const priceStr = p ? `, price at filing was <b>${p}</b>*` : "";
+          const priceStr = p ? `, reported price was <b>${p}</b>*` : "";
           const sigWord  = isSig ? "a significant new position" : "a new stake";
           sentences.push(`${shortName} initiated ${sigWord} in ${stockLink(r)}${optTag(r.putcall)} (${inner})${priceStr}.`);
         } else if (sigList.length === 0) {
@@ -805,12 +806,12 @@
           <tr>
             <th class="col-num" style="color:var(--muted)">#</th>
             <th class="col-company" onclick="sort(0)">Company${arrow(0)}</th>
-            <th class="col-data num" onclick="sort(3)">% of Portfolio${arrow(3)}</th>
-            <th class="col-data num" onclick="sort(2)">Shares${arrow(2)}</th>
-            <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter${arrow(4)}</th>
-            <th class="col-data num" onclick="sort(5)">Shares vs Prior Year${arrow(5)}</th>
-            <th class="col-data num" onclick="sort(1)">Value${arrow(1)}</th>
-            <th class="col-data num" onclick="sort(6)">Price at Last Filing *${arrow(6)}</th>
+            <th class="col-data num" onclick="sort(3)">% of Portfolio †${arrow(3)}</th>
+            <th class="col-data num" onclick="sort(2)">Shares †${arrow(2)}</th>
+            <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter †${arrow(4)}</th>
+            <th class="col-data num" onclick="sort(5)">Shares vs Prior Year †${arrow(5)}</th>
+            <th class="col-data num" onclick="sort(1)">Value †${arrow(1)}</th>
+            <th class="col-data num" onclick="sort(6)">Reported Price *${arrow(6)}</th>
             <th class="col-data num">Option</th>
           </tr>
         </thead>
