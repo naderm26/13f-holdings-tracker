@@ -1,20 +1,10 @@
 
-
-
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>13FAI — AI-Powered Hedge Fund Holdings Tracker</title>
-  <meta name="description" content="Track 13F filings from the world's top hedge fund managers. See what Buffett, Ackman, Burry and others are buying and selling every quarter."/>
-  <meta property="og:title" content="13FAI — AI-Powered Hedge Fund Holdings Tracker"/>
-  <meta property="og:description" content="Track 13F filings from the world's top hedge fund managers. See what Buffett, Ackman, Burry and others are buying and selling every quarter."/>
-  <meta property="og:type" content="website"/>
+  <title>13FAI — Index Mockup with Hero Search</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,122 +15,135 @@
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
 
+    /* Header */
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
     .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
-    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
-    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-    .brand-sub { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
-    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
-    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
-    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; }
     .nav-link.active { color: var(--accent); font-weight: 500; }
-    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
-    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
-    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
-    .search-wrap { position: relative; }
-    #search {
-      font-family: var(--sans); font-size: 0.875rem;
-      padding: 0.6rem 1rem 0.6rem 2.25rem;
-      border: 1px solid var(--border); border-radius: 6px;
-      background: var(--bg); color: var(--text);
-      width: 200px; outline: none; transition: border 0.15s;
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } }
+
+    /* ── Hero search ── */
+    .hero-search-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 1.25rem;
     }
-    @media (min-width: 700px) { #search { width: 300px; } }
-    #search:focus { border-color: var(--accent); background: var(--surface); }
-    #search::placeholder { color: var(--muted); }
-    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
-    .search-results {
+    @media (min-width: 700px) { .hero-search-wrap { padding: 2.5rem 3rem; } }
+    .hero-search-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-search-inner h2 {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 1rem;
+      letter-spacing: 0.01em;
+    }
+    .hero-input-wrap {
+      position: relative;
+    }
+    .hero-search-icon {
+      position: absolute; left: 1rem; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); font-size: 1rem; pointer-events: none;
+    }
+    #hero-search {
+      width: 100%;
+      font-family: var(--sans); font-size: 1rem;
+      padding: 0.85rem 1rem 0.85rem 2.75rem;
+      border: 1.5px solid var(--border); border-radius: 8px;
+      background: var(--bg); color: var(--text);
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    #hero-search:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(45,90,61,0.08);
+    }
+    #hero-search::placeholder { color: var(--muted); }
+    .hero-hints {
+      display: flex; justify-content: center; gap: 0.5rem;
+      flex-wrap: wrap; margin-top: 0.75rem;
+    }
+    .hero-hint {
+      font-family: var(--mono); font-size: 0.68rem; color: var(--muted);
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 4px; padding: 0.2rem 0.55rem; cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .hero-hint:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Dropdown results */
+    .hero-results {
       position: absolute; top: calc(100% + 4px); left: 0; right: 0;
       background: var(--bg); border: 1px solid var(--border);
-      border-radius: 6px; overflow: hidden; z-index: 100;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+      border-radius: 8px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: none; text-align: left;
     }
-    .search-results.visible { display: block; }
-    .search-result-item {
-      display: flex; align-items: center; gap: 0.75rem;
-      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
-      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
-    }
-    .search-result-item:last-child { border-bottom: none; }
-    .search-result-item:hover { background: var(--accent-light); }
-    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
-    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+    .hero-results.visible { display: block; }
+    .result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .result-item:last-child { border-bottom: none; }
+    .result-item:hover { background: var(--accent-light); }
+    .result-tag { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 2.5rem; }
+    .result-tag.stock { color: #2563eb; }
 
-    /* ── Hero ── */
-    .hero { padding: 2.5rem 3rem 0; max-width: 1300px; margin: 0 auto; }
-    .hero h2 { font-size: 1.6rem; font-weight: 500; letter-spacing: -0.01em; margin-bottom: 0.4rem; }
-    .hero p { font-size: 0.9rem; color: var(--muted); max-width: 560px; line-height: 1.6; }
-
-    /* ── Main layout ── */
+    /* Main */
     main { max-width: 800px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
     @media (min-width: 700px) { main { padding: 2rem 3rem 4rem; } }
-
-    /* ── Column headers ── */
     .col-header { margin-bottom: 0.85rem; }
-    .col-label {
-      font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em;
-      color: var(--accent); font-weight: 600;
-    }
+    .col-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 600; }
     .col-desc { font-size: 0.78rem; color: var(--muted); margin-top: 0.2rem; }
-
-    /* ── Fund list ── */
-    .fund-list { list-style: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); width: 100%; }
-    .fund-list li { border-bottom: 1px solid var(--border); display: block; }
+    .fund-list { list-style: none; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--surface); }
+    .fund-list li { border-bottom: 1px solid var(--border); }
     .fund-list li:last-child { border-bottom: none; }
-    .fund-list a {
-      display: flex; align-items: center;
-      gap: 0.75rem; padding: 0.85rem 1.1rem; text-decoration: none; color: var(--text);
-      font-size: 0.855rem; transition: background 0.1s; width: 100%;
-    }
+    .fund-list a { display: flex; align-items: center; gap: 0.75rem; padding: 0.85rem 1.1rem; text-decoration: none; color: var(--text); font-size: 0.855rem; transition: background 0.1s; }
     .fund-list a:hover { background: var(--accent-light); }
-    .rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 1.25rem; text-align: right; flex-shrink: 0; }
-    .fund-info { flex: 1; min-width: 0; }
-    .fund-name { font-weight: 500; white-space: normal; word-break: break-word; }
-    .fund-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.15rem; display: block; }
-    .arrow { font-family: var(--mono); color: var(--border); font-size: 0.8rem; flex-shrink: 0; }
-    .fund-list a:hover .arrow { color: var(--accent); }
-    .loading { padding: 1.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: center; }
-
-    /* ── All funds list — scrollable ── */
-    .scrollable { max-height: 600px; overflow-y: auto; -webkit-overflow-scrolling: touch; border-radius: 8px; }
-    .scrollable::-webkit-scrollbar { width: 4px; }
-    .scrollable::-webkit-scrollbar-track { background: transparent; }
-    .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-    /* ── Footer ── */
+    .rank { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); min-width: 1.25rem; text-align: right; }
+    .fund-name { font-weight: 500; flex: 1; }
+    .filed { color: #2563eb; font-family: var(--mono); font-size: 0.68rem; margin-left: 0.4rem; }
+    .arrow { font-family: var(--mono); color: var(--border); font-size: 0.8rem; }
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="header-top">
-    <div style="display:flex; align-items:center; gap:1.75rem;">
-      <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
-      <nav class="nav-links desktop-nav">
-        <a class="nav-link active" href="index.html">Funds</a>
-        <a class="nav-link" href="managers.html">Managers</a>
-        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
-        <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
-        <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+  <div class="header-top" style="max-width:1200px;margin:0 auto;">
+    <div style="display:flex;align-items:center;gap:1.75rem;">
+      <a class="brand-name" href="#">13FAI</a>
+      <nav class="nav-links">
+        <a class="nav-link active" href="#">Funds</a>
+        <a class="nav-link" href="#">Managers</a>
+        <a class="nav-link" href="#">Top Holdings</a>
+        <a class="nav-link" href="#">Activity</a>
+        <a class="nav-link" href="#">Overlap</a>
+        <a class="nav-link" href="#">Calendar</a>
       </nav>
     </div>
-    <div class="search-wrap">
-      <span class="search-icon">⌕</span>
-      <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
-      <div class="search-results" id="search-results"></div>
-    </div>
-  </div>
-  <div class="header-nav-row">
-    <nav class="nav-links">
-      <a class="nav-link active" href="index.html">Funds</a>
-      <a class="nav-link" href="managers.html">Managers</a>
-      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
-      <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
-      <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
-    </nav>
   </div>
 </header>
+
+<!-- ── Hero Search ── -->
+<div class="hero-search-wrap">
+  <div class="hero-search-inner">
+    <h2>Search funds, managers, and stocks</h2>
+    <div class="hero-input-wrap">
+      <span class="hero-search-icon">⌕</span>
+      <input id="hero-search" type="text" placeholder="Try &quot;Berkshire&quot;, &quot;Bill Ackman&quot;, or &quot;NVDA&quot;..." autocomplete="off"/>
+      <div class="hero-results" id="hero-results"></div>
+    </div>
+    <div class="hero-hints">
+      <span class="hero-hint">Warren Buffett</span>
+      <span class="hero-hint">AAPL</span>
+      <span class="hero-hint">Bill Ackman</span>
+      <span class="hero-hint">NVDA</span>
+      <span class="hero-hint">Michael Burry</span>
+    </div>
+  </div>
+</div>
 
 <main>
   <div>
@@ -148,168 +151,76 @@
       <div class="col-label">Most Followed</div>
       <div class="col-desc">Managers retail investors watch closely</div>
     </div>
-    <ul class="fund-list" id="list-popular"><li><div class="loading">Loading...</div></li></ul>
+    <ul class="fund-list">
+      <li><a href="#"><span class="rank">1.</span><span class="fund-name">Berkshire Hathaway (Warren Buffett)<span class="filed">· Feb 17, 2026</span></span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">2.</span><span class="fund-name">Pershing Square Capital Management (Bill Ackman)<span class="filed">· Feb 14, 2026</span></span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">3.</span><span class="fund-name">Scion Asset Management (Michael Burry)<span class="filed">· Feb 13, 2026</span></span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">4.</span><span class="fund-name">Duquesne Family Office (Stanley Druckenmiller)<span class="filed">· Feb 14, 2026</span></span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">5.</span><span class="fund-name">Appaloosa Management (David Tepper)<span class="filed">· Feb 13, 2026</span></span><span class="arrow">→</span></a></li>
+    </ul>
 
     <div class="col-header" style="margin-top:2rem">
       <div class="col-label">All Funds</div>
       <div class="col-desc">Complete list of tracked managers</div>
     </div>
-    <ul class="fund-list scrollable" id="list-all"><li><div class="loading">Loading...</div></li></ul>
+    <ul class="fund-list">
+      <li><a href="#"><span class="rank">1.</span><span class="fund-name">Abrams Capital Management (David Abrams)</span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">2.</span><span class="fund-name">Akre Capital Management (Chuck Akre)</span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">3.</span><span class="fund-name">AKO Capital (AKO Capital LLP)</span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">4.</span><span class="fund-name">Appaloosa Management (David Tepper)</span><span class="arrow">→</span></a></li>
+      <li><a href="#"><span class="rank">5.</span><span class="fund-name">Ariel Investments (John Rogers)</span><span class="arrow">→</span></a></li>
+    </ul>
   </div>
 </main>
 
 <footer>
-  Data sourced from 13F filings · Updated quarterly · <a href="disclaimer.html" style="color:var(--muted); text-decoration:none">Disclaimer</a>
+  Data sourced from 13F filings · Updated quarterly · <a href="#" style="color:var(--muted);text-decoration:none">Disclaimer</a>
 </footer>
 
 <script>
-  const BASE = "/13f-holdings-tracker";
-
-  // Curated popular list — retail investor favorites
-  const POPULAR_IDS = [
-    "berkshire",    // Warren Buffett
-    "pershing",     // Bill Ackman
-    "scion",        // Michael Burry
-    "duquesne",     // Stanley Druckenmiller
-    "appaloosa",    // David Tepper
-    "baupost",      // Seth Klarman
-    "third_point",  // Daniel Loeb
-    "greenlight",   // David Einhorn
-    "thiel_macro",  // Peter Thiel
-    "tci",          // Chris Hohn
+  // Simulate search with static data for mockup
+  const FUNDS = [
+    { name: "Berkshire Hathaway (Warren Buffett)", id: "berkshire" },
+    { name: "Pershing Square Capital Management (Bill Ackman)", id: "pershing" },
+    { name: "Duquesne Family Office (Stanley Druckenmiller)", id: "duquesne" },
+    { name: "Baupost Group (Seth Klarman)", id: "baupost" },
+    { name: "Scion Asset Management (Michael Burry)", id: "scion" },
+  ];
+  const STOCKS = [
+    { ticker: "AAPL", name: "Apple Inc" },
+    { ticker: "NVDA", name: "Nvidia Corp" },
+    { ticker: "MSFT", name: "Microsoft Corp" },
+    { ticker: "AMZN", name: "Amazon.com Inc" },
+    { ticker: "META", name: "Meta Platforms Inc" },
   ];
 
-  let allFunds  = [];
-  let stockIndex = {};
+  const input   = document.getElementById("hero-search");
+  const results = document.getElementById("hero-results");
 
-  function fmtAUM(aum) {
-    if (!aum) return "";
-    if (aum >= 1e12) return `$${(aum / 1e12).toFixed(1)}T`;
-    if (aum >= 1e9)  return `$${(aum / 1e9).toFixed(1)}B`;
-    if (aum >= 1e6)  return `$${(aum / 1e6).toFixed(0)}M`;
-    return `$${aum.toLocaleString()}`;
-  }
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const fr = FUNDS.filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
+      .map(f => `<a class="result-item" href="#"><span class="result-tag">Fund</span>${f.name}</a>`);
+    const sr = STOCKS.filter(s => s.ticker.toLowerCase().includes(q) || s.name.toLowerCase().includes(q)).slice(0, 3)
+      .map(s => `<a class="result-item" href="#"><span class="result-tag stock">${s.ticker}</span>${s.name}</a>`);
+    const all = [...fr, ...sr];
+    results.innerHTML = all.length ? all.join("") : `<div style="padding:0.75rem 1rem;font-size:0.875rem;color:var(--muted)">No results</div>`;
+    results.classList.add("visible");
+  });
 
-  function fmtDate(dateStr) {
-    if (!dateStr) return "";
-    const [year, month, day] = dateStr.split("-");
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
-  }
-
-  function fundItem(id, name, rank, meta, bioSlug) {
-    return `
-      <li>
-        <a href="fund.html?fund=${id}">
-          <span class="rank">${rank}.</span>
-          <span class="fund-info">
-            <span class="fund-name">${name}<span class="fund-last-updated" data-fund-id="${id}" style="color:#2563eb;font-family:var(--mono);font-size:0.68rem;font-weight:400;margin-left:0.4rem;"></span></span>
-            ${meta ? `<span class="fund-meta">${meta}</span>` : ""}
-          </span>
-          <span class="arrow">→</span>
-        </a>
-      </li>`;
-  }
-
-  async function loadData() {
-    const fundsRes = await fetch(`${BASE}/funds.json`);
-    const text = await fundsRes.text();
-    allFunds = JSON.parse(text);
-
-    // Load stock index for search (don't block on failure)
-    try {
-      const res = await fetch(`${BASE}/stock_index.json`);
-      if (res.ok) { const d = await res.json(); stockIndex = d.stocks || d; }
-    } catch(e) { /* stock index not yet generated */ }
-
-    renderPopular();
-    renderAll();
-    loadLastUpdatedDates();
-  }
-
-  function renderPopular() {
-    const el = document.getElementById("list-popular");
-    const funds = POPULAR_IDS.map(id => allFunds.find(f => f.id === id)).filter(Boolean);
-    el.innerHTML = funds.map((f, i) => fundItem(f.id, f.name, i + 1, null, f.bio_slug)).join("");
-  }
-
-  function renderAll() {
-    const el = document.getElementById("list-all");
-    el.innerHTML = allFunds.map((f, i) => fundItem(f.id, f.name, i + 1, null, f.bio_slug)).join("");
-  }
-
-  // Fetch latest filed date for each fund using new per-fund JSON format
-  async function loadLastUpdatedDates() {
-    await Promise.all(allFunds.map(async (fund) => {
-      try {
-        const r = await fetch(`${BASE}/data/${fund.id}.json`);
-        if (!r.ok) return;
-        const data = await r.json();
-        // Get most recent quarter's filed date
-        const quarters = data.quarters || {};
-        const sortedQs = Object.keys(quarters).sort().reverse();
-        if (sortedQs.length === 0) return;
-        const latestQ = quarters[sortedQs[0]];
-        if (latestQ && latestQ.filed) {
-          const dateStr = `· ${fmtDate(latestQ.filed)}`;
-          document.querySelectorAll(`[data-fund-id="${fund.id}"]`).forEach(el => {
-            el.textContent = dateStr;
-          });
-        }
-      } catch(e) { /* skip */ }
-    }));
-  }
-
-  // ── Search ─────────────────────────────────────────────────────
-  const searchInput   = document.getElementById("search");
-  const searchResults = document.getElementById("search-results");
-
-  searchInput.addEventListener("input", () => {
-    const q = searchInput.value.trim().toLowerCase();
-    if (!q) { searchResults.classList.remove("visible"); return; }
-
-    // Search funds
-    const fundMatches = allFunds
-      .filter(f => f.name.toLowerCase().includes(q))
-      .slice(0, 4)
-      .map(f => `
-        <a class="search-result-item" href="fund.html?fund=${f.id}">
-          <span class="search-result-num">Fund</span>
-          <span>${f.name}</span>
-        </a>`);
-
-    // Search stocks by ticker or company name
-    const stockMatches = [];
-    for (const [key, stock] of Object.entries(stockIndex)) {
-      if (stockMatches.length >= 4) break;
-      if (
-        (stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
-        stock.name.toLowerCase().includes(q)
-      ) {
-        stockMatches.push(`
-          <a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
-            <span class="search-result-num">Stock</span>
-            <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
-          </a>`);
-      }
-    }
-
-    const all = [...fundMatches, ...stockMatches];
-    if (all.length === 0) {
-      searchResults.innerHTML = `<div class="no-results">No results found</div>`;
-    } else {
-      searchResults.innerHTML = all.join("");
-    }
-    searchResults.classList.add("visible");
+  // Quick-fill hints
+  document.querySelectorAll(".hero-hint").forEach(h => {
+    h.addEventListener("click", () => {
+      input.value = h.textContent;
+      input.dispatchEvent(new Event("input"));
+      input.focus();
+    });
   });
 
   document.addEventListener("click", e => {
-    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-      searchResults.classList.remove("visible");
-    }
+    if (!input.contains(e.target) && !results.contains(e.target)) results.classList.remove("visible");
   });
-
-  loadData();
 </script>
 </body>
 </html>
