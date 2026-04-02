@@ -127,9 +127,9 @@
     footer a { color: var(--muted); text-decoration: none; }
 
     /* ── Sparkline ── */
-    .sparkline-container { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem 0.6rem; position: relative; }
+    .sparkline-container { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 1rem 0.75rem; position: relative; }
     .sparkline-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.5rem; }
-    .sparkline-svg { width: 100%; height: 100px; display: block; overflow: hidden; }
+    .sparkline-svg { width: 100%; height: 80px; display: block; overflow: hidden; }
     .sparkline-line { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-linejoin: round; stroke-linecap: round; }
     .sparkline-area { fill: var(--accent); opacity: 0.08; }
     .sparkline-dot { fill: var(--accent); cursor: pointer; }
@@ -576,8 +576,8 @@
     });
 
     // SVG dimensions — fixed pixel coords inside a viewBox
-    const VW = 600, VH = 100;
-    const PAD = { l: 4, r: 4, t: 6, b: 42 };
+    const VW = 600, VH = 80;
+    const PAD = { l: 4, r: 20, t: 8, b: 18 };
     const chartW = VW - PAD.l - PAD.r;
     const chartH = VH - PAD.t - PAD.b;
     const n = pts.length;
@@ -598,13 +598,15 @@
       return n.toLocaleString();
     }
 
-    // Quarter labels — all quarters, rotated 45° so they never overlap
+    // Quarter labels — horizontal, short format, sized to always fit inside viewBox
+    // Use short label "Q4 25" to save space; font-size scales with number of points
+    const fontSize = Math.min(9, Math.floor(580 / (n * 7)));
     const labels = pts.map((p, i) => {
       const m = p.q.match(/(\d{4})Q(\d)/);
-      const lbl = m ? `Q${m[2]} ${m[1]}` : p.q;
+      const lbl = m ? `Q${m[2]}\u2019${m[1].slice(2)}` : p.q;
       const cx = x(i).toFixed(1);
-      const ly = VH - 2;
-      return `<text transform="rotate(-45, ${cx}, ${ly})" x="${cx}" y="${ly}" text-anchor="end" font-size="11" fill="var(--muted)" font-family="var(--mono)">${lbl}</text>`;
+      const anchor = i === 0 ? "start" : i === n - 1 ? "end" : "middle";
+      return `<text x="${cx}" y="${VH - 3}" text-anchor="${anchor}" font-size="${fontSize}" fill="var(--muted)" font-family="var(--mono)">${lbl}</text>`;
     }).join("");
 
     // Dots
