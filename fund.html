@@ -488,7 +488,7 @@
           // Single position
           const { r, isSig, inner } = enriched[0];
           const p       = repPrice(r);
-          const priceStr = p ? `, reported price was <b>${p}</b>*` : "";
+          const priceStr = p ? `, reported price * was <b>${p}</b>` : "";
           const sigWord  = isSig ? "a significant new position" : "a new stake";
           sentences.push(`${shortName} initiated ${sigWord} in ${stockLink(r)}${optTag(r.putcall)} (${inner})${priceStr}.`);
         } else if (sigList.length === 0) {
