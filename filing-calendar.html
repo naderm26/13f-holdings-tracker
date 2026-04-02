@@ -118,8 +118,8 @@
         <a class="nav-link" href="managers.html">Managers</a>
         <a class="nav-link" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
-        <a class="nav-link active" href="filing-calendar.html">Calendar</a>
         <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+        <a class="nav-link active" href="filing-calendar.html">Calendar</a>
       </nav>
     </div>
     <div class="search-wrap">
@@ -134,8 +134,8 @@
       <a class="nav-link" href="managers.html">Managers</a>
       <a class="nav-link" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Activity</a>
-      <a class="nav-link active" href="filing-calendar.html">Calendar</a>
       <a class="nav-link" href="portfolio-overlap.html">Overlap</a>
+      <a class="nav-link active" href="filing-calendar.html">Calendar</a>
     </nav>
   </div>
 </header>
@@ -154,12 +154,6 @@
     <button class="filter-btn" data-filter="filed">Filed this quarter</button>
   </div>
 
-  <div class="legend">
-    <div class="legend-item"><span class="badge filed">FILED</span> Filed this quarter</div>
-    <div class="legend-item"><span class="badge upcoming">UPCOMING</span> Due within 30 days</div>
-    <div class="legend-item"><span class="badge overdue">OVERDUE</span> Past expected date</div>
-    <div class="legend-item"><span class="badge unknown">UNKNOWN</span> No data available</div>
-  </div>
 
   <div class="table-wrap">
     <table id="cal-table">
@@ -170,12 +164,10 @@
           <th onclick="sortBy('filed')" class="right">Filed</th>
           <th onclick="sortBy('next')" class="right">Next Quarter End</th>
           <th onclick="sortBy('due')" class="right">Filing Due</th>
-          <th onclick="sortBy('days')" class="right">Days Until Due</th>
-          <th class="right">Status</th>
         </tr>
       </thead>
       <tbody id="cal-body">
-        <tr><td colspan="7" class="loading">Loading filing data...</td></tr>
+        <tr><td colspan="5" class="loading">Loading filing data...</td></tr>
       </tbody>
     </table>
   </div>
@@ -318,10 +310,8 @@
         <td class="mono right">${r.filedStr}</td>
         <td class="mono right">${r.nextQEndStr}</td>
         <td class="mono right">${r.dueStr}</td>
-        <td class="right">${daysHtml(r.days)}</td>
-        <td class="right">${statusBadge(r.days, r.filed, r.nextQEndDate)}</td>
       </tr>`;
-    }).join('') || `<tr><td colspan="7" style="text-align:center;padding:2rem;font-family:var(--mono);font-size:0.8rem;color:var(--muted);">No funds match this filter.</td></tr>`;
+    }).join('') || `<tr><td colspan="5" style="text-align:center;padding:2rem;font-family:var(--mono);font-size:0.8rem;color:var(--muted);">No funds match this filter.</td></tr>`;
   }
 
   function sortBy(col) {
@@ -346,8 +336,12 @@
     const fundsRes = await fetch(`${PAGES}/funds.json`);
     const funds    = await fundsRes.json();
 
+    // Exclude funds that no longer file 13Fs
+    const EXCLUDED = ['scion'];
+    const activeFunds = funds.filter(f => !EXCLUDED.includes(f.id));
+
     // Fetch all fund JSONs in parallel, with a concurrency limit
-    const results = await Promise.all(funds.map(async fund => {
+    const results = await Promise.all(activeFunds.map(async fund => {
       try {
         const r = await fetch(`${PAGES}/data/${fund.id}.json`);
         if (!r.ok) return { fund, data: null };
