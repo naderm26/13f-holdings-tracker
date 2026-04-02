@@ -241,28 +241,28 @@
         <div class="activity-section-title">Most Widely Bought</div>
         <div class="activity-section-subtitle">Ranked by net number of funds buying vs selling (buyers − sellers) vs the prior quarter. Stocks where the most funds increased or initiated positions.</div>
         <div id="tbl-netAdd"><div class="loading">Fetching data...</div></div>
-        <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+        <p class="footnote">* Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.</p>
       </div>
 
       <div class="activity-section" id="sec-netDec">
         <div class="activity-section-title">Most Widely Sold</div>
         <div class="activity-section-subtitle">Ranked by net number of funds selling vs buying (sellers − buyers) vs the prior quarter. Stocks where the most funds reduced or exited positions.</div>
         <div id="tbl-netDec"><div class="loading">Fetching data...</div></div>
-        <p class="footnote">* Price at last filing is not an actual purchase or sale price. It is the implied price calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+        <p class="footnote">* Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.</p>
       </div>
 
       <div class="activity-section" id="sec-new">
         <div class="activity-section-title">Top New Positions</div>
         <div class="activity-section-subtitle">Stocks newly initiated by the most funds this quarter. Ranked by number of funds initiating.</div>
         <div id="tbl-new"><div class="loading">Fetching data...</div></div>
-        <p class="footnote" id="fn-new" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the last holdings date, calculated by dividing the reported value by the number of shares held, aggregated across all funds.</p>
+        <p class="footnote" id="fn-new" style="display:none">* Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.</p>
       </div>
 
       <div class="activity-section" id="sec-exit">
         <div class="activity-section-title">Most Exited</div>
         <div class="activity-section-subtitle">Stocks fully exited by the most funds this quarter. Ranked by number of funds exiting.</div>
         <div id="tbl-exit"><div class="loading">Fetching data...</div></div>
-        <p class="footnote" id="fn-exit" style="display:none">* Price at last filing is not an actual purchase or sale price. It is the implied price as of the prior quarter, calculated by dividing the reported value by shares held, aggregated across all funds.</p>
+        <p class="footnote" id="fn-exit" style="display:none">* Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.</p>
       </div>
 
     </div>
@@ -334,26 +334,26 @@
       { label: "Funds (Buyers)", sortKey: "buyers" },
       { label: "Funds (Sellers)", sortKey: "sellers" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
-      { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Reported Price *", sortKey: "price" }
     ],
     netDec: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
       { label: "Funds (Sellers)", sortKey: "sellers" },
       { label: "Funds (Buyers)", sortKey: "buyers" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
-      { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Reported Price *", sortKey: "price" }
     ],
     new: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
       { label: "Funds Initiating", sortKey: "fundCount" }, { label: "Aggregate Shares", sortKey: "totalShares" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
-      { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "Aggregate Value", sortKey: "totalValue" }, { label: "Reported Price *", sortKey: "price" }
     ],
     exit: [
       { label: "#", sortKey: null }, { label: "Company", sortKey: "name" },
       { label: "Funds Exiting", sortKey: "fundCount" }, { label: "Shares Removed", sortKey: "totalShares" },
       { label: "Shares vs Prior Quarter", sortKey: "chgQtr" }, { label: "Shares vs Prior Year", sortKey: "chgYr" },
-      { label: "Prior Quarter Value", sortKey: "totalValue" }, { label: "Price at Last Filing *", sortKey: "price" }
+      { label: "Prior Quarter Value", sortKey: "totalValue" }, { label: "Reported Price *", sortKey: "price" }
     ],
   };
 
