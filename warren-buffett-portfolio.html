@@ -103,13 +103,19 @@
 <header>
   <div class="header-top">
     <div style="display:flex; align-items:center; gap:1.75rem;">
-      <div><a class="brand-name" href="/13f-holdings-tracker/index.html">13FAI</a></div>
+      <div style="display:flex; flex-direction:column; gap:0.1rem;">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.02em;">ai-powered hedge fund tracker</span>
+      </div>
       <nav class="nav-links desktop-nav">
-        <a class="nav-link" href="/13f-holdings-tracker/index.html">Funds</a>
-        <a class="nav-link active" href="/13f-holdings-tracker/managers.html">Managers</a>
-        <a class="nav-link" href="/13f-holdings-tracker/top-holdings.html">Top Holdings</a>
-        <a class="nav-link" href="/13f-holdings-tracker/hedge-fund-activity.html">Activity</a>
-        <a class="nav-link" href="/13f-holdings-tracker/portfolio-overlap.html">Overlap</a>
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link active" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
       </nav>
     </div>
     <div class="search-wrap">
@@ -120,11 +126,14 @@
   </div>
   <div class="header-nav-row">
     <nav class="nav-links">
-      <a class="nav-link" href="/13f-holdings-tracker/index.html">Funds</a>
-      <a class="nav-link active" href="/13f-holdings-tracker/managers.html">Managers</a>
-      <a class="nav-link" href="/13f-holdings-tracker/top-holdings.html">Top Holdings</a>
-      <a class="nav-link" href="/13f-holdings-tracker/hedge-fund-activity.html">Activity</a>
-      <a class="nav-link" href="/13f-holdings-tracker/portfolio-overlap.html">Overlap</a>
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link active" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
     </nav>
   </div>
 </header>
@@ -133,7 +142,7 @@
 
   <div class="hero">
     <div class="avatar">
-      <img src="/13f-holdings-tracker/images/berkshire_buffett.jpg" alt="Warren Buffett"
+      <img src="/images/berkshire_buffett.jpg" alt="Warren Buffett"
            onerror="this.style.display='none';document.getElementById('av-berkshire').style.display='flex';"
            style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"/>
       <span id="av-berkshire" style="display:none">WB</span>
@@ -147,7 +156,7 @@
         <span class="tag">Dividend Stocks</span>
         <span class="tag">Insurance Float</span>
       </div>
-      <div style="margin-top:0.5rem;font-family:var(--mono);font-size:0.72rem;color:var(--muted);">Also see: <a href="/13f-holdings-tracker/greg-abel-portfolio.html" style="color:#2563eb;text-decoration:none;">Greg Abel</a> — CEO (successor to Warren Buffett)</div>
+      <div style="margin-top:0.5rem;font-family:var(--mono);font-size:0.72rem;color:var(--muted);">Also see: <a href="/greg-abel-portfolio.html" style="color:#2563eb;text-decoration:none;">Greg Abel</a> — CEO (successor to Warren Buffett)</div>
     </div>
   </div>
 
@@ -157,7 +166,7 @@
       <div class="cta-stat"><div class="label">Positions</div><div class="value">42</div></div>
       <div class="cta-stat"><div class="label">Latest Filing</div><div class="value">Feb 17, 2026</div></div>
     </div>
-    <a href="/13f-holdings-tracker/fund.html?fund=berkshire" class="cta-btn">View Full Portfolio →</a>
+    <a href="/fund.html?fund=berkshire" class="cta-btn">View Full Portfolio →</a>
   </div>
 
     <div class="stats-strip">
@@ -231,7 +240,7 @@
         <div class="h-rank">1</div>
         <div class="h-name">
           <div class="h-company">APPLE INC</div>
-          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=AAPL" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">AAPL</a></div>
+          <div class="h-ticker"><a href="/stock.html?ticker=AAPL" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">AAPL</a></div>
         </div>
         <div class="h-bar-wrap"><div class="h-bar" style="width:100.0%"></div></div>
         <div class="h-pct">22.6%</div>
@@ -240,7 +249,7 @@
         <div class="h-rank">2</div>
         <div class="h-name">
           <div class="h-company">AMERICAN EXPRESS CO</div>
-          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=AXP" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">AXP</a></div>
+          <div class="h-ticker"><a href="/stock.html?ticker=AXP" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">AXP</a></div>
         </div>
         <div class="h-bar-wrap"><div class="h-bar" style="width:90.5%"></div></div>
         <div class="h-pct">20.5%</div>
@@ -249,7 +258,7 @@
         <div class="h-rank">3</div>
         <div class="h-name">
           <div class="h-company">BANK AMERICA CORP</div>
-          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=BAC" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">BAC</a></div>
+          <div class="h-ticker"><a href="/stock.html?ticker=BAC" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">BAC</a></div>
         </div>
         <div class="h-bar-wrap"><div class="h-bar" style="width:45.9%"></div></div>
         <div class="h-pct">10.4%</div>
@@ -258,7 +267,7 @@
         <div class="h-rank">4</div>
         <div class="h-name">
           <div class="h-company">COCA COLA CO</div>
-          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=KO" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">KO</a></div>
+          <div class="h-ticker"><a href="/stock.html?ticker=KO" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">KO</a></div>
         </div>
         <div class="h-bar-wrap"><div class="h-bar" style="width:45.1%"></div></div>
         <div class="h-pct">10.2%</div>
@@ -267,14 +276,14 @@
         <div class="h-rank">5</div>
         <div class="h-name">
           <div class="h-company">CHEVRON CORP NEW</div>
-          <div class="h-ticker"><a href="/13f-holdings-tracker/stock.html?ticker=CVX" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">CVX</a></div>
+          <div class="h-ticker"><a href="/stock.html?ticker=CVX" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.72rem;">CVX</a></div>
         </div>
         <div class="h-bar-wrap"><div class="h-bar" style="width:32.0%"></div></div>
         <div class="h-pct">7.2%</div>
       </div>
       </div>
       <div class="holdings-footer">
-        <a href="/13f-holdings-tracker/fund.html?fund=berkshire">View all positions and full portfolio breakdown →</a>
+        <a href="/fund.html?fund=berkshire">View all positions and full portfolio breakdown →</a>
       </div>
     </div>
   </div>
@@ -283,11 +292,11 @@
 
 <footer>
   Data sourced from SEC EDGAR 13F filings · For informational purposes only ·
-  <a href="/13f-holdings-tracker/disclaimer.html">Disclaimer</a>
+  <a href="/disclaimer.html">Disclaimer</a>
 </footer>
 
 <script>
-  const PAGES = '/13f-holdings-tracker';
+  const PAGES = '';
   const input = document.getElementById('search');
   const results = document.getElementById('search-results');
   let funds = [], stocks = [];
