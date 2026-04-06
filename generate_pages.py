@@ -23,7 +23,7 @@ OUTPUT_DIR  = SCRIPT_DIR          # pages go in repo root
 CONTENT_FILE = SCRIPT_DIR / "funds_content.json"
 TICKERS_FILE = SCRIPT_DIR / "cusip_to_ticker.json"
 
-PAGES_BASE = "/13f-holdings-tracker"  # GitHub Pages base path
+PAGES_BASE = ""  # Custom domain — no base path needed
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -327,13 +327,19 @@ def render_page(manager, live, all_managers):
 <header>
   <div class="header-top">
     <div style="display:flex; align-items:center; gap:1.75rem;">
-      <div><a class="brand-name" href="{PAGES_BASE}/index.html">13FAI</a></div>
+      <div style="display:flex; flex-direction:column; gap:0.1rem;">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.02em;">ai-powered hedge fund tracker</span>
+      </div>
       <nav class="nav-links desktop-nav">
-        <a class="nav-link" href="{PAGES_BASE}/index.html">Funds</a>
-        <a class="nav-link active" href="{PAGES_BASE}/managers.html">Managers</a>
-        <a class="nav-link" href="{PAGES_BASE}/top-holdings.html">Top Holdings</a>
-        <a class="nav-link" href="{PAGES_BASE}/hedge-fund-activity.html">Activity</a>
-        <a class="nav-link" href="{PAGES_BASE}/portfolio-overlap.html">Overlap</a>
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link active" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
       </nav>
     </div>
     <div class="search-wrap">
@@ -344,11 +350,14 @@ def render_page(manager, live, all_managers):
   </div>
   <div class="header-nav-row">
     <nav class="nav-links">
-      <a class="nav-link" href="{PAGES_BASE}/index.html">Funds</a>
-      <a class="nav-link active" href="{PAGES_BASE}/managers.html">Managers</a>
-      <a class="nav-link" href="{PAGES_BASE}/top-holdings.html">Top Holdings</a>
-      <a class="nav-link" href="{PAGES_BASE}/hedge-fund-activity.html">Activity</a>
-      <a class="nav-link" href="{PAGES_BASE}/portfolio-overlap.html">Overlap</a>
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link active" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
     </nav>
   </div>
 </header>
