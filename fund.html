@@ -261,7 +261,20 @@
       const bioSlug = f.bio_slug || null;
       const managerEl = document.getElementById("fund-manager");
       const avatarEl  = document.getElementById("fund-avatar");
-      if (bioSlug) {
+
+      // Special case: Berkshire has two managers (Abel + Buffett)
+      if (fundId === "berkshire") {
+        managerEl.innerHTML =
+          `<a href="greg-abel-portfolio.html" style="color:#2563eb;text-decoration:none;font-size:0.95rem;font-family:var(--mono);">Greg Abel (see Bio)</a>` +
+          `<br><a href="warren-buffett-portfolio.html" style="color:#2563eb;text-decoration:none;font-size:0.95rem;font-family:var(--mono);">Warren Buffett (see Bio)</a>`;
+        const avatarImg      = document.getElementById("fund-avatar-img");
+        const avatarInitials = document.getElementById("fund-avatar-initials");
+        avatarInitials.textContent = "BH";
+        avatarImg.alt = "Berkshire Hathaway";
+        avatarImg.src = `${PAGES}/images/berkshire_abel.jpg`;
+        avatarImg.onload  = () => { avatarImg.style.display = "block"; avatarInitials.style.display = "none"; };
+        avatarImg.onerror = () => { avatarImg.style.display = "none";  avatarInitials.style.display = ""; };
+      } else if (bioSlug) {
         managerEl.innerHTML = `<a href="${bioSlug}.html" style="color:#2563eb !important;text-decoration:none;font-size:0.95rem;font-family:var(--mono);">${managerOnly} (see Bio)</a>`;
         // Avatar — load image, fallback to initials
         const avatarImg      = document.getElementById("fund-avatar-img");
