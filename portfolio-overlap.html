@@ -124,13 +124,19 @@
 <header>
   <div class="header-top">
     <div style="display:flex; align-items:center; gap:1.75rem;">
-      <a class="brand-name" href="index.html">13FAI</a>
+      <div class="brand" style="display:flex;flex-direction:column;gap:0.1rem;">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);">ai-powered hedge fund tracker</span>
+      </div>
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
         <a class="nav-link" href="managers.html">Manager Bios</a>
         <a class="nav-link" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
         <a class="nav-link active" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">Calendar</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
       </nav>
     </div>
     <div class="search-wrap">
@@ -146,6 +152,9 @@
       <a class="nav-link" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
       <a class="nav-link active" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">Calendar</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
     </nav>
   </div>
 </header>
@@ -177,10 +186,8 @@
     </div>
   </div>
 
-  <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem;line-height:1.8;display:none" id="table-footnote">
-    * % of portfolio = stock value ÷ fund's total 13F portfolio value for the selected quarter.<br>
-    * Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.<br>
-    † Fund counts, aggregate value, share counts, and period-over-period changes exclude options positions (PUT/CALL).
+  <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem;display:none" id="table-footnote">
+    † excludes options positions (PUT/CALL)
   </div>
 </main>
 
@@ -295,14 +302,23 @@
     if (!items.length) { dd.innerHTML = `<div class="no-results">No funds found</div>`; }
     else {
       dd.innerHTML = items.map(f => {
-        const already = !!selectedFunds.find(s => s.id === f.id);
-        const full    = selectedFunds.length >= MAX_FUNDS;
+        const already  = !!selectedFunds.find(s => s.id === f.id);
+        const full     = selectedFunds.length >= MAX_FUNDS;
         const disabled = already || full;
-        return `<div class="fund-dropdown-item${disabled?" disabled":""}" onclick="${disabled?"":` addFund({id:'${f.id}',name:${JSON.stringify(f.name)}})`}">
+        const escapedName = f.name.replace(/"/g, '&quot;');
+        return `<div class="fund-dropdown-item${disabled ? " disabled" : ""}" data-fund-id="${f.id}" data-fund-name="${escapedName}">
           ${shortFundName(f.name)}
-          <span style="color:var(--muted);font-size:0.72rem;margin-left:auto;font-family:var(--mono)">${already?"added":""}</span>
+          <span style="color:var(--muted);font-size:0.72rem;margin-left:auto;font-family:var(--mono)">${already ? "added" : ""}</span>
         </div>`;
       }).join("");
+
+      // Use mousedown to beat the document click handler that hides the dropdown
+      dd.querySelectorAll(".fund-dropdown-item:not(.disabled)").forEach(el => {
+        el.addEventListener("mousedown", function(e) {
+          e.preventDefault(); // prevent input blur
+          addFund({ id: this.dataset.fundId, name: this.dataset.fundName });
+        });
+      });
     }
     dd.classList.add("visible");
   }
@@ -409,11 +425,9 @@
       let av, bv;
       if      (sortCol === 0) { av = a.name; bv = b.name; return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av); }
       else if (sortCol === 1) { av = a.holdCount; bv = b.holdCount; }
-      else if (sortCol === 2) { av = a.totalValue; bv = b.totalValue; }
-      else if (sortCol === 3) { av = a.prevTotal1 > 0 ? a.netShares1 / a.prevTotal1 : 0; bv = b.prevTotal1 > 0 ? b.netShares1 / b.prevTotal1 : 0; }
       else {
-        // Per-fund columns start at index 4
-        const fid = selectedFunds[sortCol - 4]?.id;
+        // Per-fund columns start at index 2
+        const fid = selectedFunds[sortCol - 2]?.id;
         av = fid ? (a.perFund[fid]?.pct || 0) : 0;
         bv = fid ? (b.perFund[fid]?.pct || 0) : 0;
       }
@@ -422,8 +436,8 @@
 
     // Build dynamic fund columns
     const fundColHeaders = selectedFunds.map((f, i) =>
-      `<th class="col-fund sorted-fund" onclick="sort(${i + 4})" style="cursor:pointer">
-        <span class="fund-dot" style="background:${FUND_COLORS[i % FUND_COLORS.length]}"></span>${shortFundName(f.name)} % † ${arrowFor(i + 4)}
+      `<th class="col-fund sorted-fund" onclick="sort(${i + 2})" style="cursor:pointer">
+        <span class="fund-dot" style="background:${FUND_COLORS[i % FUND_COLORS.length]}"></span>${shortFundName(f.name)} % ${arrowFor(i + 4)}
       </th>`
     ).join("");
 
@@ -431,8 +445,6 @@
       const href = r.ticker
         ? `stock.html?ticker=${encodeURIComponent(r.ticker)}`
         : `stock.html?cusip=${encodeURIComponent(r.cusip || r.key)}`;
-
-      const chgQtrVal = r.prevTotal1 > 0 ? (r.netShares1 / r.prevTotal1) * 100 : null;
 
       const fundCells = selectedFunds.map((f, fi) => {
         const pf = r.perFund[f.id];
@@ -449,8 +461,6 @@
           </a>
         </td>
         <td class="num col-count">${r.holdCount} / ${selectedFunds.length}</td>
-        <td class="num">${fmtValue(r.totalValue)}</td>
-        <td class="num">${fmtChg(chgQtrVal)}</td>
         ${fundCells}
       </tr>`;
     }).join("");
@@ -466,9 +476,7 @@
         <thead><tr>
           <th class="col-num" style="color:var(--muted)">#</th>
           <th class="col-stock" onclick="sort(0)" style="cursor:pointer">Stock${arrowFor(0)}</th>
-          <th class="col-count" onclick="sort(1)" style="cursor:pointer">Funds †${arrowFor(1)}</th>
-          <th class="col-data" onclick="sort(2)" style="cursor:pointer">Aggregate Value †${arrowFor(2)}</th>
-          <th class="col-data" onclick="sort(3)" style="cursor:pointer">Shares vs Prior Quarter †${arrowFor(3)}</th>
+          <th class="col-count" onclick="sort(1)" style="cursor:pointer">Funds${arrowFor(1)}</th>
           ${fundColHeaders}
         </tr></thead>
         <tbody>${rowsHtml}</tbody>
