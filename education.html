@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Understanding 13F Filings — Hedge Fund Holdings Explained | 13FAI</title>
+  <meta name="description" content="What is a 13F filing? What do hedge funds disclose? Learn about institutional investor reporting, put options, portfolio weights, and how to interpret hedge fund holdings data."/>
+  <meta property="og:title" content="Understanding 13F Filings — Hedge Fund Holdings Explained"/>
+  <meta property="og:description" content="What is a 13F filing? Learn about institutional investor reporting, put options, portfolio weights, and how to read hedge fund holdings data."/>
+  <meta property="og:type" content="article"/>
+  <link rel="canonical" href="https://13fai.com/education.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a 13F filing?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A 13F is a quarterly report that institutional investment managers with over $100 million in qualifying assets must file with the SEC within 45 days of each quarter end. It discloses all US-listed equity holdings as of the quarter end date."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How often are 13F filings updated?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "13F filings are filed quarterly, within 45 days of March 31, June 30, September 30, and December 31. This means the data is always at least 45 days old by the time it becomes public."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What are the limitations of 13F filings?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "13F filings only disclose long US equity positions. Short positions, bonds, foreign stocks, private investments, and cash are not reported. The data is also delayed by up to 45 days, so it may not reflect a fund's current portfolio."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a PUT option in a 13F filing?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A PUT option gives the holder the right to sell shares at a set price. When a fund reports a PUT position on a stock in its 13F, it typically means the fund is hedging against or betting on a decline in that stock, not that it owns shares outright."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does portfolio weight mean?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Portfolio weight is the percentage of a fund's total reported equity value represented by a single position. A 15% weight means that holding makes up 15 cents of every dollar the fund has invested in US equities."
+        }
+      }
+    ]
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    main { padding: 2rem 1.25rem 4rem; max-width: 720px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 3rem 2rem 5rem; } }
+
+    h1 { font-size: 1.6rem; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 0.4rem; }
+    .page-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2.5rem; }
+
+    /* Table of contents */
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 2.5rem; }
+    .toc-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.6rem; }
+    .toc a { display: block; font-size: 0.875rem; color: var(--accent); text-decoration: none; padding: 0.2rem 0; border-bottom: none; }
+    .toc a:hover { text-decoration: underline; }
+    .toc a + a { margin-top: 0.1rem; }
+
+    /* Sections */
+    .edu-section { margin-bottom: 2.5rem; scroll-margin-top: 1rem; }
+    .edu-section h2 { font-size: 1.1rem; font-weight: 500; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+    .edu-section p { font-size: 0.925rem; line-height: 1.8; color: var(--text); }
+    .edu-section p + p { margin-top: 0.75rem; }
+
+    /* Glossary terms */
+    .glossary { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .term { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); background: var(--bg); }
+    .term:last-child { border-bottom: none; }
+    .term:nth-child(even) { background: var(--surface); }
+    .term-name { font-family: var(--mono); font-size: 0.78rem; font-weight: 500; color: var(--accent); margin-bottom: 0.3rem; }
+    .term-def { font-size: 0.875rem; line-height: 1.7; color: var(--text); }
+
+    /* Callout box */
+    .callout { background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; padding: 0.85rem 1rem; margin: 1.25rem 0; }
+    .callout p { font-size: 0.875rem; line-height: 1.7; color: var(--text); }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+    a.inline { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
+    a.inline:hover { opacity: 0.75; }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Fund Activity</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">Calendar</a>
+      </nav>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Fund Activity</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">Calendar</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1>Understanding 13F Filings</h1>
+  <p class="page-sub">A plain-language guide to hedge fund reporting, key terms, and how to use the data.</p>
+
+  <nav class="toc">
+    <div class="toc-label">On this page</div>
+    <a href="#what-is-13f">What is a 13F filing?</a>
+    <a href="#who-files">Who is required to file?</a>
+    <a href="#what-disclosed">What is and isn't disclosed?</a>
+    <a href="#how-to-use">How to use this data</a>
+    <a href="#glossary">Glossary of terms</a>
+  </nav>
+
+  <!-- Section 1 -->
+  <div class="edu-section" id="what-is-13f">
+    <h2>What is a 13F filing?</h2>
+    <p>A Form 13F is a quarterly disclosure that large institutional investment managers must file with the US Securities and Exchange Commission (SEC). It lists every US-listed equity security the manager held as of the last day of the quarter.</p>
+    <p>13F filings are public record and available on <a class="inline" href="https://www.sec.gov/cgi-bin/browse-edgar" target="_blank" rel="noopener">SEC EDGAR</a>. They are the primary window the public has into the portfolios of major hedge funds, asset managers, and endowments. 13FAI automates the collection and analysis of these filings so you don't have to read raw SEC documents.</p>
+    <div class="callout">
+      <p>13F filings are due within <strong>45 days</strong> of each quarter end — meaning Q4 data (December 31) is not public until mid-February at the earliest. The data always reflects past holdings, not current positions.</p>
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="edu-section" id="who-files">
+    <h2>Who is required to file?</h2>
+    <p>Any institutional investment manager that exercises discretion over <strong>$100 million or more</strong> in qualifying US equity securities must file a 13F with the SEC each quarter. This includes hedge funds, mutual funds, pension funds, bank trust departments, insurance companies, and endowments.</p>
+    <p>Managers below the $100M threshold are not required to file and therefore do not appear in public 13F data. Some well-known investors — particularly those running small, concentrated funds — may not file at all.</p>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="edu-section" id="what-disclosed">
+    <h2>What is and isn't disclosed?</h2>
+    <p>Understanding the scope of a 13F is essential for interpreting the data correctly.</p>
+    <p><strong>What is disclosed:</strong> Long positions in US-listed equities, including common stock, ETFs, convertible notes, and equity options (PUT and CALL contracts).</p>
+    <p><strong>What is not disclosed:</strong> Short positions, bonds and fixed income, foreign-listed stocks, private equity, real estate, cash, and currencies. A fund's 13F can therefore look very different from its actual portfolio — a fund that is net short US equities will still show only its long book.</p>
+    <div class="callout">
+      <p>On 13FAI, <strong>options positions</strong> (PUT/CALL) are shown in the fund table for transparency but are <strong>excluded from portfolio value, weight, and share count calculations</strong>, since they represent hedges or directional bets rather than equity ownership.</p>
+    </div>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="edu-section" id="how-to-use">
+    <h2>How to use this data</h2>
+    <p>13F data is most useful as a starting point for research — not as a real-time signal. Because filings are delayed by up to 45 days, a position you see reported may have already been sold by the time you read it.</p>
+    <p>The most reliable signal in 13F data is <strong>long-term conviction</strong>. A position that appears consistently across multiple quarters, growing in size, is more likely to reflect genuine long-term conviction than a position that appeared once. Use the 8-quarter history on each fund and stock page to identify these patterns.</p>
+    <p>Consensus signals — stocks that many funds are buying or selling simultaneously — are also worth attention. Our <a class="inline" href="hedge-fund-activity.html">Fund Activity</a> page surfaces these each quarter. For deep dives, the <a class="inline" href="portfolio-overlap.html">Fund Comparison</a> tool shows which stocks multiple specific managers hold in common.</p>
+  </div>
+
+  <hr class="divider"/>
+
+  <!-- Glossary -->
+  <div class="edu-section" id="glossary">
+    <h2>Glossary of terms</h2>
+    <div class="glossary">
+      <div class="term">
+        <div class="term-name">13F-HR</div>
+        <div class="term-def">The specific form name for the quarterly holdings report. "HR" stands for "Holdings Report." This is the primary form 13FAI collects and displays.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">AUM (Assets Under Management)</div>
+        <div class="term-def">The total market value of assets a fund manages. On 13FAI, "Portfolio Value" refers specifically to the US equity holdings disclosed in the 13F, which may be a fraction of a fund's true AUM.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">Portfolio Weight</div>
+        <div class="term-def">The percentage of a fund's total reported equity value represented by a single holding. A 15% weight means that position accounts for 15 cents of every dollar the fund has reported in US equities.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">Reported Price</div>
+        <div class="term-def">The implied price per share at the time of the filing, calculated by dividing the reported dollar value by the number of shares held. This is not an actual purchase or sale price — it is the price as of the last portfolio date.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">PUT Option</div>
+        <div class="term-def">A contract giving the holder the right to sell shares at a set price. A PUT position in a 13F typically means the fund is hedging against or betting on a decline in that stock. On 13FAI, PUT positions are shown in the Option column but excluded from equity calculations.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">CALL Option</div>
+        <div class="term-def">A contract giving the holder the right to buy shares at a set price. A CALL position is a bullish bet on a stock. Like PUTs, CALL positions are shown in the Option column but excluded from equity calculations on 13FAI.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">New Position</div>
+        <div class="term-def">A holding that appears in a fund's current 13F but was absent from the prior quarter's filing. Shown as "NEW" in the vs prior quarter column.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">Exited Position</div>
+        <div class="term-def">A holding that appeared in a fund's prior 13F but is absent from the current filing. Shown as "EXITED" and displayed at the bottom of the fund table.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">Institutional Investment Manager</div>
+        <div class="term-def">An entity that manages investments on behalf of others — including hedge funds, mutual funds, pension funds, sovereign wealth funds, and endowments. Any such manager with over $100M in qualifying US equities must file a 13F.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">CUSIP</div>
+        <div class="term-def">A nine-character alphanumeric identifier assigned to every US and Canadian security. 13F filings identify holdings by CUSIP rather than ticker symbol. 13FAI maps CUSIPs to ticker symbols where possible.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">SEC EDGAR</div>
+        <div class="term-def">The SEC's Electronic Data Gathering, Analysis, and Retrieval system — the public database where all 13F filings are submitted and stored. 13FAI sources all holdings data directly from EDGAR.</div>
+      </div>
+      <div class="term">
+        <div class="term-name">Value Multiplier</div>
+        <div class="term-def">Some funds report values in thousands rather than dollars in their 13F. 13FAI automatically detects and corrects for this, so all portfolio values on the site are shown in dollars.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="edu-section">
+    <h2>Still have questions?</h2>
+    <p>See our <a class="inline" href="about.html">About page</a> for details on our data methodology and update schedule, or read our <a class="inline" href="disclaimer.html">Disclaimer</a> for important information about the limitations of this data. For the full SEC guidance on 13F requirements, visit the <a class="inline" href="https://www.sec.gov/divisions/investment/13ffaq.htm" target="_blank" rel="noopener">SEC's 13F FAQ</a>.</p>
+  </div>
+
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F filings · For informational purposes only ·
+  <a href="disclaimer.html">Disclaimer</a>
+</footer>
+
+</body>
+</html>
