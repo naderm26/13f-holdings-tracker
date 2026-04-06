@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>About 13FAI — Hedge Fund 13F Holdings Tracker</title>
+  <meta name="description" content="13FAI tracks 13F filings from the world's top hedge fund managers. Learn how we source data, how often it updates, and what you can do with it."/>
+  <meta property="og:title" content="About 13FAI — Hedge Fund Holdings Tracker"/>
+  <meta property="og:description" content="13FAI tracks 13F filings from the world's top hedge fund managers. Learn how we source data, how often it updates, and what you can do with it."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/about.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "13FAI",
+    "url": "https://13fai.com",
+    "description": "AI-powered hedge fund 13F holdings tracker. Track what the world's top institutional investors are buying and selling every quarter.",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://13fai.com/stock.html?ticker={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    main { padding: 2rem 1.25rem 4rem; max-width: 720px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 3rem 2rem 5rem; } }
+
+    h1 { font-size: 1.6rem; font-weight: 500; letter-spacing: 0.01em; margin-bottom: 0.4rem; }
+    .page-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2.5rem; }
+
+    .section { margin-bottom: 2.25rem; }
+    .section h2 { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 600; margin-bottom: 0.6rem; }
+    .section p { font-size: 0.925rem; line-height: 1.8; color: var(--text); }
+    .section p + p { margin-top: 0.75rem; }
+
+    .stat-strip { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin: 1.5rem 0; flex-wrap: wrap; }
+    .stat-item { flex: 1; min-width: 120px; padding: 0.85rem 1rem; border-right: 1px solid var(--border); background: var(--surface); }
+    .stat-item:last-child { border-right: none; }
+    .stat-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.25rem; }
+    .stat-value { font-family: var(--mono); font-size: 1rem; font-weight: 500; color: var(--text); }
+
+    .link-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+    .link-card { border: 1px solid var(--border); border-radius: 6px; padding: 0.85rem 1rem; background: var(--surface); text-decoration: none; color: var(--text); transition: background 0.12s, border-color 0.12s; display: block; }
+    .link-card:hover { background: var(--accent-light); border-color: var(--accent); }
+    .link-card-title { font-size: 0.875rem; font-weight: 500; margin-bottom: 0.2rem; }
+    .link-card-desc { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 2.25rem 0; }
+
+    a.inline { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
+    a.inline:hover { opacity: 0.75; }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Fund Activity</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">Calendar</a>
+      </nav>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Fund Activity</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">Calendar</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1>About 13FAI</h1>
+  <p class="page-sub">An independent tracker of hedge fund 13F filings — free, data-driven, and updated every quarter.</p>
+
+  <div class="section">
+    <h2>What we do</h2>
+    <p>13FAI tracks the public equity holdings of the world's most closely followed institutional investors — from Warren Buffett's Berkshire Hathaway to Bill Ackman's Pershing Square. Every quarter, we pull 13F filings directly from the SEC and make the data easy to explore: see what each fund owns, what changed, and which stocks are attracting the most hedge fund attention.</p>
+    <p>We also use AI to generate plain-language insights on each fund and stock page — summarizing key position changes, new bets, and exits so you can understand the data at a glance without reading a spreadsheet.</p>
+  </div>
+
+  <div class="stat-strip">
+    <div class="stat-item"><div class="stat-label">Funds Tracked</div><div class="stat-value">80+</div></div>
+    <div class="stat-item"><div class="stat-label">Quarters of History</div><div class="stat-value">8</div></div>
+    <div class="stat-item"><div class="stat-label">Updated</div><div class="stat-value">Quarterly</div></div>
+    <div class="stat-item"><div class="stat-label">Data Source</div><div class="stat-value">SEC EDGAR</div></div>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="section">
+    <h2>Data source & methodology</h2>
+    <p>All holdings data comes directly from <a class="inline" href="https://www.sec.gov/cgi-bin/browse-edgar" target="_blank" rel="noopener">SEC EDGAR</a>, the public database where institutional investment managers file their 13F-HR reports. We do not modify, estimate, or interpolate the underlying data — what you see is what was reported to the SEC.</p>
+    <p>Market prices and 52-week ranges are sourced from Yahoo Finance and updated daily on weekdays. Portfolio weights and value calculations use the reported value and share count from each 13F filing. Options positions (PUT/CALL) are displayed in the fund table but excluded from portfolio value, weight, and share count calculations, since they represent hedges or directional bets rather than equity ownership.</p>
+  </div>
+
+  <div class="section">
+    <h2>Update schedule</h2>
+    <p>13F filings are due to the SEC within 45 days of each quarter end — March 31, June 30, September 30, and December 31. Most large funds file within the first two weeks of the deadline window. We update our data as filings become available, typically completing each quarterly cycle by mid-February, mid-May, mid-August, and mid-November. You can track expected filing dates on our <a class="inline" href="filing-calendar.html">Filing Calendar</a>.</p>
+  </div>
+
+  <div class="section">
+    <h2>Limitations</h2>
+    <p>13F filings have important limitations. They are filed 45 days after quarter end, so positions shown may no longer reflect a fund's current holdings. Funds managing less than $100M in US equities are not required to file. Short positions, bonds, foreign-listed stocks, and private investments are not disclosed. For a full explanation, see our <a class="inline" href="education.html">Education page</a> and <a class="inline" href="disclaimer.html">Disclaimer</a>.</p>
+  </div>
+
+  <hr class="divider"/>
+
+  <div class="section">
+    <h2>Explore the site</h2>
+    <div class="link-grid">
+      <a class="link-card" href="index.html">
+        <div class="link-card-title">Fund Holdings</div>
+        <div class="link-card-desc">Browse all 80+ tracked funds</div>
+      </a>
+      <a class="link-card" href="managers.html">
+        <div class="link-card-title">Manager Bios</div>
+        <div class="link-card-desc">Backgrounds & investment philosophy</div>
+      </a>
+      <a class="link-card" href="top-holdings.html">
+        <div class="link-card-title">Top Holdings</div>
+        <div class="link-card-desc">Most widely held stocks this quarter</div>
+      </a>
+      <a class="link-card" href="hedge-fund-activity.html">
+        <div class="link-card-title">Fund Activity</div>
+        <div class="link-card-desc">Consensus buys, sells & new positions</div>
+      </a>
+      <a class="link-card" href="portfolio-overlap.html">
+        <div class="link-card-title">Fund Comparison</div>
+        <div class="link-card-desc">Shared holdings across funds</div>
+      </a>
+      <a class="link-card" href="filing-calendar.html">
+        <div class="link-card-title">Filing Calendar</div>
+        <div class="link-card-desc">Next expected 13F filing dates</div>
+      </a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Data sourced from SEC EDGAR 13F filings · For informational purposes only ·
+  <a href="disclaimer.html">Disclaimer</a>
+</footer>
+
+</body>
+</html>
