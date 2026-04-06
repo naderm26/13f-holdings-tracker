@@ -23,10 +23,9 @@
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
     .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
-    .brand { display: flex; align-items: baseline; gap: 0.75rem; }
-    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); }
-    .brand-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; transition: color 0.15s; }
-    .brand-sub:hover { color: var(--accent); }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.02em; }
     .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
     .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
     .nav-link:hover { color: var(--accent); background: var(--accent-light); }
@@ -111,13 +110,19 @@
 <header>
   <div class="header-top">
     <div style="display:flex; align-items:center; gap:1.75rem;">
-      <div class="brand"><a class="brand-name" href="index.html">13FAI</a></div>
+            <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
         <a class="nav-link" href="managers.html">Manager Bios</a>
         <a class="nav-link active" href="top-holdings.html">Top Holdings</a>
         <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
         <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
       </nav>
     </div>
     <div class="search-wrap">
@@ -133,6 +138,9 @@
       <a class="nav-link active" href="top-holdings.html">Top Holdings</a>
       <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
       <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
     </nav>
   </div>
 </header>
