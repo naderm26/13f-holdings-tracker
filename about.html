@@ -113,7 +113,7 @@
 
 <main>
   <h1>About 13FAI</h1>
-  <p class="page-sub">An independent tracker of hedge fund 13F filings — free, data-driven, and updated every quarter.</p>
+  <p class="page-sub">ai-powered hedge fund tracker</p>
 
   <div class="section">
     <h2>What we do</h2>
@@ -121,19 +121,10 @@
     <p>We also use AI to generate plain-language insights on each fund and stock page — summarizing key position changes, new bets, and exits so you can understand the data at a glance without reading a spreadsheet.</p>
   </div>
 
-  <div class="stat-strip">
-    <div class="stat-item"><div class="stat-label">Funds Tracked</div><div class="stat-value">80+</div></div>
-    <div class="stat-item"><div class="stat-label">Quarters of History</div><div class="stat-value">8</div></div>
-    <div class="stat-item"><div class="stat-label">Updated</div><div class="stat-value">Quarterly</div></div>
-    <div class="stat-item"><div class="stat-label">Data Source</div><div class="stat-value">SEC EDGAR</div></div>
-  </div>
-
-  <hr class="divider"/>
-
   <div class="section">
     <h2>Data source & methodology</h2>
-    <p>All holdings data comes directly from <a class="inline" href="https://www.sec.gov/cgi-bin/browse-edgar" target="_blank" rel="noopener">SEC EDGAR</a>, the public database where institutional investment managers file their 13F-HR reports. We do not modify, estimate, or interpolate the underlying data — what you see is what was reported to the SEC.</p>
-    <p>Market prices and 52-week ranges are sourced from Yahoo Finance and updated daily on weekdays. Portfolio weights and value calculations use the reported value and share count from each 13F filing. Options positions (PUT/CALL) are displayed in the fund table but excluded from portfolio value, weight, and share count calculations, since they represent hedges or directional bets rather than equity ownership.</p>
+    <p>All holdings data comes directly from <a class="inline" href="https://www.sec.gov/cgi-bin/browse-edgar" target="_blank" rel="noopener">SEC EDGAR</a>, the public database where institutional investment managers file their 13F-HR reports. Market prices are sourced from Yahoo Finance and updated daily on weekdays.</p>
+    <p>Where funds report options positions (PUT/CALL), we display them in the holdings table for transparency but exclude them from all portfolio value, weight, and share count calculations. Options represent hedges or directional bets rather than direct equity ownership, and including them would distort the long equity picture.</p>
   </div>
 
   <div class="section">
@@ -146,37 +137,6 @@
     <p>13F filings have important limitations. They are filed 45 days after quarter end, so positions shown may no longer reflect a fund's current holdings. Funds managing less than $100M in US equities are not required to file. Short positions, bonds, foreign-listed stocks, and private investments are not disclosed. For a full explanation, see our <a class="inline" href="education.html">Education page</a> and <a class="inline" href="disclaimer.html">Disclaimer</a>.</p>
   </div>
 
-  <hr class="divider"/>
-
-  <div class="section">
-    <h2>Explore the site</h2>
-    <div class="link-grid">
-      <a class="link-card" href="index.html">
-        <div class="link-card-title">Fund Holdings</div>
-        <div class="link-card-desc">Browse all 80+ tracked funds</div>
-      </a>
-      <a class="link-card" href="managers.html">
-        <div class="link-card-title">Manager Bios</div>
-        <div class="link-card-desc">Backgrounds & investment philosophy</div>
-      </a>
-      <a class="link-card" href="top-holdings.html">
-        <div class="link-card-title">Top Holdings</div>
-        <div class="link-card-desc">Most widely held stocks this quarter</div>
-      </a>
-      <a class="link-card" href="hedge-fund-activity.html">
-        <div class="link-card-title">Fund Activity</div>
-        <div class="link-card-desc">Consensus buys, sells & new positions</div>
-      </a>
-      <a class="link-card" href="portfolio-overlap.html">
-        <div class="link-card-title">Fund Comparison</div>
-        <div class="link-card-desc">Shared holdings across funds</div>
-      </a>
-      <a class="link-card" href="filing-calendar.html">
-        <div class="link-card-title">Filing Calendar</div>
-        <div class="link-card-desc">Next expected 13F filing dates</div>
-      </a>
-    </div>
-  </div>
 
 </main>
 
