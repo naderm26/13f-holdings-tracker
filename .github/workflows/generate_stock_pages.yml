@@ -15,9 +15,28 @@ jobs:
         with:
           python-version: "3.11"
       - run: mkdir -p stocks
-      - name: Fix slash tickers in script
+      - name: Sanitize tickers with slashes
         run: |
-          sed -i 's/for rank, (key, stock, _) in enumerate(top_stocks, 1):/for rank, (key, stock, _) in enumerate(top_stocks, 1):\n        if "\/" in stock.get("ticker", key): continue/' generate_stock_pages.py
+          python3 << 'EOF'
+          import json
+
+          with open("stock_index.json") as f:
+              raw = json.load(f)
+
+          stock_index = raw.get("stocks", raw)
+          bad = [k for k, v in stock_index.items() if "/" in v.get("ticker", "")]
+          print(f"Tickers with slashes: {bad}")
+
+          # Remove them from stock_index so the script never sees them
+          for k in bad:
+              del stock_index[k]
+
+          raw["stocks"] = stock_index
+          with open("stock_index.json", "w") as f:
+              json.dump(raw, f)
+
+          print("Done — removed slash tickers from stock_index.json")
+          EOF
       - run: python generate_stock_pages.py
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
