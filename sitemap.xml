@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Core pages -->
+  <url><loc>https://13fai.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://13fai.com/index.html</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://13fai.com/managers.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/top-holdings.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/hedge-fund-activity.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/portfolio-overlap.html</loc><changefreq>quarterly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/filing-calendar.html</loc><changefreq>quarterly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/faq.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/about.html</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
+  <url><loc>https://13fai.com/disclaimer.html</loc><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
+  <!-- Manager bio pages -->
+  <url><loc>https://13fai.com/bill-ackman-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/warren-buffett-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/greg-abel-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/charlie-munger-portfolio.html</loc><changefreq>yearly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/michael-burry-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/stanley-druckenmiller-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/david-tepper-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/seth-klarman-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/daniel-loeb-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/david-einhorn-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/peter-thiel-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/chris-hohn-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/leon-cooperman-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/carl-icahn-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/terry-smith-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/robert-vinall-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/mason-hawkins-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/bill-gates-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/nelson-peltz-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/valueact-capital-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/polen-capital-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/causeway-capital-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/ariel-investments-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/mairs-power-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/ako-capital-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/lindsell-train-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/abrams-capital-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
+
+</urlset>
