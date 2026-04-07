@@ -15,22 +15,9 @@ jobs:
         with:
           python-version: "3.11"
       - run: mkdir -p stocks
-      - name: Patch ticker slash bug
+      - name: Fix slash tickers in script
         run: |
-          python3 -c "
-          with open('generate_stock_pages.py') as f:
-              code = f.read()
-          if 'if \"/\" in ticker' not in code:
-              code = code.replace(
-                  '        ticker = stock.get(\"ticker\", key)\n',
-                  '        ticker = stock.get(\"ticker\", key)\n        if \"/\" in ticker:\n            continue\n'
-              )
-              with open('generate_stock_pages.py', 'w') as f:
-                  f.write(code)
-              print('Patched')
-          else:
-              print('Already patched')
-          "
+          sed -i 's/for rank, (key, stock, _) in enumerate(top_stocks, 1):/for rank, (key, stock, _) in enumerate(top_stocks, 1):\n        if "\/" in stock.get("ticker", key): continue/' generate_stock_pages.py
       - run: python generate_stock_pages.py
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
