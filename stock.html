@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,6 +12,8 @@
   <title>Stock Holdings | 13FAI</title>
   <meta name="description" content=""/>
   <meta property="og:type" content="website"/>
+  <link rel="canonical" href="" id="canonical-url"/>
+  <script type="application/ld+json" id="json-ld"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -693,10 +696,26 @@
       // Title
       const ql = quarterLabel(activeQ);
       const titleStr = `${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} — Hedge Fund Ownership ${ql}`;
+      const stockDesc = `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} as of ${ql}. Track position sizes, portfolio weights, and quarterly changes from 13F filings.`;
       document.title = `${titleStr} | 13F Holdings`;
-      document.querySelector('meta[name="description"]').setAttribute("content",
-        `See which hedge funds own ${stock.name}${stock.ticker ? ` (${stock.ticker})` : ""} as of ${ql}. Track position sizes, portfolio weights, and quarterly changes from 13F filings.`);
+      document.querySelector('meta[name="description"]').setAttribute("content", stockDesc);
       document.getElementById("stock-header").innerHTML = `<h1 class="stock-name" style="font-size:1.4rem;font-weight:500;margin-bottom:0.3rem">${titleStr}</h1>`;
+      // Canonical — point to static page if ticker exists, else dynamic URL
+      const canonicalEl = document.getElementById("canonical-url");
+      if (canonicalEl) {
+        const staticUrl = stock.ticker ? `https://13fai.com/stocks/${stock.ticker.replace("/","-")}-hedge-fund-ownership.html` : `https://13fai.com/stock.html?ticker=${encodeURIComponent(key)}`;
+        canonicalEl.setAttribute("href", staticUrl);
+      }
+      // JSON-LD
+      const jsonLdEl = document.getElementById("json-ld");
+      if (jsonLdEl) jsonLdEl.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "name": titleStr,
+        "description": stockDesc,
+        "url": `https://13fai.com/stock.html?ticker=${encodeURIComponent(key)}`,
+        "creator": { "@type": "Organization", "name": "13FAI", "url": "https://13fai.com" }
+      });
 
       renderQuarterTabs();
       renderTable();
