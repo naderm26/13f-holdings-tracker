@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>APOLLO GLOBAL MGMT INC (APO) — Hedge Fund Ownership Q4 2025 | 13FAI</title>
+  <meta name="description" content="See which hedge funds own APOLLO GLOBAL MGMT INC (APO) as of Q4 2025. Track position sizes, portfolio weights, and quarterly changes from 13F filings."/>
+  <meta property="og:title" content="APOLLO GLOBAL MGMT INC (APO) — Hedge Fund Ownership Q4 2025"/>
+  <meta property="og:description" content="See which hedge funds own APOLLO GLOBAL MGMT INC (APO) as of Q4 2025. Track position sizes, portfolio weights, and quarterly changes from 13F filings."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/stocks/APO-hedge-fund-ownership.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+    h1 { font-size: 1.4rem; font-weight: 500; margin-bottom: 0.3rem; }
+    .stock-ticker { font-family: var(--mono); font-size: 0.85rem; color: #2563eb; font-weight: 600; margin-bottom: 0.75rem; }
+    .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .q-btn { font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--muted); text-decoration: none; transition: all 0.15s; display: inline-block; }
+    .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .insights-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 0; margin-bottom: 1.25rem; }
+    .insights { font-size: 0.875rem; line-height: 1.75; color: var(--text); }
+    .insights ul { list-style: none; margin: 0; padding: 0; }
+    .insights li { position: relative; padding-left: 1rem; padding-top: 0.15rem; padding-bottom: 0.15rem; }
+    .insights li::before { content: "•"; position: absolute; left: 0; color: var(--muted); font-size: 0.75rem; top: 0.22rem; }
+    .ins-green { color: var(--green); font-weight: 500; }
+    .ins-red   { color: var(--red); font-weight: 500; }
+    .ins-fund  { color: #2563eb; font-weight: 600; text-decoration: none; }
+    .ins-fund:hover { text-decoration: underline; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border); border-radius: 6px; }
+    table { width: 100%; min-width: 900px; border-collapse: collapse; background: var(--surface); }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: normal; line-height: 1.4; }
+    th.col-num  { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-fund { text-align: left; width: 20%; min-width: 140px; }
+    th.col-data { min-width: 80px; text-align: center; }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
+    td.col-num  { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    td.col-fund { text-align: left; white-space: normal; min-width: 140px; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
+    .fund-name-cell { font-weight: 500; }
+    .manager-cell { font-size: 0.75rem; color: var(--muted); margin-top: 0.1rem; }
+    .fund-link { text-decoration: none; color: var(--text); }
+    .fund-link:hover .fund-name-cell { color: var(--accent); }
+    .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .chg.pos { color: var(--green); }
+    .chg.neg { color: var(--red); }
+    .chg.new { color: var(--green); font-size: 0.72rem; letter-spacing: 0.05em; }
+    .chg.exited { color: var(--red); font-size: 0.72rem; letter-spacing: 0.05em; }
+    .chg.na { color: var(--muted); }
+    .putcall { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; }
+    .putcall.put  { color: var(--red); }
+    .putcall.call { color: var(--green); }
+    tr.exited td { color: var(--muted); background: #f0ede8; }
+    tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
+    tr.total-row td.col-fund { font-family: var(--sans); font-size: 0.875rem; }
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
+      </nav>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1>APOLLO GLOBAL MGMT INC (APO) — Hedge Fund Ownership Q4 2025</h1>
+  <div class="stock-ticker">APO</div>
+  <div class="quarter-selector"><a class="q-btn active" href="APO-hedge-fund-ownership.html">Q4 2025</a><a class="q-btn" href="APO-hedge-fund-ownership.html">Q3 2025</a><a class="q-btn" href="APO-hedge-fund-ownership.html">Q2 2025</a><a class="q-btn" href="APO-hedge-fund-ownership.html">Q1 2025</a></div>
+  <div class="insights-wrap">
+    <div class="insights"><ul><li>APOLLO GLOBAL MGMT INC (APO) is held by <b>3</b> of <b>81</b> tracked hedge funds, with <a class="ins-fund" href="fund.html?fund=cooperman">Cooperman Capital</a> (<b>6%</b>) and <a class="ins-fund" href="fund.html?fund=tiger_global">Tiger Global Management</a> (<b>3%</b>) holding the largest stakes, indicating limited hedge fund interest relative to peers.</li><li><b>1</b> hedge fund exited APO, led by <a class="ins-fund" href="fund.html?fund=third_point">Third Point</a> (<b>1%</b>).</li><li>Overall, hedge funds decreased exposure to APOLLO GLOBAL MGMT INC (APO) by <span style="color:var(--red)"><b>-7%</b></span> vs the prior quarter and <span style="color:var(--red)"><b>-43%</b></span> vs prior year.</li></ul></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th class="col-num" style="color:var(--muted)">#</th>
+        <th class="col-fund">Fund</th>
+        <th class="col-data num">% of Portfolio †</th>
+        <th class="col-data num">Shares †</th>
+        <th class="col-data num">Shares vs Prior Quarter †</th>
+        <th class="col-data num">Shares vs Prior Year †</th>
+        <th class="col-data num">Aggregate Value †</th>
+        <th class="col-data num">Reported Price *</th>
+        <th class="col-data num">Option</th>
+      </tr></thead>
+      <tbody><tr>
+          <td class="col-num num" style="color:var(--muted);font-size:0.72rem">1</td>
+          <td class="col-fund"><a class="fund-link" href="fund.html?fund=cooperman">
+            <div class="fund-name-cell">Cooperman Capital</div><div class="manager-cell"><a href="leon-cooperman-portfolio.html" style="color:#2563eb;text-decoration:none;">Leon Cooperman</a></div>
+          </a></td>
+          <td class="col-data num">6.42%</td>
+          <td class="col-data num">1.3M</td>
+          <td class="col-data num"><span class="chg na">—</span></td>
+          <td class="col-data num"><span class="chg neg">-3.60%</span></td>
+          <td class="col-data num">$193.5M</td>
+          <td class="col-data num">$144.76</td>
+          <td class="col-data num"><span class="chg na">—</span></td>
+        </tr>
+<tr>
+          <td class="col-num num" style="color:var(--muted);font-size:0.72rem">2</td>
+          <td class="col-fund"><a class="fund-link" href="fund.html?fund=tiger_global">
+            <div class="fund-name-cell">Tiger Global Management</div><div class="manager-cell">Chase Coleman</div>
+          </a></td>
+          <td class="col-data num">3.03%</td>
+          <td class="col-data num">6.2M</td>
+          <td class="col-data num"><span class="chg na">—</span></td>
+          <td class="col-data num"><span class="chg neg">-49.40%</span></td>
+          <td class="col-data num">$898.9M</td>
+          <td class="col-data num">$144.76</td>
+          <td class="col-data num"><span class="chg na">—</span></td>
+        </tr>
+<tr>
+          <td class="col-num num" style="color:var(--muted);font-size:0.72rem">3</td>
+          <td class="col-fund"><a class="fund-link" href="fund.html?fund=markel">
+            <div class="fund-name-cell">Markel Group</div><div class="manager-cell">Tom Gayner</div>
+          </a></td>
+          <td class="col-data num">1.17%</td>
+          <td class="col-data num">1.0M</td>
+          <td class="col-data num"><span class="chg na">—</span></td>
+          <td class="col-data num"><span class="chg na">—</span></td>
+          <td class="col-data num">$146.6M</td>
+          <td class="col-data num">$144.76</td>
+          <td class="col-data num"><span class="chg na">—</span></td>
+        </tr>
+<tr class="exited">
+          <td class="col-num num" style="font-size:0.72rem">—</td>
+          <td class="col-fund"><a class="fund-link" href="fund.html?fund=third_point">
+            <div class="fund-name-cell">Third Point</div><div class="manager-cell"><a href="daniel-loeb-portfolio.html" style="color:#2563eb;text-decoration:none;">Daniel Loeb</a></div>
+          </a></td>
+          <td class="col-data num">—</td><td class="col-data num">—</td>
+          <td class="col-data num"><span class="chg exited">EXITED</span></td>
+          <td class="col-data num">—</td><td class="col-data num">—</td>
+          <td class="col-data num">—</td><td class="col-data num">—</td>
+        </tr>
+<tr class="total-row">
+      <td class="col-num num">3</td>
+      <td class="col-fund">Total</td>
+      <td class="col-data num">—</td>
+      <td class="col-data num">8.6M</td>
+      <td class="col-data num"><span class="chg neg">-7.06%</span></td>
+      <td class="col-data num"><span class="chg neg">-43.21%</span></td>
+      <td class="col-data num">$1.24B</td>
+      <td class="col-data num">—</td><td class="col-data num">—</td>
+    </tr></tbody>
+    </table>
+  </div>
+  <div style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);margin-top:0.75rem;line-height:1.8;">
+    * Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.<br/>
+    † Portfolio value, share counts, and period-over-period changes exclude options positions (PUT/CALL), which are shown in the Option column for reference only.
+  </div>
+</main>
+
+<footer>
+  For informational purposes only · Not investment advice · <a href="disclaimer.html">Full Disclaimer</a>
+</footer>
+
+</body>
+</html>
