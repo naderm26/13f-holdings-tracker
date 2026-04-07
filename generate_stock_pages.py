@@ -360,7 +360,7 @@ def render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, select
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2TBN6R2JZC"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag(){{dataLayer.push(arguments);}}
   gtag('js', new Date());
   gtag('config', 'G-2TBN6R2JZC');
 </script>
