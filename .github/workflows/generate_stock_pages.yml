@@ -15,6 +15,21 @@ jobs:
         with:
           python-version: "3.11"
       - run: mkdir -p stocks
+      - name: Patch ticker slash handling
+        run: |
+          python3 - <<'EOF'
+          with open("generate_stock_pages.py") as f:
+              content = f.read()
+          old = 'out_path = OUTPUT_DIR / filename'
+          new = 'out_path = str(OUTPUT_DIR) + "/" + filename'
+          content = content.replace(old, new)
+          old2 = 'ticker = stock.get("ticker", key)\n        safe_ticker = ticker.replace("/", "-")'
+          new2 = 'ticker = stock.get("ticker", key)\n        if "/" in ticker:\n            continue\n        safe_ticker = ticker'
+          content = content.replace(old2, new2)
+          with open("generate_stock_pages.py", "w") as f:
+              f.write(content)
+          print("Patch applied")
+          EOF
       - run: python generate_stock_pages.py
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
