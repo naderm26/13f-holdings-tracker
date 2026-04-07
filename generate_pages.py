@@ -229,7 +229,7 @@ def render_page(manager, live, all_managers):
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-2TBN6R2JZC"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+  function gtag(){{dataLayer.push(arguments);}}
   gtag('js', new Date());
   gtag('config', 'G-2TBN6R2JZC');
 </script>
