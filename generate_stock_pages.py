@@ -574,6 +574,7 @@ def main():
 
     for rank, (key, stock, _) in enumerate(top_stocks, 1):
         ticker = stock.get("ticker", key)
+        print(f"DEBUG rank={rank} ticker={repr(ticker)}")
         if "/" in ticker:
             continue  # skip tickers like BRK/B that would break filenames
         safe_ticker = ticker
