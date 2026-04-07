@@ -1,0 +1,20 @@
+name: Generate Stock Pages
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Generate Stock Index"]
+    types: [completed]
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - run: python generate_stock_pages.py
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Generate stock pages"
