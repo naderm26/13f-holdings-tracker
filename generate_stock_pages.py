@@ -349,7 +349,7 @@ def render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, select
     all_qs = sorted({q for fd in stock["funds"].values() for q in fd.get("quarters", {}).keys()}, reverse=True)
     tab_qs = all_qs[:4]
     tabs_html = "".join(
-        f'<a class="q-btn{" active" if q == selected_q else ""}" href="{ticker}-hedge-fund-ownership.html">{quarter_label(q)}</a>'
+        f'<a class="q-btn{" active" if q == selected_q else ""}" href="{safe_ticker}-hedge-fund-ownership.html">{quarter_label(q)}</a>'
         for q in tab_qs
     )
 
@@ -618,7 +618,7 @@ def main():
 
         html = render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q, total_funds, safe_ticker)
         filename = f"{safe_ticker}-hedge-fund-ownership.html"
-        out_path = OUTPUT_DIR / filename
+        out_path = str(OUTPUT_DIR) + "/" + filename
 
         with open(out_path, "w") as f:
             f.write(html)
