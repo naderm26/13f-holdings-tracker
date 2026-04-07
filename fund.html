@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,6 +15,8 @@
   <meta property="og:title" content=""/>
   <meta property="og:description" content=""/>
   <meta property="og:type" content="website"/>
+  <link rel="canonical" href="" id="canonical-url"/>
+  <script type="application/ld+json" id="json-ld"></script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -720,6 +723,20 @@
     document.querySelector('meta[name="description"]').setAttribute("content", desc);
     document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
     document.querySelector('meta[property="og:description"]').setAttribute("content", desc);
+    // Canonical URL
+    const canonicalEl = document.getElementById("canonical-url");
+    if (canonicalEl) canonicalEl.setAttribute("href", `https://13fai.com/fund.html?fund=${fundId}`);
+    // JSON-LD
+    const jsonLdEl = document.getElementById("json-ld");
+    if (jsonLdEl) jsonLdEl.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": `${fundOnly} 13F Holdings ${qShort}`,
+      "description": desc,
+      "url": `https://13fai.com/fund.html?fund=${fundId}`,
+      "creator": { "@type": "Organization", "name": "13FAI", "url": "https://13fai.com" },
+      "about": { "@type": "Person", "name": managerOnly }
+    });
 
     const sorted = [...rows].sort((a, b) => {
       let av, bv;
