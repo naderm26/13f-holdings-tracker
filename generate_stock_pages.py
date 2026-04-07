@@ -331,13 +331,15 @@ def build_table(stock, holding_funds, exited_fids, fund_map, fund_totals, select
 
 # ── Full page template ────────────────────────────────────────────────────────
 
-def render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q, total_funds):
+def render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q, total_funds, safe_ticker=None):
     ticker     = stock.get("ticker", "")
+    if safe_ticker is None:
+        safe_ticker = ticker.replace("/", "-")
     name       = stock.get("name", "")
     ql         = quarter_label(selected_q)
     title_str  = f"{name} ({ticker}) — Hedge Fund Ownership {ql}" if ticker else f"{name} — Hedge Fund Ownership {ql}"
     description = f"See which hedge funds own {name}{f' ({ticker})' if ticker else ''} as of {ql}. Track position sizes, portfolio weights, and quarterly changes from 13F filings."
-    canonical  = f"https://13fai.com/stocks/{ticker}-hedge-fund-ownership.html" if ticker else ""
+    canonical  = f"https://13fai.com/stocks/{safe_ticker}-hedge-fund-ownership.html" if ticker else ""
 
     insights_html = build_insights(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q, total_funds)
     table_html    = build_table(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q)
@@ -572,6 +574,7 @@ def main():
 
     for rank, (key, stock, _) in enumerate(top_stocks, 1):
         ticker = stock.get("ticker", key)
+        safe_ticker = ticker.replace("/", "-")  # e.g. BRK/B → BRK-B
 
         # Determine selected quarter (most common latest quarter across holding funds)
         q_counts = {}
@@ -613,14 +616,14 @@ def main():
             reverse=True
         )
 
-        html = render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q, total_funds)
-        filename = f"{ticker}-hedge-fund-ownership.html"
+        html = render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q, total_funds, safe_ticker)
+        filename = f"{safe_ticker}-hedge-fund-ownership.html"
         out_path = OUTPUT_DIR / filename
 
         with open(out_path, "w") as f:
             f.write(html)
 
-        generated_tickers.append(ticker)
+        generated_tickers.append(safe_ticker)
         print(f"  ✓  [{rank:3d}] {filename}")
 
     update_sitemap(generated_tickers)
