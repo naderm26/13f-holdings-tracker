@@ -101,7 +101,7 @@ def build_insights(stock, holding_funds, exited_fids, fund_map, fund_totals, sel
     def fund_link(fid):
         f = fund_map.get(fid)
         if not f: return fid
-        return f'<a class="ins-fund" href="fund.html?fund={fid}">{fund_short_name(f["name"])}</a>'
+        return f'<a class="ins-fund" href="../fund.html?fund={fid}">{fund_short_name(f["name"])}</a>'
 
     # S1: Concentration
     fund_count = len(holding_funds)
@@ -232,7 +232,7 @@ def build_table(stock, holding_funds, exited_fids, fund_map, fund_totals, select
         manager_html = ""
         if manager:
             if bio_slug:
-                manager_html = f'<div class="manager-cell"><a href="{bio_slug}.html" style="color:#2563eb;text-decoration:none;">{manager}</a></div>'
+                manager_html = f'<div class="manager-cell"><a href="../{bio_slug}.html" style="color:#2563eb;text-decoration:none;">{manager}</a></div>'
             else:
                 manager_html = f'<div class="manager-cell">{manager}</div>'
 
@@ -259,7 +259,7 @@ def build_table(stock, holding_funds, exited_fids, fund_map, fund_totals, select
 
         rows.append(f"""<tr>
           <td class="col-num num" style="color:var(--muted);font-size:0.72rem">{i+1}</td>
-          <td class="col-fund"><a class="fund-link" href="fund.html?fund={fid}">
+          <td class="col-fund"><a class="fund-link" href="../fund.html?fund={fid}">
             <div class="fund-name-cell">{fund_only}</div>{manager_html}
           </a></td>
           <td class="col-data num">{pct}</td>
@@ -280,12 +280,12 @@ def build_table(stock, holding_funds, exited_fids, fund_map, fund_totals, select
         manager_html = ""
         if manager:
             if bio_slug:
-                manager_html = f'<div class="manager-cell"><a href="{bio_slug}.html" style="color:#2563eb;text-decoration:none;">{manager}</a></div>'
+                manager_html = f'<div class="manager-cell"><a href="../{bio_slug}.html" style="color:#2563eb;text-decoration:none;">{manager}</a></div>'
             else:
                 manager_html = f'<div class="manager-cell">{manager}</div>'
         rows.append(f"""<tr class="exited">
           <td class="col-num num" style="font-size:0.72rem">—</td>
-          <td class="col-fund"><a class="fund-link" href="fund.html?fund={fid}">
+          <td class="col-fund"><a class="fund-link" href="../fund.html?fund={fid}">
             <div class="fund-name-cell">{fund_only}</div>{manager_html}
           </a></td>
           <td class="col-data num">—</td><td class="col-data num">—</td>
@@ -443,31 +443,31 @@ def render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, select
   <div class="header-top">
     <div style="display:flex; align-items:center; gap:1.75rem;">
       <div class="brand">
-        <a class="brand-name" href="index.html">13FAI</a>
+        <a class="brand-name" href="../index.html">13FAI</a>
         <span class="brand-sub">ai-powered hedge fund tracker</span>
       </div>
       <nav class="nav-links desktop-nav">
-        <a class="nav-link" href="index.html">Funds</a>
-        <a class="nav-link" href="managers.html">Manager Bios</a>
-        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
-        <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
-        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
-        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
-        <a class="nav-link" href="faq.html">FAQ</a>
-        <a class="nav-link" href="about.html">About</a>
+        <a class="nav-link" href="../index.html">Funds</a>
+        <a class="nav-link" href="../managers.html">Manager Bios</a>
+        <a class="nav-link" href="../top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="../hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="../portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="../filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="../faq.html">FAQ</a>
+        <a class="nav-link" href="../about.html">About</a>
       </nav>
     </div>
   </div>
   <div class="header-nav-row">
     <nav class="nav-links">
-      <a class="nav-link" href="index.html">Funds</a>
-      <a class="nav-link" href="managers.html">Manager Bios</a>
-      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
-      <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
-      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
-      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
-      <a class="nav-link" href="faq.html">FAQ</a>
-      <a class="nav-link" href="about.html">About</a>
+      <a class="nav-link" href="../index.html">Funds</a>
+      <a class="nav-link" href="../managers.html">Manager Bios</a>
+      <a class="nav-link" href="../top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="../hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="../portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="../filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link" href="../faq.html">FAQ</a>
+      <a class="nav-link" href="../about.html">About</a>
     </nav>
   </div>
 </header>
@@ -502,7 +502,7 @@ def render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, select
 </main>
 
 <footer>
-  For informational purposes only · Not investment advice · <a href="disclaimer.html">Full Disclaimer</a>
+  For informational purposes only · Not investment advice · <a href="../disclaimer.html">Full Disclaimer</a>
 </footer>
 
 </body>
