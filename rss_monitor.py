@@ -163,7 +163,7 @@ for cik, accession in filings:
 if new_files:
     print(f"\nNew data fetched for: {', '.join(new_files)}")
     # Parse the new XMLs to CSVs
-    os.system("python parse_13f.py")
+    pass  # parsing now handled inside fetch_data.py
 else:
     print("\nNo new filings found for tracked funds.")
 
