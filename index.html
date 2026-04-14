@@ -148,6 +148,7 @@
     <span class="sort-label">Sort by:</span>
     <button class="sort-btn active" id="sort-date" onclick="setSort('date')">Recently Filed</button>
     <button class="sort-btn" id="sort-name" onclick="setSort('name')">Fund Name</button>
+    <button class="sort-btn" id="sort-popular" onclick="setSort('popular')">Popular</button>
   </div>
   <ul class="fund-list scrollable" id="list-all">
     <li><div class="loading">Loading...</div></li>
@@ -198,6 +199,7 @@
     currentSort = mode;
     document.getElementById("sort-date").classList.toggle("active", mode === "date");
     document.getElementById("sort-name").classList.toggle("active", mode === "name");
+    document.getElementById("sort-popular").classList.toggle("active", mode === "popular");
     renderList();
   }
 
@@ -217,6 +219,11 @@
   function getSortedFunds() {
     if (currentSort === "name") {
       return [...allFunds].sort((a, b) => a.name.localeCompare(b.name));
+    }
+    if (currentSort === "popular") {
+      const popular = allFunds.filter(f => POPULAR_IDS.has(f.id));
+      const rest    = allFunds.filter(f => !POPULAR_IDS.has(f.id)).sort((a, b) => a.name.localeCompare(b.name));
+      return [...popular, ...rest];
     }
     // Sort by filed date descending, funds without dates go to bottom
     return [...allFunds].sort((a, b) => {
