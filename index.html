@@ -20,6 +20,7 @@
   <meta property="og:title" content="13FAI — AI-Powered Hedge Fund Holdings Tracker"/>
   <meta property="og:description" content="Track 13F filings from the world's top hedge fund managers. See what Buffett, Ackman, Burry and others are buying and selling every quarter."/>
   <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -83,11 +84,6 @@
     .scrollable::-webkit-scrollbar-track { background: transparent; }
     .scrollable::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
     .loading { padding: 1.5rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); text-align: center; }
-    .sort-bar { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem; }
-    .sort-label { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); }
-    .sort-btn { font-family: var(--mono); font-size: 0.68rem; padding: 0.2rem 0.55rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--muted); cursor: pointer; transition: all 0.15s; }
-    .sort-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .sort-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
@@ -144,12 +140,6 @@
     <div class="col-label">All Funds</div>
     <div class="col-desc">13F filings from the world's top institutional investors</div>
   </div>
-  <div class="sort-bar">
-    <span class="sort-label">Sort by:</span>
-    <button class="sort-btn active" id="sort-date" onclick="setSort('date')">Recently Filed</button>
-    <button class="sort-btn" id="sort-name" onclick="setSort('name')">Fund Name</button>
-    <button class="sort-btn" id="sort-popular" onclick="setSort('popular')">Popular</button>
-  </div>
   <ul class="fund-list scrollable" id="list-all">
     <li><div class="loading">Loading...</div></li>
   </ul>
@@ -169,8 +159,6 @@
 
   let allFunds   = [];
   let stockIndex = {};
-  let filedDates = {};  // fund.id → "YYYY-MM-DD"
-  let currentSort = "date";  // default sort
 
   function fmtDate(dateStr) {
     if (!dateStr) return "";
@@ -195,14 +183,6 @@
     '</li>';
   }
 
-  function setSort(mode) {
-    currentSort = mode;
-    document.getElementById("sort-date").classList.toggle("active", mode === "date");
-    document.getElementById("sort-name").classList.toggle("active", mode === "name");
-    document.getElementById("sort-popular").classList.toggle("active", mode === "popular");
-    renderList();
-  }
-
   async function loadData() {
     const fundsRes = await fetch(BASE + "/funds.json");
     allFunds = JSON.parse(await fundsRes.text());
@@ -216,34 +196,14 @@
     loadLastUpdatedDates();
   }
 
-  function getSortedFunds() {
-    if (currentSort === "name") {
-      return [...allFunds].sort((a, b) => a.name.localeCompare(b.name));
-    }
-    if (currentSort === "popular") {
-      const popular = allFunds.filter(f => POPULAR_IDS.has(f.id));
-      const rest    = allFunds.filter(f => !POPULAR_IDS.has(f.id)).sort((a, b) => a.name.localeCompare(b.name));
-      return [...popular, ...rest];
-    }
-    // Sort by filed date descending, funds without dates go to bottom
-    return [...allFunds].sort((a, b) => {
-      const da = filedDates[a.id] || "0000-00-00";
-      const db = filedDates[b.id] || "0000-00-00";
-      return db.localeCompare(da);
-    });
-  }
-
   function renderList() {
     const el = document.getElementById("list-all");
-    const sorted = getSortedFunds();
-    let html = sorted.map((f, i) => fundItem(f, i + 1, POPULAR_IDS.has(f.id))).join("");
+    const popular = allFunds.filter(f => POPULAR_IDS.has(f.id));
+    const rest    = allFunds.filter(f => !POPULAR_IDS.has(f.id));
+    let html = popular.map((f, i) => fundItem(f, i + 1, true)).join("");
+    html += '<li class="list-divider">All Funds</li>';
+    html += rest.map((f, i) => fundItem(f, popular.length + i + 1, false)).join("");
     el.innerHTML = html;
-    // Re-apply any already-loaded dates
-    for (const [id, date] of Object.entries(filedDates)) {
-      document.querySelectorAll('[data-fund-id="' + id + '"]').forEach(function(el) {
-        el.textContent = "· " + fmtDate(date);
-      });
-    }
   }
 
   async function loadLastUpdatedDates() {
@@ -257,15 +217,13 @@
         if (!sortedQs.length) return;
         const latestQ = quarters[sortedQs[0]];
         if (latestQ && latestQ.filed) {
-          filedDates[fund.id] = latestQ.filed;
+          const dateStr = "· " + fmtDate(latestQ.filed);
           document.querySelectorAll('[data-fund-id="' + fund.id + '"]').forEach(function(el) {
-            el.textContent = "· " + fmtDate(latestQ.filed);
+            el.textContent = dateStr;
           });
         }
       } catch(e) {}
     }));
-    // Re-render with dates now loaded if in date sort mode
-    if (currentSort === "date") renderList();
   }
 
   // ── Hero search ──
