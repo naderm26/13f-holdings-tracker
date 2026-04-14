@@ -8,6 +8,7 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,8 +17,9 @@ jobs:
       - name: Fetch ticker mappings
         run: python fetch_tickers.py
 
-      - name: Fetch prices
-        run: python fetch_prices.py
+      # Price fetch disabled — re-enable when current price column is added back to fund.html
+      # - name: Fetch prices
+      #   run: python fetch_prices.py
 
       - name: Commit data
         run: |
