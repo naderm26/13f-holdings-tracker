@@ -2,7 +2,7 @@ name: RSS Monitor — Auto-fetch New 13F Filings
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Every hour
+    - cron: '0 9 * * *'  # Every day at 9am UTC
   workflow_dispatch:       # Also allow manual trigger
 
 jobs:
