@@ -7,8 +7,11 @@ MANUAL_MAPPINGS = {
     # Chubb Limited (NYSE: CB) - Swiss company, CUSIP changed after ACE merger
     "H1467J104": "CB",
 
-    # General Motors
-     "37045V100": "GM",   
+# General Motors
+"37045V100": "GM",
+
+# General Motors (Greenhaven filing typo — correct CUSIP is 37045V100)
+"35045V100": "GM",
     
     # AON PLC (NYSE: AON) - Irish company, two CUSIPs due to redomicile
     "G0403H108": "AON",
