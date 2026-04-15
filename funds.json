@@ -342,7 +342,8 @@
     "id": "situational_awareness",
     "name": "Situational Awareness LP (Leopold Aschenbrenner)",
     "cik": "0002045724",
-    "value_multiplier": 1
+    "value_multiplier": 1,
+    "bio_slug": "leopold-aschenbrenner-portfolio"
   },  
   {
     "id": "sound_shore",
