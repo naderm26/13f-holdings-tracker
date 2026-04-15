@@ -339,6 +339,12 @@
     "cik": "0001766908"
   },
   {
+    "id": "situational_awareness",
+    "name": "Situational Awareness LP (Leopold Aschenbrenner)",
+    "cik": "0002045724",
+    "value_multiplier": 1
+  },  
+  {
     "id": "sound_shore",
     "name": "Sound Shore Management (Harry Burn)",
     "cik": "0000820124"
