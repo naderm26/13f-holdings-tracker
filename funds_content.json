@@ -1390,5 +1390,43 @@
         "desc": "Abrams's small concentrated portfolio holds deeply researched value positions across sectors where the fund has strong conviction in intrinsic value."
       }
     ]
-  }
+  },
+  {
+  "fund_id": "situational_awareness",
+  "manager_name": "Leopold Aschenbrenner",
+  "slug": "leopold-aschenbrenner-portfolio",
+  "fund_name": "Situational Awareness LP",
+  "fund_founded": 2024,
+  "role": "Founder & CIO",
+  "style": "Global Macro / Long/Short",
+  "tags": ["AI-Focused", "Global Macro", "Long/Short Equity"],
+  "primary_tag": "AI-Focused",
+  "net_worth": "N/A",
+  "initials": "LA",
+  "photo": "",
+  "typical_positions": 10,
+  "bio": [
+    "Leopold Aschenbrenner founded Situational Awareness LP in 2024 after being fired from OpenAI's Superalignment team over an alleged information leak, which he disputes. A Columbia University valedictorian at age 19, he published a widely-read 165-page essay titled 'Situational Awareness: The Decade Ahead' predicting AGI by 2027, which became the intellectual foundation for the fund.",
+    "Backed by Patrick and John Collison (Stripe), Nat Friedman, and Daniel Gross, the fund grew from $383 million to over $5 billion in US equity exposure in under a year. The fund posted +47% returns in the first half of 2025, betting heavily on AI infrastructure including semiconductors, power generation, data centers, and Bitcoin miners."
+  ],
+  "philosophy_quote": "You can see the future first in San Francisco. Everyone is now talking about AI, but few have the faintest glimmer of what is about to hit them.",
+  "notable_trades": [
+    {
+      "badge": "CURRENT",
+      "title": "Core Scientific (CORZ)",
+      "desc": "Built a 5.8% ownership stake in the Bitcoin miner and data center operator, betting on rising demand for high-performance computing infrastructure."
+    },
+    {
+      "badge": "CURRENT",
+      "title": "AI Infrastructure Concentration",
+      "desc": "Over 80% of portfolio concentrated in AI enablers — semiconductors, power generation, data centers, and Bitcoin miners."
+    },
+    {
+      "badge": "WIN",
+      "title": "First Half 2025",
+      "desc": "+47% net of fees in H1 2025 vs S&P 500 +6%, driven by concentrated bets on AI infrastructure during a strong AI capex cycle."
+    }
+  ],
+  "co_manager_slug": ""
+}
 ]
