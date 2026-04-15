@@ -5,6 +5,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -647,7 +648,8 @@
   function groupByCompany(rows) {
     const map = new Map();
     for (const r of rows) {
-      const key = r.cusip || r.company;
+      // Key by cusip+putcall so equity and option rows stay separate
+      const key = (r.cusip || r.company) + "|" + (r.putcall || "");
       if (map.has(key)) {
         const g = map.get(key);
         g.shares += r.shares;
