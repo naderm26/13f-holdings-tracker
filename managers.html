@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -154,6 +155,7 @@
     <button class="filter-btn" data-style="Quality Growth">Quality Growth</button>
     <button class="filter-btn" data-style="Global Macro">Macro</button>
     <button class="filter-btn" data-style="Long/Short">Long/Short</button>
+    <button class="filter-btn" data-style="AI-Focused">AI-Focused</button>
   </div>
 
   <div class="managers-grid" id="managers-grid">
@@ -176,6 +178,7 @@
     'Quality Growth':s => s.includes('Quality'),
     'Global Macro':  s => s.includes('Macro'),
     'Long/Short':    s => s.includes('Long/Short'),
+    'AI-Focused':    s => s.includes('AI'),
   };
 
   let allManagers = [];
