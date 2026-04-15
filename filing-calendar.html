@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -294,7 +295,20 @@
 
     if (filter === 'overdue')  rows = rows.filter(r => r.days !== null && r.days < -1);
     if (filter === 'upcoming') rows = rows.filter(r => r.days !== null && r.days >= -1 && r.days <= 30);
-    if (filter === 'filed')    rows = rows.filter(r => r.days !== null && r.days > 30);
+    if (filter === 'filed') {
+      // Most recent quarter end before today
+      const today = new Date();
+      const qEnds = [
+        new Date(today.getFullYear(), 2, 31),   // Mar 31
+        new Date(today.getFullYear(), 5, 30),   // Jun 30
+        new Date(today.getFullYear(), 8, 30),   // Sep 30
+        new Date(today.getFullYear(), 11, 31),  // Dec 31
+      ];
+      // Add prior year Dec 31 as fallback
+      qEnds.unshift(new Date(today.getFullYear() - 1, 11, 31));
+      const lastQEnd = qEnds.filter(d => d <= today).pop();
+      rows = rows.filter(r => r.period && new Date(r.period) >= lastQEnd);
+    }
 
     const sorted = [...rows].sort((a, b) => {
       let av = a[sortCol], bv = b[sortCol];
