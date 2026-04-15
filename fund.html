@@ -6,6 +6,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -200,13 +201,13 @@
       </div>
       <div class="fund-stats">
         <div>
-          <div class="stat-label">Portfolio Value †</div>
+          <div class="stat-label">Portfolio Value</div>
           <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
           <div id="total-value-chg" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.15rem;"></div>
           <div id="total-value-chg-yr" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.1rem;"></div>
         </div>
         <div>
-          <div class="stat-label">Positions †</div>
+          <div class="stat-label">Positions</div>
           <div class="stat-value" id="total-positions">—</div>
         </div>
       </div>
@@ -680,14 +681,18 @@
     const prev4 = allQuarters.includes(prevYearLabel) ? groupByCompany(csvCache[prevYearLabel] || []) : null;
     const prev4Equity = prev4 ? prev4.filter(r => !isOption(r)) : null;
 
-    // AUM and portfolio value use equity-only rows
+    // AUM and portfolio value use equity-only rows for calculations
     const tv = equityRows.reduce((s, r) => s + r.value, 0) * mult;
+    // Total 13F value (including options) for display
+    const tvTotal = rows.reduce((s, r) => s + r.value, 0) * mult;
 
     renderInsights(equityRows, prev1Equity, mult, tv, activeQ);
 
     document.getElementById("total-value").textContent =
-      "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
-    document.getElementById("total-positions").textContent = equityRows.length;
+      tvTotal >= 1e9
+        ? "$" + (tvTotal / 1e9).toFixed(2) + "B"
+        : "$" + tvTotal.toLocaleString("en-US", { maximumFractionDigits: 0 });
+    document.getElementById("total-positions").textContent = rows.length;
 
     // Portfolio value % change vs prior quarter
     const tvChgEl   = document.getElementById("total-value-chg");
