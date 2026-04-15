@@ -42,7 +42,7 @@
   <url><loc>https://13fai.com/lindsell-train-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
   <url><loc>https://13fai.com/abrams-capital-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.6</priority></url>
   <url><loc>https://13fai.com/leopold-aschenbrenner-portfolio.html</loc><changefreq>quarterly</changefreq><priority>0.9</priority></url>
-  
+
   <!-- Stock pages -->
   <url><loc>https://13fai.com/stocks/AAPL-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/AXP-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -113,9 +113,9 @@
   <url><loc>https://13fai.com/stocks/LPLA-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/SNY-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/GEHC-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/BAX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/SE-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/BDX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/BAX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/PDD-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/SIRI-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/DG-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -137,9 +137,9 @@
   <url><loc>https://13fai.com/stocks/MDT-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/C-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/LLY-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/LEN-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/TMUS-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/IDXX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/LEN-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/KKR-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/STZ-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/GS-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -156,14 +156,15 @@
   <url><loc>https://13fai.com/stocks/JPM-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/INTU-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/DASH-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/GM-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/PNC-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/APP-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/AVTR-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/TMO-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/ADBE-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/ECL-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/FERG-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/WAT-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/AVTR-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/IMO-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/CHRW-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/SHW-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -177,9 +178,9 @@
   <url><loc>https://13fai.com/stocks/TTWO-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/BAP-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/TDG-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/NOV-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/ASML-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/CCL-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/NOV-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/BSX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/NEM-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/DPZ-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -189,10 +190,10 @@
   <url><loc>https://13fai.com/stocks/MAR-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/IBKR-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/PPG-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/SLB-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/MCD-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/ALLY-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/FER.MC-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/SLB-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/FWONK-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/D-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/COP-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -202,6 +203,7 @@
   <url><loc>https://13fai.com/stocks/FMX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/APO-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/AEP-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/CRWV-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/ZTS-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/BMRN-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/ACN-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -232,6 +234,7 @@
   <url><loc>https://13fai.com/stocks/HLT-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/CX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/MSCI-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/stocks/BE-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/VTRS-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/NU-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/DOX-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
@@ -241,7 +244,4 @@
   <url><loc>https://13fai.com/stocks/LYV-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/CTRA-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/EXPD-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/FOXA-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/SGI-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://13fai.com/stocks/APH-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
 </urlset>
