@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -460,6 +461,14 @@
         const prev1    = quarters[pQ]        || null;
         const prev4    = quarters[pYQ]       || null;
 
+        // Skip funds that haven't filed selectedQ — don't treat as exited
+        if (!current && !prev1) continue;
+        // If fund has no selectedQ data but has prev1 data, only count as exited
+        // if the fund's latest quarter IS selectedQ (i.e. they filed it with 0 shares)
+        // Otherwise skip — they just haven't filed yet
+        const fundLatestQ = (stockIndexRaw.fund_latest_q || {})[fid];
+        if (!current && prev1 && fundLatestQ !== selectedQ) continue;
+
         const sharesNow  = current ? (current.shares || 0) : 0;
         const sharesPrev = prev1   ? (prev1.shares   || 0) : null;
         const valueNow   = current ? (current.value  || 0) : 0;
@@ -591,13 +600,42 @@
   ]).then(([raw, funds]) => {
     stockIndexRaw = raw;
     const stockIndex = raw.stocks || raw;
+    const fundLatestQ = raw.fund_latest_q || {};
+    const totalFundCount = funds.length || 1;
 
-    // Collect all quarters across all stocks/funds
+    // Count how many funds have data for each quarter
+    const qFundCount = {};
+    for (const fid of Object.keys(fundLatestQ)) {
+      // Count all quarters this fund has filed
+      for (const stock of Object.values(stockIndex)) {
+        const fd = (stock.funds || {})[fid];
+        if (!fd) continue;
+        for (const q of Object.keys(fd.quarters || {})) {
+          qFundCount[q] = (qFundCount[q] || new Set()).add(fid);
+        }
+        break; // only need one stock per fund to get its quarters
+      }
+    }
+
+    // Only include quarters where at least 20% of funds have filed
+    const threshold = Math.max(2, Math.floor(totalFundCount * 0.20));
     const qSet = new Set();
     for (const stock of Object.values(stockIndex))
       for (const fd of Object.values(stock.funds || {}))
         Object.keys(fd.quarters || {}).forEach(q => qSet.add(q));
-    allQuarters = Array.from(qSet).sort().reverse();
+
+    // Count unique funds per quarter
+    const qFunds = {};
+    for (const [key, stock] of Object.entries(stockIndex))
+      for (const [fid, fd] of Object.entries(stock.funds || {}))
+        for (const q of Object.keys(fd.quarters || {})) {
+          if (!qFunds[q]) qFunds[q] = new Set();
+          qFunds[q].add(fid);
+        }
+
+    allQuarters = Array.from(qSet)
+      .filter(q => (qFunds[q] || new Set()).size >= threshold)
+      .sort().reverse();
     activeQ = allQuarters[0];
 
     const ql = quarterLabel(activeQ);
