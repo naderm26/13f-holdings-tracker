@@ -296,18 +296,14 @@
     if (filter === 'overdue')  rows = rows.filter(r => r.days !== null && r.days < -1);
     if (filter === 'upcoming') rows = rows.filter(r => r.days !== null && r.days >= -1 && r.days <= 30);
     if (filter === 'filed') {
-      // Most recent quarter end before today
       const today = new Date();
       const y = today.getFullYear();
       const m = today.getMonth(); // 0-indexed
-      // Quarter end months: 2=Mar, 5=Jun, 8=Sep, 11=Dec
       let lastQEndStr;
-      if      (m >= 9)  lastQEndStr = y + "-12-31";
-      else if (m >= 6)  lastQEndStr = y + "-09-30";
-      else if (m >= 3)  lastQEndStr = y + "-06-30";
-      else if (m >= 0)  lastQEndStr = y + "-03-31";
-      // If we're in Jan-Mar, last QE was Dec 31 of prior year
-      if (m < 3) lastQEndStr = (y - 1) + "-12-31";
+      if      (m >= 9)  lastQEndStr = y + "-09-30";   // Oct-Dec → last QE was Sep 30
+      else if (m >= 6)  lastQEndStr = y + "-06-30";   // Jul-Sep → last QE was Jun 30
+      else if (m >= 3)  lastQEndStr = y + "-03-31";   // Apr-Jun → last QE was Mar 31
+      else              lastQEndStr = (y-1) + "-12-31"; // Jan-Mar → last QE was Dec 31
       rows = rows.filter(r => r.period && r.period >= lastQEndStr);
     }
 
