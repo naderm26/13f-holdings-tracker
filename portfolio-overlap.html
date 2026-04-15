@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -505,13 +506,27 @@
     allFunds      = funds;
 
     const stockIndex = raw.stocks || raw;
+    const fundLatestQ = raw.fund_latest_q || {};
+
+    // Build set of quarters each default fund has filed using fund_latest_q and stock data
+    const defaultFundQuarters = {};
+    DEFAULT_FUNDS.forEach(fid => { defaultFundQuarters[fid] = new Set(); });
+    for (const stock of Object.values(stockIndex))
+      for (const fid of DEFAULT_FUNDS) {
+        const fd = (stock.funds || {})[fid];
+        if (fd) Object.keys(fd.quarters || {}).forEach(q => defaultFundQuarters[fid].add(q));
+      }
 
     // Collect all quarters
     const qSet = new Set();
     for (const stock of Object.values(stockIndex))
       for (const fd of Object.values(stock.funds || {}))
         Object.keys(fd.quarters || {}).forEach(q => qSet.add(q));
-    allQuarters = Array.from(qSet).sort().reverse();
+
+    // Only show quarters where ALL three default funds have filed
+    allQuarters = Array.from(qSet)
+      .filter(q => DEFAULT_FUNDS.every(fid => defaultFundQuarters[fid].has(q)))
+      .sort().reverse();
     activeQ = allQuarters[0];
 
     renderQuarterTabs();
