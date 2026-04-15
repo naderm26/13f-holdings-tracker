@@ -298,16 +298,17 @@
     if (filter === 'filed') {
       // Most recent quarter end before today
       const today = new Date();
-      const qEnds = [
-        new Date(today.getFullYear(), 2, 31),   // Mar 31
-        new Date(today.getFullYear(), 5, 30),   // Jun 30
-        new Date(today.getFullYear(), 8, 30),   // Sep 30
-        new Date(today.getFullYear(), 11, 31),  // Dec 31
-      ];
-      // Add prior year Dec 31 as fallback
-      qEnds.unshift(new Date(today.getFullYear() - 1, 11, 31));
-      const lastQEnd = qEnds.filter(d => d <= today).pop();
-      rows = rows.filter(r => r.period && new Date(r.period) >= lastQEnd);
+      const y = today.getFullYear();
+      const m = today.getMonth(); // 0-indexed
+      // Quarter end months: 2=Mar, 5=Jun, 8=Sep, 11=Dec
+      let lastQEndStr;
+      if      (m >= 9)  lastQEndStr = y + "-12-31";
+      else if (m >= 6)  lastQEndStr = y + "-09-30";
+      else if (m >= 3)  lastQEndStr = y + "-06-30";
+      else if (m >= 0)  lastQEndStr = y + "-03-31";
+      // If we're in Jan-Mar, last QE was Dec 31 of prior year
+      if (m < 3) lastQEndStr = (y - 1) + "-12-31";
+      rows = rows.filter(r => r.period && r.period >= lastQEndStr);
     }
 
     const sorted = [...rows].sort((a, b) => {
