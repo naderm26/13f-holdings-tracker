@@ -390,7 +390,7 @@ def render_page(manager, live, all_managers):
 
   <div class="cta-banner">
     <div class="cta-stats">
-      <div class="cta-stat"><div class="label">AUM (13F)</div><div class="value">{aum_val}</div></div>
+      <div class="cta-stat"><div class="label">Long Stock Value</div><div class="value">{aum_val}</div></div>
       <div class="cta-stat"><div class="label">Positions</div><div class="value">{pos_val}</div></div>
       <div class="cta-stat"><div class="label">Latest Filing</div><div class="value">{filed_val}</div></div>
     </div>
