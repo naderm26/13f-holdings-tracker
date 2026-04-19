@@ -80,10 +80,10 @@ def load_fund_data(fund_id, tickers, mult=1):
     latest_q = quarters[0]
     qdata    = fund_json["quarters"][latest_q]
 
-    # Filter equities only (exclude PUT/CALL options)
+    # Filter equities only (exclude PUT/CALL options) — case-insensitive
     holdings = [
         h for h in qdata.get("holdings", [])
-        if h.get("shares", 0) > 0 and h.get("putcall", "") not in ("PUT", "CALL")
+        if h.get("shares", 0) > 0 and h.get("putcall", "").upper() not in ("PUT", "CALL")
     ]
     grouped = group_by_cusip(holdings)
 
