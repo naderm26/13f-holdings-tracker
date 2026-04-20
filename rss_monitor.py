@@ -105,6 +105,15 @@ for url, form_type in [
 
 print(f"Total filings found across both feeds: {len(all_filings)}")
 
+# Log all tracked fund CIKs seen in feed — helps diagnose future misses
+tracked_in_feed = [(cik, ftype) for cik, _, ftype in all_filings if cik in tracked]
+if tracked_in_feed:
+    print("Tracked fund CIKs seen in feed:")
+    for cik, ftype in tracked_in_feed:
+        print(f"  {ftype}: {tracked[cik]['name']} (CIK: {cik})")
+else:
+    print("No tracked fund CIKs found in feed at all.")
+
 new_filing_found = False
 os.makedirs("data", exist_ok=True)
 
