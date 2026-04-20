@@ -1,3 +1,4 @@
+import re
 import urllib.request
 import urllib.error
 import xml.etree.ElementTree as ET
@@ -94,19 +95,23 @@ def parse_rss_filings(url, form_type):
         except (ValueError, IndexError):
             continue
 
-        # Find content element (namespace-agnostic)
+        # Find content or summary element (namespace-agnostic)
+        # SEC Atom feed uses HTML in summary, e.g.:
+        # <b>Accession Number:</b> 0001234567-26-000001<br>
         content = next((c for c in entry if strip_ns(c.tag) in ("content", "summary")), None)
         if content is None:
             continue
         text = content.text or ""
         if "Accession" not in text:
             continue
-        for line in text.split("\n"):
-            if "Accession" in line:
-                acc = line.split(":")[-1].strip().replace("-", "")
-                filings.append((cik, acc, form_type))
-                break
+        # Extract accession from HTML — handles both plain text and <br>-delimited HTML
+        # Matches patterns like: 0001234567-26-000001 or 0001234567-26-000001<br>
+        acc_match = re.search(r'Accession[^:]*:\s*([\d]{10}-[\d]{2}-[\d]{6})', text)
+        if acc_match:
+            acc = acc_match.group(1).replace("-", "")
+            filings.append((cik, acc, form_type))
 
+    print(f"  Parsed {len(filings)} filings with accession numbers")
     return filings
 
 def trigger_fetch_workflow(repo, token):
