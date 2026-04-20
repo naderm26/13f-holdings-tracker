@@ -6,7 +6,14 @@ import os
 import time
 
 HEADERS = {"User-Agent": "nadermassoudi@aol.com"}
-RSS_URL = "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=13F-HR&dateb=&owner=include&count=40&search_text=&output=atom"
+
+# Two RSS URLs — one for original filings, one for amendments
+# count=100 is the SEC maximum — gives largest possible window to avoid missing filings
+# that appear in the feed after a delay and risk scrolling off before next daily run
+RSS_URLS = [
+    "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=13F-HR&dateb=&owner=include&count=100&search_text=&output=atom",
+    "https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=13F-HR%2FA&dateb=&owner=include&count=100&search_text=&output=atom",
+]
 
 def fetch_url(url, retries=3):
     req = urllib.request.Request(url, headers=HEADERS)
@@ -30,10 +37,11 @@ def get_tracked_ciks():
         funds = json.load(f)
     return {str(int(fund["cik"])): fund for fund in funds}
 
-def parse_rss_filings():
-    data = fetch_url(RSS_URL)
+def parse_rss_filings(url, form_type):
+    """Fetch one RSS feed and return list of (cik, accession, form_type) tuples."""
+    data = fetch_url(url)
     if not data:
-        print("Failed to fetch RSS feed")
+        print(f"Failed to fetch RSS feed: {url}")
         return []
 
     root = ET.fromstring(data)
@@ -58,16 +66,10 @@ def parse_rss_filings():
         for line in text.split("\n"):
             if "Accession" in line:
                 acc = line.split(":")[-1].strip().replace("-", "")
-                filings.append((cik, acc))
+                filings.append((cik, acc, form_type))
                 break
 
     return filings
-
-def already_fetched(fund_id, cik):
-    """Check if we already have recent data for this fund by looking at data/ folder."""
-    import glob
-    existing = glob.glob(f"data/{fund_id}_*.json")
-    return len(existing) > 0
 
 def trigger_fetch_workflow(repo, token):
     """Trigger fetch2.yml via GitHub API."""
@@ -87,27 +89,48 @@ def trigger_fetch_workflow(repo, token):
         return False
 
 # ── Main ─────────────────────────────────────────────────────────
-print("Checking SEC RSS feed for new 13F-HR filings...")
+print("Checking SEC RSS feed for new 13F-HR and 13F-HR/A filings...")
 tracked = get_tracked_ciks()
-filings = parse_rss_filings()
-print(f"Found {len(filings)} recent filings in RSS feed")
+
+# Collect filings from both feeds (originals + amendments)
+all_filings = []
+for url, form_type in [
+    (RSS_URLS[0], "13F-HR"),
+    (RSS_URLS[1], "13F-HR/A"),
+]:
+    results = parse_rss_filings(url, form_type)
+    print(f"  {form_type}: {len(results)} recent filings in feed")
+    all_filings.extend(results)
+    time.sleep(1)  # brief pause between RSS requests
+
+print(f"Total filings found across both feeds: {len(all_filings)}")
 
 new_filing_found = False
-for cik, accession in filings:
-    if cik in tracked:
-        fund = tracked[cik]
-        fund_id = fund["id"]
-        # Check if we already have data for this accession
-        marker = f"data/{fund_id}_rss_{accession}.seen"
-        if os.path.exists(marker):
-            continue
-        print(f"\nNew filing detected: {fund['name']} (CIK: {cik}, accession: {accession})")
-        # Mark as seen so we don't trigger multiple times for the same filing
-        os.makedirs("data", exist_ok=True)
-        with open(marker, "w") as f:
-            f.write(accession)
-        new_filing_found = True
-        break  # one trigger per run is enough
+os.makedirs("data", exist_ok=True)
+
+for cik, accession, form_type in all_filings:
+    if cik not in tracked:
+        continue
+
+    fund     = tracked[cik]
+    fund_id  = fund["id"]
+    marker   = f"data/{fund_id}_rss_{accession}.seen"
+
+    if os.path.exists(marker):
+        continue
+
+    label = "AMENDMENT" if form_type == "13F-HR/A" else "NEW FILING"
+    print(f"\n{label} detected: {fund['name']} (CIK: {cik}, form: {form_type}, accession: {accession})")
+
+    if form_type == "13F-HR/A":
+        print(f"  → Amendment for an existing quarter. fetch_data.py will overwrite the prior data for that period.")
+
+    # Mark as seen so we don't trigger multiple times for the same filing
+    with open(marker, "w") as f:
+        f.write(f"{form_type}:{accession}")
+
+    new_filing_found = True
+    break  # one trigger per run is enough
 
 if new_filing_found:
     repo  = os.environ.get("GITHUB_REPOSITORY", "")
