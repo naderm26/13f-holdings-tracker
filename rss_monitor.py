@@ -72,6 +72,10 @@ def parse_rss_filings(url, form_type):
     entries = [child for child in root if strip_ns(child.tag) == "entry"]
     print(f"  Found {len(entries)} entries (namespace-agnostic)")
 
+    # Debug: show tags in first entry to help diagnose parsing
+    if entries:
+        first_tags = [strip_ns(c.tag) for c in entries[0]]
+        print(f"  First entry child tags: {first_tags}")
     if len(entries) == 0:
         # Show first 500 chars of raw feed to help diagnose
         print(f"  Raw feed preview: {data[:500].decode('utf-8', errors='replace')}")
@@ -91,7 +95,7 @@ def parse_rss_filings(url, form_type):
             continue
 
         # Find content element (namespace-agnostic)
-        content = next((c for c in entry if strip_ns(c.tag) == "content"), None)
+        content = next((c for c in entry if strip_ns(c.tag) in ("content", "summary")), None)
         if content is None:
             continue
         text = content.text or ""
