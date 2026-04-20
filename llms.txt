@@ -1,0 +1,39 @@
+# 13FAI
+
+> Hedge fund holdings tracker built on SEC EDGAR 13F-HR filings. Tracks 82 institutional investors including Berkshire Hathaway, Pershing Square, Duquesne Family Office, Baupost Group, and more. Updated quarterly. 8 quarters of history per fund.
+
+## Site Pages
+
+- [Homepage](https://13fai.com/): Fund list with search, sorted by recently filed
+- [Top Holdings](https://13fai.com/top-holdings.html): Top 10 and Top 100 stocks by aggregate hedge fund ownership value
+- [Manager Bios](https://13fai.com/managers.html): 28 hedge fund managers — biography, investment philosophy, notable trades
+- [Consensus Buys & Sells](https://13fai.com/hedge-fund-activity.html): Most widely bought and sold stocks this quarter across all tracked funds
+- [Fund Comparison](https://13fai.com/portfolio-overlap.html): Compare holdings overlap across up to 5 funds simultaneously
+- [13F Filing Calendar](https://13fai.com/filing-calendar.html): Latest filed dates and next expected filing dates per fund
+- [FAQ](https://13fai.com/faq.html): What is a 13F filing, how to interpret hedge fund holdings, glossary
+- [About](https://13fai.com/about.html): About 13FAI and data methodology
+
+## Manager Bio Pages
+
+- [Bill Ackman](https://13fai.com/bill-ackman-portfolio.html) — Pershing Square Capital Management
+- [Warren Buffett](https://13fai.com/warren-buffett-portfolio.html) — Berkshire Hathaway
+- [Michael Burry](https://13fai.com/michael-burry-portfolio.html) — Scion Asset Management
+- [Stanley Druckenmiller](https://13fai.com/stanley-druckenmiller-portfolio.html) — Duquesne Family Office
+- [David Tepper](https://13fai.com/david-tepper-portfolio.html) — Appaloosa Management
+- [Seth Klarman](https://13fai.com/seth-klarman-portfolio.html) — Baupost Group
+- [Daniel Loeb](https://13fai.com/daniel-loeb-portfolio.html) — Third Point
+- [David Einhorn](https://13fai.com/david-einhorn-portfolio.html) — Greenlight / DME Capital
+- [Peter Thiel](https://13fai.com/peter-thiel-portfolio.html) — Thiel Macro
+- [Chris Hohn](https://13fai.com/chris-hohn-portfolio.html) — TCI Fund Management
+- [Leon Cooperman](https://13fai.com/leon-cooperman-portfolio.html) — Cooperman Capital
+- [Carl Icahn](https://13fai.com/carl-icahn-portfolio.html) — Icahn Capital
+- [Terry Smith](https://13fai.com/terry-smith-portfolio.html) — Fundsmith
+- [Bill Gates](https://13fai.com/bill-gates-portfolio.html) — Gates Foundation
+
+## Data Notes
+
+- Source: SEC EDGAR 13F-HR filings (public domain)
+- Options (PUT/CALL) are displayed but excluded from portfolio weight and share count calculations
+- Value reported in USD thousands as filed; multiplier applied for funds that file in different units
+- "Price at Last Filing" is implied average (value ÷ shares), not actual trade price
+- Disclaimer: for informational purposes only, not investment advice
