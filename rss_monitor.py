@@ -94,28 +94,29 @@ def parse_rss_filings(url, form_type):
         if link is None:
             continue
         href = link.get("href", "")
-        if "CIK=" not in href:
+
+        # CIK is in the URL path: /Archives/edgar/data/{CIK}/...
+        cik_match = re.search(r'/edgar/data/(\d+)/', href)
+        if not cik_match:
             continue
         try:
-            cik = str(int(href.split("CIK=")[1].split("&")[0]))
-        except (ValueError, IndexError):
+            cik = str(int(cik_match.group(1)))
+        except ValueError:
             continue
 
-        # Find content or summary element (namespace-agnostic)
-        # SEC Atom feed uses HTML in summary, e.g.:
-        # <b>Accession Number:</b> 0001234567-26-000001<br>
-        content = next((c for c in entry if strip_ns(c.tag) in ("content", "summary")), None)
-        if content is None:
+        # Find summary element (namespace-agnostic)
+        # SEC format: <b>Filed:</b> 2026-04-20 <b>AccNo:</b> 0001234567-26-000001 <b>Size:</b> 70 KB
+        summary = next((c for c in entry if strip_ns(c.tag) in ("content", "summary")), None)
+        if summary is None:
             continue
-        text = content.text or ""
-        if "Accession" not in text:
+        text = summary.text or ""
+
+        # Extract accession number — SEC uses "AccNo:" label
+        acc_match = re.search(r'AccNo:\s*([\d]{10}-[\d]{2}-[\d]{6})', text)
+        if not acc_match:
             continue
-        # Extract accession from HTML — handles both plain text and <br>-delimited HTML
-        # Matches patterns like: 0001234567-26-000001 or 0001234567-26-000001<br>
-        acc_match = re.search(r'Accession[^:]*:\s*([\d]{10}-[\d]{2}-[\d]{6})', text)
-        if acc_match:
-            acc = acc_match.group(1).replace("-", "")
-            filings.append((cik, acc, form_type))
+        acc = acc_match.group(1).replace("-", "")
+        filings.append((cik, acc, form_type))
 
     print(f"  Parsed {len(filings)} filings with accession numbers")
     return filings
