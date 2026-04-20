@@ -73,10 +73,16 @@ def parse_rss_filings(url, form_type):
     entries = [child for child in root if strip_ns(child.tag) == "entry"]
     print(f"  Found {len(entries)} entries (namespace-agnostic)")
 
-    # Debug: show tags in first entry to help diagnose parsing
+    # Debug: show tags and raw summary of first entry
     if entries:
         first_tags = [strip_ns(c.tag) for c in entries[0]]
         print(f"  First entry child tags: {first_tags}")
+        first_summary = next((c for c in entries[0] if strip_ns(c.tag) in ("content", "summary")), None)
+        if first_summary is not None:
+            print(f"  First entry summary text: {repr((first_summary.text or '')[:300])}")
+        first_link = next((c for c in entries[0] if strip_ns(c.tag) == "link"), None)
+        if first_link is not None:
+            print(f"  First entry link href: {first_link.get('href', 'none')}")
     if len(entries) == 0:
         # Show first 500 chars of raw feed to help diagnose
         print(f"  Raw feed preview: {data[:500].decode('utf-8', errors='replace')}")
