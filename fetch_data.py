@@ -7,7 +7,7 @@ import glob
 import time
 import xml.etree.ElementTree as ET
 
-HEADERS = {"User-Agent": "nadermassoudi@aol.com"}
+HEADERS = {"User-Agent": "13fai@proton.me"}
 
 def fetch_url(url, retries=4):
     req = urllib.request.Request(url, headers=HEADERS)
@@ -107,7 +107,10 @@ def save_fund_json(fund_id, fund_name, fund_data):
     print(f"  Saved {path}")
 
 def collect_filings(data):
-    """Collect up to 8 most recent 13F-HR filings with pagination fallback."""
+    """Collect up to 20 most recent 13F-HR filings with pagination fallback.
+    Cap is 20 to support extended history for future paid tier.
+    Browser pages cap display at 8 quarters — full history stored server-side.
+    """
     collected = []
     filings = data["filings"]["recent"]
     for i, form in enumerate(filings["form"]):
@@ -117,11 +120,11 @@ def collect_filings(data):
                 "period":        filings["reportDate"][i],
                 "filed":         filings["filingDate"][i]
             })
-        if len(collected) == 8:
+        if len(collected) == 20:
             return collected
 
     for file_entry in data["filings"].get("files", []):
-        if len(collected) >= 8:
+        if len(collected) >= 20:
             break
         try:
             url = f"https://data.sec.gov/submissions/{file_entry['name']}"
@@ -133,7 +136,7 @@ def collect_filings(data):
                         "period":        old_data["reportDate"][i],
                         "filed":         old_data["filingDate"][i]
                     })
-                if len(collected) == 8:
+                if len(collected) == 20:
                     break
         except Exception as e:
             print(f"  Pagination fetch failed: {e}")
@@ -212,20 +215,14 @@ def fetch_fund(fund):
 
         time.sleep(0.5)
 
-    # Keep only 8 most recent quarters in the fund JSON
-    if "quarters" in fund_data:
-        all_quarters = sorted(fund_data["quarters"].keys(), reverse=True)
-        for old_q in all_quarters[8:]:
-            del fund_data["quarters"][old_q]
-            print(f"  Pruned old quarter from JSON: {old_q}")
-            changed = True
-
     # Save per-fund JSON if anything changed
+    # Note: no quarter cap — full history kept in per-fund JSONs.
+    # Browser pages cap display at 8 quarters. Full history reserved for paid API tier.
     if changed:
         save_fund_json(fund_id, fund_name, fund_data)
 
-    # Prune CSVs to rolling 8-quarter window
-    prune_old_csvs(fund_id, keep=8)
+    # Prune CSVs to rolling 4-quarter window (verification only — full history in JSON)
+    prune_old_csvs(fund_id, keep=4)
 
     time.sleep(1)
 
