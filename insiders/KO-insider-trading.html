@@ -65,7 +65,8 @@
     table { width: 100%; min-width: 700px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
     .table-wrap { overflow-x: auto; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
-    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: normal; line-height: 1.4; }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: normal; line-height: 1.4; cursor: pointer; user-select: none; }
+    th:hover { color: var(--text); }
     th.left { text-align: left; }
     td { padding: 0.75rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; text-align: center; }
     td.num { font-family: var(--mono); font-size: 0.82rem; }
@@ -149,378 +150,19 @@
   <div class="table-wrap">
   <table>
     <thead>
-      <tr>
+      <tr id="tx-head">
         <th style="width:2.5rem">#</th>
-        <th class="left" style="width:25%">Insider</th>
-        <th>Type</th>
-        <th>Shares</th>
-        <th>Price</th>
-        <th>Value</th>
-        <th>Owned After</th>
-        <th>Trade Date</th>
-        <th>Filed</th>
+        <th class="left" style="width:25%" onclick="sortTx(0)">Insider</th>
+        <th onclick="sortTx(1)">Type</th>
+        <th onclick="sortTx(2)">Shares</th>
+        <th onclick="sortTx(3)">Price</th>
+        <th onclick="sortTx(4)">Value</th>
+        <th onclick="sortTx(5)">Owned After</th>
+        <th onclick="sortTx(6)">Trade Date</th>
+        <th onclick="sortTx(7)">Filed</th>
       </tr>
     </thead>
-    <tbody>
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">1</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Douglas Monica Howard</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">24K</td>
-          <td class="num">$77.37</td>
-          <td class="num" style="color:var(--red)">$1.8M</td>
-          <td class="num">18K</td>
-          <td class="num">Mar 9, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 10, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">2</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Douglas Monica Howard</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">24K</td>
-          <td class="num">$77.37</td>
-          <td class="num" style="color:var(--red)">$1.8M</td>
-          <td class="num">18K</td>
-          <td class="num">Mar 9, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 10, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">3</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">QUAN NANCY</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">24K</td>
-          <td class="num">$79.50</td>
-          <td class="num" style="color:var(--red)">$1.9M</td>
-          <td class="num">223K</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">4</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Quincey James</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Chairman and CEO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">688</td>
-          <td class="num">$79.05</td>
-          <td class="num" style="color:var(--red)">$54K</td>
-          <td class="num">528K</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">5</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Quincey James</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Chairman and CEO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">250K</td>
-          <td class="num">$79.14</td>
-          <td class="num" style="color:var(--red)">$19.8M</td>
-          <td class="num">278K</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">6</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Pietracci Bruno</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)"></div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">29K</td>
-          <td class="num">$79.41</td>
-          <td class="num" style="color:var(--red)">$2.3M</td>
-          <td class="num">—</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">7</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">QUAN NANCY</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">24K</td>
-          <td class="num">$79.50</td>
-          <td class="num" style="color:var(--red)">$1.9M</td>
-          <td class="num">223K</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">8</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Quincey James</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Chairman and CEO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">688</td>
-          <td class="num">$79.05</td>
-          <td class="num" style="color:var(--red)">$54K</td>
-          <td class="num">528K</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">9</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Quincey James</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Chairman and CEO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">250K</td>
-          <td class="num">$79.14</td>
-          <td class="num" style="color:var(--red)">$19.8M</td>
-          <td class="num">278K</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">10</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Pietracci Bruno</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)"></div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">29K</td>
-          <td class="num">$79.41</td>
-          <td class="num" style="color:var(--red)">$2.3M</td>
-          <td class="num">—</td>
-          <td class="num">Mar 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">11</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">MURPHY JOHN</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">President and CFO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">72K</td>
-          <td class="num">$80.52</td>
-          <td class="num" style="color:var(--red)">$5.8M</td>
-          <td class="num">280K</td>
-          <td class="num">Mar 2, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 3, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">12</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">MURPHY JOHN</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">President and CFO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">72K</td>
-          <td class="num">$80.52</td>
-          <td class="num" style="color:var(--red)">$5.8M</td>
-          <td class="num">280K</td>
-          <td class="num">Mar 2, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 3, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">13</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Perez Beatriz R</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">21K</td>
-          <td class="num">$81.00</td>
-          <td class="num" style="color:var(--red)">$1.7M</td>
-          <td class="num">174K</td>
-          <td class="num">Feb 27, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 3, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">14</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Perez Beatriz R</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">21K</td>
-          <td class="num">$81.00</td>
-          <td class="num" style="color:var(--red)">$1.7M</td>
-          <td class="num">174K</td>
-          <td class="num">Feb 27, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Mar 3, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">15</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Perez Beatriz R</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">21K</td>
-          <td class="num">$80.75</td>
-          <td class="num" style="color:var(--red)">$1.7M</td>
-          <td class="num">174K</td>
-          <td class="num">Feb 26, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">16</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Perez Beatriz R</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">21K</td>
-          <td class="num">$80.75</td>
-          <td class="num" style="color:var(--red)">$1.7M</td>
-          <td class="num">174K</td>
-          <td class="num">Feb 26, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">17</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Perez Beatriz R</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">15K</td>
-          <td class="num">$80.60</td>
-          <td class="num" style="color:var(--red)">$1.2M</td>
-          <td class="num">174K</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">18</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">MURPHY JOHN</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">President and CFO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">99K</td>
-          <td class="num">$80.42</td>
-          <td class="num" style="color:var(--red)">$8.0M</td>
-          <td class="num">411K</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">19</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Douglas Monica Howard</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">20K</td>
-          <td class="num">$80.16</td>
-          <td class="num" style="color:var(--red)">$1.6M</td>
-          <td class="num">58K</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">20</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Perez Beatriz R</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">15K</td>
-          <td class="num">$80.60</td>
-          <td class="num" style="color:var(--red)">$1.2M</td>
-          <td class="num">174K</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">21</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">MURPHY JOHN</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">President and CFO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">99K</td>
-          <td class="num">$80.42</td>
-          <td class="num" style="color:var(--red)">$8.0M</td>
-          <td class="num">411K</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">22</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Douglas Monica Howard</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Executive Vice President</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">20K</td>
-          <td class="num">$80.16</td>
-          <td class="num" style="color:var(--red)">$1.6M</td>
-          <td class="num">58K</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 27, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">23</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Quincey James</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Chairman and CEO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">338K</td>
-          <td class="num">$77.10</td>
-          <td class="num" style="color:var(--red)">$26.0M</td>
-          <td class="num">343K</td>
-          <td class="num">Feb 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 5, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">24</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Quincey James</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">Chairman and CEO</div>
-          </td>
-          <td><span class="badge sell">SELL</span></td>
-          <td class="num">338K</td>
-          <td class="num">$77.10</td>
-          <td class="num" style="color:var(--red)">$26.0M</td>
-          <td class="num">343K</td>
-          <td class="num">Feb 3, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 5, 2026</td>
-        </tr></tbody>
+    <tbody id="tx-body"></tbody>
   </table>
   </div>
 
@@ -533,5 +175,103 @@
 <footer>
   For informational purposes only · Not investment advice · <a href="../disclaimer.html">Full Disclaimer</a>
 </footer>
+
+<script>
+// Transaction data embedded at generation time
+const TX_DATA = {tx_data_json};
+
+let txSortCol = 6;   // default: trade date
+let txSortAsc = false;
+
+function fmtDate(d) {
+  if (!d) return "—";
+  const [y, m, day] = d.split("-");
+  const mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return mo[parseInt(m)-1] + " " + parseInt(day) + ", " + y;
+}
+function fmtShares(n) {
+  if (!n) return "—";
+  if (n >= 1e6) return (n/1e6).toFixed(1) + "M";
+  if (n >= 1e3) return (n/1e3).toFixed(0) + "K";
+  return n.toLocaleString();
+}
+function fmtVal(v) {
+  if (!v) return "—";
+  const a = Math.abs(v);
+  if (a >= 1e9) return "$" + (v/1e9).toFixed(1) + "B";
+  if (a >= 1e6) return "$" + (v/1e6).toFixed(1) + "M";
+  if (a >= 1e3) return "$" + (v/1e3).toFixed(0) + "K";
+  return "$" + v.toFixed(0);
+}
+
+function sortTx(col) {
+  if (txSortCol === col) { txSortAsc = !txSortAsc; }
+  else { txSortCol = col; txSortAsc = col === 0; }
+  renderTx();
+}
+
+function arrow(col) {
+  if (txSortCol !== col) return "";
+  return txSortAsc ? " ↑" : " ↓";
+}
+
+function renderTx() {
+  const sorted = [...TX_DATA].sort((a, b) => {
+    let av, bv;
+    switch (txSortCol) {
+      case 0: av = a.insider.toLowerCase(); bv = b.insider.toLowerCase(); break;
+      case 1: av = a.code; bv = b.code; break;
+      case 2: av = a.shares || 0; bv = b.shares || 0; break;
+      case 3: av = a.price || 0; bv = b.price || 0; break;
+      case 4: av = a.value || 0; bv = b.value || 0; break;
+      case 5: av = a.shares_after || 0; bv = b.shares_after || 0; break;
+      case 6: av = a.date || ""; bv = b.date || ""; break;
+      case 7: av = a.filed || ""; bv = b.filed || ""; break;
+      default: av = 0; bv = 0;
+    }
+    if (av < bv) return txSortAsc ? -1 : 1;
+    if (av > bv) return txSortAsc ? 1 : -1;
+    return 0;
+  });
+
+  // Update header arrows
+  const ths = document.querySelectorAll("#tx-head th");
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Trade Date", "Filed"];
+  ths.forEach((th, i) => {
+    if (i === 0) { th.textContent = "#"; return; }
+    th.textContent = labels[i] + arrow(i - 1);
+  });
+
+  const tbody = document.getElementById("tx-body");
+  if (!sorted.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No insider transactions in the last 90 days.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = sorted.map((t, i) => {
+    const isBuy  = t.code === "P";
+    const cls    = isBuy ? "buy" : "sell";
+    const valCls = isBuy ? "var(--green)" : "var(--red)";
+    const price  = t.price > 0 ? "$" + t.price.toFixed(2) : "—";
+    return `<tr>
+      <td class="num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>
+      <td style="text-align:left">
+        <div style="font-weight:500">${t.insider}</div>
+        <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${t.title || ""}</div>
+      </td>
+      <td><span class="badge ${cls}">${isBuy ? "BUY" : "SELL"}</span></td>
+      <td class="num">${fmtShares(t.shares)}</td>
+      <td class="num">${price}</td>
+      <td class="num" style="color:${valCls}">${fmtVal(t.value)}</td>
+      <td class="num">${fmtShares(t.shares_after)}</td>
+      <td class="num">${fmtDate(t.date)}</td>
+      <td class="num" style="font-size:0.68rem;color:var(--muted)">${fmtDate(t.filed)}</td>
+    </tr>`;
+  }).join("");
+}
+
+// Initial render
+renderTx();
+</script>
 </body>
 </html>

@@ -65,7 +65,8 @@
     table { width: 100%; min-width: 700px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
     .table-wrap { overflow-x: auto; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
-    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: normal; line-height: 1.4; }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: normal; line-height: 1.4; cursor: pointer; user-select: none; }
+    th:hover { color: var(--text); }
     th.left { text-align: left; }
     td { padding: 0.75rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; text-align: center; }
     td.num { font-family: var(--mono); font-size: 0.82rem; }
@@ -149,63 +150,19 @@
   <div class="table-wrap">
   <table>
     <thead>
-      <tr>
+      <tr id="tx-head">
         <th style="width:2.5rem">#</th>
-        <th class="left" style="width:25%">Insider</th>
-        <th>Type</th>
-        <th>Shares</th>
-        <th>Price</th>
-        <th>Value</th>
-        <th>Owned After</th>
-        <th>Trade Date</th>
-        <th>Filed</th>
+        <th class="left" style="width:25%" onclick="sortTx(0)">Insider</th>
+        <th onclick="sortTx(1)">Type</th>
+        <th onclick="sortTx(2)">Shares</th>
+        <th onclick="sortTx(3)">Price</th>
+        <th onclick="sortTx(4)">Value</th>
+        <th onclick="sortTx(5)">Owned After</th>
+        <th onclick="sortTx(6)">Trade Date</th>
+        <th onclick="sortTx(7)">Filed</th>
       </tr>
     </thead>
-    <tbody>
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">1</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">HOWARD MICHELLE J</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)"></div>
-          </td>
-          <td><span class="badge buy">BUY</span></td>
-          <td class="num">50</td>
-          <td class="num">$237.83</td>
-          <td class="num" style="color:var(--green)">$12K</td>
-          <td class="num">194</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 25, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">2</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">Miebach Michael</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)"></div>
-          </td>
-          <td><span class="badge buy">BUY</span></td>
-          <td class="num">434</td>
-          <td class="num">$233.33</td>
-          <td class="num" style="color:var(--green)">$101K</td>
-          <td class="num">434</td>
-          <td class="num">Feb 25, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Feb 25, 2026</td>
-        </tr>
-
-        <tr>
-          <td class="num" style="color:var(--muted);font-size:0.72rem">3</td>
-          <td style="text-align:left">
-            <div style="font-weight:500">FARR DAVID N</div>
-            <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)"></div>
-          </td>
-          <td><span class="badge buy">BUY</span></td>
-          <td class="num">1K</td>
-          <td class="num">$304.00</td>
-          <td class="num" style="color:var(--green)">$304K</td>
-          <td class="num">9K</td>
-          <td class="num">Jan 30, 2026</td>
-          <td class="num" style="font-size:0.68rem;color:var(--muted)">Jan 30, 2026</td>
-        </tr></tbody>
+    <tbody id="tx-body"></tbody>
   </table>
   </div>
 
@@ -218,5 +175,103 @@
 <footer>
   For informational purposes only · Not investment advice · <a href="../disclaimer.html">Full Disclaimer</a>
 </footer>
+
+<script>
+// Transaction data embedded at generation time
+const TX_DATA = {tx_data_json};
+
+let txSortCol = 6;   // default: trade date
+let txSortAsc = false;
+
+function fmtDate(d) {
+  if (!d) return "—";
+  const [y, m, day] = d.split("-");
+  const mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return mo[parseInt(m)-1] + " " + parseInt(day) + ", " + y;
+}
+function fmtShares(n) {
+  if (!n) return "—";
+  if (n >= 1e6) return (n/1e6).toFixed(1) + "M";
+  if (n >= 1e3) return (n/1e3).toFixed(0) + "K";
+  return n.toLocaleString();
+}
+function fmtVal(v) {
+  if (!v) return "—";
+  const a = Math.abs(v);
+  if (a >= 1e9) return "$" + (v/1e9).toFixed(1) + "B";
+  if (a >= 1e6) return "$" + (v/1e6).toFixed(1) + "M";
+  if (a >= 1e3) return "$" + (v/1e3).toFixed(0) + "K";
+  return "$" + v.toFixed(0);
+}
+
+function sortTx(col) {
+  if (txSortCol === col) { txSortAsc = !txSortAsc; }
+  else { txSortCol = col; txSortAsc = col === 0; }
+  renderTx();
+}
+
+function arrow(col) {
+  if (txSortCol !== col) return "";
+  return txSortAsc ? " ↑" : " ↓";
+}
+
+function renderTx() {
+  const sorted = [...TX_DATA].sort((a, b) => {
+    let av, bv;
+    switch (txSortCol) {
+      case 0: av = a.insider.toLowerCase(); bv = b.insider.toLowerCase(); break;
+      case 1: av = a.code; bv = b.code; break;
+      case 2: av = a.shares || 0; bv = b.shares || 0; break;
+      case 3: av = a.price || 0; bv = b.price || 0; break;
+      case 4: av = a.value || 0; bv = b.value || 0; break;
+      case 5: av = a.shares_after || 0; bv = b.shares_after || 0; break;
+      case 6: av = a.date || ""; bv = b.date || ""; break;
+      case 7: av = a.filed || ""; bv = b.filed || ""; break;
+      default: av = 0; bv = 0;
+    }
+    if (av < bv) return txSortAsc ? -1 : 1;
+    if (av > bv) return txSortAsc ? 1 : -1;
+    return 0;
+  });
+
+  // Update header arrows
+  const ths = document.querySelectorAll("#tx-head th");
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Trade Date", "Filed"];
+  ths.forEach((th, i) => {
+    if (i === 0) { th.textContent = "#"; return; }
+    th.textContent = labels[i] + arrow(i - 1);
+  });
+
+  const tbody = document.getElementById("tx-body");
+  if (!sorted.length) {
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No insider transactions in the last 90 days.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = sorted.map((t, i) => {
+    const isBuy  = t.code === "P";
+    const cls    = isBuy ? "buy" : "sell";
+    const valCls = isBuy ? "var(--green)" : "var(--red)";
+    const price  = t.price > 0 ? "$" + t.price.toFixed(2) : "—";
+    return `<tr>
+      <td class="num" style="color:var(--muted);font-size:0.72rem">${i+1}</td>
+      <td style="text-align:left">
+        <div style="font-weight:500">${t.insider}</div>
+        <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${t.title || ""}</div>
+      </td>
+      <td><span class="badge ${cls}">${isBuy ? "BUY" : "SELL"}</span></td>
+      <td class="num">${fmtShares(t.shares)}</td>
+      <td class="num">${price}</td>
+      <td class="num" style="color:${valCls}">${fmtVal(t.value)}</td>
+      <td class="num">${fmtShares(t.shares_after)}</td>
+      <td class="num">${fmtDate(t.date)}</td>
+      <td class="num" style="font-size:0.68rem;color:var(--muted)">${fmtDate(t.filed)}</td>
+    </tr>`;
+  }).join("");
+}
+
+// Initial render
+renderTx();
+</script>
 </body>
 </html>
