@@ -13,7 +13,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Insider Trading Activity — Corporate Insider Buys &amp; Sells | 13FAI</title>
-  <meta name="description" content="Track corporate insider buying and selling activity. See which executives and directors are buying or selling their own company stock, sourced from SEC Form 4 filings."/>
+  <meta name="description" content="Track corporate insider buying and selling. Search any stock to see which executives and directors are trading, sourced from SEC Form 4 filings."/>
   <link rel="canonical" href="https://13fai.com/insider-activity.html"/>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -25,6 +25,8 @@
       --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
     }
     body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+
+    /* ── Header ── */
     header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
     .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
     .brand { display: flex; flex-direction: column; gap: 0.1rem; }
@@ -37,59 +39,104 @@
     .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
     @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
     @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    /* ── Main ── */
     main { padding: 1.5rem 1.25rem 4rem; max-width: 1200px; margin: 0 auto; }
     @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+
     h1 { font-size: 1.4rem; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 0.3rem; }
-    .page-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 1.5rem; }
-    /* Filter bar */
-    .filter-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
-    .filter-btn {
-      font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem;
-      border: 1px solid var(--border); border-radius: 4px; background: var(--surface);
-      color: var(--muted); cursor: pointer; transition: all 0.15s;
-    }
-    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
-    .filter-label { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-    /* Two-column layout */
-    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-    @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
-    .col-head { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
-    .col-head.buys { color: var(--green); border-color: var(--green); }
-    .col-head.sells { color: var(--red); border-color: var(--red); }
-    /* Transaction card */
-    .tx-card {
+    .page-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+
+    /* ── Hero search ── */
+    .search-hero { margin-bottom: 2.5rem; }
+    .search-hero-label { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.5rem; }
+    .search-wrap { position: relative; max-width: 520px; }
+    #insider-search {
+      width: 100%; font-family: var(--sans); font-size: 1rem;
+      padding: 0.8rem 1rem 0.8rem 2.75rem;
       border: 1px solid var(--border); border-radius: 6px;
-      background: var(--surface); margin-bottom: 0.5rem;
-      padding: 0.75rem 0.9rem; transition: background 0.1s;
+      background: var(--surface); color: var(--text);
+      outline: none; transition: border 0.15s, box-shadow 0.15s;
     }
-    .tx-card:hover { background: var(--accent-light); }
-    .tx-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.3rem; }
-    .tx-ticker { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: #2563eb; text-decoration: none; }
-    .tx-ticker:hover { text-decoration: underline; }
-    .tx-company { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
-    .tx-value { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
-    .tx-value.buy { color: var(--green); }
-    .tx-value.sell { color: var(--red); }
-    .tx-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
-    .tx-insider { font-size: 0.8rem; color: var(--text); font-weight: 500; margin-top: 0.25rem; }
-    .tx-title { font-size: 0.75rem; color: var(--muted); }
-    .tx-badge {
-      font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
-      letter-spacing: 0.06em; padding: 0.15rem 0.4rem; border-radius: 3px;
-      text-transform: uppercase;
+    #insider-search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,90,61,0.08); background: var(--bg); }
+    #insider-search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
     }
-    .tx-badge.buy { background: #dcfce7; color: var(--green); }
-    .tx-badge.sell { background: #fee2e2; color: var(--red); }
-    .loading { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; padding: 2rem 0; }
-    .empty { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; padding: 1rem 0; }
-    /* Stats strip */
-    .stats-strip { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .res-left { display: flex; align-items: center; gap: 0.75rem; }
+    .res-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.9rem; min-width: 3.5rem; }
+    .res-company { color: var(--muted); font-size: 0.82rem; }
+    .res-right { display: flex; gap: 0.75rem; font-family: var(--mono); font-size: 0.72rem; }
+    .res-buys { color: var(--green); }
+    .res-sells { color: var(--red); }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+
+    /* ── Section headers ── */
+    .section-head { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.75rem; margin-top: 2rem; }
+    .section-head h2 { font-size: 1rem; font-weight: 500; }
+    .section-head .section-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+
+    /* ── Summary table ── */
+    .table-wrap { overflow-x: auto; margin-bottom: 2rem; }
+    table { width: 100%; min-width: 600px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; display: block; overflow: hidden; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.75rem; text-align: center; cursor: pointer; user-select: none; white-space: nowrap; }
+    th.left { text-align: left; }
+    th:hover { color: var(--text); }
+    td { padding: 0.8rem 0.75rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; text-align: center; }
+    td.left { text-align: left; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    td.num { font-family: var(--mono); font-size: 0.82rem; }
+    .ticker-link { font-family: var(--mono); font-weight: 600; color: #2563eb; text-decoration: none; font-size: 0.9rem; }
+    .ticker-link:hover { text-decoration: underline; }
+    .co-name { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+    .val-green { color: var(--green); font-weight: 500; }
+    .val-red { color: var(--red); font-weight: 500; }
+    .val-muted { color: var(--muted); }
+    .badge { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .badge.buy { background: #dcfce7; color: var(--green); }
+    .badge.sell { background: #fee2e2; color: var(--red); }
+    .badge.neutral { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+    /* ── Signal cards ── */
+    .signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
+    .signal-card {
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surface); padding: 0.9rem 1rem;
+      text-decoration: none; color: var(--text); display: block;
+      transition: background 0.1s, border-color 0.1s;
+    }
+    .signal-card:hover { background: var(--accent-light); border-color: var(--accent); }
+    .signal-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; }
+    .signal-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.95rem; }
+    .signal-label { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .signal-label.buy { background: #dcfce7; color: var(--green); }
+    .signal-label.sell { background: #fee2e2; color: var(--red); }
+    .signal-label.mixed { background: #fef9c3; color: #854d0e; }
+    .signal-company { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.5rem; }
+    .signal-detail { font-family: var(--mono); font-size: 0.75rem; color: var(--text); }
+    .signal-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.25rem; }
+
+    /* ── Stats strip ── */
+    .stats-strip { display: flex; gap: 2rem; margin-bottom: 2rem; flex-wrap: wrap; padding: 1rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
     .stat { font-family: var(--mono); }
     .stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
-    .stat-value { font-size: 1.1rem; font-weight: 500; margin-top: 0.1rem; }
-    .stat-value.green { color: var(--green); }
-    .stat-value.red { color: var(--red); }
+    .stat-value { font-size: 1.05rem; font-weight: 500; margin-top: 0.1rem; }
+
+    .loading { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; padding: 1.5rem 0; }
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
@@ -133,32 +180,19 @@
 
 <main>
   <h1>Insider Trading Activity</h1>
-  <p class="page-sub">Open market purchases and sales by corporate insiders — officers, directors, and 10% owners. Source: SEC Form 4 filings.</p>
+  <p class="page-sub">Open market purchases and sales by corporate officers, directors, and 10% owners. Source: SEC Form 4 filings, last 90 days.</p>
 
-  <div class="stats-strip" id="stats-strip">
-    <div class="stat"><div class="stat-label">Buys (90d)</div><div class="stat-value green" id="stat-buys">—</div></div>
-    <div class="stat"><div class="stat-label">Sells (90d)</div><div class="stat-value red" id="stat-sells">—</div></div>
-    <div class="stat"><div class="stat-label">Net Value (90d)</div><div class="stat-value" id="stat-net">—</div></div>
-    <div class="stat"><div class="stat-label">Stocks Tracked</div><div class="stat-value" id="stat-stocks">—</div></div>
-  </div>
-
-  <div class="filter-bar">
-    <span class="filter-label">Filter:</span>
-    <button class="filter-btn active" onclick="setFilter('all')">All</button>
-    <button class="filter-btn" onclick="setFilter('buys')">Buys only</button>
-    <button class="filter-btn" onclick="setFilter('sells')">Sells only</button>
-  </div>
-
-  <div class="cols">
-    <div>
-      <div class="col-head buys">▲ Insider Buys</div>
-      <div id="buys-col"><div class="loading">Loading...</div></div>
-    </div>
-    <div>
-      <div class="col-head sells">▼ Insider Sells</div>
-      <div id="sells-col"><div class="loading">Loading...</div></div>
+  <!-- Hero search -->
+  <div class="search-hero">
+    <div class="search-hero-label">Search by ticker or company name</div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="e.g. AAPL, Amazon, Microsoft..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
     </div>
   </div>
+
+  <div id="main-content"><div class="loading">Loading insider data...</div></div>
 </main>
 
 <footer>
@@ -166,123 +200,210 @@
 </footer>
 
 <script>
-  const PAGES = "";
-  let allData  = {};
-  let activeFilter = "all";
+const PAGES = "";
+let indexData = {};
 
-  function fmtVal(v) {
-    if (!v) return "—";
-    const abs = Math.abs(v);
-    if (abs >= 1e9) return "$" + (v / 1e9).toFixed(1) + "B";
-    if (abs >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
-    if (abs >= 1e3) return "$" + (v / 1e3).toFixed(0) + "K";
-    return "$" + v.toFixed(0);
-  }
+function fmtVal(v) {
+  if (!v) return "—";
+  const a = Math.abs(v);
+  if (a >= 1e9) return "$" + (v/1e9).toFixed(1) + "B";
+  if (a >= 1e6) return "$" + (v/1e6).toFixed(1) + "M";
+  if (a >= 1e3) return "$" + (v/1e3).toFixed(0) + "K";
+  return "$" + Math.abs(v).toFixed(0);
+}
 
-  function fmtDate(d) {
-    if (!d) return "—";
-    const [y, m, day] = d.split("-");
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    return `${months[parseInt(m)-1]} ${parseInt(day)}, ${y}`;
-  }
+function fmtDate(d) {
+  if (!d) return "—";
+  const [y, m, day] = d.split("-");
+  const mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return `${mo[parseInt(m)-1]} ${parseInt(day)}`;
+}
 
-  function fmtShares(n) {
-    if (!n) return "—";
-    if (n >= 1e6) return (n/1e6).toFixed(1) + "M";
-    if (n >= 1e3) return (n/1e3).toFixed(0) + "K";
-    return n.toLocaleString();
-  }
+function sortTable(col) {
+  currentSort = (currentSort === col) ? "-" + col : col;
+  renderTable();
+}
 
-  function setFilter(f) {
-    activeFilter = f;
-    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
-    event.target.classList.add("active");
-    render();
-  }
+let currentSort = "-net_value_90d";
 
-  function txCard(tx, ticker) {
-    const isBuy  = tx.code === "P";
-    const cls    = isBuy ? "buy" : "sell";
-    const href   = `insiders/${ticker}-insider-trading.html`;
-    return `
-      <div class="tx-card">
-        <div class="tx-top">
-          <div>
-            <a class="tx-ticker" href="${href}">${ticker}</a>
-            <div class="tx-company">${allData[ticker]?.company || ""}</div>
-          </div>
-          <div style="text-align:right">
-            <div class="tx-value ${cls}">${fmtVal(tx.value)}</div>
-            <div class="tx-meta">${fmtShares(tx.shares)} shares @ $${tx.price > 0 ? tx.price.toFixed(2) : "—"}</div>
-          </div>
+function renderTable() {
+  const entries = Object.entries(indexData);
+  const asc = !currentSort.startsWith("-");
+  const key = currentSort.replace(/^-/, "");
+
+  entries.sort((a, b) => {
+    let av = a[1][key] ?? 0;
+    let bv = b[1][key] ?? 0;
+    if (typeof av === "string") av = av.toLowerCase();
+    if (typeof bv === "string") bv = bv.toLowerCase();
+    return asc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+  });
+
+  const arrow = k => {
+    if (currentSort === k)  return " ↑";
+    if (currentSort === "-"+k) return " ↓";
+    return "";
+  };
+
+  const rows = entries.map(([ticker, d]) => {
+    const netVal = d.net_value_90d || 0;
+    const netCls = netVal > 0 ? "val-green" : netVal < 0 ? "val-red" : "val-muted";
+    const netSign = netVal > 0 ? "+" : "";
+
+    let signal = "neutral";
+    if (d.buys_90d > 0 && d.sells_90d === 0) signal = "buy";
+    else if (d.sells_90d > 0 && d.buys_90d === 0) signal = "sell";
+    else if (d.buys_90d > 0) signal = "mixed";
+
+    const signalLabel = signal === "buy" ? "Buying" : signal === "sell" ? "Selling" : signal === "mixed" ? "Mixed" : "—";
+    const signalCls   = signal === "buy" ? "buy" : signal === "sell" ? "sell" : "neutral";
+
+    return `<tr onclick="location.href='insiders/${ticker}-insider-trading.html'" style="cursor:pointer">
+      <td class="left">
+        <a class="ticker-link" href="insiders/${ticker}-insider-trading.html">${ticker}</a>
+        <div class="co-name">${d.company || ""}</div>
+      </td>
+      <td><span class="badge ${signalCls}">${signalLabel}</span></td>
+      <td class="num val-green">${d.buys_90d || 0}</td>
+      <td class="num val-red">${d.sells_90d || 0}</td>
+      <td class="num ${netCls}">${netSign}${fmtVal(Math.abs(netVal))}</td>
+      <td class="num" style="color:var(--muted)">${fmtDate(d.last_tx_date)}</td>
+    </tr>`;
+  }).join("");
+
+  return `
+    <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th class="left" onclick="sortTable('ticker')" style="cursor:pointer">Stock${arrow("ticker")}</th>
+        <th onclick="sortTable('signal')" style="cursor:pointer">Signal${arrow("signal")}</th>
+        <th onclick="sortTable('buys_90d')" style="cursor:pointer">Buys${arrow("buys_90d")}</th>
+        <th onclick="sortTable('sells_90d')" style="cursor:pointer">Sells${arrow("sells_90d")}</th>
+        <th onclick="sortTable('net_value_90d')" style="cursor:pointer">Net Value (90d)${arrow("net_value_90d")}</th>
+        <th onclick="sortTable('last_tx_date')" style="cursor:pointer">Last Trade${arrow("last_tx_date")}</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    </div>`;
+}
+
+function renderSignals() {
+  // Notable signals: stocks with only buys, or unusually large buy value
+  const notable = Object.entries(indexData)
+    .filter(([, d]) => d.buys_90d > 0)
+    .sort((a, b) => (b[1].net_value_90d || 0) - (a[1].net_value_90d || 0))
+    .slice(0, 6);
+
+  if (!notable.length) return "";
+
+  const cards = notable.map(([ticker, d]) => {
+    const isBuyOnly = d.sells_90d === 0;
+    const labelCls  = isBuyOnly ? "buy" : "mixed";
+    const labelTxt  = isBuyOnly ? "Buying" : "Mixed";
+    const topBuy    = (d.transactions || [])
+      .filter(t => t.code === "P")
+      .sort((a, b) => (b.value||0) - (a.value||0))[0];
+    const detail = topBuy
+      ? `${topBuy.insider} bought ${fmtVal(topBuy.value)}`
+      : `${d.buys_90d} purchase${d.buys_90d > 1 ? "s" : ""} recorded`;
+    const meta = topBuy ? fmtDate(topBuy.date) : "";
+
+    return `<a class="signal-card" href="insiders/${ticker}-insider-trading.html">
+      <div class="signal-card-top">
+        <span class="signal-ticker">${ticker}</span>
+        <span class="signal-label ${labelCls}">${labelTxt}</span>
+      </div>
+      <div class="signal-company">${d.company || ""}</div>
+      <div class="signal-detail">${detail}</div>
+      <div class="signal-meta">${meta}</div>
+    </a>`;
+  }).join("");
+
+  return `
+    <div class="section-head">
+      <h2>Notable Insider Purchases</h2>
+      <span class="section-sub">Stocks with recent open market buying activity</span>
+    </div>
+    <div class="signals-grid">${cards}</div>`;
+}
+
+function renderStats() {
+  const totalBuys  = Object.values(indexData).reduce((s, d) => s + (d.buys_90d  || 0), 0);
+  const totalSells = Object.values(indexData).reduce((s, d) => s + (d.sells_90d || 0), 0);
+  const netVal     = Object.values(indexData).reduce((s, d) => s + (d.net_value_90d || 0), 0);
+  const netCls     = netVal >= 0 ? "val-green" : "val-red";
+  const netSign    = netVal >= 0 ? "+" : "";
+  const stocks     = Object.keys(indexData).length;
+
+  return `<div class="stats-strip">
+    <div class="stat"><div class="stat-label">Stocks Tracked</div><div class="stat-value">${stocks}</div></div>
+    <div class="stat"><div class="stat-label">Buys (90d)</div><div class="stat-value val-green">${totalBuys}</div></div>
+    <div class="stat"><div class="stat-label">Sells (90d)</div><div class="stat-value val-red">${totalSells}</div></div>
+    <div class="stat"><div class="stat-label">Net Value (90d)</div><div class="stat-value ${netCls}">${netSign}${fmtVal(Math.abs(netVal))}</div></div>
+  </div>`;
+}
+
+function renderAll() {
+  document.getElementById("main-content").innerHTML =
+    renderStats() +
+    renderSignals() +
+    `<div class="section-head">
+       <h2>All Tracked Stocks</h2>
+       <span class="section-sub">Click any row to see full transaction detail</span>
+     </div>` +
+    renderTable();
+}
+
+// ── Search ──────────────────────────────────────────────────────
+const searchEl  = document.getElementById("insider-search");
+const resultsEl = document.getElementById("search-results");
+
+searchEl.addEventListener("input", () => {
+  const q = searchEl.value.trim().toLowerCase();
+  if (!q) { resultsEl.classList.remove("visible"); return; }
+
+  const matches = Object.entries(indexData)
+    .filter(([ticker, d]) =>
+      ticker.toLowerCase().includes(q) ||
+      (d.company || "").toLowerCase().includes(q)
+    )
+    .slice(0, 6);
+
+  if (!matches.length) {
+    resultsEl.innerHTML = `<div class="no-results">No matches found</div>`;
+  } else {
+    resultsEl.innerHTML = matches.map(([ticker, d]) => `
+      <a class="search-result-item" href="insiders/${ticker}-insider-trading.html">
+        <div class="res-left">
+          <span class="res-ticker">${ticker}</span>
+          <span class="res-company">${d.company || ""}</span>
         </div>
-        <div class="tx-insider">${tx.insider}</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.25rem;">
-          <div class="tx-title">${tx.title || "—"}</div>
-          <div class="tx-meta">${fmtDate(tx.date)}</div>
+        <div class="res-right">
+          ${d.buys_90d  ? `<span class="res-buys">▲ ${d.buys_90d} buy${d.buys_90d>1?"s":""}</span>` : ""}
+          ${d.sells_90d ? `<span class="res-sells">▼ ${d.sells_90d} sell${d.sells_90d>1?"s":""}</span>` : ""}
         </div>
-      </div>`;
+      </a>`).join("");
   }
+  resultsEl.classList.add("visible");
+});
 
-  function render() {
-    // Flatten all transactions with ticker attached, sorted by date desc
-    let buys  = [];
-    let sells = [];
-
-    for (const [ticker, data] of Object.entries(allData)) {
-      for (const tx of (data.transactions || [])) {
-        if (tx.code === "P") buys.push({...tx, ticker});
-        if (tx.code === "S") sells.push({...tx, ticker});
-      }
-    }
-
-    buys.sort((a, b)  => b.date.localeCompare(a.date));
-    sells.sort((a, b) => b.date.localeCompare(a.date));
-
-    const buysCol  = document.getElementById("buys-col");
-    const sellsCol = document.getElementById("sells-col");
-
-    if (activeFilter === "sells") {
-      buysCol.innerHTML = `<div class="empty">Filter active — showing sells only.</div>`;
-    } else {
-      buysCol.innerHTML = buys.length
-        ? buys.map(tx => txCard(tx, tx.ticker)).join("")
-        : `<div class="empty">No insider purchases in the last 90 days.</div>`;
-    }
-
-    if (activeFilter === "buys") {
-      sellsCol.innerHTML = `<div class="empty">Filter active — showing buys only.</div>`;
-    } else {
-      sellsCol.innerHTML = sells.length
-        ? sells.map(tx => txCard(tx, tx.ticker)).join("")
-        : `<div class="empty">No insider sales in the last 90 days.</div>`;
-    }
-
-    // Stats
-    const totalBuys  = buys.length;
-    const totalSells = sells.length;
-    const netVal     = buys.reduce((s,t) => s + (t.value||0), 0)
-                     - sells.reduce((s,t) => s + (t.value||0), 0);
-
-    document.getElementById("stat-buys").textContent   = totalBuys;
-    document.getElementById("stat-sells").textContent  = totalSells;
-    document.getElementById("stat-stocks").textContent = Object.keys(allData).length;
-    const netEl = document.getElementById("stat-net");
-    netEl.textContent = fmtVal(netVal);
-    netEl.className   = "stat-value " + (netVal >= 0 ? "green" : "red");
+document.addEventListener("click", e => {
+  if (!searchEl.contains(e.target) && !resultsEl.contains(e.target)) {
+    resultsEl.classList.remove("visible");
   }
+});
 
-  // Load insider_index.json
-  fetch(`${PAGES}/insider_index.json`)
-    .then(r => r.json())
-    .then(data => {
-      allData = data;
-      render();
-    })
-    .catch(e => {
-      document.getElementById("buys-col").innerHTML  = `<div class="empty">Failed to load data: ${e.message}</div>`;
-      document.getElementById("sells-col").innerHTML = "";
-    });
+// ── Load data ───────────────────────────────────────────────────
+fetch(`${PAGES}/insider_index.json`)
+  .then(r => r.json())
+  .then(data => {
+    indexData = data;
+    renderAll();
+  })
+  .catch(e => {
+    document.getElementById("main-content").innerHTML =
+      `<div class="loading">Failed to load data: ${e.message}</div>`;
+  });
 </script>
 </body>
 </html>
