@@ -13,6 +13,10 @@ import os
 import time
 from datetime import datetime, timezone, timedelta
 
+# Hard timeout — stop fetching new companies after this many minutes
+# Protects GitHub Actions minutes budget
+MAX_RUNTIME_MINUTES = 25
+
 HEADERS = {"User-Agent": "13fai@proton.me"}
 LOOKBACK_DAYS = 90       # fetch last 90 days on first run, then incremental
 MAX_FILINGS   = 200      # max Form 4 filings to scan per company
@@ -20,20 +24,31 @@ MAX_FILINGS   = 200      # max Form 4 filings to scan per company
 # Transaction codes we care about — open market buys and sells only
 SIGNAL_CODES = {"P", "S"}
 
-# Pilot: 10 stocks with known CIKs
-# CIK is the issuer (company) CIK, not the insider's CIK
-PILOT_COMPANIES = {
-    "AAPL": {"cik": "0000320193", "name": "Apple Inc"},
-    "AXP":  {"cik": "0000004962", "name": "American Express Co"},
-    "MSFT": {"cik": "0000789019", "name": "Microsoft Corp"},
-    "BAC":  {"cik": "0000070858", "name": "Bank of America Corp"},
-    "KO":   {"cik": "0000021344", "name": "Coca-Cola Co"},
-    "MCO":  {"cik": "0001059556", "name": "Moody's Corp"},
-    "GOOGL":{"cik": "0001652044", "name": "Alphabet Inc"},
-    "V":    {"cik": "0001403161", "name": "Visa Inc"},
-    "AMZN": {"cik": "0001018724", "name": "Amazon.com Inc"},
-    "CVX":  {"cik": "0000093410", "name": "Chevron Corp"},
-}
+# Load companies from company_ciks.json (built by build_company_ciks.py)
+# Falls back to pilot 10 if file not found
+import os as _os
+if _os.path.exists("company_ciks.json"):
+    with open("company_ciks.json") as _f:
+        _raw = json.load(_f)
+    PILOT_COMPANIES = {
+        ticker: {"cik": info["cik"], "name": info["name"]}
+        for ticker, info in _raw.items()
+    }
+    print(f"Loaded {len(PILOT_COMPANIES)} companies from company_ciks.json")
+else:
+    print("company_ciks.json not found — using pilot 10 stocks")
+    PILOT_COMPANIES = {
+        "AAPL": {"cik": "0000320193", "name": "Apple Inc"},
+        "AXP":  {"cik": "0000004962", "name": "American Express Co"},
+        "MSFT": {"cik": "0000789019", "name": "Microsoft Corp"},
+        "BAC":  {"cik": "0000070858", "name": "Bank of America Corp"},
+        "KO":   {"cik": "0000021344", "name": "Coca-Cola Co"},
+        "MCO":  {"cik": "0001059556", "name": "Moody's Corp"},
+        "GOOGL":{"cik": "0001652044", "name": "Alphabet Inc"},
+        "V":    {"cik": "0001403161", "name": "Visa Inc"},
+        "AMZN": {"cik": "0001018724", "name": "Amazon.com Inc"},
+        "CVX":  {"cik": "0000093410", "name": "Chevron Corp"},
+    }
 
 def fetch_url(url, retries=3):
     req = urllib.request.Request(url, headers=HEADERS)
@@ -261,13 +276,22 @@ def save_stock(ticker, company_name, cik, data):
     print(f"  Saved {path}")
 
 # ── Main ─────────────────────────────────────────────────────────
-cutoff = (datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)).strftime("%Y-%m-%d")
+cutoff     = (datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)).strftime("%Y-%m-%d")
+start_time = time.time()
 print(f"Fetching Form 4 insider data (cutoff: {cutoff})...")
-print(f"Tracking {len(PILOT_COMPANIES)} companies\n")
+print(f"Tracking {len(PILOT_COMPANIES)} companies | timeout: {MAX_RUNTIME_MINUTES} min\n")
 
 os.makedirs("data/insiders", exist_ok=True)
+timed_out = False
 
 for ticker, info in PILOT_COMPANIES.items():
+    elapsed = (time.time() - start_time) / 60
+    if elapsed >= MAX_RUNTIME_MINUTES:
+        print(f"\n⚠ Timeout reached ({MAX_RUNTIME_MINUTES} min). Stopping early.")
+        print(f"  Completed {list(PILOT_COMPANIES.keys()).index(ticker)} of {len(PILOT_COMPANIES)} companies.")
+        print(f"  Remaining companies will be fetched on the next run.")
+        timed_out = True
+        break
     cik          = info["cik"]
     company_name = info["name"]
     print(f"\n{ticker} ({company_name})...")
@@ -319,4 +343,8 @@ for ticker, info in PILOT_COMPANIES.items():
     save_stock(ticker, company_name, cik, stock_data)
     time.sleep(1)
 
-print("\nDone fetching insider data.")
+elapsed_total = (time.time() - start_time) / 60
+if timed_out:
+    print(f"\nStopped early after {elapsed_total:.1f} min — budget limit reached.")
+else:
+    print(f"\nDone fetching insider data in {elapsed_total:.1f} min.")
