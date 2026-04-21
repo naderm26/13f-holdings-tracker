@@ -320,7 +320,7 @@ def build_page(ticker, data):
 
 <script>
 // Transaction data embedded at generation time
-const TX_DATA = {{tx_data_json}};
+const TX_DATA = {tx_data_json};
 
 let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
