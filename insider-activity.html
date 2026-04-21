@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2TBN6R2JZC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2TBN6R2JZC');
+</script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Insider Trading Activity — Corporate Insider Buys &amp; Sells | 13FAI</title>
+  <meta name="description" content="Track corporate insider buying and selling activity. See which executives and directors are buying or selling their own company stock, sourced from SEC Form 4 filings."/>
+  <link rel="canonical" href="https://13fai.com/insider-activity.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+    h1 { font-size: 1.4rem; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 0.3rem; }
+    .page-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 1.5rem; }
+    /* Filter bar */
+    .filter-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; align-items: center; }
+    .filter-btn {
+      font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 4px; background: var(--surface);
+      color: var(--muted); cursor: pointer; transition: all 0.15s;
+    }
+    .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .filter-label { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    /* Two-column layout */
+    .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    @media (max-width: 800px) { .cols { grid-template-columns: 1fr; } }
+    .col-head { font-family: var(--mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--border); }
+    .col-head.buys { color: var(--green); border-color: var(--green); }
+    .col-head.sells { color: var(--red); border-color: var(--red); }
+    /* Transaction card */
+    .tx-card {
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surface); margin-bottom: 0.5rem;
+      padding: 0.75rem 0.9rem; transition: background 0.1s;
+    }
+    .tx-card:hover { background: var(--accent-light); }
+    .tx-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.3rem; }
+    .tx-ticker { font-family: var(--mono); font-size: 0.9rem; font-weight: 600; color: #2563eb; text-decoration: none; }
+    .tx-ticker:hover { text-decoration: underline; }
+    .tx-company { font-size: 0.78rem; color: var(--muted); margin-top: 0.1rem; }
+    .tx-value { font-family: var(--mono); font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+    .tx-value.buy { color: var(--green); }
+    .tx-value.sell { color: var(--red); }
+    .tx-meta { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+    .tx-insider { font-size: 0.8rem; color: var(--text); font-weight: 500; margin-top: 0.25rem; }
+    .tx-title { font-size: 0.75rem; color: var(--muted); }
+    .tx-badge {
+      font-family: var(--mono); font-size: 0.65rem; font-weight: 600;
+      letter-spacing: 0.06em; padding: 0.15rem 0.4rem; border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .tx-badge.buy { background: #dcfce7; color: var(--green); }
+    .tx-badge.sell { background: #fee2e2; color: var(--red); }
+    .loading { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; padding: 2rem 0; }
+    .empty { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; padding: 1rem 0; }
+    /* Stats strip */
+    .stats-strip { display: flex; gap: 2rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .stat { font-family: var(--mono); }
+    .stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+    .stat-value { font-size: 1.1rem; font-weight: 500; margin-top: 0.1rem; }
+    .stat-value.green { color: var(--green); }
+    .stat-value.red { color: var(--red); }
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link active" href="insider-activity.html">Insider Trading</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
+      </nav>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link active" href="insider-activity.html">Insider Trading</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1>Insider Trading Activity</h1>
+  <p class="page-sub">Open market purchases and sales by corporate insiders — officers, directors, and 10% owners. Source: SEC Form 4 filings.</p>
+
+  <div class="stats-strip" id="stats-strip">
+    <div class="stat"><div class="stat-label">Buys (90d)</div><div class="stat-value green" id="stat-buys">—</div></div>
+    <div class="stat"><div class="stat-label">Sells (90d)</div><div class="stat-value red" id="stat-sells">—</div></div>
+    <div class="stat"><div class="stat-label">Net Value (90d)</div><div class="stat-value" id="stat-net">—</div></div>
+    <div class="stat"><div class="stat-label">Stocks Tracked</div><div class="stat-value" id="stat-stocks">—</div></div>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label">Filter:</span>
+    <button class="filter-btn active" onclick="setFilter('all')">All</button>
+    <button class="filter-btn" onclick="setFilter('buys')">Buys only</button>
+    <button class="filter-btn" onclick="setFilter('sells')">Sells only</button>
+  </div>
+
+  <div class="cols">
+    <div>
+      <div class="col-head buys">▲ Insider Buys</div>
+      <div id="buys-col"><div class="loading">Loading...</div></div>
+    </div>
+    <div>
+      <div class="col-head sells">▼ Insider Sells</div>
+      <div id="sells-col"><div class="loading">Loading...</div></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  For informational purposes only · Not investment advice · <a href="disclaimer.html">Full Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "";
+  let allData  = {};
+  let activeFilter = "all";
+
+  function fmtVal(v) {
+    if (!v) return "—";
+    const abs = Math.abs(v);
+    if (abs >= 1e9) return "$" + (v / 1e9).toFixed(1) + "B";
+    if (abs >= 1e6) return "$" + (v / 1e6).toFixed(1) + "M";
+    if (abs >= 1e3) return "$" + (v / 1e3).toFixed(0) + "K";
+    return "$" + v.toFixed(0);
+  }
+
+  function fmtDate(d) {
+    if (!d) return "—";
+    const [y, m, day] = d.split("-");
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${months[parseInt(m)-1]} ${parseInt(day)}, ${y}`;
+  }
+
+  function fmtShares(n) {
+    if (!n) return "—";
+    if (n >= 1e6) return (n/1e6).toFixed(1) + "M";
+    if (n >= 1e3) return (n/1e3).toFixed(0) + "K";
+    return n.toLocaleString();
+  }
+
+  function setFilter(f) {
+    activeFilter = f;
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    event.target.classList.add("active");
+    render();
+  }
+
+  function txCard(tx, ticker) {
+    const isBuy  = tx.code === "P";
+    const cls    = isBuy ? "buy" : "sell";
+    const href   = `insiders/${ticker}-insider-trading.html`;
+    return `
+      <div class="tx-card">
+        <div class="tx-top">
+          <div>
+            <a class="tx-ticker" href="${href}">${ticker}</a>
+            <div class="tx-company">${allData[ticker]?.company || ""}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="tx-value ${cls}">${fmtVal(tx.value)}</div>
+            <div class="tx-meta">${fmtShares(tx.shares)} shares @ $${tx.price > 0 ? tx.price.toFixed(2) : "—"}</div>
+          </div>
+        </div>
+        <div class="tx-insider">${tx.insider}</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.25rem;">
+          <div class="tx-title">${tx.title || "—"}</div>
+          <div class="tx-meta">${fmtDate(tx.date)}</div>
+        </div>
+      </div>`;
+  }
+
+  function render() {
+    // Flatten all transactions with ticker attached, sorted by date desc
+    let buys  = [];
+    let sells = [];
+
+    for (const [ticker, data] of Object.entries(allData)) {
+      for (const tx of (data.transactions || [])) {
+        if (tx.code === "P") buys.push({...tx, ticker});
+        if (tx.code === "S") sells.push({...tx, ticker});
+      }
+    }
+
+    buys.sort((a, b)  => b.date.localeCompare(a.date));
+    sells.sort((a, b) => b.date.localeCompare(a.date));
+
+    const buysCol  = document.getElementById("buys-col");
+    const sellsCol = document.getElementById("sells-col");
+
+    if (activeFilter === "sells") {
+      buysCol.innerHTML = `<div class="empty">Filter active — showing sells only.</div>`;
+    } else {
+      buysCol.innerHTML = buys.length
+        ? buys.map(tx => txCard(tx, tx.ticker)).join("")
+        : `<div class="empty">No insider purchases in the last 90 days.</div>`;
+    }
+
+    if (activeFilter === "buys") {
+      sellsCol.innerHTML = `<div class="empty">Filter active — showing buys only.</div>`;
+    } else {
+      sellsCol.innerHTML = sells.length
+        ? sells.map(tx => txCard(tx, tx.ticker)).join("")
+        : `<div class="empty">No insider sales in the last 90 days.</div>`;
+    }
+
+    // Stats
+    const totalBuys  = buys.length;
+    const totalSells = sells.length;
+    const netVal     = buys.reduce((s,t) => s + (t.value||0), 0)
+                     - sells.reduce((s,t) => s + (t.value||0), 0);
+
+    document.getElementById("stat-buys").textContent   = totalBuys;
+    document.getElementById("stat-sells").textContent  = totalSells;
+    document.getElementById("stat-stocks").textContent = Object.keys(allData).length;
+    const netEl = document.getElementById("stat-net");
+    netEl.textContent = fmtVal(netVal);
+    netEl.className   = "stat-value " + (netVal >= 0 ? "green" : "red");
+  }
+
+  // Load insider_index.json
+  fetch(`${PAGES}/insider_index.json`)
+    .then(r => r.json())
+    .then(data => {
+      allData = data;
+      render();
+    })
+    .catch(e => {
+      document.getElementById("buys-col").innerHTML  = `<div class="empty">Failed to load data: ${e.message}</div>`;
+      document.getElementById("sells-col").innerHTML = "";
+    });
+</script>
+</body>
+</html>
