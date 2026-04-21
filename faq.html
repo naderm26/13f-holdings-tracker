@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,6 +63,62 @@
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Portfolio weight is the percentage of a fund's total reported equity value represented by a single position. A 15% weight means that holding makes up 15 cents of every dollar the fund has invested in US equities."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What hedge funds currently hold Apple stock?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "You can see which hedge funds hold any stock on 13FAI. For Apple (AAPL), visit https://13fai.com/stocks/AAPL-hedge-fund-ownership.html to see every tracked fund holding AAPL, their position sizes, portfolio weights, and quarter-over-quarter changes. Data is sourced from the most recent 13F filings on SEC EDGAR."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is Stanley Druckenmiller buying?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Stanley Druckenmiller discloses holdings quarterly through Duquesne Family Office via 13F filings. See his current and historical positions at https://13fai.com/fund.html?fund=duquesne or his manager bio at https://13fai.com/stanley-druckenmiller-portfolio.html. New positions, increases, decreases, and exits are highlighted each quarter."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What stocks do multiple hedge funds own in common?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "13FAI offers three ways to find this: the Fund Comparison tool at https://13fai.com/portfolio-overlap.html lets you select up to 5 funds and see shared holdings; the Top Holdings page at https://13fai.com/top-holdings.html shows stocks held by the most funds overall; and the Consensus Buys and Sells page at https://13fai.com/hedge-fund-activity.html shows stocks most funds are buying or selling this quarter."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How do I find what stocks Warren Buffett owns?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Warren Buffett's stock holdings are disclosed through Berkshire Hathaway's quarterly 13F filings. View the full portfolio at https://13fai.com/fund.html?fund=berkshire. Note that Berkshire's 13F reflects only US-listed equity positions — it does not include wholly-owned subsidiaries like GEICO or BNSF Railway, bonds, or international holdings."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "When is the next 13F filing deadline?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "13F filings are due 45 days after each quarter end: mid-February (Q4/December 31), mid-May (Q1/March 31), mid-August (Q2/June 30), and mid-November (Q3/September 30). Different funds file at different times within this window. See https://13fai.com/filing-calendar.html for the latest filed dates and next expected dates per fund."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Which hedge funds have the most concentrated portfolios?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Concentration varies widely. Funds like Pershing Square, Scion Asset Management, and RV Capital typically hold fewer than 15 positions with heavy top-holding concentration. Each fund page on 13FAI shows top 3 and top 5 holding weights in the insights section, making it easy to compare concentration across funds."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the difference between shares vs prior quarter and shares vs prior year?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Shares vs prior quarter shows the percentage change in shares held compared to the immediately preceding quarter — a measure of recent activity. Shares vs prior year compares to the same quarter one year ago, smoothing short-term noise to show the longer-term trend. Both metrics exclude options (PUT/CALL) positions."
         }
       }
     ]
@@ -168,6 +225,12 @@
     <a href="#who-files">Who is required to file?</a>
     <a href="#what-disclosed">What is and isn't disclosed?</a>
     <a href="#how-to-use">How to use this data</a>
+    <a href="#find-stock">Which hedge funds own a specific stock?</a>
+    <a href="#find-manager">How do I find a specific manager's holdings?</a>
+    <a href="#overlap">What stocks do multiple hedge funds own in common?</a>
+    <a href="#filing-dates">When are 13F filings due?</a>
+    <a href="#concentration">Which funds have the most concentrated portfolios?</a>
+    <a href="#chg-columns">What do the shares vs prior quarter and prior year columns mean?</a>
   </nav>
 
   <!-- Section 1 -->
@@ -206,6 +269,62 @@
     <p>Consensus signals — stocks that many funds are buying or selling simultaneously — are also worth attention. Our <a class="inline" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a> page surfaces these each quarter. For deep dives, the <a class="inline" href="portfolio-overlap.html">Fund Comparison</a> tool shows which stocks multiple specific managers hold in common.</p>
   </div>
 
+
+
+  <hr class="divider"/>
+
+  <!-- Section 5 -->
+  <div class="edu-section" id="find-stock">
+    <h2>Which hedge funds own a specific stock?</h2>
+    <p>Every stock tracked on 13FAI has a dedicated ownership page showing all funds holding that position, their share counts, portfolio weights, and quarter-over-quarter changes. For example, to see which hedge funds own Apple: <a class="inline" href="stocks/AAPL-hedge-fund-ownership.html">AAPL hedge fund ownership</a>. The page also shows aggregate ownership trends over 8 quarters and highlights new positions, increases, and exits.</p>
+    <p>You can also use the search bar on any page — type a ticker or company name and select the stock result to go directly to its ownership page.</p>
+  </div>
+
+  <!-- Section 6 -->
+  <div class="edu-section" id="find-manager">
+    <h2>How do I find a specific manager's holdings?</h2>
+    <p>Each fund has a dedicated holdings page showing its full portfolio by quarter. You can find any fund from the <a class="inline" href="index.html">homepage</a> by searching the manager's name or fund name. For the most followed managers, 13FAI also has dedicated bio pages with biography, investment philosophy, notable trades, and a live holdings preview — see the <a class="inline" href="managers.html">Manager Bios</a> directory.</p>
+    <p>Some examples: <a class="inline" href="warren-buffett-portfolio.html">Warren Buffett</a>, <a class="inline" href="stanley-druckenmiller-portfolio.html">Stanley Druckenmiller</a>, <a class="inline" href="bill-ackman-portfolio.html">Bill Ackman</a>, <a class="inline" href="michael-burry-portfolio.html">Michael Burry</a>.</p>
+  </div>
+
+  <!-- Section 7 -->
+  <div class="edu-section" id="overlap">
+    <h2>What stocks do multiple hedge funds own in common?</h2>
+    <p>13FAI offers three tools for this. The <a class="inline" href="top-holdings.html">Top Holdings</a> page ranks stocks by aggregate hedge fund ownership value and shows how many tracked funds hold each stock. The <a class="inline" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a> page shows which stocks the most funds are buying or selling this quarter. The <a class="inline" href="portfolio-overlap.html">Fund Comparison</a> tool lets you select up to 5 specific funds and see exactly which holdings they share.</p>
+  </div>
+
+  <!-- Section 8 -->
+  <div class="edu-section" id="filing-dates">
+    <h2>When are 13F filings due?</h2>
+    <p>13F filings are due within 45 days of each quarter end date:</p>
+    <p>
+      <strong>Q1 (March 31)</strong> → due by mid-May<br/>
+      <strong>Q2 (June 30)</strong> → due by mid-August<br/>
+      <strong>Q3 (September 30)</strong> → due by mid-November<br/>
+      <strong>Q4 (December 31)</strong> → due by mid-February
+    </p>
+    <p>Different funds file at different times within this 45-day window — some file on day 1, others wait until the deadline. The <a class="inline" href="filing-calendar.html">13F Filing Calendar</a> shows the most recent filed date and next expected filing date for every tracked fund.</p>
+    <div class="callout">
+      <p>13FAI's RSS monitor checks SEC EDGAR daily and automatically fetches new filings as they are submitted — so data typically appears on the site within 24 hours of a fund filing.</p>
+    </div>
+  </div>
+
+  <!-- Section 9 -->
+  <div class="edu-section" id="concentration">
+    <h2>Which hedge funds have the most concentrated portfolios?</h2>
+    <p>Concentration varies widely across the funds tracked on 13FAI. Highly concentrated funds — those with a large share of assets in just a few positions — include Pershing Square Capital Management, Scion Asset Management, RV Capital, and Greenlea Lane Capital. These funds typically hold fewer than 15 positions with their top 3 holdings representing 50% or more of the portfolio.</p>
+    <p>More diversified funds like Causeway Capital, Ariel Investments, and Dodge &amp; Cox typically hold 30–80 positions with lower individual weights. Each fund page shows the top 3 and top 5 holding weights in the insights summary, making it easy to assess concentration at a glance.</p>
+  </div>
+
+  <!-- Section 10 -->
+  <div class="edu-section" id="chg-columns">
+    <h2>What do the shares vs prior quarter and prior year columns mean?</h2>
+    <p>The <strong>Shares vs Prior Quarter</strong> column shows the percentage change in the number of shares held compared to the immediately preceding quarter. A value of +25% means the fund bought 25% more shares than it held last quarter. A value of -50% means it sold half its position. NEW indicates the position did not exist in the prior quarter. EXITED means the position was held last quarter but is gone now.</p>
+    <p>The <strong>Shares vs Prior Year</strong> column compares to the same quarter one year ago — Q1 2026 vs Q1 2025, for example. This smooths out short-term noise and shows longer-term conviction. A position that has grown 200% year-over-year indicates sustained accumulation over multiple quarters.</p>
+    <div class="callout">
+      <p>Both columns are share-based, not value-based. This is intentional — share count changes reflect actual buying and selling decisions, whereas value changes can be driven purely by price movements with no trading activity.</p>
+    </div>
+  </div>
 
 </main>
 <footer>
