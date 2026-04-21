@@ -6,7 +6,7 @@ import os
 import time
 from datetime import datetime, timezone, timedelta
 
-HEADERS = {"User-Agent": "nadermassoudi@aol.com"}
+HEADERS = {"User-Agent": "13fai@proton.me"}
 LOOKBACK_DAYS = 2  # ignore filings older than this
 
 # count=100 is the SEC maximum
