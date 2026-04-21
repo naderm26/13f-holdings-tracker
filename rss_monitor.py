@@ -4,8 +4,10 @@ import urllib.error
 import json
 import os
 import time
+from datetime import datetime, timezone, timedelta
 
 HEADERS = {"User-Agent": "nadermassoudi@aol.com"}
+LOOKBACK_DAYS = 2  # ignore filings older than this
 
 # count=100 is the SEC maximum
 RSS_URLS = [
@@ -46,6 +48,8 @@ def parse_rss_filings(url, form_type):
     SEC Atom entry format:
       <link href="https://www.sec.gov/Archives/edgar/data/{CIK}/..."/>
       <summary> <b>Filed:</b> 2026-04-20 <b>AccNo:</b> 0001234567-26-000001 <b>Size:</b> 70 KB </summary>
+      <updated>2026-04-20T00:00:00-04:00</updated>
+    Only includes filings from the last LOOKBACK_DAYS days.
     """
     print(f"\nFetching {form_type} feed...")
     text = fetch_url(url)
@@ -58,11 +62,20 @@ def parse_rss_filings(url, form_type):
     entries = entries[1:]  # drop feed header before first entry
     print(f"  Found {len(entries)} entries")
 
-    if entries:
-        print(f"  First entry preview: {repr(entries[0][:300])}")
+    cutoff = datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)
+    print(f"  Cutoff date: {cutoff.strftime('%Y-%m-%d')} (lookback {LOOKBACK_DAYS} days)")
 
     filings = []
+    skipped_old = 0
     for entry in entries:
+        # Check filing date — <updated>2026-04-20T...</updated>
+        date_match = re.search(r'<updated>(\d{4}-\d{2}-\d{2})', entry)
+        if date_match:
+            filed_date = datetime.strptime(date_match.group(1), "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            if filed_date < cutoff:
+                skipped_old += 1
+                continue
+
         # CIK from link href: /edgar/data/{CIK}/
         cik_match = re.search(r'/edgar/data/(\d+)/', entry)
         if not cik_match:
@@ -76,7 +89,7 @@ def parse_rss_filings(url, form_type):
         acc = acc_match.group(1).replace("-", "")
         filings.append((cik, acc, form_type))
 
-    print(f"  Parsed {len(filings)} filings")
+    print(f"  Parsed {len(filings)} filings within lookback window ({skipped_old} older entries skipped)")
     return filings
 
 def trigger_fetch_workflow(repo, token):
@@ -106,7 +119,7 @@ for url, form_type in RSS_URLS:
     all_filings.extend(results)
     time.sleep(1)
 
-print(f"\nTotal filings across both feeds: {len(all_filings)}")
+print(f"\nTotal filings in lookback window: {len(all_filings)}")
 
 tracked_in_feed = [(cik, ftype) for cik, _, ftype in all_filings if cik in tracked]
 if tracked_in_feed:
