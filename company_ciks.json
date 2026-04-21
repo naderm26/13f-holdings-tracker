@@ -1,0 +1,402 @@
+{
+  "NVDA": {
+    "cik": "0001045810",
+    "name": "NVIDIA CORP"
+  },
+  "AAPL": {
+    "cik": "0000320193",
+    "name": "Apple Inc."
+  },
+  "MSFT": {
+    "cik": "0000789019",
+    "name": "MICROSOFT CORP"
+  },
+  "GOOGL": {
+    "cik": "0001652044",
+    "name": "Alphabet Inc."
+  },
+  "GOOG": {
+    "cik": "0001652044",
+    "name": "Alphabet Inc."
+  },
+  "AMZN": {
+    "cik": "0001018724",
+    "name": "AMAZON COM INC"
+  },
+  "META": {
+    "cik": "0001326801",
+    "name": "Meta Platforms, Inc."
+  },
+  "TSLA": {
+    "cik": "0001318605",
+    "name": "Tesla, Inc."
+  },
+  "BRK.B": {
+    "cik": "0001067983",
+    "name": "BERKSHIRE HATHAWAY INC"
+  },
+  "WMT": {
+    "cik": "0000104169",
+    "name": "Walmart Inc."
+  },
+  "LLY": {
+    "cik": "0000059478",
+    "name": "ELI LILLY & Co"
+  },
+  "JPM": {
+    "cik": "0000019617",
+    "name": "JPMORGAN CHASE & CO"
+  },
+  "V": {
+    "cik": "0001403161",
+    "name": "VISA INC."
+  },
+  "XOM": {
+    "cik": "0000034088",
+    "name": "EXXON MOBIL CORP"
+  },
+  "MA": {
+    "cik": "0001141391",
+    "name": "Mastercard Inc"
+  },
+  "AVGO": {
+    "cik": "0001730168",
+    "name": "Broadcom Inc."
+  },
+  "HD": {
+    "cik": "0000354950",
+    "name": "HOME DEPOT, INC."
+  },
+  "JNJ": {
+    "cik": "0000200406",
+    "name": "JOHNSON & JOHNSON"
+  },
+  "COST": {
+    "cik": "0000909832",
+    "name": "COSTCO WHOLESALE CORP /NEW"
+  },
+  "PG": {
+    "cik": "0000080424",
+    "name": "PROCTER & GAMBLE Co"
+  },
+  "ABBV": {
+    "cik": "0001551152",
+    "name": "AbbVie Inc."
+  },
+  "MRK": {
+    "cik": "0000310158",
+    "name": "Merck & Co., Inc."
+  },
+  "CVX": {
+    "cik": "0000093410",
+    "name": "CHEVRON CORP"
+  },
+  "KO": {
+    "cik": "0000021344",
+    "name": "COCA COLA CO"
+  },
+  "NFLX": {
+    "cik": "0001065280",
+    "name": "NETFLIX INC"
+  },
+  "AMD": {
+    "cik": "0000002488",
+    "name": "ADVANCED MICRO DEVICES INC"
+  },
+  "BAC": {
+    "cik": "0000070858",
+    "name": "BANK OF AMERICA CORP /DE/"
+  },
+  "GE": {
+    "cik": "0000040545",
+    "name": "GENERAL ELECTRIC CO"
+  },
+  "CSCO": {
+    "cik": "0000858877",
+    "name": "CISCO SYSTEMS, INC."
+  },
+  "CRM": {
+    "cik": "0001108524",
+    "name": "Salesforce, Inc."
+  },
+  "IBM": {
+    "cik": "0000051143",
+    "name": "INTERNATIONAL BUSINESS MACHINES CORP"
+  },
+  "LIN": {
+    "cik": "0001707925",
+    "name": "LINDE PLC"
+  },
+  "RTX": {
+    "cik": "0000101829",
+    "name": "RTX Corp"
+  },
+  "GS": {
+    "cik": "0000886982",
+    "name": "GOLDMAN SACHS GROUP INC"
+  },
+  "MS": {
+    "cik": "0000895421",
+    "name": "MORGAN STANLEY"
+  },
+  "NOW": {
+    "cik": "0001373715",
+    "name": "ServiceNow, Inc."
+  },
+  "TMO": {
+    "cik": "0000097745",
+    "name": "THERMO FISHER SCIENTIFIC INC."
+  },
+  "PEP": {
+    "cik": "0000077476",
+    "name": "PEPSICO INC"
+  },
+  "NEE": {
+    "cik": "0000753308",
+    "name": "NEXTERA ENERGY INC"
+  },
+  "ISRG": {
+    "cik": "0001035267",
+    "name": "INTUITIVE SURGICAL INC"
+  },
+  "MCD": {
+    "cik": "0000063908",
+    "name": "MCDONALDS CORP"
+  },
+  "T": {
+    "cik": "0000732717",
+    "name": "AT&T INC."
+  },
+  "TXN": {
+    "cik": "0000097476",
+    "name": "TEXAS INSTRUMENTS INC"
+  },
+  "CAT": {
+    "cik": "0000018230",
+    "name": "CATERPILLAR INC"
+  },
+  "VZ": {
+    "cik": "0000732712",
+    "name": "VERIZON COMMUNICATIONS INC"
+  },
+  "PM": {
+    "cik": "0001413329",
+    "name": "Philip Morris International Inc."
+  },
+  "WFC": {
+    "cik": "0000072971",
+    "name": "WELLS FARGO & COMPANY/MN"
+  },
+  "DIS": {
+    "cik": "0001744489",
+    "name": "Walt Disney Co"
+  },
+  "UNH": {
+    "cik": "0000731766",
+    "name": "UNITEDHEALTH GROUP INC"
+  },
+  "LOW": {
+    "cik": "0000060667",
+    "name": "LOWES COMPANIES INC"
+  },
+  "GEV": {
+    "cik": "0001996810",
+    "name": "GE Vernova Inc."
+  },
+  "QCOM": {
+    "cik": "0000804328",
+    "name": "QUALCOMM INC/DE"
+  },
+  "ABT": {
+    "cik": "0000001800",
+    "name": "ABBOTT LABORATORIES"
+  },
+  "DHR": {
+    "cik": "0000313616",
+    "name": "DANAHER CORP /DE/"
+  },
+  "CB": {
+    "cik": "0000896159",
+    "name": "Chubb Ltd"
+  },
+  "ACN": {
+    "cik": "0001467373",
+    "name": "Accenture plc"
+  },
+  "HON": {
+    "cik": "0000773840",
+    "name": "HONEYWELL INTERNATIONAL INC"
+  },
+  "SPGI": {
+    "cik": "0000064040",
+    "name": "S&P Global Inc."
+  },
+  "INTU": {
+    "cik": "0000896878",
+    "name": "INTUIT INC."
+  },
+  "ETN": {
+    "cik": "0001551182",
+    "name": "Eaton Corp plc"
+  },
+  "TJX": {
+    "cik": "0000109198",
+    "name": "TJX COMPANIES INC /DE/"
+  },
+  "BLK": {
+    "cik": "0002012383",
+    "name": "BlackRock, Inc."
+  },
+  "SYK": {
+    "cik": "0000310764",
+    "name": "STRYKER CORP"
+  },
+  "BKNG": {
+    "cik": "0001075531",
+    "name": "Booking Holdings Inc."
+  },
+  "PGR": {
+    "cik": "0000080661",
+    "name": "PROGRESSIVE CORP/OH/"
+  },
+  "MDT": {
+    "cik": "0001613103",
+    "name": "Medtronic plc"
+  },
+  "PLD": {
+    "cik": "0001045609",
+    "name": "Prologis, Inc."
+  },
+  "ANET": {
+    "cik": "0001596532",
+    "name": "Arista Networks, Inc."
+  },
+  "ADI": {
+    "cik": "0000006281",
+    "name": "ANALOG DEVICES INC"
+  },
+  "COP": {
+    "cik": "0001163165",
+    "name": "CONOCOPHILLIPS"
+  },
+  "CME": {
+    "cik": "0001156375",
+    "name": "CME GROUP INC."
+  },
+  "SCHW": {
+    "cik": "0000316709",
+    "name": "SCHWAB CHARLES CORP"
+  },
+  "MO": {
+    "cik": "0000764180",
+    "name": "ALTRIA GROUP, INC."
+  },
+  "GILD": {
+    "cik": "0000882095",
+    "name": "GILEAD SCIENCES, INC."
+  },
+  "BMY": {
+    "cik": "0000014272",
+    "name": "BRISTOL MYERS SQUIBB CO"
+  },
+  "HCA": {
+    "cik": "0000860730",
+    "name": "HCA Healthcare, Inc."
+  },
+  "PANW": {
+    "cik": "0001327567",
+    "name": "Palo Alto Networks Inc"
+  },
+  "LRCX": {
+    "cik": "0000707549",
+    "name": "LAM RESEARCH CORP"
+  },
+  "TMUS": {
+    "cik": "0001283699",
+    "name": "T-Mobile US, Inc."
+  },
+  "NEM": {
+    "cik": "0001164727",
+    "name": "NEWMONT Corp /DE/"
+  },
+  "SO": {
+    "cik": "0000092122",
+    "name": "SOUTHERN CO"
+  },
+  "SBUX": {
+    "cik": "0000829224",
+    "name": "STARBUCKS CORP"
+  },
+  "CEG": {
+    "cik": "0001868275",
+    "name": "Constellation Energy Corp"
+  },
+  "COF": {
+    "cik": "0000927628",
+    "name": "CAPITAL ONE FINANCIAL CORP"
+  },
+  "VRTX": {
+    "cik": "0000875320",
+    "name": "VERTEX PHARMACEUTICALS INC / MA"
+  },
+  "DUK": {
+    "cik": "0001326160",
+    "name": "Duke Energy CORP"
+  },
+  "MCK": {
+    "cik": "0000927653",
+    "name": "MCKESSON CORP"
+  },
+  "NOC": {
+    "cik": "0001133421",
+    "name": "NORTHROP GRUMMAN CORP /DE/"
+  },
+  "AMAT": {
+    "cik": "0000006951",
+    "name": "APPLIED MATERIALS INC /DE"
+  },
+  "PH": {
+    "cik": "0000076334",
+    "name": "Parker-Hannifin Corp"
+  },
+  "APH": {
+    "cik": "0000820313",
+    "name": "AMPHENOL CORP /DE/"
+  },
+  "BA": {
+    "cik": "0000012927",
+    "name": "BOEING CO"
+  },
+  "UBER": {
+    "cik": "0001543151",
+    "name": "Uber Technologies, Inc"
+  },
+  "DE": {
+    "cik": "0000315189",
+    "name": "DEERE & CO"
+  },
+  "WELL": {
+    "cik": "0000766704",
+    "name": "WELLTOWER INC."
+  },
+  "BSX": {
+    "cik": "0000885725",
+    "name": "BOSTON SCIENTIFIC CORP"
+  },
+  "CMCSA": {
+    "cik": "0001166691",
+    "name": "COMCAST CORP"
+  },
+  "CRWD": {
+    "cik": "0001535527",
+    "name": "CrowdStrike Holdings, Inc."
+  },
+  "AXP": {
+    "cik": "0000004962",
+    "name": "AMERICAN EXPRESS CO"
+  },
+  "MCO": {
+    "cik": "0001059556",
+    "name": "MOODYS CORP /DE/"
+  }
+}
