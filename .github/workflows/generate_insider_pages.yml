@@ -1,0 +1,36 @@
+name: Generate Insider Pages
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/insiders/**'
+      - 'insider_index.json'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate insider pages
+        run: python generate_insider_pages.py
+
+      - name: Commit results
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add insiders/
+          git diff --cached --quiet && echo "No changes" && exit 0
+          git commit -m "chore: regenerate insider trading pages"
+          git push
