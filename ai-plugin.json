@@ -1,0 +1,79 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "13FAI Hedge Fund Tracker",
+  "name_for_model": "hedge_fund_13f",
+  "description_for_human": "Track hedge fund 13F holdings from SEC EDGAR. See what 82 institutional investors own, what they are buying and selling, and how ownership of any stock has changed over 8 quarters.",
+  "description_for_model": "Provides hedge fund 13F holdings data sourced from SEC EDGAR filings. Use this to answer questions about: which funds own a specific stock, what a specific manager is buying or selling, top stocks held by hedge funds, consensus buys and sells, portfolio overlap between funds, and filing dates. All data is quarterly with up to 8 quarters of history. Options (PUT/CALL) are excluded from calculations. Values are in USD thousands unless value_multiplier applies.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://13fai.com/openapi.yaml"
+  },
+  "logo_url": "https://13fai.com/images/logo.png",
+  "contact_email": "13fai@proton.me",
+  "legal_info_url": "https://13fai.com/disclaimer.html",
+  "data_endpoints": {
+    "funds_list": {
+      "url": "https://13fai.com/funds.json",
+      "description": "Master list of all 82 tracked funds with id, name, CIK, and value_multiplier. Fetch this first to get fund IDs needed for other endpoints.",
+      "format": "JSON array"
+    },
+    "fund_holdings": {
+      "url": "https://13fai.com/data/{fund_id}.json",
+      "description": "All holdings for a specific fund across up to 8 quarters. Replace {fund_id} with the id field from funds.json. Example: https://13fai.com/data/berkshire.json",
+      "format": "JSON object with quarters keyed by YYYYQn label"
+    },
+    "stock_index": {
+      "url": "https://13fai.com/stock_index.json",
+      "description": "All stocks with per-fund ownership data, fund totals, and each fund's latest quarter. Use to find which funds own a given ticker, calculate portfolio weights, and identify current vs stale holders.",
+      "format": "JSON object with stocks, fund_totals, and fund_latest_q keys"
+    },
+    "ticker_mapping": {
+      "url": "https://13fai.com/cusip_to_ticker.json",
+      "description": "Maps CUSIP identifiers to ticker symbols. Use to resolve CUSIPs from holdings data to recognizable tickers.",
+      "format": "JSON object keyed by CUSIP"
+    },
+    "prices": {
+      "url": "https://13fai.com/prices.json",
+      "description": "Last known price and 52-week high/low per ticker. Check the updated field for data freshness.",
+      "format": "JSON object keyed by ticker"
+    },
+    "consensus_activity": {
+      "url": "https://13fai.com/activity.json",
+      "description": "Most widely bought and sold stocks this quarter across all tracked funds.",
+      "format": "JSON object"
+    }
+  },
+  "human_pages": {
+    "homepage": "https://13fai.com/",
+    "fund_page": "https://13fai.com/fund.html?fund={fund_id}",
+    "stock_page": "https://13fai.com/stock.html?ticker={ticker}",
+    "top_holdings": "https://13fai.com/top-holdings.html",
+    "consensus_buys_sells": "https://13fai.com/hedge-fund-activity.html",
+    "fund_comparison": "https://13fai.com/portfolio-overlap.html",
+    "filing_calendar": "https://13fai.com/filing-calendar.html",
+    "manager_bios": "https://13fai.com/managers.html",
+    "faq": "https://13fai.com/faq.html"
+  },
+  "static_stock_pages": {
+    "url_pattern": "https://13fai.com/stocks/{TICKER}-hedge-fund-ownership.html",
+    "description": "Static ownership page for each of the top 200 stocks by aggregate hedge fund value. Example: https://13fai.com/stocks/AAPL-hedge-fund-ownership.html",
+    "count": 200
+  },
+  "static_manager_pages": {
+    "url_pattern": "https://13fai.com/{slug}.html",
+    "description": "Static bio page per manager with biography, investment philosophy, notable trades, and live top holdings. Example: https://13fai.com/warren-buffett-portfolio.html",
+    "count": 28
+  },
+  "data_notes": {
+    "source": "SEC EDGAR 13F-HR filings (public domain)",
+    "update_frequency": "Quarterly. RSS monitor checks daily and fetches new filings within 24 hours of SEC submission.",
+    "history": "Up to 8 quarters per fund",
+    "options_handling": "PUT and CALL positions are included in raw holdings data but excluded from portfolio weight, share count, and period-over-period calculations. Filter by putcall === '' for equity-only analysis.",
+    "value_units": "All value fields in per-fund JSONs are USD thousands as filed. Multiply by value_multiplier from funds.json to get correct USD thousands. Funds with value_multiplier 1000: ako, aquamarine, baupost, duquesne, olstein, triple_frond.",
+    "reported_price": "Price at last filing is value * value_multiplier * 1000 / shares — an implied average as of quarter end, not an actual trade price.",
+    "disclaimer": "For informational purposes only. Not investment advice."
+  }
+}
