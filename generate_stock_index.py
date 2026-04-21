@@ -31,7 +31,7 @@ for fund in funds:
         fund_data = json.load(f)
 
     quarters = fund_data.get("quarters", {})
-    recent_quarters = sorted(quarters.keys(), reverse=True)[:8]
+    recent_quarters = sorted(quarters.keys(), reverse=True)  # no cap — full history indexed
     if recent_quarters:
         fund_latest_q[fund_id] = recent_quarters[0]
 
