@@ -8,7 +8,7 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 28  # script self-limits at 25 min; 28 gives 3 min buffer for setup/commit
 
     permissions:
       contents: write
