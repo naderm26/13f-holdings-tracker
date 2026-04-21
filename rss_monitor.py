@@ -1,17 +1,15 @@
 import re
 import urllib.request
 import urllib.error
-import xml.etree.ElementTree as ET
 import json
 import os
 import time
 
 HEADERS = {"User-Agent": "nadermassoudi@aol.com"}
 
-# Two RSS URLs — one for original filings, one for amendments
-# count=100 is the SEC maximum — largest possible window to avoid missing filings
+# count=100 is the SEC maximum
 RSS_URLS = [
-    ("https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=13F-HR&dateb=&owner=include&count=100&search_text=&output=atom",    "13F-HR"),
+    ("https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=13F-HR&dateb=&owner=include&count=100&search_text=&output=atom", "13F-HR"),
     ("https://www.sec.gov/cgi-bin/browse-edgar?action=getcurrent&type=13F-HR%2FA&dateb=&owner=include&count=100&search_text=&output=atom", "13F-HR/A"),
 ]
 
@@ -20,16 +18,11 @@ def fetch_url(url, retries=3):
     for attempt in range(retries):
         try:
             response = urllib.request.urlopen(req, timeout=30)
-            data = response.read()
-            print(f"  HTTP {response.status} — {len(data)} bytes received")
+            data = response.read().decode("utf-8", errors="replace")
+            print(f"  HTTP {response.status} — {len(data)} chars received")
             return data
         except urllib.error.HTTPError as e:
-            body_preview = ""
-            try:
-                body_preview = e.read()[:300].decode("utf-8", errors="replace")
-            except Exception:
-                pass
-            print(f"  HTTP {e.code} error — body preview: {body_preview}")
+            print(f"  HTTPError {e.code}: {e.reason}")
             if e.code == 429:
                 wait = 10 * (attempt + 1)
                 print(f"  Rate limited, waiting {wait}s...")
@@ -37,7 +30,7 @@ def fetch_url(url, retries=3):
             else:
                 time.sleep(3)
         except Exception as e:
-            print(f"  Error (attempt {attempt+1}): {e}")
+            print(f"  Error (attempt {attempt+1}): {type(e).__name__}: {e}")
             time.sleep(3)
     print(f"  All retries exhausted.")
     return None
@@ -47,82 +40,46 @@ def get_tracked_ciks():
         funds = json.load(f)
     return {str(int(fund["cik"])): fund for fund in funds}
 
-def strip_ns(tag):
-    """Strip XML namespace from a tag, e.g. '{http://...}entry' -> 'entry'."""
-    return tag.split("}")[-1] if "}" in tag else tag
-
 def parse_rss_filings(url, form_type):
-    """Fetch one RSS feed and return list of (cik, accession, form_type) tuples."""
+    """
+    Parse SEC RSS feed using simple regex on raw text.
+    SEC Atom entry format:
+      <link href="https://www.sec.gov/Archives/edgar/data/{CIK}/..."/>
+      <summary> <b>Filed:</b> 2026-04-20 <b>AccNo:</b> 0001234567-26-000001 <b>Size:</b> 70 KB </summary>
+    """
     print(f"\nFetching {form_type} feed...")
-    data = fetch_url(url)
-    if not data:
-        print(f"  ERROR: fetch returned nothing for {form_type} feed")
+    text = fetch_url(url)
+    if not text:
+        print(f"  ERROR: fetch returned nothing")
         return []
 
-    try:
-        root = ET.fromstring(data)
-    except ET.ParseError as e:
-        print(f"  ERROR: failed to parse XML — {e}")
-        print(f"  Raw response preview: {data[:300].decode('utf-8', errors='replace')}")
-        return []
+    # Split into individual entry blocks
+    entries = re.split(r'<entry[\s>]', text)
+    entries = entries[1:]  # drop feed header before first entry
+    print(f"  Found {len(entries)} entries")
 
-    print(f"  Root tag: {root.tag}")
-
-    # Namespace-agnostic entry search — strips namespace prefix before comparing
-    # Handles both namespaced ({http://www.w3.org/2005/Atom}entry) and bare (entry) tags
-    entries = [child for child in root if strip_ns(child.tag) == "entry"]
-    print(f"  Found {len(entries)} entries (namespace-agnostic)")
-
-    # Debug: show tags and raw summary of first entry
     if entries:
-        first_tags = [strip_ns(c.tag) for c in entries[0]]
-        print(f"  First entry child tags: {first_tags}")
-        first_summary = next((c for c in entries[0] if strip_ns(c.tag) in ("content", "summary")), None)
-        if first_summary is not None:
-            print(f"  First entry summary text: {repr((first_summary.text or '')[:300])}")
-        first_link = next((c for c in entries[0] if strip_ns(c.tag) == "link"), None)
-        if first_link is not None:
-            print(f"  First entry link href: {first_link.get('href', 'none')}")
-    if len(entries) == 0:
-        # Show first 500 chars of raw feed to help diagnose
-        print(f"  Raw feed preview: {data[:500].decode('utf-8', errors='replace')}")
+        print(f"  First entry preview: {repr(entries[0][:300])}")
 
     filings = []
     for entry in entries:
-        # Find link element (namespace-agnostic)
-        link = next((c for c in entry if strip_ns(c.tag) == "link"), None)
-        if link is None:
-            continue
-        href = link.get("href", "")
-
-        # CIK is in the URL path: /Archives/edgar/data/{CIK}/...
-        cik_match = re.search(r'/edgar/data/(\d+)/', href)
+        # CIK from link href: /edgar/data/{CIK}/
+        cik_match = re.search(r'/edgar/data/(\d+)/', entry)
         if not cik_match:
             continue
-        try:
-            cik = str(int(cik_match.group(1)))
-        except ValueError:
-            continue
+        cik = str(int(cik_match.group(1)))
 
-        # Find summary element (namespace-agnostic)
-        # SEC format: <b>Filed:</b> 2026-04-20 <b>AccNo:</b> 0001234567-26-000001 <b>Size:</b> 70 KB
-        summary = next((c for c in entry if strip_ns(c.tag) in ("content", "summary")), None)
-        if summary is None:
-            continue
-        text = summary.text or ""
-
-        # Extract accession number — SEC uses "AccNo:" label
-        acc_match = re.search(r'AccNo:\s*([\d]{10}-[\d]{2}-[\d]{6})', text)
+        # Accession number after AccNo:
+        acc_match = re.search(r'AccNo[^0-9]*(\d{10}-\d{2}-\d{6})', entry)
         if not acc_match:
             continue
         acc = acc_match.group(1).replace("-", "")
         filings.append((cik, acc, form_type))
 
-    print(f"  Parsed {len(filings)} filings with accession numbers")
+    print(f"  Parsed {len(filings)} filings")
     return filings
 
 def trigger_fetch_workflow(repo, token):
-    """Trigger fetch2.yml via GitHub API."""
     url = f"https://api.github.com/repos/{repo}/actions/workflows/fetch2.yml/dispatches"
     payload = json.dumps({"ref": "main"}).encode()
     req = urllib.request.Request(url, data=payload, headers={
@@ -143,20 +100,17 @@ print("Checking SEC RSS feed for new 13F-HR and 13F-HR/A filings...")
 tracked = get_tracked_ciks()
 print(f"Tracking {len(tracked)} funds")
 
-# Collect filings from both feeds
 all_filings = []
 for url, form_type in RSS_URLS:
     results = parse_rss_filings(url, form_type)
-    print(f"  {form_type}: {len(results)} filings parsed")
     all_filings.extend(results)
     time.sleep(1)
 
 print(f"\nTotal filings across both feeds: {len(all_filings)}")
 
-# Log all tracked fund CIKs seen in feed
 tracked_in_feed = [(cik, ftype) for cik, _, ftype in all_filings if cik in tracked]
 if tracked_in_feed:
-    print("Tracked fund CIKs seen in feed:")
+    print("Tracked funds seen in feed:")
     for cik, ftype in tracked_in_feed:
         print(f"  {ftype}: {tracked[cik]['name']} (CIK: {cik})")
 else:
@@ -180,13 +134,13 @@ for cik, accession, form_type in all_filings:
     print(f"\n{label} detected: {fund['name']} (CIK: {cik}, form: {form_type}, accession: {accession})")
 
     if form_type == "13F-HR/A":
-        print(f"  → Amendment. fetch_data.py will overwrite prior data for that period.")
+        print(f"  -> Amendment. fetch_data.py will overwrite prior data for that period.")
 
     with open(marker, "w") as f:
         f.write(f"{form_type}:{accession}")
 
     new_filing_found = True
-    break  # one trigger per run is enough
+    break
 
 if new_filing_found:
     repo  = os.environ.get("GITHUB_REPOSITORY", "")
@@ -198,6 +152,5 @@ if new_filing_found:
 else:
     print("\nNo new filings found for tracked funds.")
 
-# Save result for workflow step
 with open("rss_check_result.txt", "w") as f:
     f.write("triggered" if new_filing_found else "none")
