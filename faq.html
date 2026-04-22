@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -120,6 +121,46 @@
           "@type": "Answer",
           "text": "Shares vs prior quarter shows the percentage change in shares held compared to the immediately preceding quarter — a measure of recent activity. Shares vs prior year compares to the same quarter one year ago, smoothing short-term noise to show the longer-term trend. Both metrics exclude options (PUT/CALL) positions."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "What is a Form 4 filing?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A Form 4 is an SEC filing that corporate insiders — officers, directors, and owners of more than 10% of a company's shares — must submit within two business days of any transaction in their company's stock. It discloses the transaction type, number of shares, price, and the insider's total ownership after the trade."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does it mean when a CEO buys stock?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "An open market purchase by a CEO or other executive is widely considered a bullish signal. Insiders have the best knowledge of their company's prospects, and spending personal money to buy shares at market prices indicates genuine conviction."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How is insider trading data different from 13F hedge fund data?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "13F filings are filed quarterly by institutional investors managing over $100M and show their entire equity portfolio. Form 4 insider filings are filed within 2 business days of any transaction by corporate insiders. 13F data tells you what smart money funds own; Form 4 data tells you what company executives are personally buying and selling."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are all insider transactions a signal worth following?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. Only open market purchases (code P) and open market sales (code S) are meaningful signals. Awards, option exercises, and tax withholding sales are automatic or mechanical transactions. 13FAI filters to show only open market buys and sells."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What does it mean when hedge funds and insiders are both buying the same stock?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "When both institutional investors (via 13F filings) and corporate insiders (via Form 4 filings) are increasing exposure to the same stock, it is considered a strong convergence signal. Institutional investors bring external analytical rigor; insiders bring internal knowledge. Alignment between the two is historically associated with positive stock performance."
+        }
       }
     ]
   }
@@ -233,6 +274,11 @@
     <a href="#filing-dates">When are 13F filings due?</a>
     <a href="#concentration">Which funds have the most concentrated portfolios?</a>
     <a href="#chg-columns">What do the shares vs prior quarter and prior year columns mean?</a>
+    <a href="#form4">What is a Form 4 filing?</a>
+    <a href="#ceo-buying">What does it mean when a CEO buys stock?</a>
+    <a href="#insider-vs-13f">How is insider data different from 13F data?</a>
+    <a href="#insider-signals">Which insider transactions are worth following?</a>
+    <a href="#convergence">What does it mean when hedge funds and insiders both buy?</a>
   </nav>
 
   <!-- Section 1 -->
@@ -326,6 +372,50 @@
     <div class="callout">
       <p>Both columns are share-based, not value-based. This is intentional — share count changes reflect actual buying and selling decisions, whereas value changes can be driven purely by price movements with no trading activity.</p>
     </div>
+  </div>
+
+
+  <hr class="divider"/>
+
+  <!-- Section: Insider Trading -->
+  <div class="edu-section" id="form4">
+    <h2>What is a Form 4 filing?</h2>
+    <p>A Form 4 is an SEC filing that corporate insiders — officers, directors, and owners of more than 10% of a company's shares — must submit within two business days of any transaction in their company's stock. It discloses the transaction type, number of shares, price paid, and the insider's total ownership after the trade.</p>
+    <p>Form 4 filings are public record on <a class="inline" href="https://www.sec.gov" target="_blank" rel="noopener">SEC EDGAR</a>. 13FAI tracks open market purchases and sales across the top 100 S&P 500 companies and displays them alongside hedge fund holdings data on each stock page.</p>
+    <div class="callout">
+      <p>Form 4 filings must be submitted within <strong>2 business days</strong> of the transaction — far more timely than 13F filings, which can be up to 45 days old when they become public.</p>
+    </div>
+  </div>
+
+  <div class="edu-section" id="ceo-buying">
+    <h2>What does it mean when a CEO buys stock?</h2>
+    <p>An open market purchase by a CEO or other executive is widely considered a bullish signal. Unlike awards or option exercises — which are automatic or contractual — an open market purchase means the insider spent their own money at prevailing market prices. It signals genuine personal conviction that the stock is undervalued.</p>
+    <p>The signal is strongest when the purchase is large relative to the insider's existing holdings, multiple insiders buy simultaneously, or the purchase follows a period of significant stock price weakness. A single small purchase by a minor director carries less weight than a major purchase by the CEO.</p>
+  </div>
+
+  <div class="edu-section" id="insider-vs-13f">
+    <h2>How is insider trading data different from 13F hedge fund data?</h2>
+    <p><strong>13F filings</strong> are filed quarterly by institutional investors managing over $100M. They show the fund's entire equity portfolio as a snapshot at quarter end — what they own, how much, and how it changed vs the prior quarter.</p>
+    <p><strong>Form 4 insider filings</strong> are filed within 2 business days of any transaction by corporate insiders. They show individual trades by people with direct knowledge of the company's operations and prospects.</p>
+    <p>13F data tells you what sophisticated outside investors own. Form 4 data tells you what the people running the company are personally doing with their own money. Both are valuable independently — and especially powerful when they point in the same direction.</p>
+    <div class="callout">
+      <p>On 13FAI, each stock page shows both hedge fund ownership and recent insider transactions, making it easy to see whether institutional and insider conviction are aligned.</p>
+    </div>
+  </div>
+
+  <div class="edu-section" id="insider-signals">
+    <h2>Which insider transactions are worth following?</h2>
+    <p>Only two transaction types represent genuine discretionary decisions worth tracking.</p>
+    <p><strong>Open market purchases (code P)</strong> — the insider bought shares at market price with their own money. This is the strongest bullish signal and the one most associated with positive forward returns.</p>
+    <p><strong>Open market sales (code S)</strong> — the insider sold shares at market price. This can indicate bearishness but often reflects personal financial planning, diversification, or pre-scheduled selling plans (10b5-1 plans), so it carries less weight than a purchase.</p>
+    <p>Transactions to ignore: stock awards (A), option exercises (M), and tax withholding sales (F) are mechanical or contractual and tell you nothing about the insider's view of the stock. 13FAI filters these out and shows only open market buys and sells.</p>
+  </div>
+
+  <div class="edu-section" id="convergence">
+    <h2>What does it mean when hedge funds and insiders are both buying the same stock?</h2>
+    <p>This convergence is one of the most compelling signals in public market data. Institutional investors bring rigorous external analysis — studying financials, competitive dynamics, and valuation from the outside. Corporate insiders bring direct internal knowledge — they know the pipeline, customer relationships, and operational reality better than any outside analyst.</p>
+    <p>When both groups are independently increasing their exposure to the same stock, the alignment of external analysis and internal conviction is historically associated with strong forward performance. It narrows the field of stocks worth researching further.</p>
+    <p>Use 13FAI's stock pages to see both data points side by side — hedge fund holdings and recent insider transactions in one view. You can also see consensus activity across all tracked stocks on the <a class="inline" href="insider-activity.html">Insider Trading</a> page.</p>
   </div>
 
 </main>
