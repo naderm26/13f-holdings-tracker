@@ -246,7 +246,7 @@
     <div class="side-nav-inner">
       <div class="side-nav-label">Jump to</div>
       <a class="side-nav-link active" href="#sec-funds" id="nav-funds">Fund Holdings</a>
-      <a class="side-nav-link" href="#sec-insider" id="nav-insider">Insider Trading</a>
+      <a class="side-nav-link" href="#sec-insider" id="nav-insider" style="display:none">Insider Trading</a>
     </div>
   </div>
 </aside>
@@ -824,7 +824,11 @@
         const insiderPageUrl = `insiders/${ticker}-insider-trading.html`;
 
         if (!txs.length) {
-          el.innerHTML = `
+          // Show nav link even when no recent transactions
+        const navInsiderNoTx = document.getElementById("nav-insider");
+        if (navInsiderNoTx) navInsiderNoTx.style.display = "";
+
+        el.innerHTML = `
             <div class="insider-wrap">
               <div class="insider-head">
                 <h2>Insider Trading</h2>
@@ -863,6 +867,10 @@
           </tr>`;
         }).join("");
 
+        // Show nav link now that we have data
+        const navInsiderEl = document.getElementById("nav-insider");
+        if (navInsiderEl) navInsiderEl.style.display = "";
+
         el.innerHTML = `
           <div class="insider-wrap">
             <div class="insider-head">
@@ -888,8 +896,10 @@
           </div>`;
       })
       .catch(() => {
-        // No insider data for this stock — show nothing
+        // No insider data for this stock — hide section and nav link
         el.innerHTML = "";
+        const navInsider = document.getElementById("nav-insider");
+        if (navInsider) navInsider.style.display = "none";
       });
   }
 
