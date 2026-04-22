@@ -180,12 +180,7 @@ def fetch_fund(fund):
         # Skip if already in per-fund JSON
         if label in fund_data.get("quarters", {}):
             print(f"  {label} already in fund JSON, skipping")
-            # Still write CSV if missing (for verification)
-            if not os.path.exists(csv_file):
-                holdings = fund_data["quarters"][label]["holdings"]
-                write_csv(csv_file, holdings)
-                print(f"  Wrote missing CSV: {csv_file}")
-            continue
+            continue  # never write CSVs for already-stored quarters
 
         try:
             filename = get_infotable_filename(cik_stripped, accession)
@@ -196,9 +191,11 @@ def fetch_fund(fund):
             # Parse holdings from XML in memory — no XML file saved
             holdings = parse_xml_to_holdings(xml_text)
 
-            # Write CSV for human verification
-            write_csv(csv_file, holdings)
-            print(f"  Saved CSV: {csv_file}")
+            # Write CSV only for the 4 most recent quarters (verification only)
+            filing_idx = collected.index(filing)
+            if filing_idx < 4:
+                write_csv(csv_file, holdings)
+                print(f"  Saved CSV: {csv_file}")
 
             # Add to per-fund JSON
             if "quarters" not in fund_data:
