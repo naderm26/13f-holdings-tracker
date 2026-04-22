@@ -18,8 +18,12 @@ from datetime import datetime, timezone, timedelta
 MAX_RUNTIME_MINUTES = 25
 
 HEADERS = {"User-Agent": "13fai@proton.me"}
-LOOKBACK_DAYS = 90       # fetch last 90 days on first run, then incremental
-MAX_FILINGS   = 200      # max Form 4 filings to scan per company
+# On initial run (no data yet): uses LOOKBACK_DAYS_INIT = 90
+# On daily incremental runs (data exists): uses LOOKBACK_DAYS_DAILY = 5
+# This avoids scanning 200 filings per company every day
+LOOKBACK_DAYS_INIT  = 90
+LOOKBACK_DAYS_DAILY = 5
+MAX_FILINGS         = 40   # plenty for a 5-day window; was 200 which was wasteful daily
 
 # Transaction codes we care about — open market buys and sells only
 SIGNAL_CODES = {"P", "S"}
@@ -276,9 +280,19 @@ def save_stock(ticker, company_name, cik, data):
     print(f"  Saved {path}")
 
 # ── Main ─────────────────────────────────────────────────────────
-cutoff     = (datetime.now(timezone.utc) - timedelta(days=LOOKBACK_DAYS)).strftime("%Y-%m-%d")
+# Use short lookback if we already have data for at least half the companies
+# (indicates this is an incremental run not an initial backfill)
+_existing_count = sum(
+    1 for t in PILOT_COMPANIES
+    if os.path.exists(f"data/insiders/{t}.json")
+)
+_is_incremental = _existing_count >= len(PILOT_COMPANIES) // 2
+_lookback = LOOKBACK_DAYS_DAILY if _is_incremental else LOOKBACK_DAYS_INIT
+
+cutoff     = (datetime.now(timezone.utc) - timedelta(days=_lookback)).strftime("%Y-%m-%d")
 start_time = time.time()
-print(f"Fetching Form 4 insider data (cutoff: {cutoff})...")
+run_type   = "incremental" if _is_incremental else "initial backfill"
+print(f"Fetching Form 4 insider data ({run_type}, cutoff: {cutoff})...")
 print(f"Tracking {len(PILOT_COMPANIES)} companies | timeout: {MAX_RUNTIME_MINUTES} min\n")
 
 os.makedirs("data/insiders", exist_ok=True)
