@@ -155,6 +155,27 @@
       transform: translate(-50%, calc(-100% - 6px));
     }
 
+    /* ── Side nav — sticky jump-to links (matches hedge-fund-activity.html) ── */
+    .side-nav {
+      position: fixed; top: 50%; transform: translateY(-50%);
+      left: max(0.75rem, calc(50% - 640px - 180px));
+      width: 160px; z-index: 10;
+    }
+    .side-nav-inner { display: flex; flex-direction: column; gap: 0.15rem; }
+    .side-nav-label {
+      font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--muted); margin-bottom: 0.4rem;
+      padding-bottom: 0.3rem; border-bottom: 1px solid var(--border);
+    }
+    .side-nav-link {
+      font-family: var(--mono); font-size: 0.7rem; color: var(--muted);
+      text-decoration: none; padding: 0.3rem 0.5rem; border-radius: 4px;
+      line-height: 1.4; transition: color 0.15s, background 0.15s; display: block;
+    }
+    .side-nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .side-nav-link.active { color: var(--accent); font-weight: 500; background: var(--accent-light); }
+    @media (max-width: 1100px) { .side-nav { display: none; } }
+
     /* ── Insider section ── */
     .insider-wrap { margin-top: 1.5rem; margin-bottom: 1.25rem; }
     .insider-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
@@ -220,12 +241,24 @@
   </div>
 </header>
 
+<aside>
+  <div class="side-nav">
+    <div class="side-nav-inner">
+      <div class="side-nav-label">Jump to</div>
+      <a class="side-nav-link active" href="#sec-funds" id="nav-funds">Fund Holdings</a>
+      <a class="side-nav-link" href="#sec-insider" id="nav-insider">Insider Trading</a>
+    </div>
+  </div>
+</aside>
+
 <main>
   <div id="stock-header"><div class="loading">Loading stock data...</div></div>
   <div id="quarter-selector-wrap"></div>
   <div class="insights-wrap"><div class="insights" id="insights"></div></div>
   <div id="sparkline-wrap" style="display:none; margin-bottom:1.25rem;"></div>
+  <div id="sec-funds"></div>
   <div id="table-container"></div>
+  <div id="sec-insider"></div>
   <div id="insider-section"></div>
 </main>
 
@@ -960,6 +993,20 @@
   document.addEventListener("click", e => {
     if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) searchResults.classList.remove("visible");
   });
+
+  // ── Side nav scroll highlighting ──────────────────────────────
+  function updateSideNav() {
+    const fundsEl   = document.getElementById("sec-funds");
+    const insiderEl = document.getElementById("sec-insider");
+    const navFunds   = document.getElementById("nav-funds");
+    const navInsider = document.getElementById("nav-insider");
+    if (!fundsEl || !insiderEl || !navFunds || !navInsider) return;
+    const insiderTop = insiderEl.getBoundingClientRect().top;
+    const onInsider  = insiderTop <= window.innerHeight * 0.4;
+    navFunds.classList.toggle("active", !onInsider);
+    navInsider.classList.toggle("active", onInsider);
+  }
+  window.addEventListener("scroll", updateSideNav, { passive: true });
 </script>
 </body>
 </html>
