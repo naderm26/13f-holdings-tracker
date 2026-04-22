@@ -346,6 +346,7 @@ def render_page(manager, live, all_managers):
         <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
         <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
         <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="../insider-activity.html">Insider Trading</a>
         <a class="nav-link" href="faq.html">FAQ</a>
         <a class="nav-link" href="about.html">About</a>
       </nav>
@@ -364,6 +365,7 @@ def render_page(manager, live, all_managers):
       <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
       <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
       <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link" href="../insider-activity.html">Insider Trading</a>
       <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="about.html">About</a>
     </nav>
