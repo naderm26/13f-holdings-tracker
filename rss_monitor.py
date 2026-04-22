@@ -121,6 +121,12 @@ for url, form_type in RSS_URLS:
 
 print(f"\nTotal filings in lookback window: {len(all_filings)}")
 
+# Debug: print all CIKs found in feed to diagnose mismatches
+all_ciks_in_feed = sorted(set(cik for cik, _, _ in all_filings))
+print(f"All CIKs in feed ({len(all_ciks_in_feed)}): {all_ciks_in_feed}")
+print(f"Olstein CIK in tracked: {'947996' in tracked}")
+print(f"Olstein CIK in feed: {'947996' in all_ciks_in_feed}")
+
 tracked_in_feed = [(cik, ftype) for cik, _, ftype in all_filings if cik in tracked]
 if tracked_in_feed:
     print("Tracked funds seen in feed:")
