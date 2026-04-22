@@ -156,24 +156,25 @@
     }
 
     /* ── Insider section ── */
-    .insider-wrap { margin-bottom: 1.25rem; }
-    .insider-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+    .insider-wrap { margin-top: 1.5rem; margin-bottom: 1.25rem; }
+    .insider-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
     .insider-head h2 { font-size: 0.95rem; font-weight: 500; }
     .insider-head a { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); text-decoration: none; }
     .insider-head a:hover { text-decoration: underline; }
-    .insider-cards { display: flex; flex-direction: column; gap: 0.4rem; }
-    .insider-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.65rem 0.9rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.875rem; flex-wrap: wrap; }
-    .insider-left { display: flex; flex-direction: column; gap: 0.1rem; }
-    .insider-name { font-weight: 500; }
-    .insider-title { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
-    .insider-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+    .insider-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
+    .insider-table { width: 100%; min-width: 700px; border-collapse: collapse; background: var(--surface); }
+    .insider-table thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    .insider-table th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; white-space: nowrap; }
+    .insider-table th.left { text-align: left; }
+    .insider-table td { padding: 0.75rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; text-align: center; font-family: var(--mono); font-size: 0.82rem; }
+    .insider-table td.left { text-align: left; font-family: var(--sans); font-size: 0.875rem; }
+    .insider-table tr:last-child td { border-bottom: none; }
+    .insider-table tr:hover td { background: var(--accent-light); }
     .insider-badge { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; padding: 0.15rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
     .insider-badge.buy  { background: #dcfce7; color: var(--green); }
     .insider-badge.sell { background: #fee2e2; color: var(--red); }
-    .insider-val { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
-    .insider-val.buy  { color: var(--green); }
-    .insider-val.sell { color: var(--red); }
-    .insider-date { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+    .insider-green { color: var(--green); }
+    .insider-red   { color: var(--red); }
     .insider-none { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); padding: 0.5rem 0; }
   </style>
 </head>
@@ -224,8 +225,8 @@
   <div id="quarter-selector-wrap"></div>
   <div class="insights-wrap"><div class="insights" id="insights"></div></div>
   <div id="sparkline-wrap" style="display:none; margin-bottom:1.25rem;"></div>
-  <div id="insider-section"></div>
   <div id="table-container"></div>
+  <div id="insider-section"></div>
 </main>
 
 <footer>
@@ -417,6 +418,20 @@
   }
 
   // ── Render table for selected quarter ─────────────────────────
+  function isQuarterIncomplete(q) {
+    // Count how many funds have data for this quarter
+    if (!stockData) return false;
+    const fundLatestQ = window._fundLatestQ || {};
+    const totalTracked = Object.keys(fundLatestQ).length;
+    if (totalTracked === 0) return false;
+    let withData = 0;
+    for (const [fid, fdata] of Object.entries(stockData.funds || {})) {
+      if (fdata.quarters && fdata.quarters[q]) withData++;
+    }
+    // If fewer than 20% of tracked funds have this quarter, it's incomplete
+    return totalTracked > 0 && (withData / totalTracked) < 0.20;
+  }
+
   function renderTable() {
     const stock   = stockData;
     const fundMap = Object.fromEntries(fundsData.map(f => [f.id, f]));
@@ -739,20 +754,32 @@
           return;
         }
 
-        const cards = txs.map(t => {
+        const fmtSharesI = n => {
+          if (!n) return "—";
+          if (n >= 1e6) return (n/1e6).toFixed(1) + "M";
+          if (n >= 1e3) return (n/1e3).toFixed(0) + "K";
+          return n.toLocaleString();
+        };
+
+        const rows = txs.map((t, i) => {
           const isBuy = t.code === "P";
           const cls   = isBuy ? "buy" : "sell";
-          return `<div class="insider-card">
-            <div class="insider-left">
-              <div class="insider-name">${t.insider}</div>
-              <div class="insider-title">${t.title || "—"}</div>
-            </div>
-            <div class="insider-right">
-              <span class="insider-badge ${cls}">${isBuy ? "BUY" : "SELL"}</span>
-              <span class="insider-val ${cls}">${fmtInsiderVal(t.value)}</span>
-              <span class="insider-date">${fmtInsiderDate(t.date)}</span>
-            </div>
-          </div>`;
+          const valCls = isBuy ? "insider-green" : "insider-red";
+          const price = t.price > 0 ? "$" + t.price.toFixed(2) : "—";
+          return `<tr>
+            <td style="color:var(--muted);font-size:0.72rem">${i+1}</td>
+            <td class="left">
+              <div style="font-weight:500">${t.insider}</div>
+              <div style="font-size:0.72rem;color:var(--muted)">${t.title || "—"}</div>
+            </td>
+            <td><span class="insider-badge ${cls}">${isBuy ? "BUY" : "SELL"}</span></td>
+            <td>${fmtSharesI(t.shares)}</td>
+            <td>${price}</td>
+            <td class="${valCls}">${fmtInsiderVal(t.value)}</td>
+            <td>${fmtSharesI(t.shares_after)}</td>
+            <td>${fmtInsiderDate(t.date)}</td>
+            <td style="font-size:0.68rem;color:var(--muted)">${fmtInsiderDate(t.filed)}</td>
+          </tr>`;
         }).join("");
 
         el.innerHTML = `
@@ -761,7 +788,22 @@
               <h2>Insider Trading <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);font-weight:400">— last 90 days</span></h2>
               <a href="${insiderPageUrl}">View all →</a>
             </div>
-            <div class="insider-cards">${cards}</div>
+            <div class="insider-table-wrap">
+            <table class="insider-table">
+              <thead><tr>
+                <th style="width:2.5rem">#</th>
+                <th class="left" style="width:25%">Insider</th>
+                <th>Type</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>Value</th>
+                <th>Owned After</th>
+                <th>Trade Date</th>
+                <th>Filed</th>
+              </tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+            </div>
           </div>`;
       })
       .catch(() => {
@@ -787,6 +829,7 @@
       stockData  = stock;
       fundsData  = funds;
       fundTotals = stockIndexRaw.fund_totals || {};
+      window._fundLatestQ = stockIndexRaw.fund_latest_q || {};
 
       // Collect all quarters across all funds for this stock
       const qSet = new Set();
@@ -824,6 +867,14 @@
       renderTable();
       renderSparkline();
       renderInsiderSection(stock.ticker || null);
+      // Show incomplete quarter warning if needed
+      if (isQuarterIncomplete(activeQ)) {
+        const warn = document.createElement("div");
+        warn.style.cssText = "margin-bottom:1rem;padding:0.75rem 1rem;background:#fef9c3;border:1px solid #fde047;border-radius:6px;font-family:var(--mono);font-size:0.78rem;color:#854d0e;";
+        warn.innerHTML = `⚠ ${quarterLabel(activeQ)} data is incomplete — most tracked funds have not yet filed for this quarter. Data will fill in as filings are submitted.`;
+        const tableContainer = document.getElementById("table-container");
+        if (tableContainer) tableContainer.insertAdjacentElement("beforebegin", warn);
+      }
     }).catch(e => {
       document.getElementById("stock-header").innerHTML = `<div class="error">Failed to load data: ${e.message}</div>`;
     });
