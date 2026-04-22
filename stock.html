@@ -661,12 +661,19 @@
   function renderSparkline() {
     const wrap = document.getElementById("sparkline-wrap");
     if (!stockData || allQuarters.length < 2) { wrap.style.display = "none"; return; }
+    // Re-check after filtering — need at least 2 points to draw a line
 
     const stock = stockData;
 
     // Build aggregate shares per quarter across ALL funds (including exits = 0)
+    // Cap to 8 most recent quarters; exclude current quarter if incomplete
     // Chronological order: oldest → newest
-    const pts = [...allQuarters].reverse().map(q => {
+    const sparklineQs = [...allQuarters]
+      .filter(q => !isIncompleteQuarter(q))  // exclude incomplete current quarter
+      .slice(0, 8)                            // cap at 8 quarters
+      .reverse();                             // oldest → newest for chart
+
+    const pts = sparklineQs.map(q => {
       let shares = 0, funds = 0;
       for (const fd of Object.values(stock.funds)) {
         const qd = fd.quarters?.[q];
@@ -674,6 +681,8 @@
       }
       return { q, shares, funds };
     });
+
+    if (pts.length < 2) { wrap.style.display = "none"; return; }
 
     // SVG dimensions — fixed pixel coords inside a viewBox
     const VW = 600, VH = 80;
@@ -876,7 +885,20 @@
         Object.keys(fundData.quarters || {}).forEach(q => qSet.add(q));
       }
       allQuarters = Array.from(qSet).sort().reverse();
-      activeQ = allQuarters[0];
+      // Default to prior quarter if current quarter has < 25% fund coverage
+      // (most funds haven't filed yet — prior quarter gives a complete picture)
+      const fundLatestQMap = stockIndexRaw.fund_latest_q || {};
+      const totalTrackedFunds = Object.keys(fundLatestQMap).length;
+      const currentQ = allQuarters[0];
+      let fundsWithCurrentQ = 0;
+      for (const fdata of Object.values(stock.funds)) {
+        if (fdata.quarters?.[currentQ]) fundsWithCurrentQ++;
+      }
+      const currentQCoverage = totalTrackedFunds > 0 ? fundsWithCurrentQ / totalTrackedFunds : 1;
+      // Use prior quarter as default if coverage < 25% AND deadline not yet passed
+      const currentDeadline = quarterDeadline(currentQ);
+      const currentIsIncomplete = currentDeadline && new Date() < currentDeadline && currentQCoverage < 0.25;
+      activeQ = (currentIsIncomplete && allQuarters.length > 1) ? allQuarters[1] : allQuarters[0];
 
       // Title
       const ql = quarterLabel(activeQ);
