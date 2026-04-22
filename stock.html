@@ -418,18 +418,52 @@
   }
 
   // ── Render table for selected quarter ─────────────────────────
-  function isQuarterIncomplete(q) {
-    // Count how many funds have data for this quarter
-    if (!stockData) return false;
-    const fundLatestQ = window._fundLatestQ || {};
-    const totalTracked = Object.keys(fundLatestQ).length;
-    if (totalTracked === 0) return false;
-    let withData = 0;
-    for (const [fid, fdata] of Object.entries(stockData.funds || {})) {
-      if (fdata.quarters && fdata.quarters[q]) withData++;
-    }
-    // If fewer than 20% of tracked funds have this quarter, it's incomplete
-    return totalTracked > 0 && (withData / totalTracked) < 0.20;
+  function quarterDeadline(q) {
+    // Returns the 13F filing deadline (45 days after quarter end) as a Date
+    const m = q.match(/^(\d{4})Q(\d)$/);
+    if (!m) return null;
+    const year = parseInt(m[1]), qn = parseInt(m[2]);
+    const quarterEnd = new Date(year, qn * 3, 0); // last day of quarter
+    const deadline   = new Date(quarterEnd);
+    deadline.setDate(deadline.getDate() + 45);
+    return deadline;
+  }
+
+  function fmtDeadline(d) {
+    if (!d) return "";
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    return months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+  }
+
+  function isCurrentQuarter(q) {
+    // True if q is the most recent quarter label (first in allQuarters)
+    return allQuarters.length > 0 && q === allQuarters[0];
+  }
+
+  function isIncompleteQuarter(q) {
+    // Only flag as incomplete if:
+    // 1. It's the most recent quarter, AND
+    // 2. We haven't passed the filing deadline yet
+    if (!isCurrentQuarter(q)) return false;
+    const deadline = quarterDeadline(q);
+    if (!deadline) return false;
+    return new Date() < deadline;
+  }
+
+  function renderIncompleteWarning(q) {
+    // Remove any existing warning
+    const existing = document.getElementById("incomplete-warning");
+    if (existing) existing.remove();
+    if (!isIncompleteQuarter(q)) return;
+    const deadline = quarterDeadline(q);
+    const ql = quarterLabel(q);
+    const warn = document.createElement("div");
+    warn.id = "incomplete-warning";
+    warn.style.cssText = "margin-bottom:1rem;padding:0.75rem 1rem;background:#fef9c3;border:1px solid #fde047;border-radius:6px;font-family:var(--mono);font-size:0.78rem;color:#854d0e;line-height:1.6;";
+    warn.innerHTML = `⚠ ${ql} data may be incomplete as 13F filings are yet to be filed for this quarter by all tracked funds. The filing deadline is ${fmtDeadline(deadline)}.`;
+    // Insert between quarter selector and insights
+    const insightsWrap = document.querySelector(".insights-wrap");
+    if (insightsWrap) insightsWrap.insertAdjacentElement("beforebegin", warn);
   }
 
   function renderTable() {
@@ -457,7 +491,11 @@
         holdingFunds.push({ fid, fund, latest, prev1, prev4 });
       } else if (prev1 && prev1.shares > 0) {
         // held last quarter but not this one → exited
-        exitedFunds.push({ fid, fund, prev1 });
+        // Only show as exited if quarter is complete (past filing deadline)
+        // Avoids falsely marking funds as exited when they simply haven't filed yet
+        if (!isIncompleteQuarter(selectedQ)) {
+          exitedFunds.push({ fid, fund, prev1 });
+        }
       }
     }
 
@@ -610,6 +648,7 @@
     activeQ = q;
     renderQuarterTabs();
     renderTable();
+    renderIncompleteWarning(q);
     // Update title
     const stock = stockData;
     const ql = quarterLabel(q);
@@ -867,14 +906,7 @@
       renderTable();
       renderSparkline();
       renderInsiderSection(stock.ticker || null);
-      // Show incomplete quarter warning if needed
-      if (isQuarterIncomplete(activeQ)) {
-        const warn = document.createElement("div");
-        warn.style.cssText = "margin-bottom:1rem;padding:0.75rem 1rem;background:#fef9c3;border:1px solid #fde047;border-radius:6px;font-family:var(--mono);font-size:0.78rem;color:#854d0e;";
-        warn.innerHTML = `⚠ ${quarterLabel(activeQ)} data is incomplete — most tracked funds have not yet filed for this quarter. Data will fill in as filings are submitted.`;
-        const tableContainer = document.getElementById("table-container");
-        if (tableContainer) tableContainer.insertAdjacentElement("beforebegin", warn);
-      }
+      renderIncompleteWarning(activeQ);
     }).catch(e => {
       document.getElementById("stock-header").innerHTML = `<div class="error">Failed to load data: ${e.message}</div>`;
     });
