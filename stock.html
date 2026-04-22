@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -153,7 +154,27 @@
       white-space: nowrap; opacity: 0; transition: opacity 0.1s; z-index: 10;
       transform: translate(-50%, calc(-100% - 6px));
     }
-    
+
+    /* ── Insider section ── */
+    .insider-wrap { margin-bottom: 1.25rem; }
+    .insider-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 0.75rem; }
+    .insider-head h2 { font-size: 0.95rem; font-weight: 500; }
+    .insider-head a { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); text-decoration: none; }
+    .insider-head a:hover { text-decoration: underline; }
+    .insider-cards { display: flex; flex-direction: column; gap: 0.4rem; }
+    .insider-card { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.65rem 0.9rem; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 0.875rem; flex-wrap: wrap; }
+    .insider-left { display: flex; flex-direction: column; gap: 0.1rem; }
+    .insider-name { font-weight: 500; }
+    .insider-title { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); }
+    .insider-right { display: flex; align-items: center; gap: 1rem; flex-shrink: 0; }
+    .insider-badge { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; padding: 0.15rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
+    .insider-badge.buy  { background: #dcfce7; color: var(--green); }
+    .insider-badge.sell { background: #fee2e2; color: var(--red); }
+    .insider-val { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .insider-val.buy  { color: var(--green); }
+    .insider-val.sell { color: var(--red); }
+    .insider-date { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
+    .insider-none { font-family: var(--mono); font-size: 0.78rem; color: var(--muted); padding: 0.5rem 0; }
   </style>
 </head>
 <body>
@@ -172,6 +193,7 @@
         <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
         <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
         <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="insider-activity.html">Insider Trading</a>
         <a class="nav-link" href="faq.html">FAQ</a>
         <a class="nav-link" href="about.html">About</a>
       </nav>
@@ -190,6 +212,7 @@
       <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
       <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
       <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link" href="insider-activity.html">Insider Trading</a>
       <a class="nav-link" href="faq.html">FAQ</a>
       <a class="nav-link" href="about.html">About</a>
     </nav>
@@ -201,6 +224,7 @@
   <div id="quarter-selector-wrap"></div>
   <div class="insights-wrap"><div class="insights" id="insights"></div></div>
   <div id="sparkline-wrap" style="display:none; margin-bottom:1.25rem;"></div>
+  <div id="insider-section"></div>
   <div id="table-container"></div>
 </main>
 
@@ -675,6 +699,77 @@
     });
   }
 
+    // ── Insider section ───────────────────────────────────────────
+  function fmtInsiderVal(v) {
+    if (!v) return "—";
+    const a = Math.abs(v);
+    if (a >= 1e9) return "$" + (v/1e9).toFixed(1) + "B";
+    if (a >= 1e6) return "$" + (v/1e6).toFixed(1) + "M";
+    if (a >= 1e3) return "$" + (v/1e3).toFixed(0) + "K";
+    return "$" + v.toFixed(0);
+  }
+  function fmtInsiderDate(d) {
+    if (!d) return "";
+    const [y, m, day] = d.split("-");
+    const mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return mo[parseInt(m)-1] + " " + parseInt(day) + ", " + y;
+  }
+  function renderInsiderSection(ticker) {
+    const el = document.getElementById("insider-section");
+    if (!el || !ticker) return;
+    // Try to load insider data for this ticker
+    fetch(`${PAGES}/data/insiders/${ticker}.json`)
+      .then(r => { if (!r.ok) throw new Error("not found"); return r.json(); })
+      .then(data => {
+        const txs = (data.transactions || [])
+          .filter(t => t.code === "P" || t.code === "S")
+          .slice(0, 5); // show up to 5 most recent
+
+        const insiderPageUrl = `insiders/${ticker}-insider-trading.html`;
+
+        if (!txs.length) {
+          el.innerHTML = `
+            <div class="insider-wrap">
+              <div class="insider-head">
+                <h2>Insider Trading</h2>
+                <a href="${insiderPageUrl}">View all →</a>
+              </div>
+              <div class="insider-none">No open market insider transactions recorded in the last 90 days.</div>
+            </div>`;
+          return;
+        }
+
+        const cards = txs.map(t => {
+          const isBuy = t.code === "P";
+          const cls   = isBuy ? "buy" : "sell";
+          return `<div class="insider-card">
+            <div class="insider-left">
+              <div class="insider-name">${t.insider}</div>
+              <div class="insider-title">${t.title || "—"}</div>
+            </div>
+            <div class="insider-right">
+              <span class="insider-badge ${cls}">${isBuy ? "BUY" : "SELL"}</span>
+              <span class="insider-val ${cls}">${fmtInsiderVal(t.value)}</span>
+              <span class="insider-date">${fmtInsiderDate(t.date)}</span>
+            </div>
+          </div>`;
+        }).join("");
+
+        el.innerHTML = `
+          <div class="insider-wrap">
+            <div class="insider-head">
+              <h2>Insider Trading <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);font-weight:400">— last 90 days</span></h2>
+              <a href="${insiderPageUrl}">View all →</a>
+            </div>
+            <div class="insider-cards">${cards}</div>
+          </div>`;
+      })
+      .catch(() => {
+        // No insider data for this stock — show nothing
+        el.innerHTML = "";
+      });
+  }
+
     // ── Bootstrap ──────────────────────────────────────────────────
   if (!key) {
     document.getElementById("stock-header").innerHTML = `<div class="error">No stock specified.</div>`;
@@ -728,6 +823,7 @@
       renderQuarterTabs();
       renderTable();
       renderSparkline();
+      renderInsiderSection(stock.ticker || null);
     }).catch(e => {
       document.getElementById("stock-header").innerHTML = `<div class="error">Failed to load data: ${e.message}</div>`;
     });
