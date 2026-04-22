@@ -59,23 +59,38 @@ def get_latest_edgar_filing(cik):
 
 def get_stored_latest(fund_id):
     """
-    Return the most recent quarter's filed date from our stored per-fund JSON.
-    Returns None if no data stored yet.
+    Return the most recent filed date we know about for this fund.
+    Checks both the per-fund JSON and any monitor marker file.
+    The marker file stores the EDGAR date from the last trigger,
+    preventing re-triggering when fetch2 skips an amendment.
     """
+    best_date = None
+
+    # Check per-fund JSON
     path = f"data/{fund_id}.json"
-    if not os.path.exists(path):
-        return None
-    try:
-        with open(path) as f:
-            data = json.load(f)
-        quarters = data.get("quarters", {})
-        if not quarters:
-            return None
-        # Most recent quarter sorted descending
-        latest_q = sorted(quarters.keys(), reverse=True)[0]
-        return quarters[latest_q].get("filed", None)
-    except Exception:
-        return None
+    if os.path.exists(path):
+        try:
+            with open(path) as f:
+                data = json.load(f)
+            quarters = data.get("quarters", {})
+            if quarters:
+                latest_q = sorted(quarters.keys(), reverse=True)[0]
+                best_date = quarters[latest_q].get("filed", None)
+        except Exception:
+            pass
+
+    # Check monitor marker file (written after triggering)
+    marker = f"data/{fund_id}_monitor_date.txt"
+    if os.path.exists(marker):
+        try:
+            with open(marker) as f:
+                marker_date = f.read().strip()
+            if marker_date and (best_date is None or marker_date > best_date):
+                best_date = marker_date
+        except Exception:
+            pass
+
+    return best_date
 
 def trigger_fetch_workflow(repo, token):
     """Trigger fetch2.yml via GitHub API."""
@@ -121,6 +136,11 @@ for fund in funds:
         print(f"    EDGAR latest: {edgar_date} | Stored latest: {stored_date or 'none'}")
         funds_with_new.append(name)
         new_filing_found = True
+        # Store the EDGAR date as a marker so we don't re-trigger tomorrow
+        # if fetch2 skips the filing (e.g. amendment for already-stored quarter)
+        os.makedirs("data", exist_ok=True)
+        with open(f"data/{fund_id}_monitor_date.txt", "w") as _mf:
+            _mf.write(edgar_date)
         break  # one trigger is enough — fetch2.yml picks up everything
 
     time.sleep(0.3)  # be polite to EDGAR
