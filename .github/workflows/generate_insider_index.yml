@@ -2,13 +2,14 @@ name: Generate Insider Index
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'data/insiders/**'
+  workflow_run:
+    workflows: ["Fetch Insider Data (Form 4)"]
+    types: [completed]
 
 jobs:
   generate:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     permissions:
       contents: write
@@ -16,6 +17,12 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull latest changes
+        run: git pull origin main
 
       - name: Set up Python
         uses: actions/setup-python@v5
