@@ -351,11 +351,11 @@ for ticker, info in PILOT_COMPANIES.items():
         print(f"  Added {len(new_transactions)} new transactions "
               f"(P={sum(1 for t in new_transactions if t['code']=='P')}, "
               f"S={sum(1 for t in new_transactions if t['code']=='S')})")
+        save_stock(ticker, company_name, cik, stock_data)
     else:
-        print(f"  No new signal transactions found")
+        print(f"  No new transactions — skipping save")
 
-    save_stock(ticker, company_name, cik, stock_data)
-    time.sleep(1)
+    time.sleep(0.5)  # reduced from 1s since we skip save on no-change
 
 elapsed_total = (time.time() - start_time) / 60
 if timed_out:
