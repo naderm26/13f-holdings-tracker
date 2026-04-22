@@ -169,6 +169,19 @@ def fetch_fund(fund):
     fund_data = load_fund_json(fund_id)
     changed = False
 
+    # Fast-path: if the most recent EDGAR filing is already stored and not newer,
+    # skip the entire fund — no need to check all 20 quarters one by one
+    if collected:
+        first         = collected[0]
+        first_label   = quarter_label(first["period"])
+        first_filed   = first["filed"]
+        stored_quarters = fund_data.get("quarters", {})
+        if (first_label in stored_quarters and
+                first_filed <= stored_quarters[first_label].get("filed", "")):
+            print(f"  Up to date ({first_label}, filed {first_filed}) — skipping")
+            time.sleep(0.2)
+            continue  # skip to next fund
+
     for filing in collected:
         accession_raw = filing["accession_raw"]
         period        = filing["period"]
@@ -177,10 +190,15 @@ def fetch_fund(fund):
         label         = quarter_label(period)
         csv_file      = f"data/{fund_id}_{label}.csv"
 
-        # Skip if already in per-fund JSON
+        # Skip if already in per-fund JSON — unless this is a newer filing
+        # (e.g. an amendment 13F-HR/A supersedes the original for that quarter)
         if label in fund_data.get("quarters", {}):
-            print(f"  {label} already in fund JSON, skipping")
-            continue  # never write CSVs for already-stored quarters
+            stored_filed = fund_data["quarters"][label].get("filed", "")
+            if filed <= stored_filed:
+                print(f"  {label} already in fund JSON, skipping")
+                continue
+            else:
+                print(f"  {label} has newer filing ({filed} > {stored_filed}), overwriting")
 
         try:
             filename = get_infotable_filename(cik_stripped, accession)
