@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -308,6 +309,56 @@
     return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
   }
   function fmtNum(n) { return n === 0 || n === null || n === undefined ? "—" : n; }
+function quarterDeadline(q) {
+    // Returns the 13F filing deadline (45 days after quarter end) as a Date
+    const m = q.match(/^(\d{4})Q(\d)$/);
+    if (!m) return null;
+    const year = parseInt(m[1]), qn = parseInt(m[2]);
+    const quarterEnd = new Date(year, qn * 3, 0); // last day of quarter
+    const deadline   = new Date(quarterEnd);
+    deadline.setDate(deadline.getDate() + 45);
+    return deadline;
+  }
+
+  function fmtDeadline(d) {
+    if (!d) return "";
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    return months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+  }
+
+  function isCurrentQuarter(q) {
+    // True if q is the most recent quarter label (first in allQuarters)
+    return allQuarters.length > 0 && q === allQuarters[0];
+  }
+
+  function isIncompleteQuarter(q) {
+    // Only flag as incomplete if:
+    // 1. It's the most recent quarter, AND
+    // 2. We haven't passed the filing deadline yet
+    if (!isCurrentQuarter(q)) return false;
+    const deadline = quarterDeadline(q);
+    if (!deadline) return false;
+    return new Date() < deadline;
+  }
+
+  function renderIncompleteWarning(q) {
+    // Remove any existing warning
+    const existing = document.getElementById("incomplete-warning");
+    if (existing) existing.remove();
+    if (!isIncompleteQuarter(q)) return;
+    const deadline = quarterDeadline(q);
+    const ql = quarterLabel(q);
+    const warn = document.createElement("div");
+    warn.id = "incomplete-warning";
+    warn.style.cssText = "margin-bottom:1rem;padding:0.75rem 1rem;background:#fef9c3;border:1px solid #fde047;border-radius:6px;font-family:var(--mono);font-size:0.78rem;color:#854d0e;line-height:1.6;";
+    warn.innerHTML = `⚠ ${ql} data may be incomplete as 13F filings are yet to be filed for this quarter by all tracked funds. The filing deadline is ${fmtDeadline(deadline)}.`;
+    // Insert between quarter selector and insights
+    const tabsWrap = document.getElementById("quarter-selector-wrap");
+    const tableWrap = document.getElementById("page-title");
+    if (tabsWrap) tabsWrap.insertAdjacentElement("afterend", warn);
+    else if (tableWrap) tableWrap.insertAdjacentElement("afterend", warn);
+  }
+
   function quarterLabel(q) { const m = q.match(/^(\d{4})Q(\d)$/); return m ? `Q${m[2]} ${m[1]}` : q; }
   function prevQuarter(q)  { const [yr,qn]=q.split("Q"); let pq=parseInt(qn)-1,py=parseInt(yr); if(pq===0){pq=4;py--;} return py+"Q"+pq; }
   function prevYrQ(q)      { const [yr,qn]=q.split("Q"); return (parseInt(yr)-1)+"Q"+qn; }
@@ -556,6 +607,7 @@
 
   function selectQuarter(q) {
     activeQ = q;
+    renderIncompleteWarning(q);
     sortState.netAdd  = { col: 2, asc: false }; sortState.netDec = { col: 2, asc: false };
     sortState.new     = { col: 2, asc: false }; sortState.exit   = { col: 2, asc: false };
     renderQuarterTabs();
@@ -606,10 +658,19 @@
           qFunds[q].add(fid);
         }
 
-    allQuarters = Array.from(qSet)
-      .filter(q => (qFunds[q] || new Set()).size >= threshold)
-      .sort().reverse();
-    activeQ = allQuarters[0];
+    const allQsSorted = Array.from(qSet).sort().reverse();
+    const currentQ = allQsSorted[0];
+
+    allQuarters = allQsSorted.filter(q =>
+      q === currentQ || (qFunds[q] || new Set()).size >= threshold
+    );
+
+    const currentDeadline   = quarterDeadline(currentQ);
+    const fundsWithCurrentQ = (qFunds[currentQ] || new Set()).size;
+    const currentQCoverage  = totalFundCount > 0 ? fundsWithCurrentQ / totalFundCount : 1;
+    const currentIsIncomplete = currentDeadline && new Date() < currentDeadline && currentQCoverage < 0.25;
+    window._fundLatestQ = stockIndexRaw.fund_latest_q || {};
+    activeQ = (currentIsIncomplete && allQuarters.length > 1) ? allQuarters[1] : allQuarters[0];
 
     const ql = quarterLabel(activeQ);
     document.getElementById("page-title").textContent = `Hedge Fund Activity: Top Most Widely Bought and Sold`;
