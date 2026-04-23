@@ -136,11 +136,23 @@ for fund in funds:
         print(f"    EDGAR latest: {edgar_date} | Stored latest: {stored_date or 'none'}")
         funds_with_new.append(name)
         new_filing_found = True
-        # Store the EDGAR date as a marker so we don't re-trigger tomorrow
-        # if fetch2 skips the filing (e.g. amendment for already-stored quarter)
-        os.makedirs("data", exist_ok=True)
-        with open(f"data/{fund_id}_monitor_date.txt", "w") as _mf:
-            _mf.write(edgar_date)
+        # Update the stored JSON's latest quarter filed date to the EDGAR date.
+        # This prevents re-triggering tomorrow if fetch2 skips the filing
+        # (e.g. amendment for an already-stored quarter label).
+        fund_json_path = f"data/{fund_id}.json"
+        if os.path.exists(fund_json_path):
+            try:
+                with open(fund_json_path) as _f:
+                    _fd = json.load(_f)
+                _quarters = _fd.get("quarters", {})
+                if _quarters:
+                    _latest_q = sorted(_quarters.keys(), reverse=True)[0]
+                    _fd["quarters"][_latest_q]["filed"] = edgar_date
+                    with open(fund_json_path, "w") as _f:
+                        json.dump(_fd, _f)
+                    print(f"    Updated stored filed date to {edgar_date}")
+            except Exception as _e:
+                print(f"    Could not update stored date: {_e}")
         break  # one trigger is enough — fetch2.yml picks up everything
 
     time.sleep(0.3)  # be polite to EDGAR
