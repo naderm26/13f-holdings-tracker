@@ -180,7 +180,7 @@ def fetch_fund(fund):
                 first_filed <= stored_quarters[first_label].get("filed", "")):
             print(f"  Up to date ({first_label}, filed {first_filed}) — skipping")
             time.sleep(0.2)
-            continue  # skip to next fund
+            return  # nothing new for this fund
 
     for filing in collected:
         accession_raw = filing["accession_raw"]
