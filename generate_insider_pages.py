@@ -38,8 +38,20 @@ def build_page(ticker, data):
     updated    = data.get("updated", "")
     txs        = data.get("transactions", [])
 
-    buys  = [t for t in txs if t["code"] == "P"]
-    sells = [t for t in txs if t["code"] == "S"]
+    # Aggregate same-day trades per insider before computing stats
+    from collections import defaultdict
+    agg_map = {}
+    for t in txs:
+        key = f"{t['insider']}|{t['date']}|{t['code']}"
+        if key not in agg_map:
+            agg_map[key] = {**t, "shares": 0, "value": 0}
+        agg_map[key]["shares"] += t.get("shares", 0)
+        agg_map[key]["value"]  += t.get("value", 0)
+        agg_map[key]["shares_after"] = t.get("shares_after", agg_map[key].get("shares_after", 0))
+    agg_txs = sorted(agg_map.values(), key=lambda x: (x["date"], -x.get("value", 0)), reverse=True)
+
+    buys  = [t for t in agg_txs if t["code"] == "P"]
+    sells = [t for t in agg_txs if t["code"] == "S"]
 
     total_buy_val  = sum(t.get("value", 0) for t in buys)
     total_sell_val = sum(t.get("value", 0) for t in sells)
@@ -49,11 +61,11 @@ def build_page(ticker, data):
 
     # Insights sentences
     insights = []
-    if not txs:
+    if not agg_txs:
         insights.append(f"No open market insider transactions recorded for {company} ({ticker}) in the last 90 days.")
     else:
-        # S1 — summary
-        unique_insiders = len({t["insider"] for t in txs})
+        # S1 — summary (uses aggregated counts)
+        unique_insiders = len({t["insider"] for t in agg_txs})
         if buys and sells:
             insights.append(
                 f"{company} ({ticker}) had {len(buys)} insider purchase{'s' if len(buys)>1 else ''} "
@@ -357,14 +369,31 @@ function arrow(col) {{
   return txSortAsc ? " ↑" : " ↓";
 }}
 
+function aggregateTx(txs) {{
+  // Combine same insider + same date + same code into one row
+  const agg = {{}};
+  for (const t of txs) {{
+    const key = t.insider + "|" + t.date + "|" + t.code;
+    if (!agg[key]) {{
+      agg[key] = {{ ...t, shares: 0, value: 0 }};
+    }}
+    agg[key].shares      += t.shares || 0;
+    agg[key].value       += t.value  || 0;
+    agg[key].shares_after = t.shares_after || agg[key].shares_after;
+  }}
+  return Object.values(agg);
+}}
+
 function renderTx() {{
-  const sorted = [...TX_DATA].sort((a, b) => {{
+  const aggData = aggregateTx(TX_DATA);
+
+  const sorted = [...aggData].sort((a, b) => {{
     let av, bv;
     switch (txSortCol) {{
       case 0: av = a.insider.toLowerCase(); bv = b.insider.toLowerCase(); break;
       case 1: av = a.code; bv = b.code; break;
       case 2: av = a.shares || 0; bv = b.shares || 0; break;
-      case 3: av = a.price || 0; bv = b.price || 0; break;
+      case 3: av = (a.shares > 0 ? a.value / a.shares : 0); bv = (b.shares > 0 ? b.value / b.shares : 0); break;
       case 4: av = a.value || 0; bv = b.value || 0; break;
       case 5: av = a.shares_after || 0; bv = b.shares_after || 0; break;
       case 6: av = a.date || ""; bv = b.date || ""; break;
@@ -394,7 +423,7 @@ function renderTx() {{
     const isBuy  = t.code === "P";
     const cls    = isBuy ? "buy" : "sell";
     const valCls = isBuy ? "var(--green)" : "var(--red)";
-    const price  = t.price > 0 ? "$" + t.price.toFixed(2) : "—";
+    const price  = t.shares > 0 && t.value > 0 ? "$" + (t.value / t.shares).toFixed(2) : "—";
     return `<tr>
       <td class="num" style="color:var(--muted);font-size:0.72rem">${{i+1}}</td>
       <td style="text-align:left">
