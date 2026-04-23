@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,7 +65,6 @@
     }
     @media (min-width: 700px) {
       header { padding: 1.5rem 3rem; }
-      .header-top { flex-wrap: nowrap; }
       .header-nav-row { display: none; }
       .desktop-nav { display: flex !important; }
     }
@@ -203,9 +203,8 @@
     <div style="display:flex; align-items:center; gap:1.75rem;">
       <div class="brand">
         <a class="brand-name" href="index.html">13FAI</a>
-        <span class="brand-sub" style="font-family:var(--mono);font-size:0.62rem;color:var(--muted);letter-spacing:0.02em;">ai-powered hedge fund tracker</span>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
       </div>
-      <!-- Desktop nav: hidden on mobile via CSS -->
       <nav class="nav-links desktop-nav">
         <a class="nav-link" href="index.html">Funds</a>
         <a class="nav-link" href="managers.html">Manager Bios</a>
@@ -224,7 +223,6 @@
       <div class="search-results" id="search-results"></div>
     </div>
   </div>
-  <!-- Mobile nav: shown below on small screens -->
   <div class="header-nav-row">
     <nav class="nav-links">
       <a class="nav-link" href="index.html">Funds</a>
