@@ -90,24 +90,25 @@
 
 
 
-    /* ── Signal cards ── */
-    .signals-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
-    .signal-card {
-      border: 1px solid var(--border); border-radius: 6px;
-      background: var(--surface); padding: 0.9rem 1rem;
-      text-decoration: none; color: var(--text); display: block;
-      transition: background 0.1s, border-color 0.1s;
-    }
-    .signal-card:hover { background: var(--accent-light); border-color: var(--accent); }
-    .signal-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; }
-    .signal-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.95rem; }
-    .signal-label { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.15rem 0.4rem; border-radius: 3px; }
-    .signal-label.buy { background: #dcfce7; color: var(--green); }
-    .signal-label.sell { background: #fee2e2; color: var(--red); }
-    .signal-label.mixed { background: #fef9c3; color: #854d0e; }
-    .signal-company { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.5rem; }
-    .signal-detail { font-family: var(--mono); font-size: 0.75rem; color: var(--text); }
-    .signal-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.25rem; }
+    /* ── Activity table ── */
+    .activity-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; margin-bottom: 1rem; }
+    .activity-table { width: 100%; min-width: 900px; border-collapse: collapse; background: var(--surface); }
+    .activity-table thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    .activity-table th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: nowrap; }
+    .activity-table th:hover { color: var(--text); }
+    .activity-table th.left { text-align: left; }
+    .activity-table td { padding: 0.75rem 0.6rem; font-size: 0.82rem; border-bottom: 1px solid var(--border); vertical-align: middle; text-align: center; font-family: var(--mono); }
+    .activity-table td.left { text-align: left; font-family: var(--sans); }
+    .activity-table tr:last-child td { border-bottom: none; }
+    .activity-table tr:hover td { background: var(--accent-light); }
+    .act-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; text-decoration: none; }
+    .act-ticker:hover { text-decoration: underline; }
+    .act-badge { font-family: var(--mono); font-size: 0.65rem; font-weight: 600; letter-spacing: 0.05em; padding: 0.15rem 0.4rem; border-radius: 3px; text-transform: uppercase; }
+    .act-badge.buy  { background: #dcfce7; color: var(--green); }
+    .act-badge.sell { background: #fee2e2; color: var(--red); }
+    .act-green { color: var(--green); }
+    .act-red   { color: var(--red); }
+    .table-note { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.5rem; }
 
 
     .loading { color: var(--muted); font-family: var(--mono); font-size: 0.82rem; padding: 1.5rem 0; }
@@ -193,51 +194,138 @@ function fmtDate(d) {
   return `${mo[parseInt(m)-1]} ${parseInt(day)}`;
 }
 
-function renderSignals() {
-  // Notable signals: stocks with only buys, or unusually large buy value
-  const notable = Object.entries(indexData)
-    .filter(([, d]) => d.buys_90d > 0)
-    .sort((a, b) => (b[1].net_value_90d || 0) - (a[1].net_value_90d || 0))
-    .slice(0, 6);
+// ── Sort state ─────────────────────────────────────────────────
+let sortCol = "date", sortAsc = false;
+let flatRows = [];  // all aggregated rows
 
-  if (!notable.length) return "";
-
-  const cards = notable.map(([ticker, d]) => {
-    const isBuyOnly = d.sells_90d === 0;
-    const labelCls  = isBuyOnly ? "buy" : "mixed";
-    const labelTxt  = isBuyOnly ? "Buying" : "Mixed";
-    const topBuy    = (d.transactions || [])
-      .filter(t => t.code === "P")
-      .sort((a, b) => (b.value||0) - (a.value||0))[0];
-    const detail = topBuy
-      ? `${topBuy.insider} bought ${fmtVal(topBuy.value)}`
-      : `${d.buys_90d} purchase${d.buys_90d > 1 ? "s" : ""} recorded`;
-    const meta = topBuy ? fmtDate(topBuy.date) : "";
-
-    return `<a class="signal-card" href="insiders/${ticker}-insider-trading.html">
-      <div class="signal-card-top">
-        <span class="signal-ticker">${ticker}</span>
-        <span class="signal-label ${labelCls}">${labelTxt}</span>
-      </div>
-      <div class="signal-company">${d.company || ""}</div>
-      <div class="signal-detail">${detail}</div>
-      <div class="signal-meta">${meta}</div>
-    </a>`;
-  }).join("");
-
-  return `
-    <div class="section-head">
-      <h2>Notable Insider Purchases</h2>
-      <span class="section-sub">Stocks with recent open market buying activity</span>
-    </div>
-    <div class="signals-grid">${cards}</div>`;
+function fmtShares(n) {
+  if (!n) return "—";
+  if (n >= 1e6) return (n/1e6).toFixed(1) + "M";
+  if (n >= 1e3) return (n/1e3).toFixed(0) + "K";
+  return n.toLocaleString();
 }
 
+function buildFlatRows() {
+  // Flatten all transactions from all stocks, aggregate per insider+ticker+date
+  const agg = {};  // key: ticker|insider|date|code
+  for (const [ticker, d] of Object.entries(indexData)) {
+    for (const tx of (d.transactions || [])) {
+      const key = `${ticker}|${tx.insider}|${tx.date}|${tx.code}`;
+      if (!agg[key]) {
+        agg[key] = {
+          ticker,
+          company: d.company || "",
+          insider: tx.insider,
+          title:   tx.title || "",
+          code:    tx.code,
+          date:    tx.date,
+          filed:   tx.filed,
+          shares:  0,
+          value:   0,
+          shares_after: tx.shares_after || 0,
+        };
+      }
+      agg[key].shares      += tx.shares || 0;
+      agg[key].value       += tx.value  || 0;
+      agg[key].shares_after = tx.shares_after || agg[key].shares_after;
+    }
+  }
+  // Sort default: date desc, then value desc
+  flatRows = Object.values(agg)
+    .sort((a, b) => {
+      if (b.date !== a.date) return b.date.localeCompare(a.date);
+      return (b.value || 0) - (a.value || 0);
+    })
+    .slice(0, 200);
+}
+
+function getSortVal(r, col) {
+  switch (col) {
+    case "ticker":  return r.ticker.toLowerCase();
+    case "insider": return r.insider.toLowerCase();
+    case "code":    return r.code;
+    case "shares":  return r.shares || 0;
+    case "price":   return r.shares > 0 ? r.value / r.shares : 0;
+    case "value":   return r.value || 0;
+    case "after":   return r.shares_after || 0;
+    case "date":    return r.date || "";
+    case "filed":   return r.filed || "";
+    default:        return 0;
+  }
+}
+
+function sortBy(col) {
+  if (sortCol === col) { sortAsc = !sortAsc; }
+  else { sortCol = col; sortAsc = (col === "ticker" || col === "insider"); }
+  renderTable();
+}
+
+function arrow(col) {
+  if (sortCol !== col) return ` <span style="opacity:0.3">↕</span>`;
+  return sortAsc ? " ↑" : " ↓";
+}
+
+function renderTable() {
+  const sorted = [...flatRows].sort((a, b) => {
+    let av = getSortVal(a, sortCol), bv = getSortVal(b, sortCol);
+    if (typeof av === "string") return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+    return sortAsc ? av - bv : bv - av;
+  });
+
+  const rows = sorted.map((r, i) => {
+    const isBuy  = r.code === "P";
+    const cls    = isBuy ? "buy" : "sell";
+    const valCls = isBuy ? "act-green" : "act-red";
+    const price  = r.shares > 0 && r.value > 0 ? "$" + (r.value / r.shares).toFixed(2) : "—";
+    return `<tr>
+      <td>${i + 1}</td>
+      <td class="left"><a class="act-ticker" href="insiders/${r.ticker}-insider-trading.html">${r.ticker}</a><div style="font-size:0.72rem;color:var(--muted)">${r.company}</div></td>
+      <td class="left"><div style="font-weight:500">${r.insider}</div><div style="font-size:0.7rem;color:var(--muted)">${r.title}</div></td>
+      <td><span class="act-badge ${cls}">${isBuy ? "BUY" : "SELL"}</span></td>
+      <td>${fmtShares(r.shares)}</td>
+      <td>${price}</td>
+      <td class="${valCls}">${fmtVal(r.value)}</td>
+      <td>${fmtShares(r.shares_after)}</td>
+      <td>${fmtDate(r.date)}</td>
+      <td style="color:var(--muted);font-size:0.72rem">${fmtDate(r.filed)}</td>
+    </tr>`;
+  }).join("");
+
+  const thead = `<thead><tr>
+    <th onclick="sortBy('idx')">#</th>
+    <th class="left" onclick="sortBy('ticker')">Ticker${arrow("ticker")}</th>
+    <th class="left" onclick="sortBy('insider')">Insider${arrow("insider")}</th>
+    <th onclick="sortBy('code')">Type${arrow("code")}</th>
+    <th onclick="sortBy('shares')">Shares${arrow("shares")}</th>
+    <th onclick="sortBy('price')">Price${arrow("price")}</th>
+    <th onclick="sortBy('value')">Value${arrow("value")}</th>
+    <th onclick="sortBy('after')">Owned After${arrow("after")}</th>
+    <th onclick="sortBy('date')">Trade Date${arrow("date")}</th>
+    <th onclick="sortBy('filed')">Filed${arrow("filed")}</th>
+  </tr></thead>`;
+
+  document.getElementById("main-content").innerHTML = `
+    <div class="section-head" style="margin-bottom:0.75rem;">
+      <h2>Recent Insider Transactions</h2>
+      <span class="section-sub">Last 90 days · ${sorted.length} transactions · Same-day trades per insider aggregated</span>
+    </div>
+    <div class="activity-table-wrap">
+      <table class="activity-table">
+        ${thead}
+        <tbody>${rows || '<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:2rem">No transactions found.</td></tr>'}</tbody>
+      </table>
+    </div>
+    <div class="table-note">* Price shown is total value ÷ total shares for same-day trades by the same insider. Not an actual single trade price.</div>`;
+}
 
 function renderAll() {
-  const signals = renderSignals();
-  document.getElementById("main-content").innerHTML = signals ||
-    `<div class="loading">No insider purchases recorded in the last 90 days.</div>`;
+  buildFlatRows();
+  if (!flatRows.length) {
+    document.getElementById("main-content").innerHTML =
+      `<div class="loading">No insider transactions recorded in the last 90 days.</div>`;
+    return;
+  }
+  renderTable();
 }
 
 // ── Search ──────────────────────────────────────────────────────
