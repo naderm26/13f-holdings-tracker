@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,12 +179,12 @@
   <div class="table-wrap">
     <table id="cal-table">
       <thead>
-        <tr>
-          <th onclick="sortBy('name')">Fund</th>
-          <th onclick="sortBy('quarter')" class="right">Latest Quarter</th>
-          <th onclick="sortBy('filed')" class="right">Filed</th>
-          <th onclick="sortBy('next')" class="right">Next Quarter End</th>
-          <th onclick="sortBy('due')" class="right">Filing Due</th>
+        <tr id="cal-head">
+          <th onclick="sortBy('name')" data-col="name">Fund</th>
+          <th onclick="sortBy('quarter')" data-col="quarter" class="right">Latest Quarter</th>
+          <th onclick="sortBy('filed')" data-col="filed" class="right">Filed</th>
+          <th onclick="sortBy('next')" data-col="next" class="right">Next Quarter End</th>
+          <th onclick="sortBy('due')" data-col="due" class="right">Filing Due</th>
         </tr>
       </thead>
       <tbody id="cal-body">
@@ -310,13 +311,18 @@
     }
 
     const sorted = [...rows].sort((a, b) => {
-      let av = a[sortCol], bv = b[sortCol];
+      let av, bv;
       if (sortCol === 'name') {
         av = a.name.toLowerCase(); bv = b.name.toLowerCase();
         return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
       }
-      if (av === null) av = sortAsc ? Infinity : -Infinity;
-      if (bv === null) bv = sortAsc ? Infinity : -Infinity;
+      if (sortCol === 'filed') {
+        av = a.filedTs; bv = b.filedTs;
+      } else {
+        av = a[sortCol]; bv = b[sortCol];
+      }
+      if (av === null || av === undefined) av = sortAsc ? Infinity : -Infinity;
+      if (bv === null || bv === undefined) bv = sortAsc ? Infinity : -Infinity;
       return sortAsc ? av - bv : bv - av;
     });
 
@@ -343,12 +349,24 @@
     }).join('') || `<tr><td colspan="5" style="text-align:center;padding:2rem;font-family:var(--mono);font-size:0.8rem;color:var(--muted);">No funds match this filter.</td></tr>`;
   }
 
+  function updateHeaderArrows() {
+    document.querySelectorAll('#cal-head th').forEach(th => {
+      const col = th.dataset.col;
+      if (!col) return;
+      // Strip existing arrows
+      th.textContent = th.textContent.replace(/ [↑↓]$/, '');
+      th.classList.remove('sorted');
+      if (col === sortCol) {
+        th.textContent += sortAsc ? ' ↑' : ' ↓';
+        th.classList.add('sorted');
+      }
+    });
+  }
+
   function sortBy(col) {
     if (sortCol === col) sortAsc = !sortAsc;
     else { sortCol = col; sortAsc = col === 'name'; }
-    // Update sorted indicators
-    document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
-    event.target.classList.add('sorted');
+    updateHeaderArrows();
     renderTable(document.querySelector('.filter-btn.active').dataset.filter);
   }
 
@@ -357,6 +375,17 @@
     btn.addEventListener('click', () => {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      // Default sort for each filter tab
+      if (btn.dataset.filter === 'filed') {
+        sortCol = 'filed'; sortAsc = false;  // newest filed first
+      } else if (btn.dataset.filter === 'all') {
+        sortCol = 'days'; sortAsc = true;    // soonest due first
+      } else if (btn.dataset.filter === 'overdue') {
+        sortCol = 'days'; sortAsc = true;    // most overdue first
+      } else if (btn.dataset.filter === 'upcoming') {
+        sortCol = 'days'; sortAsc = true;    // soonest due first
+      }
+      updateHeaderArrows();
       renderTable(btn.dataset.filter);
     });
   });
@@ -416,11 +445,13 @@
         quarter: period ? new Date(period).getTime() : null,
         due:     dueDate ? dueDate.getTime() : null,
         next:    nextQEndDate ? nextQEndDate.getTime() : null,
+        filedTs: filed ? new Date(filed).getTime() : null,
       };
     });
 
     // Default sort: days until due ascending (overdue first, then soonest)
     sortCol = 'days'; sortAsc = true;
+    updateHeaderArrows();
     renderTable('all');
   }
 
