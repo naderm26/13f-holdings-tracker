@@ -2,35 +2,33 @@ name: RSS Monitor — Auto-fetch New 13F Filings
 
 on:
   schedule:
-    - cron: '0 9 * * *'  # Every day at 9am UTC
+    - cron: '0 22 * * 1-5'  # Weekdays at 22:00 UTC (6pm ET / 7pm EDT)
   workflow_dispatch:
 
 permissions:
   contents: write
-  actions: write  # needed to trigger other workflows
+  actions: write  # needed to trigger fetch2.yml
 
 jobs:
   monitor:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check RSS feed for new filings
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check EDGAR for new filings
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python rss_monitor.py
-
-      - name: Commit seen markers
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add data/*.seen 2>/dev/null || true
-          git diff --staged --quiet || git commit -m "RSS monitor: mark seen filings"
-          git push --force || true
 
       - name: Report result
         run: cat rss_check_result.txt
