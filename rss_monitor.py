@@ -37,6 +37,8 @@ def fetch_url(url, retries=3):
 def get_latest_edgar_filing(cik):
     """
     Fetch EDGAR submissions for a fund and return the most recent 13F-HR filing date.
+    Only looks at original 13F-HR filings — amendments (13F-HR/A) are ignored here
+    because they apply to already-stored quarters and would cause false triggers.
     Returns (filed_date, accession) or (None, None) if no filing found.
     """
     cik_padded = cik.zfill(10) if not cik.startswith("0") else cik
@@ -51,7 +53,7 @@ def get_latest_edgar_filing(cik):
         dates       = filings.get("filingDate", [])
         accessions  = filings.get("accessionNumber", [])
         for i, form in enumerate(forms):
-            if form in ("13F-HR", "13F-HR/A"):
+            if form == "13F-HR":  # originals only — skip amendments
                 return dates[i], accessions[i].replace("-", "")
     except Exception as e:
         print(f"  Parse error: {e}")
@@ -59,38 +61,22 @@ def get_latest_edgar_filing(cik):
 
 def get_stored_latest(fund_id):
     """
-    Return the most recent filed date we know about for this fund.
-    Checks both the per-fund JSON and any monitor marker file.
-    The marker file stores the EDGAR date from the last trigger,
-    preventing re-triggering when fetch2 skips an amendment.
+    Return the most recent 13F-HR original filing date from our stored per-fund JSON.
+    Returns None if no data stored yet.
     """
-    best_date = None
-
-    # Check per-fund JSON
     path = f"data/{fund_id}.json"
-    if os.path.exists(path):
-        try:
-            with open(path) as f:
-                data = json.load(f)
-            quarters = data.get("quarters", {})
-            if quarters:
-                latest_q = sorted(quarters.keys(), reverse=True)[0]
-                best_date = quarters[latest_q].get("filed", None)
-        except Exception:
-            pass
-
-    # Check monitor marker file (written after triggering)
-    marker = f"data/{fund_id}_monitor_date.txt"
-    if os.path.exists(marker):
-        try:
-            with open(marker) as f:
-                marker_date = f.read().strip()
-            if marker_date and (best_date is None or marker_date > best_date):
-                best_date = marker_date
-        except Exception:
-            pass
-
-    return best_date
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path) as f:
+            data = json.load(f)
+        quarters = data.get("quarters", {})
+        if not quarters:
+            return None
+        latest_q = sorted(quarters.keys(), reverse=True)[0]
+        return quarters[latest_q].get("filed", None)
+    except Exception:
+        return None
 
 def trigger_fetch_workflow(repo, token):
     """Trigger fetch2.yml via GitHub API."""
@@ -136,23 +122,6 @@ for fund in funds:
         print(f"    EDGAR latest: {edgar_date} | Stored latest: {stored_date or 'none'}")
         funds_with_new.append(name)
         new_filing_found = True
-        # Update the stored JSON's latest quarter filed date to the EDGAR date.
-        # This prevents re-triggering tomorrow if fetch2 skips the filing
-        # (e.g. amendment for an already-stored quarter label).
-        fund_json_path = f"data/{fund_id}.json"
-        if os.path.exists(fund_json_path):
-            try:
-                with open(fund_json_path) as _f:
-                    _fd = json.load(_f)
-                _quarters = _fd.get("quarters", {})
-                if _quarters:
-                    _latest_q = sorted(_quarters.keys(), reverse=True)[0]
-                    _fd["quarters"][_latest_q]["filed"] = edgar_date
-                    with open(fund_json_path, "w") as _f:
-                        json.dump(_fd, _f)
-                    print(f"    Updated stored filed date to {edgar_date}")
-            except Exception as _e:
-                print(f"    Could not update stored date: {_e}")
         break  # one trigger is enough — fetch2.yml picks up everything
 
     time.sleep(0.3)  # be polite to EDGAR
