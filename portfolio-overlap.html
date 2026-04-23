@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,6 +242,54 @@
     const sign = val >= 0 ? "+" : "", cls = val >= 0 ? "pos" : "neg";
     return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
   }
+function quarterDeadline(q) {
+    // Returns the 13F filing deadline (45 days after quarter end) as a Date
+    const m = q.match(/^(\d{4})Q(\d)$/);
+    if (!m) return null;
+    const year = parseInt(m[1]), qn = parseInt(m[2]);
+    const quarterEnd = new Date(year, qn * 3, 0); // last day of quarter
+    const deadline   = new Date(quarterEnd);
+    deadline.setDate(deadline.getDate() + 45);
+    return deadline;
+  }
+
+  function fmtDeadline(d) {
+    if (!d) return "";
+    const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    return months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+  }
+
+  function isCurrentQuarter(q) {
+    // True if q is the most recent quarter label (first in allQuarters)
+    return allQuarters.length > 0 && q === allQuarters[0];
+  }
+
+  function isIncompleteQuarter(q) {
+    // Only flag as incomplete if:
+    // 1. It's the most recent quarter, AND
+    // 2. We haven't passed the filing deadline yet
+    if (!isCurrentQuarter(q)) return false;
+    const deadline = quarterDeadline(q);
+    if (!deadline) return false;
+    return new Date() < deadline;
+  }
+
+  function renderIncompleteWarning(q) {
+    // Remove any existing warning
+    const existing = document.getElementById("incomplete-warning");
+    if (existing) existing.remove();
+    if (!isIncompleteQuarter(q)) return;
+    const deadline = quarterDeadline(q);
+    const ql = quarterLabel(q);
+    const warn = document.createElement("div");
+    warn.id = "incomplete-warning";
+    warn.style.cssText = "margin-bottom:1rem;padding:0.75rem 1rem;background:#fef9c3;border:1px solid #fde047;border-radius:6px;font-family:var(--mono);font-size:0.78rem;color:#854d0e;line-height:1.6;";
+    warn.innerHTML = `⚠ ${ql} data may be incomplete as 13F filings are yet to be filed for this quarter by all tracked funds. The filing deadline is ${fmtDeadline(deadline)}.`;
+    // Insert between quarter selector and insights
+    const tabsWrap = document.getElementById("quarter-selector-wrap");
+    if (tabsWrap) tabsWrap.insertAdjacentElement("afterend", warn);
+  }
+
   function quarterLabel(q) { const m = q.match(/^(\d{4})Q(\d)$/); return m ? `Q${m[2]} ${m[1]}` : q; }
   function prevQuarter(q)  { const [yr,qn] = q.split("Q"); let pq=parseInt(qn)-1, py=parseInt(yr); if(pq===0){pq=4;py--;} return py+"Q"+pq; }
   function shortFundName(name) {
@@ -259,6 +308,7 @@
   }
   function selectQuarter(q) {
     activeQ = q;
+    renderIncompleteWarning(q);
     renderQuarterTabs();
     renderResults();
   }
@@ -525,13 +575,26 @@
       for (const fd of Object.values(stock.funds || {}))
         Object.keys(fd.quarters || {}).forEach(q => qSet.add(q));
 
-    // Only show quarters where ALL three default funds have filed
-    allQuarters = Array.from(qSet)
-      .filter(q => DEFAULT_FUNDS.every(fid => defaultFundQuarters[fid].has(q)))
-      .sort().reverse();
-    activeQ = allQuarters[0];
+    // Show quarters where all default funds have filed, PLUS always include current quarter
+    const allQsSorted = Array.from(qSet).sort().reverse();
+    const currentQ = allQsSorted[0];
+
+    allQuarters = allQsSorted.filter(q =>
+      q === currentQ || DEFAULT_FUNDS.every(fid => defaultFundQuarters[fid].has(q))
+    );
+
+    const currentDeadline   = quarterDeadline(currentQ);
+    // For overlap: count how many of the 82 tracked funds have filed current quarter
+    const fundLatestQMap    = stockIndexRaw.fund_latest_q || {};
+    const totalTracked      = Object.keys(fundLatestQMap).length || 1;
+    const fundsWithCurrentQ = Object.values(fundLatestQMap).filter(q => q === currentQ).length;
+    const currentQCoverage  = fundsWithCurrentQ / totalTracked;
+    const currentIsIncomplete = currentDeadline && new Date() < currentDeadline && currentQCoverage < 0.25;
+    window._fundLatestQ = fundLatestQMap;
+    activeQ = (currentIsIncomplete && allQuarters.length > 1) ? allQuarters[1] : allQuarters[0];
 
     renderQuarterTabs();
+    renderIncompleteWarning(activeQ);
 
     // Pre-select default funds
     DEFAULT_FUNDS.forEach(id => {
