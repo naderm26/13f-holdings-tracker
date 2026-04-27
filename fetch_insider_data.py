@@ -223,6 +223,24 @@ def parse_form4_xml(xml_bytes, filed_date):
 
         value = round(shares * price, 2) if price > 0 else 0
 
+        # 10b5-1 plan flag — mandatory disclosure since April 2023
+        # Field is Rule10b5One inside transactionCoding block
+        # True = pre-scheduled plan, False = discretionary, None = not disclosed (pre-2023)
+        plan_flag = None
+        coding_el = tx.find(".//transactionCoding")
+        if coding_el is not None:
+            # Try Rule10b5One (EDGAR 23.1 field name)
+            for tag in ["Rule10b5One", "rule10b5One", "Rule10b5one"]:
+                plan_el = coding_el.find(tag)
+                if plan_el is not None and plan_el.text is not None:
+                    plan_flag = plan_el.text.strip() == "1"
+                    break
+            # Also check as attribute on transactionCoding
+            if plan_flag is None:
+                v = coding_el.get("Rule10b5One") or coding_el.get("rule10b5One")
+                if v is not None:
+                    plan_flag = v == "1"
+
         transactions.append({
             "insider":      insider_name,
             "title":        insider_title,
@@ -233,6 +251,7 @@ def parse_form4_xml(xml_bytes, filed_date):
             "price":        price,
             "value":        value,
             "shares_after": int(shares_after),
+            "plan":         plan_flag,      # True=pre-scheduled, False=discretionary, None=unknown
         })
 
     return transactions
@@ -311,7 +330,17 @@ for ticker, info in PILOT_COMPANIES.items():
     print(f"\n{ticker} ({company_name})...")
 
     # Load existing data — skip accessions we already have
-    stock_data   = load_existing(ticker)
+    stock_data = load_existing(ticker)
+    # Deduplicate stored transactions (guard against prior double-fetch bugs)
+    seen_keys = set()
+    deduped = []
+    for tx in stock_data.get("transactions", []):
+        key = f"{tx.get('accession','')}|{tx.get('insider','')}|{tx.get('date','')}|{tx.get('code','')}|{tx.get('shares',0)}"
+        if key not in seen_keys:
+            seen_keys.add(key)
+            deduped.append(tx)
+    if len(deduped) < len(stock_data.get("transactions", [])):
+        stock_data["transactions"] = deduped
     existing_acc = {tx.get("accession", "") for tx in stock_data.get("transactions", [])}
 
     filings = collect_form4_filings(cik, cutoff)
