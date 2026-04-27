@@ -156,8 +156,9 @@
         <th onclick="sortTx(3)">Price</th>
         <th onclick="sortTx(4)">Value</th>
         <th onclick="sortTx(5)">Owned After</th>
-        <th onclick="sortTx(6)">Trade Date</th>
-        <th onclick="sortTx(7)">Filed</th>
+        <th onclick="sortTx(6)">Pre-scheduled</th>
+        <th onclick="sortTx(7)">Trade Date</th>
+        <th onclick="sortTx(8)">Filed</th>
       </tr>
     </thead>
     <tbody id="tx-body"></tbody>
@@ -240,8 +241,9 @@ function renderTx() {
       case 3: av = (a.shares > 0 ? a.value / a.shares : 0); bv = (b.shares > 0 ? b.value / b.shares : 0); break;
       case 4: av = a.value || 0; bv = b.value || 0; break;
       case 5: av = a.shares_after || 0; bv = b.shares_after || 0; break;
-      case 6: av = a.date || ""; bv = b.date || ""; break;
-      case 7: av = a.filed || ""; bv = b.filed || ""; break;
+      case 6: av = (a.plan === null ? 2 : a.plan ? 1 : 0); bv = (b.plan === null ? 2 : b.plan ? 1 : 0); break;
+      case 7: av = a.date || ""; bv = b.date || ""; break;
+      case 8: av = a.filed || ""; bv = b.filed || ""; break;
       default: av = 0; bv = 0;
     }
     if (av < bv) return txSortAsc ? -1 : 1;
@@ -251,7 +253,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -259,7 +261,7 @@ function renderTx() {
 
   const tbody = document.getElementById("tx-body");
   if (!sorted.length) {
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:2rem">No insider transactions in the last 90 days.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:2rem">No insider transactions in the last 90 days.</td></tr>';
     return;
   }
 
@@ -279,6 +281,11 @@ function renderTx() {
       <td class="num">${price}</td>
       <td class="num" style="color:${valCls}">${fmtVal(t.value)}</td>
       <td class="num">${fmtShares(t.shares_after)}</td>
+      <td class="num" style="font-size:0.78rem">${
+        t.plan === true ? '<span style="color:var(--muted)">Yes</span>' :
+        t.plan === false ? '<span style="color:var(--green);font-weight:500">No</span>' :
+        '<span style="color:var(--muted)">—</span>'
+      }</td>
       <td class="num">${fmtDate(t.date)}</td>
       <td class="num" style="font-size:0.68rem;color:var(--muted)">${fmtDate(t.filed)}</td>
     </tr>`;
