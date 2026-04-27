@@ -691,8 +691,25 @@ def main():
                 exited_fids.append(fid)
 
         # Skip stocks with no current holders unless they are in the S&P 500 list
-        if not holding_funds and ticker not in SP500_TICKERS:
+        # This preserves S&P 500 pages even with 0 holders (valuable for SEO)
+        # but drops obscure non-S&P500 stocks that fell out of tracked funds
+        if not holding_funds and not exited_fids and ticker not in SP500_TICKERS:
             continue
+        # Also skip stocks with only very stale exits (held >4 quarters ago) and not S&P 500
+        if not holding_funds and ticker not in SP500_TICKERS:
+            # Check if any exit was recent (within last 4 quarters)
+            all_lq = sorted(set(fund_latest_q.values()), reverse=True)
+            recent_qs = set(all_lq[:4])
+            prev_qs   = set()
+            for q in recent_qs:
+                prev_qs.add(prev_quarter(q))
+            any_recent = any(
+                any(q in recent_qs or q in prev_qs
+                    for q in stock["funds"].get(fid, {}).get("quarters", {}).keys())
+                for fid in exited_fids
+            )
+            if not any_recent:
+                continue  # truly stale, skip
 
         # Sort by portfolio weight descending
         holding_funds.sort(
