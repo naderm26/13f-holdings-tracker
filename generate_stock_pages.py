@@ -617,6 +617,10 @@ def main():
         if agg_val > 0:
             ranked.append((key, stock, agg_val))
             hedge_fund_tickers.add(ticker)
+        else:
+            # Stock was held historically but has 0 current holders — skip
+            # (still included if it's in SP500_TICKERS via the supplement logic)
+            pass
 
     ranked.sort(key=lambda x: x[2], reverse=True)
     top_stocks = ranked[:TOP_N]
@@ -659,8 +663,9 @@ def main():
             if lq and fd.get("quarters", {}).get(lq, {}).get("shares", 0) > 0:
                 q_counts[lq] = q_counts.get(lq, 0) + 1
         if not q_counts:
-            # S&P 500 stock with no fund holdings — use most recent global quarter
-            selected_q = sorted(fund_latest_q.values())[-1] if fund_latest_q else "2025Q4"
+            # No current holders — use most recent global quarter
+            all_lq = sorted(set(fund_latest_q.values()), reverse=True)
+            selected_q = all_lq[0] if all_lq else "2025Q4"
         else:
             selected_q = max(q_counts, key=q_counts.get)
         prev_q     = prev_quarter(selected_q)
@@ -685,9 +690,9 @@ def main():
             elif prev1 and prev1.get("shares", 0) > 0:
                 exited_fids.append(fid)
 
-        if not holding_funds and stock.get("funds"):
-            continue  # skip if fund data exists but nothing is holding
-        # For S&P 500 stubs with no fund data, still generate the page
+        # Skip stocks with no current holders unless they are in the S&P 500 list
+        if not holding_funds and ticker not in SP500_TICKERS:
+            continue
 
         # Sort by portfolio weight descending
         holding_funds.sort(
