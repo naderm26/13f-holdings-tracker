@@ -731,6 +731,23 @@ def main():
         generated_tickers.append(safe_ticker)
         print(f"  ✓  [{rank:3d}] {filename}")
 
+    # ── Cleanup stale pages ──────────────────────────────────────────────────
+    # Delete any stock pages that were not generated this run
+    # This removes stale pages (ETFs, dropped stocks, old tickers) automatically
+    generated_set = set(f"{t}-hedge-fund-ownership.html" for t in generated_tickers)
+    stale = []
+    for existing in OUTPUT_DIR.glob("*-hedge-fund-ownership.html"):
+        if existing.name not in generated_set:
+            stale.append(existing)
+
+    if stale:
+        print(f"\nCleaning up {len(stale)} stale pages...")
+        for f in stale:
+            f.unlink()
+            print(f"  🗑  Deleted {f.name}")
+    else:
+        print("\nNo stale pages to clean up.")
+
     update_sitemap(generated_tickers)
     print(f"\n✅  Generated {len(generated_tickers)} stock pages")
 
