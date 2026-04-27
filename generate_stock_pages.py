@@ -25,7 +25,42 @@ STOCK_INDEX  = SCRIPT_DIR / "stock_index.json"
 FUNDS_JSON   = SCRIPT_DIR / "funds.json"
 SITEMAP      = SCRIPT_DIR / "sitemap.xml"
 
-TOP_N = 200  # number of stock pages to generate
+TOP_N = 500  # number of hedge-fund-held stock pages to generate
+
+# Full S&P 500 ticker list — pages generated for these even if no tracked fund holds them
+# Update this list when S&P 500 composition changes (~quarterly)
+SP500_TICKERS = {
+    "AAPL","NVDA","MSFT","GOOGL","GOOG","AMZN","META","TSLA","BRK.B","WMT",
+    "LLY","JPM","V","XOM","MA","AVGO","HD","JNJ","COST","PG","ABBV","MRK",
+    "CVX","KO","NFLX","AMD","BAC","GE","CSCO","CRM","IBM","LIN","RTX","GS",
+    "MS","NOW","TMO","PEP","NEE","ISRG","MCD","T","TXN","CAT","VZ","PM",
+    "WFC","DIS","UNH","LOW","GEV","QCOM","ABT","DHR","CB","ACN","HON","SPGI",
+    "INTU","ETN","TJX","BLK","SYK","BKNG","PGR","MDT","PLD","ANET","ADI",
+    "COP","CME","SCHW","MO","GILD","BMY","HCA","PANW","LRCX","TMUS","NEM",
+    "SO","SBUX","CEG","COF","VRTX","DUK","MCK","NOC","AMAT","PH","APH","BA",
+    "UBER","DE","WELL","BSX","CMCSA","CRWD","AXP","MCO","MU","ORCL","ADBE",
+    "HWM","NRG","EQIX","AMP","MMC","CI","CTAS","USB","PNC","TDG","CARR","EOG",
+    "SHW","ZTS","BDX","ICE","AON","EMR","NSC","FCX","FDX","GM","MET","AFL",
+    "PCAR","OKE","PSX","CMG","ELV","HLT","FICO","REGN","KLAC","SPG","ECL",
+    "EW","GWW","NXPI","ITW","URI","D","ROP","KMB","PSA","ALL","WM","FTNT",
+    "AME","MSCI","MDLZ","CCI","MCO","AIG","IDXX","BIIB","TFC","CSGP","EXC",
+    "TROW","KEYS","LHX","GIS","A","RSG","PPG","STZ","YUM","HES","SRE","DVN",
+    "IQV","ODFL","VRSK","PRU","MCHP","TEL","PWR","ALNY","DAL","EBAY","NUE",
+    "MTD","ES","WAT","ROL","MTB","PEG","FANG","BK","FIS","WY","AVB","DLTR",
+    "FAST","VMC","RF","GPN","HPE","XEL","DOV","EIX","CF","CTSH","ZBRA","ALB",
+    "TTWO","VICI","WST","CAH","MNST","VLTO","RMD","ANSS","CBRE","CDW","LUV",
+    "FITB","DFS","DECK","AKAM","EFX","ROK","HBAN","TRGP","TRV","PCG","BAX",
+    "ACGL","LDOS","LVS","CINF","ATO","PPL","CNP","WEC","NI","IEX","MPWR",
+    "BALL","SWKS","FMC","TER","CE","NTRS","STE","L","BRO","PKG","RL","MHK",
+    "POOL","PFG","WRB","CPT","INCY","EXPD","DVA","UDR","NDAQ","TSN","IPG",
+    "LKQ","IFF","AES","AIZ","CLX","BIO","HSIC","EMN","FRT","UHS","TAP","BWA",
+    "FOXA","FOX","WYNN","CZR","MGM","CCL","RCL","NCLH","AAL","UAL","ALK",
+    "HAS","MAT","MOS","HII","CPB","SJM","CAG","HRL","K","MKC","DRI","QSR",
+    "DPZ","EAT","TXRH","ULTA","TGT","ROST","DG","BBY","GPC","AAP","AZO",
+    "ORLY","KMX","AN","WBA","CVS","HUM","CNC","MOH","HIG","LNC","UNM","IVZ",
+    "BEN","STT","ZION","CMA","FHN","SBCF","WTFC","EWBC","NWBI","FULT","PACW",
+    "WAL","CBSH","UMBF","FFIN","BOKF","BPOP","GBCI","CVBF",
+}
 
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -105,6 +140,12 @@ def build_insights(stock, holding_funds, exited_fids, fund_map, fund_totals, sel
 
     # S1: Concentration
     fund_count = len(holding_funds)
+
+    # S&P 500 stocks with no tracked fund holdings — return early with simple message
+    if fund_count == 0:
+        sentences.append(f"{stock_label} is not currently held by any of the {total_funds} hedge funds tracked on 13FAI.")
+        return "<ul>" + "".join(f"<li>{s}</li>" for s in sentences) + "</ul>"
+
     by_pct = sorted(
         [x for x in holding_funds if fund_totals.get(x["fid"], {}).get(selected_q, 0) > 0],
         key=lambda x: x["latest"]["value"] / fund_totals[x["fid"]][selected_q],
@@ -561,11 +602,11 @@ def main():
 
     # Rank stocks by aggregate hedge fund value (latest quarter only)
     ranked = []
+    hedge_fund_tickers = set()
     for key, stock in stock_index.items():
         ticker = stock.get("ticker", "")
-        if not ticker:
-            continue  # skip unmapped stocks
-        # Sum value across all funds at their latest quarter
+        if not ticker or "/" in ticker:
+            continue  # skip unmapped or slash tickers
         agg_val = 0
         for fid, fd in stock["funds"].items():
             lq = fund_latest_q.get(fid)
@@ -575,14 +616,36 @@ def main():
                     agg_val += qd.get("value", 0)
         if agg_val > 0:
             ranked.append((key, stock, agg_val))
+            hedge_fund_tickers.add(ticker)
 
     ranked.sort(key=lambda x: x[2], reverse=True)
     top_stocks = ranked[:TOP_N]
-    print(f"Generating {len(top_stocks)} stock pages...")
+
+    # Add S&P 500 stocks not already covered by hedge fund holdings
+    sp500_only = []
+    for ticker in sorted(SP500_TICKERS):
+        if "/" in ticker or ticker in hedge_fund_tickers:
+            continue  # already covered or invalid
+        # Check if ticker exists in stock_index under any key
+        stock = None
+        for key, s in stock_index.items():
+            if s.get("ticker") == ticker:
+                stock = (key, s, 0)
+                break
+        if stock:
+            sp500_only.append(stock)
+        else:
+            # Create a minimal stub for S&P 500 stocks not in index at all
+            sp500_only.append((ticker, {
+                "ticker": ticker, "name": ticker, "cusip": "", "funds": {}
+            }, 0))
+
+    print(f"Generating {len(top_stocks)} hedge-fund stock pages + {len(sp500_only)} S&P 500 supplement pages...")
+    all_stocks = top_stocks + sp500_only
 
     generated_tickers = []
 
-    for rank, (key, stock, _) in enumerate(top_stocks, 1):
+    for rank, (key, stock, _) in enumerate(all_stocks, 1):
         ticker = stock.get("ticker", key)
         print(f"DEBUG rank={rank} ticker={repr(ticker)}")
         if "/" in ticker:
@@ -596,8 +659,10 @@ def main():
             if lq and fd.get("quarters", {}).get(lq, {}).get("shares", 0) > 0:
                 q_counts[lq] = q_counts.get(lq, 0) + 1
         if not q_counts:
-            continue
-        selected_q = max(q_counts, key=q_counts.get)
+            # S&P 500 stock with no fund holdings — use most recent global quarter
+            selected_q = sorted(fund_latest_q.values())[-1] if fund_latest_q else "2025Q4"
+        else:
+            selected_q = max(q_counts, key=q_counts.get)
         prev_q     = prev_quarter(selected_q)
         prev_yr_q  = prev_year_quarter(selected_q)
 
@@ -620,14 +685,19 @@ def main():
             elif prev1 and prev1.get("shares", 0) > 0:
                 exited_fids.append(fid)
 
-        if not holding_funds:
-            continue
+        if not holding_funds and stock.get("funds"):
+            continue  # skip if fund data exists but nothing is holding
+        # For S&P 500 stubs with no fund data, still generate the page
 
         # Sort by portfolio weight descending
         holding_funds.sort(
             key=lambda x: x["latest"]["value"] / fund_totals.get(x["fid"], {}).get(selected_q, 1) if fund_totals.get(x["fid"], {}).get(selected_q, 0) > 0 else 0,
             reverse=True
         )
+
+        # Handle S&P 500 stocks with no hedge fund holdings
+        if not holding_funds and not exited_fids:
+            selected_q = sorted(fund_latest_q.values())[-1] if fund_latest_q else "2025Q4"
 
         html = render_page(stock, holding_funds, exited_fids, fund_map, fund_totals, selected_q, total_funds, safe_ticker)
         filename = f"{safe_ticker}-hedge-fund-ownership.html"
