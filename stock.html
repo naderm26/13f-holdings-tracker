@@ -980,6 +980,7 @@
             <td>${price}</td>
             <td class="${valCls}">${fmtInsiderVal(t.value)}</td>
             <td>${fmtSharesI(t.shares_after)}</td>
+            <td style="font-size:0.78rem">${t.plan === true ? '<span style="color:var(--muted)">Yes</span>' : '—'}</td>
             <td>${fmtInsiderDate(t.date)}</td>
             <td style="font-size:0.68rem;color:var(--muted)">${fmtInsiderDate(t.filed)}</td>
           </tr>`;
@@ -1000,17 +1001,22 @@
             <table class="insider-table">
               <thead><tr>
                 <th style="width:2.5rem">#</th>
-                <th class="left" style="width:25%">Insider</th>
+                <th class="left" style="width:22%">Insider</th>
                 <th>Type</th>
                 <th>Shares</th>
-                <th>Price</th>
+                <th>Price *</th>
                 <th>Value</th>
                 <th>Owned After</th>
+                <th>Pre-scheduled †</th>
                 <th>Trade Date</th>
                 <th>Filed</th>
               </tr></thead>
               <tbody>${rows}</tbody>
             </table>
+            </div>
+            <div style="margin-top:0.5rem;font-family:var(--mono);font-size:0.68rem;color:var(--muted);line-height:1.8;">
+              * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
+              † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
             </div>
           </div>`;
       })
