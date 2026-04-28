@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -144,11 +160,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=TMO">hedge fund ownership of TMO</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=TMO" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of TMO</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -169,9 +185,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -183,7 +199,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Shafer Michael D", "title": "Executive Vice President", "date": "2026-03-11", "filed": "2026-03-12", "code": "S", "shares": 1607, "price": 499.4, "value": 802535.8, "shares_after": 20949, "plan": true, "accession": "0000097745-26-000064"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 20, "price": 503.66, "value": 10073.2, "shares_after": 127905, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 60, "price": 505.76, "value": 30345.6, "shares_after": 127845, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 58, "price": 507.54, "value": 29437.32, "shares_after": 127787, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 99, "price": 509.66, "value": 50456.34, "shares_after": 127688, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 214, "price": 511.78, "value": 109520.92, "shares_after": 127474, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 411, "price": 512.73, "value": 210732.03, "shares_after": 127063, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 1133, "price": 513.71, "value": 582033.43, "shares_after": 125930, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 570, "price": 514.71, "value": 293384.7, "shares_after": 125360, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 348, "price": 515.64, "value": 179442.72, "shares_after": 125012, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 201, "price": 516.73, "value": 103862.73, "shares_after": 124811, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 106, "price": 517.83, "value": 54889.98, "shares_after": 124705, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 516, "price": 519.13, "value": 267871.08, "shares_after": 124189, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 264, "price": 519.74, "value": 137211.36, "shares_after": 123925, "plan": true, "accession": "0000097745-26-000058"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 447, "price": 509.89, "value": 227920.83, "shares_after": 128478, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 678, "price": 510.71, "value": 346261.38, "shares_after": 127800, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 1370, "price": 511.8, "value": 701166.0, "shares_after": 126430, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 1241, "price": 512.92, "value": 636533.72, "shares_after": 125189, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 815, "price": 513.63, "value": 418608.45, "shares_after": 124374, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 212, "price": 514.86, "value": 109150.32, "shares_after": 124162, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 119, "price": 515.77, "value": 61376.63, "shares_after": 124043, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-04", "filed": "2026-03-05", "code": "S", "shares": 118, "price": 516.75, "value": 60976.5, "shares_after": 123925, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 360, "price": 495.29, "value": 178304.4, "shares_after": 128565, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 480, "price": 496.84, "value": 238483.2, "shares_after": 128085, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 680, "price": 498.14, "value": 338735.2, "shares_after": 127405, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 240, "price": 499.75, "value": 119940.0, "shares_after": 127165, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 382, "price": 500.55, "value": 191210.1, "shares_after": 126783, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 360, "price": 501.95, "value": 180702.0, "shares_after": 126423, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 120, "price": 502.59, "value": 60310.8, "shares_after": 126303, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 120, "price": 504.06, "value": 60487.2, "shares_after": 126183, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 448, "price": 506.74, "value": 227019.52, "shares_after": 125735, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 931, "price": 507.9, "value": 472854.9, "shares_after": 124804, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 759, "price": 508.95, "value": 386293.05, "shares_after": 124045, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "CASPER MARC N", "title": "Chairman & CEO", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 120, "price": 509.62, "value": 61154.4, "shares_after": 123925, "plan": true, "accession": "0000097745-26-000055"}, {"insider": "Pettiti Gianluca", "title": "Executive Vice President", "date": "2026-02-09", "filed": "2026-02-11", "code": "S", "shares": 400, "price": 541.2, "value": 216480.0, "shares_after": 20752, "plan": true, "accession": "0000097745-26-000014"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +273,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -296,6 +312,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>

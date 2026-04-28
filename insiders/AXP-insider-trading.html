@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -146,11 +162,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=AXP">hedge fund ownership of AXP</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=AXP" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of AXP</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -171,9 +187,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -185,7 +201,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2026-03-13", "filed": "2026-03-13", "code": "S", "shares": 16, "price": 301.27, "value": 4820.32, "shares_after": 1486, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Lieberman Quinn Jessica", "title": "EVP - Controller", "date": "2026-03-06", "filed": "2026-03-10", "code": "S", "shares": 3032, "price": 300.02, "value": 909660.64, "shares_after": 258, "plan": false, "accession": "0000004962-26-000114"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2026-03-02", "filed": "2026-03-13", "code": "S", "shares": 24, "price": 309.85, "value": 7436.4, "shares_after": 1502, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2026-02-19", "filed": "2026-02-20", "code": "S", "shares": 2835, "price": 338.98, "value": 961008.3, "shares_after": 19867, "plan": false, "accession": "0000004962-26-000104"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2026-02-19", "filed": "2026-02-20", "code": "S", "shares": 2840, "price": 340.03, "value": 965685.2, "shares_after": 17027, "plan": false, "accession": "0000004962-26-000104"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2026-02-19", "filed": "2026-02-20", "code": "S", "shares": 4977, "price": 341.14, "value": 1697853.78, "shares_after": 12050, "plan": false, "accession": "0000004962-26-000104"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2026-02-19", "filed": "2026-02-20", "code": "S", "shares": 3348, "price": 341.95, "value": 1144848.6, "shares_after": 8702, "plan": false, "accession": "0000004962-26-000104"}, {"insider": "Grosfield Howard", "title": "Group Pres., U.S. Cons. Serv.", "date": "2026-02-12", "filed": "2026-02-13", "code": "S", "shares": 8134, "price": 346.73, "value": 2820301.82, "shares_after": 9433, "plan": false, "accession": "0000004962-26-000099"}, {"insider": "Radhakrishnan Ravikumar", "title": "Chief Information Officer", "date": "2026-02-09", "filed": "2026-02-10", "code": "S", "shares": 8362, "price": 356.14, "value": 2978042.68, "shares_after": 15583, "plan": false, "accession": "0000004962-26-000096"}, {"insider": "Radhakrishnan Ravikumar", "title": "Chief Information Officer", "date": "2026-02-09", "filed": "2026-02-10", "code": "S", "shares": 6638, "price": 357.13, "value": 2370628.94, "shares_after": 8945, "plan": false, "accession": "0000004962-26-000096"}, {"insider": "Seeger Laureen", "title": "Chief Legal Officer", "date": "2026-02-09", "filed": "2026-02-10", "code": "S", "shares": 12737, "price": 360.99, "value": 4597929.63, "shares_after": 9001, "plan": false, "accession": "0000004962-26-000095"}, {"insider": "Pickett Denise", "title": "Pres., Enterprise Shared Serv.", "date": "2026-02-05", "filed": "2026-02-06", "code": "S", "shares": 23385, "price": 356.91, "value": 8346340.35, "shares_after": 7753, "plan": false, "accession": "0000004962-26-000087"}, {"insider": "Marrs Anna", "title": "Group Pres., GMNS", "date": "2026-02-05", "filed": "2026-02-06", "code": "S", "shares": 27425, "price": 350.01, "value": 9599024.25, "shares_after": 20393, "plan": false, "accession": "0000004962-26-000086"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2025-04-09", "filed": "2026-03-13", "code": "P", "shares": 2, "price": 261.56, "value": 523.12, "shares_after": 1526, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2024-02-23", "filed": "2026-03-13", "code": "P", "shares": 2, "price": 214.64, "value": 429.28, "shares_after": 1524, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2023-12-07", "filed": "2026-03-13", "code": "P", "shares": 2, "price": 169.11, "value": 338.22, "shares_after": 1522, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2023-12-06", "filed": "2026-03-13", "code": "P", "shares": 5, "price": 168.52, "value": 842.6, "shares_after": 1520, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2023-10-17", "filed": "2026-03-13", "code": "P", "shares": 1, "price": 154.37, "value": 154.37, "shares_after": 1515, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2023-09-27", "filed": "2026-03-13", "code": "P", "shares": 2, "price": 150.01, "value": 300.02, "shares_after": 1514, "plan": false, "accession": "0000004962-26-000116"}, {"insider": "Joabar Raymond", "title": "Grp. Pres., Global Comm. Serv.", "date": "2023-09-15", "filed": "2026-03-13", "code": "P", "shares": 9, "price": 162.94, "value": 1466.46, "shares_after": 1512, "plan": false, "accession": "0000004962-26-000116"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -259,7 +275,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -298,6 +314,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>

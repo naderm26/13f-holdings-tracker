@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -144,11 +160,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=SCHW">hedge fund ownership of SCHW</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=SCHW" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of SCHW</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -169,9 +185,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -183,7 +199,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-04-27", "filed": "2026-04-27", "code": "S", "shares": 36450, "price": 90.0017, "value": 3280561.96, "shares_after": 55673384, "plan": false, "accession": "0000923738-26-000016"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-04-23", "filed": "2026-04-27", "code": "S", "shares": 36450, "price": 90.5012, "value": 3298768.74, "shares_after": 55709834, "plan": false, "accession": "0000923738-26-000016"}, {"insider": "Woolway Paul V", "title": "MD, Chief Banking Officer", "date": "2026-04-15", "filed": "2026-04-16", "code": "S", "shares": 7941, "price": 100.0046, "value": 794136.53, "shares_after": 29866, "plan": true, "accession": "0002031313-26-000005"}, {"insider": "Woolway Paul V", "title": "MD, Chief Banking Officer", "date": "2026-04-14", "filed": "2026-04-16", "code": "S", "shares": 7942, "price": 98.0033, "value": 778342.21, "shares_after": 29866, "plan": true, "accession": "0002031313-26-000005"}, {"insider": "Craig Jonathan M.", "title": "MD, Head of Retail Investing", "date": "2026-04-14", "filed": "2026-04-15", "code": "S", "shares": 21750, "price": 99.0035, "value": 2153326.12, "shares_after": 0, "plan": true, "accession": "0001733065-26-000007"}, {"insider": "Murtagh Nigel J", "title": "Chief Risk Officer", "date": "2026-04-14", "filed": "2026-04-15", "code": "S", "shares": 41297, "price": 99.0029, "value": 4088522.76, "shares_after": 57972, "plan": true, "accession": "0001649599-26-000006"}, {"insider": "Murtagh Nigel J", "title": "Chief Risk Officer", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 4463, "price": 94.4274, "value": 421429.49, "shares_after": 60712, "plan": true, "accession": "0001649599-26-000004"}, {"insider": "Murtagh Nigel J", "title": "Chief Risk Officer", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 2740, "price": 94.8993, "value": 260024.08, "shares_after": 57972, "plan": true, "accession": "0001649599-26-000004"}, {"insider": "Craig Jonathan M.", "title": "MD, Head of Investor Services", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 9032, "price": 94.4218, "value": 852817.7, "shares_after": 5449, "plan": true, "accession": "0001733065-26-000005"}, {"insider": "Craig Jonathan M.", "title": "MD, Head of Investor Services", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 5449, "price": 94.8943, "value": 517079.04, "shares_after": 0, "plan": true, "accession": "0001733065-26-000005"}, {"insider": "Howard Dennis", "title": "MD, Chief Tech, OPS & Data Off", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 6269, "price": 94.4316, "value": 591991.7, "shares_after": 14309, "plan": true, "accession": "0001825454-26-000013"}, {"insider": "Howard Dennis", "title": "MD, Chief Tech, OPS & Data Off", "date": "2026-03-03", "filed": "2026-03-05", "code": "S", "shares": 3839, "price": 94.8778, "value": 364235.87, "shares_after": 10470, "plan": true, "accession": "0001825454-26-000013"}, {"insider": "Woolway Paul V", "title": "MD, Chief Banking Officer", "date": "2026-03-03", "filed": "2026-03-03", "code": "S", "shares": 3626, "price": 94.4144, "value": 342346.61, "shares_after": 32366, "plan": true, "accession": "0002031313-26-000003"}, {"insider": "Woolway Paul V", "title": "MD, Chief Banking Officer", "date": "2026-03-03", "filed": "2026-03-03", "code": "S", "shares": 2500, "price": 94.8904, "value": 237226.0, "shares_after": 29866, "plan": true, "accession": "0002031313-26-000003"}, {"insider": "Woolway Paul V", "title": "MD, Chief Banking Officer", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 7942, "price": 94.23, "value": 748374.66, "shares_after": 43934, "plan": false, "accession": "0002031313-26-000003"}, {"insider": "Woolway Paul V", "title": "MD, Chief Banking Officer", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 7942, "price": 96.0013, "value": 762442.32, "shares_after": 35992, "plan": true, "accession": "0002031313-26-000003"}, {"insider": "Beatty Jonathan S", "title": "MD, Head of Advisor Services", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 2030, "price": 95.2974, "value": 193453.72, "shares_after": 19738, "plan": false, "accession": "0002028977-26-000005"}, {"insider": "Ellis Stephen A", "title": "Director", "date": "2026-02-26", "filed": "2026-03-03", "code": "S", "shares": 10725, "price": 96.5682, "value": 1035693.95, "shares_after": 87562, "plan": false, "accession": "0001561563-26-000005"}, {"insider": "Howard Dennis", "title": "MD, Chief Tech, OPS & Data Off", "date": "2026-02-25", "filed": "2026-02-27", "code": "S", "shares": 27903, "price": 95.02, "value": 2651343.06, "shares_after": 10470, "plan": true, "accession": "0001825454-26-000009"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-02-10", "filed": "2026-02-11", "code": "S", "shares": 32413, "price": 105.5774, "value": 3422080.27, "shares_after": 30483368, "plan": false, "accession": "0000923738-26-000009"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-02-09", "filed": "2026-02-11", "code": "S", "shares": 126200, "price": 106.5495, "value": 13446546.9, "shares_after": 30515781, "plan": false, "accession": "0000923738-26-000009"}, {"insider": "Bettinger Walter W", "title": "Co-Chairman", "date": "2026-02-06", "filed": "2026-02-10", "code": "S", "shares": 67514, "price": 104.2521, "value": 7038476.28, "shares_after": 529346, "plan": false, "accession": "0001296479-26-000005"}, {"insider": "DODDS CHRISTOPHER V", "title": "Director", "date": "2026-02-06", "filed": "2026-02-10", "code": "S", "shares": 11825, "price": 104.5509, "value": 1236314.39, "shares_after": 449406, "plan": false, "accession": "0001186004-26-000004"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-02-04", "filed": "2026-02-05", "code": "S", "shares": 67975, "price": 103.8091, "value": 7056423.57, "shares_after": 55782729, "plan": false, "accession": "0000923738-26-000006"}, {"insider": "Bettinger Walter W", "title": "Co-Chairman", "date": "2026-02-04", "filed": "2026-02-05", "code": "S", "shares": 94948, "price": 104.252, "value": 9898518.9, "shares_after": 529346, "plan": false, "accession": "0001296479-26-000003"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-02-03", "filed": "2026-02-05", "code": "S", "shares": 96625, "price": 103.7364, "value": 10023529.65, "shares_after": 55850704, "plan": false, "accession": "0000923738-26-000006"}, {"insider": "Bettinger Walter W", "title": "Co-Chairman", "date": "2026-02-03", "filed": "2026-02-05", "code": "S", "shares": 141033, "price": 103.8485, "value": 14646065.5, "shares_after": 550775, "plan": false, "accession": "0001296479-26-000003"}, {"insider": "Bettinger Walter W", "title": "Co-Chairman", "date": "2026-02-03", "filed": "2026-02-05", "code": "S", "shares": 21429, "price": 104.2429, "value": 2233821.1, "shares_after": 529346, "plan": false, "accession": "0001296479-26-000003"}, {"insider": "Morgan Peter J. III", "title": "General Counsel", "date": "2026-02-02", "filed": "2026-02-03", "code": "S", "shares": 7595, "price": 104.384, "value": 792796.48, "shares_after": 0, "plan": false, "accession": "0001792910-26-000002"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-01-29", "filed": "2026-02-02", "code": "S", "shares": 145650, "price": 103.1649, "value": 15025967.69, "shares_after": 55947329, "plan": false, "accession": "0000923738-26-000004"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-01-28", "filed": "2026-01-28", "code": "S", "shares": 44962, "price": 103.2003, "value": 4640091.89, "shares_after": 56119454, "plan": false, "accession": "0000923738-26-000002"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-01-28", "filed": "2026-01-28", "code": "S", "shares": 26475, "price": 103.2177, "value": 2732688.61, "shares_after": 56092979, "plan": false, "accession": "0000923738-26-000002"}, {"insider": "Schwab Charles R.", "title": "Co-Chairman", "date": "2026-01-26", "filed": "2026-01-28", "code": "S", "shares": 134895, "price": 103.0864, "value": 13905839.93, "shares_after": 56119454, "plan": false, "accession": "0000923738-26-000002"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +273,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -296,6 +312,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>

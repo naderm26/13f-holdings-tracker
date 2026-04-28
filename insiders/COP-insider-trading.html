@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -144,11 +160,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=COP">hedge fund ownership of COP</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=COP" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of COP</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -169,9 +185,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -183,7 +199,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Lance Ryan Michael", "title": "Chairman and CEO", "date": "2026-03-31", "filed": "2026-03-31", "code": "S", "shares": 113221, "price": 132.7085, "value": 15025389.08, "shares_after": 350000, "plan": false, "accession": "0001193125-26-134713"}, {"insider": "Rose Kelly Brunetti", "title": "SVP & General Counsel", "date": "2026-03-24", "filed": "2026-03-25", "code": "S", "shares": 7700, "price": 130.0275, "value": 1001211.75, "shares_after": 25284, "plan": false, "accession": "0001193125-26-124053"}, {"insider": "Olds Nicholas G", "title": "Executive Vice President", "date": "2026-03-23", "filed": "2026-03-23", "code": "S", "shares": 6994, "price": 127.059, "value": 888650.65, "shares_after": 5395, "plan": false, "accession": "0001193125-26-120089"}, {"insider": "Lance Ryan Michael", "title": "Chairman and CEO", "date": "2026-03-20", "filed": "2026-03-23", "code": "S", "shares": 506800, "price": 127.2565, "value": 64493594.2, "shares_after": 6835, "plan": false, "accession": "0001193125-26-119690"}, {"insider": "Hrap Heather G.", "title": "Senior Vice President", "date": "2026-03-13", "filed": "2026-03-16", "code": "S", "shares": 2654, "price": 119.68, "value": 317630.72, "shares_after": 5663, "plan": false, "accession": "0001193125-26-108304"}, {"insider": "LUNDQUIST ANDREW D", "title": "Senior Vice President", "date": "2026-03-13", "filed": "2026-03-16", "code": "S", "shares": 34500, "price": 119.68, "value": 4128960.0, "shares_after": 17469, "plan": false, "accession": "0001193125-26-108299"}, {"insider": "Olds Nicholas G", "title": "Executive Vice President", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 14522, "price": 119.3621, "value": 1733376.42, "shares_after": 12389, "plan": false, "accession": "0001193125-26-108294"}, {"insider": "HAYNES WELSH KONTESSA S", "title": "VP & Controller", "date": "2026-03-12", "filed": "2026-03-13", "code": "S", "shares": 10339, "price": 120.0702, "value": 1241405.8, "shares_after": 0, "plan": false, "accession": "0001193125-26-106204"}, {"insider": "Olds Nicholas G", "title": "Executive Vice President", "date": "2026-03-11", "filed": "2026-03-12", "code": "S", "shares": 12150, "price": 116.365, "value": 1413834.75, "shares_after": 26911, "plan": false, "accession": "0001193125-26-104133"}, {"insider": "Rose Kelly Brunetti", "title": "SVP & General Counsel", "date": "2026-03-09", "filed": "2026-03-10", "code": "S", "shares": 8500, "price": 118.0406, "value": 1003345.1, "shares_after": 32984, "plan": false, "accession": "0001193125-26-100112"}, {"insider": "LEACH TIMOTHY A", "title": "", "date": "2026-03-06", "filed": "2026-03-09", "code": "S", "shares": 40000, "price": 118.7921, "value": 4751684.0, "shares_after": 411211, "plan": false, "accession": "0001193125-26-098606"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +273,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -296,6 +312,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>

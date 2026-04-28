@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -144,11 +160,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=TXN">hedge fund ownership of TXN</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=TXN" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of TXN</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -169,9 +185,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -183,7 +199,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Leonard Shanon J", "title": "Sr. Vice President", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 18189, "price": 277.9541, "value": 5055707.12, "shares_after": 31975, "plan": false, "accession": "0000097476-26-000115"}, {"insider": "Bluedorn Todd M", "title": "Director", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 4306, "price": 274.2521, "value": 1180929.54, "shares_after": 8191, "plan": false, "accession": "0000097476-26-000114"}, {"insider": "Ron Amichai", "title": "Sr. Vice President", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 18365, "price": 272.432, "value": 5003213.68, "shares_after": 81085, "plan": false, "accession": "0000097476-26-000113"}, {"insider": "BLINN MARK A", "title": "Director", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 6000, "price": 276.65, "value": 1659900.0, "shares_after": 0, "plan": false, "accession": "0000097476-26-000112"}, {"insider": "BLINN MARK A", "title": "Director", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 6000, "price": 277.8673, "value": 1667203.8, "shares_after": 0, "plan": false, "accession": "0000097476-26-000112"}, {"insider": "BLINN MARK A", "title": "Director", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 3000, "price": 278.5284, "value": 835585.2, "shares_after": 46, "plan": false, "accession": "0000097476-26-000112"}, {"insider": "Lizardi Rafael R", "title": "Sr. Vice President & CFO", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 22065, "price": 273.7425, "value": 6040128.26, "shares_after": 103961, "plan": false, "accession": "0000097476-26-000111"}, {"insider": "Lizardi Rafael R", "title": "Sr. Vice President & CFO", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 16057, "price": 274.7035, "value": 4410914.1, "shares_after": 87904, "plan": false, "accession": "0000097476-26-000111"}, {"insider": "Lizardi Rafael R", "title": "Sr. Vice President & CFO", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 2419, "price": 275.5328, "value": 666513.84, "shares_after": 85485, "plan": false, "accession": "0000097476-26-000111"}, {"insider": "PATSLEY PAMELA H", "title": "Director", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 4306, "price": 276.1074, "value": 1188918.46, "shares_after": 34487, "plan": false, "accession": "0000097476-26-000110"}, {"insider": "Witzsche Christine", "title": "Sr. Vice President", "date": "2026-04-24", "filed": "2026-04-27", "code": "S", "shares": 3625, "price": 275.5229, "value": 998770.51, "shares_after": 25617, "plan": false, "accession": "0000097476-26-000109"}, {"insider": "Kozanian Hagop H", "title": "Sr. Vice President", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 6843, "price": 225.9488, "value": 1546167.64, "shares_after": 75425, "plan": false, "accession": "0000097476-26-000073"}, {"insider": "BAHAI AHMAD", "title": "Sr. Vice President", "date": "2026-02-11", "filed": "2026-02-12", "code": "S", "shares": 6500, "price": 230.7872, "value": 1500116.8, "shares_after": 42488, "plan": false, "accession": "0000097476-26-000071"}, {"insider": "Gary Mark", "title": "Sr. Vice President", "date": "2026-02-11", "filed": "2026-02-12", "code": "S", "shares": 12921, "price": 230.0988, "value": 2973106.59, "shares_after": 45547, "plan": false, "accession": "0000097476-26-000070"}, {"insider": "Lizardi Rafael R", "title": "Sr. Vice President & CFO", "date": "2026-02-11", "filed": "2026-02-12", "code": "S", "shares": 7096, "price": 230.7795, "value": 1637611.33, "shares_after": 85454, "plan": false, "accession": "0000097476-26-000069"}, {"insider": "Gary Mark", "title": "Sr. Vice President", "date": "2026-02-10", "filed": "2026-02-12", "code": "S", "shares": 10248, "price": 220.8331, "value": 2263097.61, "shares_after": 45547, "plan": false, "accession": "0000097476-26-000070"}, {"insider": "Lizardi Rafael R", "title": "Sr. Vice President & CFO", "date": "2026-02-10", "filed": "2026-02-12", "code": "S", "shares": 44055, "price": 220.5105, "value": 9714590.08, "shares_after": 113027, "plan": false, "accession": "0000097476-26-000069"}, {"insider": "Lizardi Rafael R", "title": "Sr. Vice President & CFO", "date": "2026-02-10", "filed": "2026-02-12", "code": "S", "shares": 20477, "price": 221.2213, "value": 4529948.56, "shares_after": 92550, "plan": false, "accession": "0000097476-26-000069"}, {"insider": "Roberts Mark T.", "title": "Sr. Vice President", "date": "2026-02-09", "filed": "2026-02-10", "code": "S", "shares": 4461, "price": 221.162, "value": 986603.68, "shares_after": 64058, "plan": false, "accession": "0000097476-26-000065"}, {"insider": "BLINN MARK A", "title": "Director", "date": "2026-02-05", "filed": "2026-02-06", "code": "S", "shares": 3144, "price": 221.5798, "value": 696646.89, "shares_after": 11670, "plan": false, "accession": "0000097476-26-000063"}, {"insider": "BAHAI AHMAD", "title": "Sr. Vice President", "date": "2026-02-05", "filed": "2026-02-06", "code": "S", "shares": 3000, "price": 223.4622, "value": 670386.6, "shares_after": 42488, "plan": false, "accession": "0000097476-26-000062"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +273,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -296,6 +312,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>

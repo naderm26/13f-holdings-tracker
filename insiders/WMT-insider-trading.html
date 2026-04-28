@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -144,11 +160,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=WMT">hedge fund ownership of WMT</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=WMT" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of WMT</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -169,9 +185,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -183,7 +199,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "McMillon C Douglas", "title": "Director", "date": "2026-04-23", "filed": "2026-04-24", "code": "S", "shares": 19416, "price": 132.2099, "value": 2566987.42, "shares_after": 4193994, "plan": false, "accession": "0001335782-26-000014"}, {"insider": "Nicholas Christopher James", "title": "Executive Vice President", "date": "2026-04-16", "filed": "2026-04-17", "code": "S", "shares": 2003, "price": 124.37, "value": 249113.11, "shares_after": 596904, "plan": false, "accession": "0001992808-26-000014"}, {"insider": "Nicholas Christopher James", "title": "Executive Vice President", "date": "2026-04-16", "filed": "2026-04-17", "code": "S", "shares": 897, "price": 125.51, "value": 112582.47, "shares_after": 596007, "plan": false, "accession": "0001992808-26-000014"}, {"insider": "Furner John R.", "title": "President & CEO", "date": "2026-04-16", "filed": "2026-04-17", "code": "S", "shares": 6703, "price": 124.63, "value": 835394.89, "shares_after": 680584, "plan": false, "accession": "0001696737-26-000014"}, {"insider": "Furner John R.", "title": "President & CEO", "date": "2026-04-16", "filed": "2026-04-17", "code": "S", "shares": 6422, "price": 125.06, "value": 803135.32, "shares_after": 674162, "plan": false, "accession": "0001696737-26-000014"}, {"insider": "Bartlett Daniel J", "title": "Executive Vice President", "date": "2026-04-15", "filed": "2026-04-17", "code": "S", "shares": 1335, "price": 124.63, "value": 166381.05, "shares_after": 636842, "plan": false, "accession": "0001579299-26-000014"}, {"insider": "McMillon C Douglas", "title": "Director", "date": "2026-03-26", "filed": "2026-03-27", "code": "S", "shares": 19416, "price": 123.1603, "value": 2391280.38, "shares_after": 4213405, "plan": false, "accession": "0001335782-26-000012"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-25", "filed": "2026-03-26", "code": "S", "shares": 1069299, "price": 122.7118, "value": 131215605.03, "shares_after": 515434920, "plan": false, "accession": "0000104169-26-000065"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-25", "filed": "2026-03-26", "code": "S", "shares": 1910464, "price": 123.1054, "value": 235188434.91, "shares_after": 513524456, "plan": false, "accession": "0000104169-26-000065"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-24", "filed": "2026-03-26", "code": "S", "shares": 299237, "price": 122.3277, "value": 36604973.96, "shares_after": 516504219, "plan": false, "accession": "0000104169-26-000065"}, {"insider": "Furner John R.", "title": "President & CEO", "date": "2026-03-19", "filed": "2026-03-20", "code": "S", "shares": 13125, "price": 121.9595, "value": 1600718.44, "shares_after": 687286, "plan": false, "accession": "0001696737-26-000012"}, {"insider": "Bartlett Daniel J", "title": "Executive Vice President", "date": "2026-03-16", "filed": "2026-03-17", "code": "S", "shares": 1325, "price": 126.285, "value": 167327.62, "shares_after": 638177, "plan": false, "accession": "0001579299-26-000012"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-11", "filed": "2026-03-11", "code": "S", "shares": 995288, "price": 123.4979, "value": 122915977.9, "shares_after": 517232960, "plan": false, "accession": "0000104169-26-000043"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-11", "filed": "2026-03-11", "code": "S", "shares": 376237, "price": 124.5949, "value": 46877211.39, "shares_after": 516856723, "plan": false, "accession": "0000104169-26-000043"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-11", "filed": "2026-03-11", "code": "S", "shares": 18267, "price": 125.1464, "value": 2286049.29, "shares_after": 516838456, "plan": false, "accession": "0000104169-26-000043"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-09", "filed": "2026-03-11", "code": "S", "shares": 1332649, "price": 124.223, "value": 165545656.73, "shares_after": 518285393, "plan": false, "accession": "0000104169-26-000043"}, {"insider": "Walton Family Holdings Trust", "title": "10% Owner", "date": "2026-03-09", "filed": "2026-03-11", "code": "S", "shares": 57145, "price": 124.4098, "value": 7109398.02, "shares_after": 518228248, "plan": false, "accession": "0000104169-26-000043"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +273,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -296,6 +312,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>

@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -144,11 +160,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=AMD">hedge fund ownership of AMD</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=AMD" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of AMD</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -169,9 +185,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -183,7 +199,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Papermaster Mark D", "title": "Chief Technology Officer & EVP", "date": "2026-04-16", "filed": "2026-04-17", "code": "S", "shares": 27109, "price": 275.0, "value": 7454975.0, "shares_after": 1267357, "plan": false, "accession": "0000002488-26-000066"}, {"insider": "Papermaster Mark D", "title": "Chief Technology Officer & EVP", "date": "2026-04-15", "filed": "2026-04-17", "code": "S", "shares": 6000, "price": 255.54, "value": 1533240.0, "shares_after": 1294466, "plan": false, "accession": "0000002488-26-000066"}, {"insider": "Papermaster Mark D", "title": "Chief Technology Officer & EVP", "date": "2026-04-06", "filed": "2026-04-08", "code": "S", "shares": 3293, "price": 225.0, "value": 740925.0, "shares_after": 1294466, "plan": false, "accession": "0000002488-26-000064"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 16228, "price": 197.42, "value": 3203731.76, "shares_after": 3214778, "plan": false, "accession": "0000002488-26-000058"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 35587, "price": 198.2, "value": 7053343.4, "shares_after": 3179191, "plan": false, "accession": "0000002488-26-000058"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 18279, "price": 199.15, "value": 3640262.85, "shares_after": 3160912, "plan": false, "accession": "0000002488-26-000058"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 6303, "price": 199.98, "value": 1260473.94, "shares_after": 3154609, "plan": false, "accession": "0000002488-26-000058"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 4100, "price": 201.13, "value": 824633.0, "shares_after": 3150509, "plan": false, "accession": "0000002488-26-000058"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 3003, "price": 202.46, "value": 607987.38, "shares_after": 3147506, "plan": false, "accession": "0000002488-26-000058"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 1500, "price": 203.15, "value": 304725.0, "shares_after": 3146006, "plan": false, "accession": "0000002488-26-000058"}, {"insider": "GRASBY PAUL DARREN", "title": "EVP & CSO", "date": "2026-03-11", "filed": "2026-03-13", "code": "S", "shares": 7500, "price": 204.87, "value": 1536525.0, "shares_after": 129598, "plan": false, "accession": "0000002488-26-000056"}, {"insider": "Papermaster Mark D", "title": "Chief Technology Officer & EVP", "date": "2026-03-04", "filed": "2026-03-06", "code": "S", "shares": 3034, "price": 200.0, "value": 606800.0, "shares_after": 1297759, "plan": false, "accession": "0000002488-26-000054"}, {"insider": "Hahn Ava", "title": "SVP, GC & Corporate Secretary", "date": "2026-02-18", "filed": "2026-02-20", "code": "S", "shares": 286, "price": 198.65, "value": 56813.9, "shares_after": 17216, "plan": false, "accession": "0000002488-26-000042"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 690, "price": 196.78, "value": 135778.2, "shares_after": 44214, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 2355, "price": 197.73, "value": 465654.15, "shares_after": 41859, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 1513, "price": 198.73, "value": 300678.49, "shares_after": 40346, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 1431, "price": 200.36, "value": 286715.16, "shares_after": 38915, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 3564, "price": 201.41, "value": 717825.24, "shares_after": 35351, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 4254, "price": 202.35, "value": 860796.9, "shares_after": 31097, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 2134, "price": 203.49, "value": 434247.66, "shares_after": 28963, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 3215, "price": 204.6, "value": 657789.0, "shares_after": 25748, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Hu Jean X.", "title": "EVP, CFO and Treasurer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 800, "price": 205.12, "value": 164096.0, "shares_after": 24948, "plan": false, "accession": "0000002488-26-000039"}, {"insider": "Norrod Forrest Eugene", "title": "EVP & GM DESG", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 4141, "price": 215.12, "value": 890811.92, "shares_after": 304407, "plan": false, "accession": "0000002488-26-000026"}, {"insider": "Norrod Forrest Eugene", "title": "EVP & GM DESG", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 3607, "price": 216.22, "value": 779905.54, "shares_after": 300800, "plan": false, "accession": "0000002488-26-000026"}, {"insider": "Norrod Forrest Eugene", "title": "EVP & GM DESG", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 11602, "price": 217.59, "value": 2524479.18, "shares_after": 289198, "plan": false, "accession": "0000002488-26-000026"}, {"insider": "Norrod Forrest Eugene", "title": "EVP & GM DESG", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 100, "price": 217.72, "value": 21772.0, "shares_after": 289098, "plan": false, "accession": "0000002488-26-000026"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 7949, "price": 210.18, "value": 1670720.82, "shares_after": 3269527, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 16366, "price": 211.06, "value": 3454207.96, "shares_after": 3253161, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 11630, "price": 212.02, "value": 2465792.6, "shares_after": 3241531, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 19103, "price": 213.08, "value": 4070467.24, "shares_after": 3222428, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 12033, "price": 213.86, "value": 2573377.38, "shares_after": 3210395, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 6856, "price": 215.03, "value": 1474245.68, "shares_after": 3203539, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 14565, "price": 216.17, "value": 3148516.05, "shares_after": 3188974, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 14005, "price": 216.89, "value": 3037544.45, "shares_after": 3174969, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 20988, "price": 217.75, "value": 4570137.0, "shares_after": 3153981, "plan": false, "accession": "0000002488-26-000024"}, {"insider": "Su Lisa T", "title": "Chair, President & CEO", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 1505, "price": 219.18, "value": 329865.9, "shares_after": 3152476, "plan": false, "accession": "0000002488-26-000024"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +273,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -296,6 +312,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>

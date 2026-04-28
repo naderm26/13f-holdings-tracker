@@ -84,6 +84,17 @@
     footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); }
     footer a { color: var(--muted); text-decoration: none; }
     footer a:hover { color: var(--accent); }
+    .search-wrap { position: relative; }
+    .search-wrap input { font-family: var(--mono); font-size: 0.75rem; padding: 0.4rem 0.75rem 0.4rem 2rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); width: 200px; outline: none; }
+    .search-wrap input:focus { border-color: var(--accent); }
+    .search-icon { position: absolute; left: 0.6rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.9rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); right: 0; width: 280px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 100; max-height: 320px; overflow-y: auto; display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { padding: 0.6rem 0.85rem; cursor: pointer; font-size: 0.82rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .sr-ticker { font-family: var(--mono); font-weight: 600; color: #2563eb; font-size: 0.78rem; min-width: 3rem; }
+    .sr-company { color: var(--muted); font-size: 0.75rem; }
   </style>
 </head>
 <body>
@@ -105,6 +116,11 @@
         <a class="nav-link" href="../faq.html">FAQ</a>
         <a class="nav-link" href="../about.html">About</a>
       </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="insider-search" placeholder="Search insider stocks..." autocomplete="off"/>
+      <div class="search-results" id="insider-search-results"></div>
     </div>
   </div>
   <div class="header-nav-row">
@@ -144,11 +160,11 @@
   </div>
 
   <div class="cross-ref">
-    Also see: <a href="../stock.html?ticker=CVX">hedge fund ownership of CVX</a> — which institutional investors hold this stock and how positions are changing.
+    Also see: <a href="../stock.html?ticker=CVX" style="color:#2563eb;text-decoration:none;font-weight:500;">hedge fund ownership of CVX</a> — which institutional investors hold this stock and how positions are changing.
   </div>
 
   <div class="table-wrap">
-  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Insider Trades ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
@@ -169,9 +185,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
   </div>
 </main>
 
@@ -183,7 +199,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-03-30", "filed": "2026-04-01", "code": "S", "shares": 40200, "price": 213.3049, "value": 8574856.98, "shares_after": 8638, "plan": true, "accession": "0000093410-26-000105"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-03-06", "filed": "2026-03-10", "code": "S", "shares": 47200, "price": 192.12, "value": 9068064.0, "shares_after": 8558, "plan": true, "accession": "0000093410-26-000101"}, {"insider": "NELSON MARK A", "title": "Vice Chairman", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 62600, "price": 188.1138, "value": 11775923.88, "shares_after": 11337, "plan": false, "accession": "0000093410-26-000097"}, {"insider": "NELSON MARK A", "title": "Vice Chairman", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 77000, "price": 187.7643, "value": 14457851.1, "shares_after": 11337, "plan": false, "accession": "0000093410-26-000097"}, {"insider": "Wirth Michael K", "title": "Chairman and CEO", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 27672, "price": 188.0056, "value": 5202490.96, "shares_after": 185694, "plan": true, "accession": "0000093410-26-000095"}, {"insider": "Wirth Michael K", "title": "Chairman and CEO", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 86329, "price": 188.82, "value": 16300641.78, "shares_after": 99365, "plan": true, "accession": "0000093410-26-000095"}, {"insider": "Wirth Michael K", "title": "Chairman and CEO", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 64399, "price": 189.6122, "value": 12210836.07, "shares_after": 34966, "plan": true, "accession": "0000093410-26-000095"}, {"insider": "Wirth Michael K", "title": "Chairman and CEO", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 3700, "price": 190.6, "value": 705220.0, "shares_after": 31266, "plan": true, "accession": "0000093410-26-000095"}, {"insider": "Wirth Michael K", "title": "Chairman and CEO", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 90524, "price": 190.0413, "value": 17203298.64, "shares_after": 31266, "plan": false, "accession": "0000093410-26-000095"}, {"insider": "Walz Andrew Benjamin", "title": "President, DM&C", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 6600, "price": 188.5556, "value": 1244466.96, "shares_after": 5000, "plan": false, "accession": "0000093410-26-000094"}, {"insider": "Walz Andrew Benjamin", "title": "President, DM&C", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 5000, "price": 188.61, "value": 943050.0, "shares_after": 0, "plan": false, "accession": "0000093410-26-000094"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 29260, "price": 188.127, "value": 5504596.02, "shares_after": 37298, "plan": true, "accession": "0000093410-26-000084"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 23757, "price": 189.0507, "value": 4491277.48, "shares_after": 13541, "plan": true, "accession": "0000093410-26-000084"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 4983, "price": 189.8415, "value": 945980.19, "shares_after": 8558, "plan": true, "accession": "0000093410-26-000084"}, {"insider": "BONNER EIMEAR P", "title": "Chief Financial Officer", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 17400, "price": 190.6, "value": 3316440.0, "shares_after": 8427, "plan": true, "accession": "0000093410-26-000082"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 6958, "price": 184.29, "value": 1282289.82, "shares_after": 37075, "plan": true, "accession": "0000093410-26-000084"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 4900, "price": 185.6102, "value": 909489.98, "shares_after": 32175, "plan": true, "accession": "0000093410-26-000084"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 21237, "price": 186.618, "value": 3963206.47, "shares_after": 10938, "plan": true, "accession": "0000093410-26-000084"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 2380, "price": 187.2175, "value": 445577.65, "shares_after": 8558, "plan": true, "accession": "0000093410-26-000084"}, {"insider": "BONNER EIMEAR P", "title": "Chief Financial Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 5500, "price": 184.2776, "value": 1013526.8, "shares_after": 31328, "plan": true, "accession": "0000093410-26-000082"}, {"insider": "BONNER EIMEAR P", "title": "Chief Financial Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 2500, "price": 185.3335, "value": 463333.75, "shares_after": 28828, "plan": true, "accession": "0000093410-26-000082"}, {"insider": "BONNER EIMEAR P", "title": "Chief Financial Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 18100, "price": 186.5605, "value": 3376745.05, "shares_after": 10728, "plan": true, "accession": "0000093410-26-000082"}, {"insider": "BONNER EIMEAR P", "title": "Chief Financial Officer", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 2300, "price": 187.1605, "value": 430469.15, "shares_after": 8428, "plan": true, "accession": "0000093410-26-000082"}, {"insider": "GUSTAVSON JEFF B", "title": "President, New Energies", "date": "2026-02-27", "filed": "2026-03-03", "code": "S", "shares": 6667, "price": 186.0394, "value": 1240324.68, "shares_after": 3716, "plan": false, "accession": "0000093410-26-000080"}, {"insider": "Walz Andrew Benjamin", "title": "President, DM&C", "date": "2026-02-18", "filed": "2026-02-20", "code": "S", "shares": 1463, "price": 183.8345, "value": 268949.87, "shares_after": 0, "plan": false, "accession": "0000093410-26-000075"}, {"insider": "Knowles Alana K", "title": "Controller", "date": "2026-02-18", "filed": "2026-02-20", "code": "S", "shares": 2408, "price": 183.2752, "value": 441326.68, "shares_after": 0, "plan": false, "accession": "0000093410-26-000073"}, {"insider": "Booth Thomas Ryder", "title": "Chief Technology & Eng Ofr", "date": "2026-02-13", "filed": "2026-02-17", "code": "S", "shares": 1122, "price": 182.3654, "value": 204613.98, "shares_after": 0, "plan": false, "accession": "0000093410-26-000071"}, {"insider": "Booth Thomas Ryder", "title": "Chief Technology & Eng Ofr", "date": "2026-02-12", "filed": "2026-02-17", "code": "S", "shares": 10600, "price": 184.39, "value": 1954534.0, "shares_after": 1598, "plan": false, "accession": "0000093410-26-000071"}, {"insider": "Booth Thomas Ryder", "title": "Chief Technology & Eng Ofr", "date": "2026-02-12", "filed": "2026-02-17", "code": "S", "shares": 476, "price": 184.54, "value": 87841.04, "shares_after": 1122, "plan": false, "accession": "0000093410-26-000071"}, {"insider": "Walz Andrew Benjamin", "title": "President, DM&C", "date": "2026-02-12", "filed": "2026-02-17", "code": "S", "shares": 666, "price": 183.4, "value": 122144.4, "shares_after": 1463, "plan": false, "accession": "0000093410-26-000070"}, {"insider": "Booth Thomas Ryder", "title": "Chief Technology & Eng Ofr", "date": "2026-02-11", "filed": "2026-02-12", "code": "S", "shares": 5, "price": 184.77, "value": 923.85, "shares_after": 0, "plan": false, "accession": "0000093410-26-000066"}, {"insider": "Walz Andrew Benjamin", "title": "President, DM&C", "date": "2026-02-03", "filed": "2026-02-05", "code": "S", "shares": 22200, "price": 176.5338, "value": 3919050.36, "shares_after": 666, "plan": false, "accession": "0000093410-26-000047"}, {"insider": "Booth Thomas Ryder", "title": "Chief Technology & Eng Ofr", "date": "2026-02-03", "filed": "2026-02-05", "code": "S", "shares": 6000, "price": 178.4277, "value": 1070566.2, "shares_after": 476, "plan": false, "accession": "0000093410-26-000045"}, {"insider": "NELSON MARK A", "title": "Vice Chairman", "date": "2026-02-02", "filed": "2026-02-03", "code": "S", "shares": 18100, "price": 174.2806, "value": 3154478.86, "shares_after": 7161, "plan": false, "accession": "0000093410-26-000042"}, {"insider": "NELSON MARK A", "title": "Vice Chairman", "date": "2026-02-02", "filed": "2026-02-03", "code": "S", "shares": 27700, "price": 174.0926, "value": 4822365.02, "shares_after": 7161, "plan": false, "accession": "0000093410-26-000042"}, {"insider": "BONNER EIMEAR P", "title": "Chief Financial Officer", "date": "2026-01-30", "filed": "2026-02-03", "code": "S", "shares": 32100, "price": 175.0072, "value": 5617731.12, "shares_after": 4366, "plan": true, "accession": "0000093410-26-000043"}, {"insider": "Pate R. Hewitt", "title": "Chief Legal Officer", "date": "2026-01-30", "filed": "2026-02-03", "code": "S", "shares": 41134, "price": 176.4, "value": 7256037.6, "shares_after": 4169, "plan": true, "accession": "0000093410-26-000040"}, {"insider": "Knowles Alana K", "title": "Controller", "date": "2026-01-28", "filed": "2026-01-30", "code": "S", "shares": 3200, "price": 170.0, "value": 544000.0, "shares_after": 1207, "plan": true, "accession": "0000093410-26-000025"}, {"insider": "BONNER EIMEAR P", "title": "Chief Financial Officer", "date": "2026-01-28", "filed": "2026-01-30", "code": "S", "shares": 7534, "price": 170.0, "value": 1280780.0, "shares_after": 4366, "plan": true, "accession": "0000093410-26-000023"}];
 
-let txSortCol = 7;   // default: trade date
+let txSortCol = 6;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +273,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
@@ -296,6 +312,44 @@ function renderTx() {
 
 // Initial render
 renderTx();
+
+// ── Insider stock search ──────────────────────────────────────────
+(function() {
+  const input   = document.getElementById("insider-search");
+  const results = document.getElementById("insider-search-results");
+  if (!input || !results) return;
+
+  // Load insider_index.json to get company names
+  let insiderMap = {};
+  fetch("../insider_index.json")
+    .then(r => r.json())
+    .then(data => { insiderMap = data; })
+    .catch(() => {});
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.classList.remove("visible"); return; }
+    const matches = Object.entries(insiderMap)
+      .filter(([ticker, d]) =>
+        ticker.toLowerCase().includes(q) ||
+        (d.company || "").toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+    if (!matches.length) { results.classList.remove("visible"); return; }
+    results.innerHTML = matches.map(([ticker, d]) =>
+      `<div class="search-result-item" onclick="window.location='${ticker}-insider-trading.html'">
+        <span class="sr-ticker">${ticker}</span>
+        <span class="sr-company">${d.company || ""}</span>
+      </div>`
+    ).join("");
+    results.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!input.contains(e.target) && !results.contains(e.target))
+      results.classList.remove("visible");
+  });
+})();
 </script>
 </body>
 </html>
