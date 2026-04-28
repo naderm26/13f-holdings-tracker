@@ -223,6 +223,7 @@ function buildFlatRows() {
           shares:  0,
           value:   0,
           shares_after: tx.shares_after || 0,
+          plan:    tx.plan !== undefined ? tx.plan : null,
         };
       }
       agg[key].shares      += tx.shares || 0;
