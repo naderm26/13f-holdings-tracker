@@ -32,4 +32,5 @@ jobs:
           git add data/insiders/
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "chore: update insider trading data"
+          git pull --rebase origin main
           git push
