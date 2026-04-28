@@ -224,31 +224,44 @@ def parse_form4_xml(xml_bytes, filed_date):
         value = round(shares * price, 2) if price > 0 else 0
 
         # 10b5-1 plan flag — mandatory disclosure since April 2023
-        # EDGAR stores this as a footnote reference in transactionCoding
-        # or as a direct element — try all known variants
+        # In EDGAR XML the flag appears in one of two ways:
+        # 1. A <footnoteId> on transactionCoding referencing a footnote
+        #    that contains "10b5-1" — indicates pre-scheduled plan
+        # 2. Absence of any such footnote — indicates discretionary trade
+        # Note: not all filings use footnotes; some simply omit the field
         plan_flag = None
+
+        # Collect all footnote texts from the document
+        footnotes = {}
+        for fn in root.findall(".//footnote"):
+            fn_id  = fn.get("id", "")
+            fn_txt = (fn.text or "").lower()
+            if fn_id:
+                footnotes[fn_id] = fn_txt
+
+        # Check if transactionCoding has a footnoteId referencing a 10b5-1 plan
         coding_el = tx.find(".//transactionCoding")
         if coding_el is not None:
-            # Try all known EDGAR tag variants for the 10b5-1 checkbox
-            for tag in ["Rule10b5One", "rule10b5One", "Rule10b5one",
-                        "transactionRule10b5One", "isRule10b5",
-                        "rule10b51", "Rule10b51"]:
-                plan_el = coding_el.find(tag)
-                if plan_el is not None and plan_el.text is not None:
-                    plan_flag = plan_el.text.strip() in ("1", "true", "True", "yes")
+            for fn_ref in coding_el.findall("footnoteId"):
+                ref_id  = fn_ref.get("id", "") or (fn_ref.text or "").strip()
+                fn_text = footnotes.get(ref_id, "")
+                if "10b5-1" in fn_text or "10b5" in fn_text or "rule 10b5" in fn_text:
+                    plan_flag = True
                     break
-        # Also check at transaction level directly
+                elif ref_id and ref_id in footnotes:
+                    # Footnote exists but doesn't mention 10b5-1 — discretionary
+                    plan_flag = False
+
+        # If no footnote found but filing is post-April 2023, treat as discretionary
         if plan_flag is None:
-            for tag in ["Rule10b5One", "rule10b5One", "transactionRule10b5One"]:
-                plan_el = tx.find(f".//{tag}")
-                if plan_el is not None and plan_el.text is not None:
-                    plan_flag = plan_el.text.strip() in ("1", "true", "True", "yes")
-                    break
-        # Add debug logging on first transaction to help identify correct tag name
-        if plan_flag is None and not hasattr(parse_form4_xml, '_logged_tags'):
-            parse_form4_xml._logged_tags = True
-            all_tags = {el.tag for el in tx.iter()}
-            print(f"  [debug] TX tags: {sorted(all_tags)}")
+            from datetime import date as _date
+            try:
+                tx_yr = int(tx_date[:4]) if tx_date else 0
+                tx_mo = int(tx_date[5:7]) if tx_date and len(tx_date) >= 7 else 0
+                if (tx_yr, tx_mo) >= (2023, 4):
+                    plan_flag = False  # post-mandate, no plan footnote = discretionary
+            except (ValueError, TypeError):
+                pass
 
         transactions.append({
             "insider":      insider_name,
