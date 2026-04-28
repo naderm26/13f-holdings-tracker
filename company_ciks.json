@@ -398,5 +398,397 @@
   "MCO": {
     "cik": "0001059556",
     "name": "MOODYS CORP /DE/"
+  },
+  "MU": {
+    "cik": "0000723125",
+    "name": "MICRON TECHNOLOGY INC"
+  },
+  "ORCL": {
+    "cik": "0001341439",
+    "name": "ORACLE CORP"
+  },
+  "ADBE": {
+    "cik": "0000796343",
+    "name": "ADOBE INC."
+  },
+  "HWM": {
+    "cik": "0000004281",
+    "name": "Howmet Aerospace Inc."
+  },
+  "NRG": {
+    "cik": "0001013871",
+    "name": "NRG ENERGY, INC."
+  },
+  "EQIX": {
+    "cik": "0001101239",
+    "name": "EQUINIX INC"
+  },
+  "AMP": {
+    "cik": "0000820027",
+    "name": "AMERIPRISE FINANCIAL INC"
+  },
+  "CI": {
+    "cik": "0001739940",
+    "name": "Cigna Group"
+  },
+  "CTAS": {
+    "cik": "0000723254",
+    "name": "CINTAS CORP"
+  },
+  "USB": {
+    "cik": "0000036104",
+    "name": "US BANCORP \\DE\\"
+  },
+  "PNC": {
+    "cik": "0000713676",
+    "name": "PNC FINANCIAL SERVICES GROUP, INC."
+  },
+  "TDG": {
+    "cik": "0001260221",
+    "name": "TransDigm Group INC"
+  },
+  "CARR": {
+    "cik": "0001783180",
+    "name": "CARRIER GLOBAL Corp"
+  },
+  "EOG": {
+    "cik": "0000821189",
+    "name": "EOG RESOURCES INC"
+  },
+  "SHW": {
+    "cik": "0000089800",
+    "name": "SHERWIN WILLIAMS CO"
+  },
+  "ZTS": {
+    "cik": "0001555280",
+    "name": "Zoetis Inc."
+  },
+  "BDX": {
+    "cik": "0000010795",
+    "name": "BECTON DICKINSON & CO"
+  },
+  "ICE": {
+    "cik": "0001571949",
+    "name": "Intercontinental Exchange, Inc."
+  },
+  "AON": {
+    "cik": "0000315293",
+    "name": "Aon plc"
+  },
+  "EMR": {
+    "cik": "0000032604",
+    "name": "EMERSON ELECTRIC CO"
+  },
+  "NSC": {
+    "cik": "0000702165",
+    "name": "NORFOLK SOUTHERN CORP"
+  },
+  "FCX": {
+    "cik": "0000831259",
+    "name": "FREEPORT-MCMORAN INC"
+  },
+  "FDX": {
+    "cik": "0001048911",
+    "name": "FEDEX CORP"
+  },
+  "GM": {
+    "cik": "0001467858",
+    "name": "General Motors Co"
+  },
+  "MET": {
+    "cik": "0001099219",
+    "name": "METLIFE INC"
+  },
+  "AFL": {
+    "cik": "0000004977",
+    "name": "AFLAC INC"
+  },
+  "PCAR": {
+    "cik": "0000075362",
+    "name": "PACCAR INC"
+  },
+  "OKE": {
+    "cik": "0001039684",
+    "name": "ONEOK INC /NEW/"
+  },
+  "PSX": {
+    "cik": "0001534701",
+    "name": "Phillips 66"
+  },
+  "CMG": {
+    "cik": "0001058090",
+    "name": "CHIPOTLE MEXICAN GRILL INC"
+  },
+  "ELV": {
+    "cik": "0001156039",
+    "name": "Elevance Health, Inc."
+  },
+  "HLT": {
+    "cik": "0001585689",
+    "name": "Hilton Worldwide Holdings Inc."
+  },
+  "FICO": {
+    "cik": "0000814547",
+    "name": "FAIR ISAAC CORP"
+  },
+  "REGN": {
+    "cik": "0000872589",
+    "name": "REGENERON PHARMACEUTICALS, INC."
+  },
+  "KLAC": {
+    "cik": "0000319201",
+    "name": "KLA CORP"
+  },
+  "SPG": {
+    "cik": "0001063761",
+    "name": "SIMON PROPERTY GROUP INC."
+  },
+  "ECL": {
+    "cik": "0000031462",
+    "name": "ECOLAB INC."
+  },
+  "EW": {
+    "cik": "0001099800",
+    "name": "Edwards Lifesciences Corp"
+  },
+  "GWW": {
+    "cik": "0000277135",
+    "name": "W.W. GRAINGER, INC."
+  },
+  "NXPI": {
+    "cik": "0001413447",
+    "name": "NXP Semiconductors N.V."
+  },
+  "ITW": {
+    "cik": "0000049826",
+    "name": "ILLINOIS TOOL WORKS INC"
+  },
+  "URI": {
+    "cik": "0001067701",
+    "name": "UNITED RENTALS, INC."
+  },
+  "D": {
+    "cik": "0000715957",
+    "name": "DOMINION ENERGY, INC"
+  },
+  "ROP": {
+    "cik": "0000882835",
+    "name": "ROPER TECHNOLOGIES INC"
+  },
+  "KMB": {
+    "cik": "0000055785",
+    "name": "KIMBERLY CLARK CORP"
+  },
+  "PSA": {
+    "cik": "0001393311",
+    "name": "Public Storage"
+  },
+  "ALL": {
+    "cik": "0000899051",
+    "name": "ALLSTATE CORP"
+  },
+  "WM": {
+    "cik": "0000823768",
+    "name": "WASTE MANAGEMENT INC"
+  },
+  "FTNT": {
+    "cik": "0001262039",
+    "name": "Fortinet, Inc."
+  },
+  "AME": {
+    "cik": "0001037868",
+    "name": "AMETEK INC/"
+  },
+  "MSCI": {
+    "cik": "0001408198",
+    "name": "MSCI Inc."
+  },
+  "MDLZ": {
+    "cik": "0001103982",
+    "name": "Mondelez International, Inc."
+  },
+  "CCI": {
+    "cik": "0001051470",
+    "name": "CROWN CASTLE INC."
+  },
+  "AIG": {
+    "cik": "0000005272",
+    "name": "AMERICAN INTERNATIONAL GROUP, INC."
+  },
+  "IDXX": {
+    "cik": "0000874716",
+    "name": "IDEXX LABORATORIES INC /DE"
+  },
+  "BIIB": {
+    "cik": "0000875045",
+    "name": "BIOGEN INC."
+  },
+  "TFC": {
+    "cik": "0000092230",
+    "name": "TRUIST FINANCIAL CORP"
+  },
+  "CSGP": {
+    "cik": "0001057352",
+    "name": "COSTAR GROUP, INC."
+  },
+  "EXC": {
+    "cik": "0001109357",
+    "name": "EXELON CORP"
+  },
+  "TROW": {
+    "cik": "0001113169",
+    "name": "PRICE T ROWE GROUP INC"
+  },
+  "KEYS": {
+    "cik": "0001601046",
+    "name": "Keysight Technologies, Inc."
+  },
+  "LHX": {
+    "cik": "0000202058",
+    "name": "L3HARRIS TECHNOLOGIES, INC. /DE/"
+  },
+  "GIS": {
+    "cik": "0000040704",
+    "name": "GENERAL MILLS INC"
+  },
+  "A": {
+    "cik": "0001090872",
+    "name": "AGILENT TECHNOLOGIES, INC."
+  },
+  "RSG": {
+    "cik": "0001060391",
+    "name": "REPUBLIC SERVICES, INC."
+  },
+  "PPG": {
+    "cik": "0000079879",
+    "name": "PPG INDUSTRIES INC"
+  },
+  "STZ": {
+    "cik": "0000016918",
+    "name": "CONSTELLATION BRANDS, INC."
+  },
+  "YUM": {
+    "cik": "0001041061",
+    "name": "YUM BRANDS INC"
+  },
+  "SRE": {
+    "cik": "0001032208",
+    "name": "SEMPRA"
+  },
+  "DVN": {
+    "cik": "0001090012",
+    "name": "DEVON ENERGY CORP/DE"
+  },
+  "IQV": {
+    "cik": "0001478242",
+    "name": "IQVIA HOLDINGS INC."
+  },
+  "ODFL": {
+    "cik": "0000878927",
+    "name": "OLD DOMINION FREIGHT LINE, INC."
+  },
+  "VRSK": {
+    "cik": "0001442145",
+    "name": "Verisk Analytics, Inc."
+  },
+  "PRU": {
+    "cik": "0001137774",
+    "name": "PRUDENTIAL FINANCIAL INC"
+  },
+  "MCHP": {
+    "cik": "0000827054",
+    "name": "MICROCHIP TECHNOLOGY INC"
+  },
+  "TEL": {
+    "cik": "0001385157",
+    "name": "TE Connectivity plc"
+  },
+  "PWR": {
+    "cik": "0001050915",
+    "name": "QUANTA SERVICES, INC."
+  },
+  "ALNY": {
+    "cik": "0001178670",
+    "name": "ALNYLAM PHARMACEUTICALS, INC."
+  },
+  "DAL": {
+    "cik": "0000027904",
+    "name": "DELTA AIR LINES, INC."
+  },
+  "EBAY": {
+    "cik": "0001065088",
+    "name": "EBAY INC"
+  },
+  "NUE": {
+    "cik": "0000073309",
+    "name": "NUCOR CORP"
+  },
+  "MTD": {
+    "cik": "0001037646",
+    "name": "METTLER TOLEDO INTERNATIONAL INC/"
+  },
+  "ES": {
+    "cik": "0000072741",
+    "name": "EVERSOURCE ENERGY"
+  },
+  "WAT": {
+    "cik": "0001000697",
+    "name": "WATERS CORP /DE/"
+  },
+  "ROL": {
+    "cik": "0000084839",
+    "name": "ROLLINS INC"
+  },
+  "MTB": {
+    "cik": "0000036270",
+    "name": "M&T BANK CORP"
+  },
+  "PEG": {
+    "cik": "0000788784",
+    "name": "PUBLIC SERVICE ENTERPRISE GROUP INC"
+  },
+  "FANG": {
+    "cik": "0001539838",
+    "name": "Diamondback Energy, Inc."
+  },
+  "BK": {
+    "cik": "0001390777",
+    "name": "Bank of New York Mellon Corp"
+  },
+  "FIS": {
+    "cik": "0001136893",
+    "name": "Fidelity National Information Services, Inc."
+  },
+  "WY": {
+    "cik": "0000106535",
+    "name": "WEYERHAEUSER CO"
+  },
+  "AVB": {
+    "cik": "0000915912",
+    "name": "AVALONBAY COMMUNITIES INC"
+  },
+  "DLTR": {
+    "cik": "0000935703",
+    "name": "DOLLAR TREE, INC."
+  },
+  "FAST": {
+    "cik": "0000815556",
+    "name": "FASTENAL CO"
+  },
+  "VMC": {
+    "cik": "0001396009",
+    "name": "Vulcan Materials CO"
+  },
+  "RF": {
+    "cik": "0001281761",
+    "name": "REGIONS FINANCIAL CORP"
+  },
+  "GPN": {
+    "cik": "0001123360",
+    "name": "GLOBAL PAYMENTS INC"
+  },
+  "HPE": {
+    "cik": "0001645590",
+    "name": "Hewlett Packard Enterprise Co"
   }
 }
