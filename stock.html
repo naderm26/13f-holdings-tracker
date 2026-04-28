@@ -437,8 +437,10 @@
       if (prev1data?.shares > 0) { ns1 += 0 - prev1data.shares; pt1 += prev1data.shares; }
       if (prev4data?.shares > 0) { ns4 += 0 - prev4data.shares; pt4 += prev4data.shares; }
     }
+    window._hfNetQtr = 0; // default — updated below if prior data exists
     if (pt1 > 0) {
       const p1 = (ns1 / pt1) * 100, s1 = p1 >= 0 ? "+" : "", c1 = p1 >= 0 ? "var(--green)" : "var(--red)";
+      window._hfNetQtr = p1; // store for S6 convergence sentence
       const verb = p1 >= 0 ? "increased" : "decreased";
       let yearStr = "";
       if (pt4 > 0) {
@@ -449,8 +451,6 @@
     }
 
     el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
-    // Store net trend for S6 convergence sentence (used after insider fetch)
-    window._hfNetQtr = p1; // hedge fund net QoQ % change
   }
 
   // ── Render table for selected quarter ─────────────────────────
