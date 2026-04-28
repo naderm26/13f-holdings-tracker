@@ -183,7 +183,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Creed Joseph E", "title": "Chief Executive Officer", "date": "2026-03-05", "filed": "2026-03-06", "code": "S", "shares": 420, "price": 717.01, "value": 301144.2, "shares_after": 37163, "plan": false, "accession": "0001104659-26-024558"}, {"insider": "Creed Joseph E", "title": "Chief Executive Officer", "date": "2026-03-05", "filed": "2026-03-06", "code": "S", "shares": 800, "price": 718.44, "value": 574752.0, "shares_after": 36363, "plan": false, "accession": "0001104659-26-024558"}, {"insider": "Creed Joseph E", "title": "Chief Executive Officer", "date": "2026-03-05", "filed": "2026-03-06", "code": "S", "shares": 585, "price": 719.39, "value": 420843.15, "shares_after": 35778, "plan": false, "accession": "0001104659-26-024558"}, {"insider": "Creed Joseph E", "title": "Chief Executive Officer", "date": "2026-03-05", "filed": "2026-03-06", "code": "S", "shares": 575, "price": 720.1, "value": 414057.5, "shares_after": 35203, "plan": false, "accession": "0001104659-26-024558"}, {"insider": "Creed Joseph E", "title": "Chief Executive Officer", "date": "2026-03-05", "filed": "2026-03-06", "code": "S", "shares": 120, "price": 721.0, "value": 86520.0, "shares_after": 35083, "plan": false, "accession": "0001104659-26-024558"}, {"insider": "Shurman Rodney Michael", "title": "Group President", "date": "2026-02-23", "filed": "2026-02-24", "code": "S", "shares": 2278, "price": 759.61, "value": 1730391.58, "shares_after": 1443, "plan": false, "accession": "0001104659-26-019298"}, {"insider": "Shurman Rodney Michael", "title": "Group President", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 1764, "price": 763.39, "value": 1346619.96, "shares_after": 1440, "plan": false, "accession": "0001104659-26-016984"}, {"insider": "Schaupp William E", "title": "Chief Accounting Officer", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 972, "price": 764.2, "value": 742802.4, "shares_after": 824, "plan": false, "accession": "0001104659-26-016981"}, {"insider": "Fassino Anthony D.", "title": "Group President", "date": "2026-02-13", "filed": "2026-02-17", "code": "S", "shares": 7891, "price": 776.9, "value": 6130517.9, "shares_after": 46643, "plan": false, "accession": "0001104659-26-016072"}, {"insider": "Kaiser Jason", "title": "Group President", "date": "2026-02-12", "filed": "2026-02-13", "code": "S", "shares": 1690, "price": 776.7, "value": 1312623.0, "shares_after": 8661, "plan": false, "accession": "0001104659-26-015109"}, {"insider": "De Lange Bob", "title": "Group President", "date": "2026-02-11", "filed": "2026-02-13", "code": "S", "shares": 12507, "price": 767.08, "value": 9593869.56, "shares_after": 84997, "plan": false, "accession": "0001104659-26-015112"}];
 
-let txSortCol = 6;   // default: trade date
+let txSortCol = 7;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +257,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);

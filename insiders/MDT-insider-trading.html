@@ -183,7 +183,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "KIIL HARRY SKIP", "title": "EVP & President Cardiovascular", "date": "2026-02-19", "filed": "2026-02-26", "code": "S", "shares": 1648, "price": 97.86, "value": 161273.28, "shares_after": 83644, "plan": false, "accession": "0001708062-26-000002"}, {"insider": "KIIL HARRY SKIP", "title": "EVP & President Cardiovascular", "date": "2026-02-19", "filed": "2026-02-26", "code": "S", "shares": 30568, "price": 97.6634, "value": 2985374.81, "shares_after": 53076, "plan": false, "accession": "0001708062-26-000002"}, {"insider": "KIIL HARRY SKIP", "title": "EVP & President Cardiovascular", "date": "2026-02-19", "filed": "2026-02-26", "code": "S", "shares": 19255, "price": 97.77, "value": 1882561.35, "shares_after": 33821, "plan": false, "accession": "0001708062-26-000002"}, {"insider": "KIIL HARRY SKIP", "title": "EVP & President Cardiovascular", "date": "2026-02-19", "filed": "2026-02-26", "code": "S", "shares": 668, "price": 97.825, "value": 65347.1, "shares_after": 33153, "plan": false, "accession": "0001708062-26-000002"}, {"insider": "KIIL HARRY SKIP", "title": "EVP & President Cardiovascular", "date": "2026-02-19", "filed": "2026-02-26", "code": "S", "shares": 385, "price": 97.82, "value": 37660.7, "shares_after": 32768, "plan": false, "accession": "0001708062-26-000002"}];
 
-let txSortCol = 6;   // default: trade date
+let txSortCol = 7;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +257,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);

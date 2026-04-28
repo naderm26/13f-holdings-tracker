@@ -183,7 +183,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Reuss Mark L", "title": "President", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 82489, "price": 80.1, "value": 6607368.9, "shares_after": 342959, "plan": false, "accession": "0001492362-26-000008"}, {"insider": "Reuss Mark L", "title": "President", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 147569, "price": 80.61, "value": 11895537.09, "shares_after": 342959, "plan": false, "accession": "0001492362-26-000008"}, {"insider": "Reuss Mark L", "title": "President", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 249567, "price": 80.61, "value": 20117595.87, "shares_after": 93392, "plan": false, "accession": "0001492362-26-000008"}, {"insider": "Reuss Mark L", "title": "President", "date": "2026-02-17", "filed": "2026-02-18", "code": "S", "shares": 1099, "price": 80.94, "value": 88953.06, "shares_after": 92293, "plan": false, "accession": "0001492362-26-000008"}];
 
-let txSortCol = 6;   // default: trade date
+let txSortCol = 7;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +257,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);

@@ -185,7 +185,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Slusser Sarah A", "title": "", "date": "2026-01-28", "filed": "2026-03-18", "code": "S", "shares": 10, "price": 127.57, "value": 1275.7, "shares_after": 11, "plan": false, "accession": "0001193125-26-114480"}, {"insider": "Slusser Sarah A", "title": "", "date": "2025-10-09", "filed": "2026-03-18", "code": "S", "shares": 42, "price": 114.69, "value": 4816.98, "shares_after": 21, "plan": false, "accession": "0001193125-26-114480"}, {"insider": "Slusser Sarah A", "title": "", "date": "2025-10-08", "filed": "2026-03-18", "code": "S", "shares": 18, "price": 115.87, "value": 2085.66, "shares_after": 63, "plan": false, "accession": "0001193125-26-114480"}, {"insider": "Slusser Sarah A", "title": "", "date": "2025-07-14", "filed": "2026-03-18", "code": "S", "shares": 22, "price": 108.63, "value": 2389.86, "shares_after": 81, "plan": false, "accession": "0001193125-26-114480"}, {"insider": "Slusser Sarah A", "title": "", "date": "2025-07-10", "filed": "2026-03-18", "code": "S", "shares": 19, "price": 108.58, "value": 2063.02, "shares_after": 103, "plan": false, "accession": "0001193125-26-114480"}, {"insider": "Slusser Sarah A", "title": "", "date": "2025-05-14", "filed": "2026-03-18", "code": "P", "shares": 13, "price": 107.34, "value": 1395.42, "shares_after": 122, "plan": false, "accession": "0001193125-26-114480"}];
 
-let txSortCol = 6;   // default: trade date
+let txSortCol = 7;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -259,7 +259,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);

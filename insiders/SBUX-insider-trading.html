@@ -183,7 +183,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "BREWER BRADY", "title": "ceo, International", "date": "2026-04-17", "filed": "2026-04-21", "code": "S", "shares": 588, "price": 100.0, "value": 58800.0, "shares_after": 83787, "plan": false, "accession": "0000829224-26-000068"}, {"insider": "BREWER BRADY", "title": "ceo, International", "date": "2026-04-06", "filed": "2026-04-08", "code": "S", "shares": 1641, "price": 90.0, "value": 147690.0, "shares_after": 84375, "plan": false, "accession": "0000829224-26-000066"}, {"insider": "BREWER BRADY", "title": "ceo, International", "date": "2026-03-09", "filed": "2026-03-11", "code": "S", "shares": 588, "price": 100.0, "value": 58800.0, "shares_after": 86016, "plan": false, "accession": "0000829224-26-000017"}, {"insider": "KELLY SARA", "title": "evp, chief partner officer", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 2500, "price": 97.12, "value": 242800.0, "shares_after": 59608, "plan": false, "accession": "0000829224-26-000015"}, {"insider": "BREWER BRADY", "title": "ceo, International", "date": "2026-03-05", "filed": "2026-03-09", "code": "S", "shares": 1641, "price": 97.12, "value": 159373.92, "shares_after": 86604, "plan": false, "accession": "0000829224-26-000013"}];
 
-let txSortCol = 6;   // default: trade date
+let txSortCol = 7;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +257,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);

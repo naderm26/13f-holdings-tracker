@@ -183,7 +183,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Leitzell Jeffrey R.", "title": "EVP & COO", "date": "2026-03-31", "filed": "2026-04-02", "code": "S", "shares": 5698, "price": 150.32, "value": 856523.36, "shares_after": 88045, "plan": false, "accession": "0000821189-26-000074"}, {"insider": "Janssen Ann D.", "title": "EVP & Chief Financial Officer", "date": "2026-03-19", "filed": "2026-03-23", "code": "S", "shares": 4161, "price": 140.04, "value": 582706.44, "shares_after": 100246, "plan": false, "accession": "0000821189-26-000071"}, {"insider": "Janssen Ann D.", "title": "EVP & Chief Financial Officer", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 1175, "price": 134.985, "value": 158607.38, "shares_after": 100246, "plan": false, "accession": "0000821189-26-000069"}, {"insider": "Janssen Ann D.", "title": "EVP & Chief Financial Officer", "date": "2026-03-12", "filed": "2026-03-16", "code": "S", "shares": 1422, "price": 133.76, "value": 190206.72, "shares_after": 100246, "plan": false, "accession": "0000821189-26-000069"}, {"insider": "Leitzell Jeffrey R.", "title": "EVP & COO", "date": "2026-03-03", "filed": "2026-03-04", "code": "S", "shares": 2000, "price": 130.0, "value": 260000.0, "shares_after": 88045, "plan": false, "accession": "0000821189-26-000067"}, {"insider": "Leitzell Jeffrey R.", "title": "EVP & COO", "date": "2026-03-02", "filed": "2026-03-04", "code": "S", "shares": 1774, "price": 126.57, "value": 224535.18, "shares_after": 90045, "plan": false, "accession": "0000821189-26-000067"}, {"insider": "Leitzell Jeffrey R.", "title": "EVP & COO", "date": "2026-02-19", "filed": "2026-02-23", "code": "S", "shares": 2000, "price": 125.0, "value": 250000.0, "shares_after": 61481, "plan": false, "accession": "0000821189-26-000046"}];
 
-let txSortCol = 6;   // default: trade date
+let txSortCol = 7;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +257,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);

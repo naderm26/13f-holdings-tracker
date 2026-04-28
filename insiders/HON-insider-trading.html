@@ -183,7 +183,7 @@
 // Transaction data embedded at generation time
 const TX_DATA = [{"insider": "Currier James E", "title": "Pres/CEO Aero Technologies", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 2248, "price": 243.65, "value": 547725.2, "shares_after": 4523, "plan": false, "accession": "0001986198-26-000005"}, {"insider": "West Kenneth J", "title": "Pres/CEO Process Technologies", "date": "2026-03-02", "filed": "2026-03-03", "code": "S", "shares": 873, "price": 242.7, "value": 211877.1, "shares_after": 3268, "plan": true, "accession": "0002004222-26-000004"}, {"insider": "Lieblein Grace", "title": "Director", "date": "2026-02-23", "filed": "2026-02-24", "code": "S", "shares": 2242, "price": 243.73, "value": 546442.66, "shares_after": 14888, "plan": false, "accession": "0001564342-26-000002"}, {"insider": "Lieblein Grace", "title": "Director", "date": "2026-02-23", "filed": "2026-02-24", "code": "S", "shares": 1819, "price": 243.73, "value": 443344.87, "shares_after": 15492, "plan": false, "accession": "0001564342-26-000002"}, {"insider": "Lieblein Grace", "title": "Director", "date": "2026-02-23", "filed": "2026-02-24", "code": "S", "shares": 1786, "price": 243.73, "value": 435301.78, "shares_after": 15889, "plan": false, "accession": "0001564342-26-000002"}, {"insider": "DAVIS D SCOTT", "title": "Director", "date": "2026-02-19", "filed": "2026-02-20", "code": "S", "shares": 2367, "price": 240.0, "value": 568080.0, "shares_after": 31081, "plan": false, "accession": "0001227733-26-000002"}];
 
-let txSortCol = 6;   // default: trade date
+let txSortCol = 7;   // default: trade date
 let txSortAsc = false;
 
 function fmtDate(d) {
@@ -257,7 +257,7 @@ function renderTx() {
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {
     if (i === 0) { th.textContent = "#"; return; }
     th.textContent = labels[i] + arrow(i - 1);
