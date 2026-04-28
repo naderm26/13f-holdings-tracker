@@ -224,22 +224,31 @@ def parse_form4_xml(xml_bytes, filed_date):
         value = round(shares * price, 2) if price > 0 else 0
 
         # 10b5-1 plan flag — mandatory disclosure since April 2023
-        # Field is Rule10b5One inside transactionCoding block
-        # True = pre-scheduled plan, False = discretionary, None = not disclosed (pre-2023)
+        # EDGAR stores this as a footnote reference in transactionCoding
+        # or as a direct element — try all known variants
         plan_flag = None
         coding_el = tx.find(".//transactionCoding")
         if coding_el is not None:
-            # Try Rule10b5One (EDGAR 23.1 field name)
-            for tag in ["Rule10b5One", "rule10b5One", "Rule10b5one"]:
+            # Try all known EDGAR tag variants for the 10b5-1 checkbox
+            for tag in ["Rule10b5One", "rule10b5One", "Rule10b5one",
+                        "transactionRule10b5One", "isRule10b5",
+                        "rule10b51", "Rule10b51"]:
                 plan_el = coding_el.find(tag)
                 if plan_el is not None and plan_el.text is not None:
-                    plan_flag = plan_el.text.strip() == "1"
+                    plan_flag = plan_el.text.strip() in ("1", "true", "True", "yes")
                     break
-            # Also check as attribute on transactionCoding
-            if plan_flag is None:
-                v = coding_el.get("Rule10b5One") or coding_el.get("rule10b5One")
-                if v is not None:
-                    plan_flag = v == "1"
+        # Also check at transaction level directly
+        if plan_flag is None:
+            for tag in ["Rule10b5One", "rule10b5One", "transactionRule10b5One"]:
+                plan_el = tx.find(f".//{tag}")
+                if plan_el is not None and plan_el.text is not None:
+                    plan_flag = plan_el.text.strip() in ("1", "true", "True", "yes")
+                    break
+        # Add debug logging on first transaction to help identify correct tag name
+        if plan_flag is None and not hasattr(parse_form4_xml, '_logged_tags'):
+            parse_form4_xml._logged_tags = True
+            all_tags = {el.tag for el in tx.iter()}
+            print(f"  [debug] TX tags: {sorted(all_tags)}")
 
         transactions.append({
             "insider":      insider_name,
@@ -299,19 +308,17 @@ def save_stock(ticker, company_name, cik, data):
     print(f"  Saved {path}")
 
 # ── Main ─────────────────────────────────────────────────────────
-# Use short lookback if we already have data for at least half the companies
-# (indicates this is an incremental run not an initial backfill)
-_existing_count = sum(
-    1 for t in PILOT_COMPANIES
-    if os.path.exists(f"data/insiders/{t}.json")
-)
-_is_incremental = _existing_count >= len(PILOT_COMPANIES) // 2
-_lookback = LOOKBACK_DAYS_DAILY if _is_incremental else LOOKBACK_DAYS_INIT
+# Cutoff is computed per-company:
+# - New companies (no existing JSON) use LOOKBACK_DAYS_INIT (90 days) for full backfill
+# - Existing companies use LOOKBACK_DAYS_DAILY (5 days) for incremental update
+_now = datetime.now(timezone.utc)
+_cutoff_init  = (_now - timedelta(days=LOOKBACK_DAYS_INIT)).strftime("%Y-%m-%d")
+_cutoff_daily = (_now - timedelta(days=LOOKBACK_DAYS_DAILY)).strftime("%Y-%m-%d")
 
-cutoff     = (datetime.now(timezone.utc) - timedelta(days=_lookback)).strftime("%Y-%m-%d")
 start_time = time.time()
-run_type   = "incremental" if _is_incremental else "initial backfill"
-print(f"Fetching Form 4 insider data ({run_type}, cutoff: {cutoff})...")
+_new_count      = sum(1 for t in PILOT_COMPANIES if not os.path.exists(f"data/insiders/{t}.json"))
+_existing_count = len(PILOT_COMPANIES) - _new_count
+print(f"Fetching Form 4 insider data ({_existing_count} incremental, {_new_count} new backfill)...")
 print(f"Tracking {len(PILOT_COMPANIES)} companies | timeout: {MAX_RUNTIME_MINUTES} min\n")
 
 os.makedirs("data/insiders", exist_ok=True)
@@ -328,6 +335,9 @@ for ticker, info in PILOT_COMPANIES.items():
     cik          = info["cik"]
     company_name = info["name"]
     print(f"\n{ticker} ({company_name})...")
+
+    # Per-company cutoff — new companies get full 90-day backfill
+    cutoff = _cutoff_daily if os.path.exists(f"data/insiders/{ticker}.json") else _cutoff_init
 
     # Load existing data — skip accessions we already have
     stock_data = load_existing(ticker)
