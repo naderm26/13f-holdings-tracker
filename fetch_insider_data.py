@@ -23,7 +23,10 @@ HEADERS = {"User-Agent": "13fai@proton.me"}
 # This avoids scanning 200 filings per company every day
 LOOKBACK_DAYS_INIT  = 90
 LOOKBACK_DAYS_DAILY = 5
-MAX_FILINGS         = 40   # plenty for a 5-day window; was 200 which was wasteful daily
+MAX_FILINGS         = 40
+
+# Set to a ticker to test a single company — set to None for normal run
+TEST_TICKER = None  # e.g. "AAPL"   # plenty for a 5-day window; was 200 which was wasteful daily
 
 # Transaction codes we care about — open market buys and sells only
 SIGNAL_CODES = {"P", "S"}
@@ -337,7 +340,17 @@ print(f"Tracking {len(PILOT_COMPANIES)} companies | timeout: {MAX_RUNTIME_MINUTE
 os.makedirs("data/insiders", exist_ok=True)
 timed_out = False
 
-for ticker, info in PILOT_COMPANIES.items():
+# Test mode — process single ticker only
+_companies = PILOT_COMPANIES
+if TEST_TICKER:
+    if TEST_TICKER in PILOT_COMPANIES:
+        _companies = {TEST_TICKER: PILOT_COMPANIES[TEST_TICKER]}
+        print(f"TEST MODE — processing {TEST_TICKER} only\n")
+    else:
+        print(f"TEST_TICKER '{TEST_TICKER}' not found in PILOT_COMPANIES")
+        exit(1)
+
+for ticker, info in _companies.items():
     elapsed = (time.time() - start_time) / 60
     if elapsed >= MAX_RUNTIME_MINUTES:
         print(f"\n⚠ Timeout reached ({MAX_RUNTIME_MINUTES} min). Stopping early.")
