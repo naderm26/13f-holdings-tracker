@@ -302,6 +302,7 @@ def build_page(ticker, data):
 {cross_ref_html}
 
   <div class="table-wrap">
+  <div style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);margin-bottom:0.5rem;">Recent Transactions ‡</div>
   <table>
     <thead>
       <tr id="tx-head">
