@@ -449,6 +449,8 @@
     }
 
     el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
+    // Store net trend for S6 convergence sentence (used after insider fetch)
+    window._hfNetQtr = p1; // hedge fund net QoQ % change
   }
 
   // ── Render table for selected quarter ─────────────────────────
@@ -811,6 +813,106 @@
     const mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
     return mo[parseInt(m)-1] + " " + parseInt(day) + ", " + y;
   }
+  function buildInsiderInsight(allTxs, ticker) {
+    // Build S6 convergence sentence and insider insights
+    // Returns { s6: string|null, insightHtml: string }
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 90);
+    const cutoffStr = cutoff.toISOString().slice(0, 10);
+
+    const recent = allTxs.filter(t =>
+      (t.code === "P" || t.code === "S") && t.date >= cutoffStr
+    );
+
+    if (!recent.length) return { s6: null, insightHtml: "" };
+
+    // Aggregate same-day trades per insider
+    const agg = {};
+    for (const t of recent) {
+      const key = `${t.insider}|${t.date}|${t.code}`;
+      if (!agg[key]) agg[key] = { ...t, shares: 0, value: 0 };
+      agg[key].shares += t.shares || 0;
+      agg[key].value  += t.value  || 0;
+      agg[key].shares_after = t.shares_after || agg[key].shares_after;
+    }
+    const aggTxs = Object.values(agg).sort((a, b) => b.date.localeCompare(a.date));
+
+    const buys  = aggTxs.filter(t => t.code === "P");
+    const sells = aggTxs.filter(t => t.code === "S");
+
+    // Find most interesting trade:
+    // 1. CEO/CFO any size
+    // 2. Any trade >= $1M
+    // 3. 3+ insiders same direction
+    const isCLevel = t => /chief executive|chief financial|ceo|cfo/i.test(t.title || "");
+    const topBuy  = buys.sort((a, b) => (b.value || 0) - (a.value || 0))[0];
+    const topSell = sells.sort((a, b) => (b.value || 0) - (a.value || 0))[0];
+
+    let interestingTx = null, txType = null;
+    // CEO/CFO first
+    const clevelBuy  = buys.find(isCLevel);
+    const clevelSell = sells.find(isCLevel);
+    if (clevelBuy)  { interestingTx = clevelBuy;  txType = "buy"; }
+    else if (clevelSell) { interestingTx = clevelSell; txType = "sell"; }
+    // Then $1M+ threshold
+    else if (topBuy  && (topBuy.value  || 0) >= 1e6) { interestingTx = topBuy;  txType = "buy"; }
+    else if (topSell && (topSell.value || 0) >= 1e6) { interestingTx = topSell; txType = "sell"; }
+    // Then 3+ insiders same direction
+    else if (buys.length  >= 3) { interestingTx = topBuy;  txType = "buy"; }
+    else if (sells.length >= 3) { interestingTx = topSell; txType = "sell"; }
+
+    if (!interestingTx) return { s6: null, insightHtml: "" };
+
+    const fmtV = v => {
+      if (!v) return "—";
+      const a = Math.abs(v);
+      if (a >= 1e9) return "$" + (v/1e9).toFixed(1) + "B";
+      if (a >= 1e6) return "$" + (v/1e6).toFixed(1) + "M";
+      if (a >= 1e3) return "$" + (v/1e3).toFixed(0) + "K";
+      return "$" + v.toFixed(0);
+    };
+
+    const hfNet   = window._hfNetQtr || 0;
+    const isBuy   = txType === "buy";
+    const action  = isBuy ? "purchased" : "sold";
+    const name    = interestingTx.insider;
+    const title   = interestingTx.title || "";
+    const val     = fmtV(interestingTx.value);
+    const color   = isBuy ? "var(--green)" : "var(--red)";
+
+    // Convergence check
+    const converging = (isBuy && hfNet > 0) || (!isBuy && hfNet < 0);
+    const diverging  = (isBuy && hfNet < 0) || (!isBuy && hfNet > 0);
+
+    let s6 = `${title ? title + " " : ""}${name} ${action} <span style="color:${color}"><b>${val}</b></span> in open market transactions in the last 90 days`;
+    if (converging) s6 += ` — aligning with hedge fund ${isBuy ? "buying" : "selling"}.`;
+    else if (diverging) s6 += ` — diverging from hedge fund ${isBuy ? "selling" : "buying"}.`;
+    else s6 += ".";
+
+    // Insights block for above insider table
+    const sentences = [];
+    const totalBuys  = buys.length;
+    const totalSells = sells.length;
+    const buyVal  = buys.reduce((s, t)  => s + (t.value || 0), 0);
+    const sellVal = sells.reduce((s, t) => s + (t.value || 0), 0);
+    const uniqueInsiders = new Set(aggTxs.map(t => t.insider)).size;
+
+    if (totalBuys && totalSells) {
+      sentences.push(`${totalBuys} insider purchase${totalBuys > 1 ? "s" : ""} and ${totalSells} insider sale${totalSells > 1 ? "s" : ""} from ${uniqueInsiders} insider${uniqueInsiders > 1 ? "s" : ""} in the last 90 days.`);
+    } else if (totalBuys) {
+      sentences.push(`${totalBuys} insider purchase${totalBuys > 1 ? "s" : ""} from ${uniqueInsiders} insider${uniqueInsiders > 1 ? "s" : ""} totaling <span style="color:var(--green)">${fmtV(buyVal)}</span> in the last 90 days.`);
+    } else {
+      sentences.push(`${totalSells} insider sale${totalSells > 1 ? "s" : ""} from ${uniqueInsiders} insider${uniqueInsiders > 1 ? "s" : ""} totaling <span style="color:var(--red)">${fmtV(sellVal)}</span> in the last 90 days.`);
+    }
+    if (interestingTx) {
+      const topAction = isBuy ? "The largest purchase" : "The largest sale";
+      sentences.push(`${topAction} was by ${name}${title ? " (" + title + ")" : ""} who ${action} ${fmtSharesI(interestingTx.shares)} shares worth ${fmtV(interestingTx.value)} on ${fmtInsiderDate(interestingTx.date)}.`);
+    }
+
+    const insightHtml = `<div class="insights-wrap" style="margin-bottom:0.75rem;"><div class="insights"><ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul></div></div>`;
+    return { s6, insightHtml };
+  }
+
   function renderInsiderSection(ticker) {
     const el = document.getElementById("insider-section");
     if (!el || !ticker) return;
@@ -818,7 +920,20 @@
     fetch(`${PAGES}/data/insiders/${ticker}.json`)
       .then(r => { if (!r.ok) throw new Error("not found"); return r.json(); })
       .then(data => {
-        const txs = (data.transactions || [])
+        const allTxs = data.transactions || [];
+        const { s6, insightHtml } = buildInsiderInsight(allTxs, ticker);
+
+        // Append S6 to main insights block
+        if (s6) {
+          const insightsEl = document.querySelector(".insights-wrap ul");
+          if (insightsEl) {
+            const li = document.createElement("li");
+            li.innerHTML = s6;
+            insightsEl.appendChild(li);
+          }
+        }
+
+        const txs = allTxs
           .filter(t => t.code === "P" || t.code === "S")
           .slice(0, 5); // show up to 5 most recent
 
@@ -863,11 +978,6 @@
             <td>${price}</td>
             <td class="${valCls}">${fmtInsiderVal(t.value)}</td>
             <td>${fmtSharesI(t.shares_after)}</td>
-            <td style="font-size:0.78rem">${
-              t.plan === true  ? '<span style="color:var(--muted)">Yes</span>' :
-              t.plan === false ? '<span style="color:var(--green);font-weight:500">No</span>' :
-              '<span style="color:var(--muted)">—</span>'
-            }</td>
             <td>${fmtInsiderDate(t.date)}</td>
             <td style="font-size:0.68rem;color:var(--muted)">${fmtInsiderDate(t.filed)}</td>
           </tr>`;
@@ -883,6 +993,7 @@
               <h2>Insider Trading <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);font-weight:400">— last 90 days</span></h2>
               <a href="${insiderPageUrl}">View all →</a>
             </div>
+            ${insightHtml}
             <div class="insider-table-wrap">
             <table class="insider-table">
               <thead><tr>
@@ -893,7 +1004,6 @@
                 <th>Price</th>
                 <th>Value</th>
                 <th>Owned After</th>
-                <th>Pre-scheduled</th>
                 <th>Trade Date</th>
                 <th>Filed</th>
               </tr></thead>
