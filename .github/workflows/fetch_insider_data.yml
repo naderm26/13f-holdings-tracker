@@ -3,12 +3,12 @@ name: Fetch Insider Data (Form 4)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 10 * * 1-5'  # 10am UTC weekdays — after market open
+    - cron: '0 22 * * 1,3,5'  # Mon, Wed, Fri at 10pm UTC (6pm ET)
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
-    timeout-minutes: 28  # script self-limits at 25 min; 28 gives 3 min buffer for setup/commit
+    timeout-minutes: 28
 
     permissions:
       contents: write
