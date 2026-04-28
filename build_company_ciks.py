@@ -1,6 +1,6 @@
 """
 build_company_ciks.py
-Builds company_ciks.json mapping top 100 S&P 500 tickers to EDGAR CIKs.
+Builds company_ciks.json mapping top 200 S&P 500 tickers to EDGAR CIKs.
 Uses SEC EDGAR's public company_tickers.json endpoint — no scraping needed.
 Run once, then update manually when composition changes.
 To expand coverage later, add tickers to SP500_TICKERS below.
@@ -11,22 +11,41 @@ import json
 
 HEADERS = {"User-Agent": "13fai@proton.me"}
 
-# Top 100 S&P 500 companies by market cap as of April 2026
+# Top 200 S&P 500 companies by market cap as of April 2026
 # Add more tickers here to expand coverage
 SP500_TICKERS = [
+    # 1-50
     "NVDA", "AAPL", "MSFT", "GOOGL", "GOOG", "AMZN", "META", "TSLA",
     "BRK.B", "WMT", "LLY", "JPM", "V", "XOM", "MA", "AVGO",
     "HD", "JNJ", "COST", "PG", "ABBV", "MRK", "CVX", "KO",
     "NFLX", "AMD", "BAC", "GE", "CSCO", "CRM", "IBM", "LIN",
     "RTX", "GS", "MS", "NOW", "TMO", "PEP", "NEE", "ISRG",
     "MCD", "T", "TXN", "CAT", "VZ", "PM", "WFC", "DIS",
-    "UNH", "LOW", "GEV", "QCOM", "ABT", "DHR", "CB", "ACN",
+    "UNH", "LOW",
+    # 51-100
+    "GEV", "QCOM", "ABT", "DHR", "CB", "ACN",
     "HON", "SPGI", "INTU", "ETN", "TJX", "BLK", "SYK", "BKNG",
     "PGR", "MDT", "PLD", "ANET", "ADI", "COP", "CME", "SCHW",
     "MO", "GILD", "BMY", "HCA", "PANW", "LRCX", "TMUS", "NEM",
     "SO", "SBUX", "CEG", "COF", "VRTX", "DUK", "MCK", "NOC",
     "AMAT", "PH", "APH", "BA", "UBER", "DE", "WELL", "BSX",
     "CMCSA", "CRWD", "AXP", "MCO",
+    # 101-150
+    "MU", "ORCL", "ADBE", "HWM", "NRG", "EQIX", "AMP", "MMC",
+    "CI", "CTAS", "USB", "PNC", "TDG", "CARR", "EOG", "SHW",
+    "ZTS", "BDX", "ICE", "AON", "EMR", "NSC", "FCX", "FDX",
+    "GM", "MET", "AFL", "PCAR", "OKE", "PSX", "CMG", "ELV",
+    "HLT", "FICO", "REGN", "KLAC", "SPG", "ECL", "EW", "GWW",
+    "NXPI", "ITW", "URI", "D", "ROP", "KMB", "PSA", "ALL",
+    "WM", "FTNT",
+    # 151-200
+    "AME", "MSCI", "MDLZ", "CCI", "AIG", "IDXX", "BIIB", "TFC",
+    "CSGP", "EXC", "TROW", "KEYS", "LHX", "GIS", "A", "RSG",
+    "PPG", "STZ", "YUM", "HES", "SRE", "DVN", "IQV", "ODFL",
+    "VRSK", "PRU", "MCHP", "TEL", "PWR", "ALNY", "DAL", "EBAY",
+    "NUE", "MTD", "ES", "WAT", "ROL", "MTB", "PEG", "FANG",
+    "BK", "FIS", "WY", "AVB", "DLTR", "FAST", "VMC", "RF",
+    "GPN", "HPE",
 ]
 
 # Deduplicate while preserving order
