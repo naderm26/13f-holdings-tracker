@@ -323,6 +323,7 @@ def build_page(ticker, data):
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
     Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
+    A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
     Source: SEC EDGAR Form 4 filings. For informational purposes only — not investment advice.
   </div>
 </main>
@@ -438,9 +439,7 @@ function renderTx() {{
       <td class="num" style="color:${{valCls}}">${{fmtVal(t.value)}}</td>
       <td class="num">${{fmtShares(t.shares_after)}}</td>
       <td class="num" style="font-size:0.78rem">${{
-        t.plan === true ? '<span style="color:var(--muted)">Yes</span>' :
-        t.plan === false ? '<span style="color:var(--green);font-weight:500">No</span>' :
-        '<span style="color:var(--muted)">—</span>'
+        t.plan === true ? '<span style="color:var(--muted)">Yes</span>' : '—'
       }}</td>
       <td class="num">${{fmtDate(t.date)}}</td>
       <td class="num" style="font-size:0.68rem;color:var(--muted)">${{fmtDate(t.filed)}}</td>
