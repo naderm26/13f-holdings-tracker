@@ -949,7 +949,7 @@
         el.innerHTML = `
             <div class="insider-wrap">
               <div class="insider-head">
-                <h2>Insider Trading</h2>
+                <h2>Insider Trades</h2>
                 <a href="${insiderPageUrl}">View all →</a>
               </div>
               <div class="insider-none">No open market insider transactions recorded in the last 90 days.</div>
@@ -993,7 +993,7 @@
         el.innerHTML = `
           <div class="insider-wrap">
             <div class="insider-head">
-              <h2>Insider Trading <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);font-weight:400">— last 90 days</span></h2>
+              <h2>Insider Trades ‡ <span style="font-family:var(--mono);font-size:0.72rem;color:var(--muted);font-weight:400">— last 90 days</span></h2>
               <a href="${insiderPageUrl}">View all →</a>
             </div>
             ${insightHtml}
@@ -1015,6 +1015,7 @@
             </table>
             </div>
             <div style="margin-top:0.5rem;font-family:var(--mono);font-size:0.68rem;color:var(--muted);line-height:1.8;">
+              ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
               * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
               † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
             </div>
