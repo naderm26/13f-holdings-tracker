@@ -906,7 +906,9 @@
     }
     if (interestingTx) {
       const topAction = isBuy ? "The largest purchase" : "The largest sale";
-      sentences.push(`${topAction} was by ${name}${title ? " (" + title + ")" : ""} who ${action} ${fmtSharesI(interestingTx.shares)} shares worth ${fmtV(interestingTx.value)} on ${fmtInsiderDate(interestingTx.date)}.`);
+      const _fmtSh = n => { if (!n) return "—"; if (n >= 1e6) return (n/1e6).toFixed(1) + "M"; if (n >= 1e3) return (n/1e3).toFixed(0) + "K"; return n.toLocaleString(); };
+      const _fmtDt = d => { if (!d) return "—"; try { const [y,m,day] = d.split("-"); const mo=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]; return mo[parseInt(m)-1]+" "+parseInt(day)+", "+y; } catch(e) { return d; } };
+      sentences.push(`${topAction} was by ${name}${title ? " (" + title + ")" : ""} who ${action} ${_fmtSh(interestingTx.shares)} shares worth ${fmtV(interestingTx.value)} on ${_fmtDt(interestingTx.date)}.`);
     }
 
     const insightHtml = `<div class="insights-wrap" style="margin-bottom:0.75rem;"><div class="insights"><ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul></div></div>`;
