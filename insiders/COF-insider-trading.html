@@ -155,10 +155,10 @@
         <th class="left" style="width:25%" onclick="sortTx(0)">Insider</th>
         <th onclick="sortTx(1)">Type</th>
         <th onclick="sortTx(2)">Shares</th>
-        <th onclick="sortTx(3)">Price</th>
+        <th onclick="sortTx(3)">Price *</th>
         <th onclick="sortTx(4)">Value</th>
         <th onclick="sortTx(5)">Owned After</th>
-        <th onclick="sortTx(6)">Pre-scheduled</th>
+        <th onclick="sortTx(6)">Pre-scheduled †</th>
         <th onclick="sortTx(7)">Trade Date</th>
         <th onclick="sortTx(8)">Filed</th>
       </tr>
@@ -168,9 +168,9 @@
   </div>
 
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
-    Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
-    A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
-    Source: SEC EDGAR Form 4 filings. For informational purposes only — not investment advice.
+    * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
+    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.<br/>
+    ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.
   </div>
 </main>
 
