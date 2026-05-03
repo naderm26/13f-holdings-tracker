@@ -2,6 +2,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -212,7 +213,12 @@
     .callout { background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; padding: 0.85rem 1rem; margin: 1.25rem 0; }
     .callout p { font-size: 0.875rem; line-height: 1.7; color: var(--text); }
 
-    .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+    .toc-section-label { font-family: var(--mono); font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-top: 0.5rem; margin-bottom: 0.3rem; }
+
+    /* Section heading dividers */
+    .section-heading { margin: 3rem 0 2rem; }
+    .section-heading h2 { font-size: 1.25rem; font-weight: 600; letter-spacing: 0.01em; margin-bottom: 0.3rem; }
+    .section-heading .section-sub { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); }
 
     a.inline { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--accent); }
     a.inline:hover { opacity: 0.75; }
@@ -260,11 +266,12 @@
 </header>
 
 <main>
-  <h1>Understanding 13F Filings</h1>
-  <p class="page-sub">A plain-language guide to hedge fund reporting, key terms, and how to use the data.</p>
+  <h1>13F &amp; Form 4 FAQ</h1>
+  <p class="page-sub">A plain-language guide to hedge fund 13F filings, insider Form 4 transactions, and how to use the data.</p>
 
   <nav class="toc">
     <div class="toc-label">On this page</div>
+    <div class="toc-section-label">13F Filings &amp; Hedge Fund Holdings</div>
     <a href="#what-is-13f">What is a 13F filing?</a>
     <a href="#who-files">Who is required to file?</a>
     <a href="#what-disclosed">What is and isn't disclosed?</a>
@@ -275,12 +282,18 @@
     <a href="#filing-dates">When are 13F filings due?</a>
     <a href="#concentration">Which funds have the most concentrated portfolios?</a>
     <a href="#chg-columns">What do the shares vs prior quarter and prior year columns mean?</a>
+    <div class="toc-section-label" style="margin-top:0.6rem;">Form 4 Filings &amp; Insider Trading</div>
     <a href="#form4">What is a Form 4 filing?</a>
     <a href="#ceo-buying">What does it mean when a CEO buys stock?</a>
     <a href="#insider-vs-13f">How is insider data different from 13F data?</a>
     <a href="#insider-signals">Which insider transactions are worth following?</a>
     <a href="#convergence">What does it mean when hedge funds and insiders both buy?</a>
   </nav>
+
+  <div class="section-heading">
+    <h2>13F Filings &amp; Hedge Fund Holdings</h2>
+    <p class="section-sub">Quarterly SEC filings that reveal what major institutional investors own.</p>
+  </div>
 
   <!-- Section 1 -->
   <div class="edu-section" id="what-is-13f">
@@ -376,9 +389,11 @@
   </div>
 
 
-  <hr class="divider"/>
-
-  <!-- Section: Insider Trading -->
+  <div class="section-heading" id="form4-section">
+    <hr class="divider"/>
+    <h2>Form 4 Filings &amp; Insider Trading</h2>
+    <p class="section-sub">SEC Form 4 disclosures — what corporate insiders are buying and selling with their own money.</p>
+  </div>
   <div class="edu-section" id="form4">
     <h2>What is a Form 4 filing?</h2>
     <p>A Form 4 is an SEC filing that corporate insiders — officers, directors, and owners of more than 10% of a company's shares — must submit within two business days of any transaction in their company's stock. It discloses the transaction type, number of shares, price paid, and the insider's total ownership after the trade.</p>
