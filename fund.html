@@ -9,6 +9,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -904,6 +905,33 @@
       </table>
       </div>`;
     document.getElementById("table-footnote").style.display = "block";
+
+    // ── Internal links — top holdings ────────────────────────────
+    // Show top 5 equity positions as linked tags for SEO internal linking
+    const topHoldings = equityRows
+      .filter(r => !isOption(r))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
+
+    if (topHoldings.length > 0) {
+      const links = topHoldings.map(r => {
+        const ticker = tickerMap[r.cusip] || null;
+        const href   = ticker
+          ? `stocks/${ticker}-hedge-fund-ownership.html`
+          : `stock.html?ticker=${r.cusip}`;
+        const label  = ticker || r.company;
+        return `<a href="${href}" style="font-family:var(--mono);font-size:0.72rem;color:#2563eb;text-decoration:none;padding:0.25rem 0.6rem;border:1px solid #dbeafe;border-radius:4px;background:#eff6ff;white-space:nowrap;">${label}</a>`;
+      }).join("");
+
+      const existing = document.getElementById("top-holdings-links");
+      if (existing) existing.remove();
+
+      const el = document.createElement("div");
+      el.id = "top-holdings-links";
+      el.style.cssText = "margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;";
+      el.innerHTML = `<span style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-right:0.25rem;">Top Holdings:</span>${links}`;
+      document.getElementById("table-container").appendChild(el);
+    }
   }
 
   function sort(col) {
