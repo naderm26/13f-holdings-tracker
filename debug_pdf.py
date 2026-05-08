@@ -58,8 +58,20 @@ def deep_dive(pdf_path):
         print(f"ERROR: {e}")
 
 
+def parse_merged_row(text):
+    """Same fallback parser as fetch_congress_data.py."""
+    text = text.replace("\n", " ").strip()
+    m = re.search(
+        r"^(.+?)\s+([PSE](?:\s*\((?:partial|full)\))?)\s+(\d{2}/\d{2}/\d{4})\s+\d{2}/\d{2}/\d{4}\s+(\$[\d,\s\-]+(?:,\d{3})*(?:\s*-\s*\$[\d,\s]+)?)\s*$",
+        text, re.IGNORECASE
+    )
+    if not m:
+        return None
+    return m.group(1).strip(), m.group(2).strip(), m.group(3).strip(), m.group(4).strip()
+
+
 def inspect_pdf(pdf_path):
-    """Return all rows that look like trade data."""
+    """Return all rows that look like trade data, including merged single-cell rows."""
     rows = []
     try:
         with pdfplumber.open(pdf_path) as pdf:
@@ -70,16 +82,29 @@ def inspect_pdf(pdf_path):
                             continue
                         if (row[0] or "").strip() == "ID":
                             continue
+
                         if is_data_row(row):
-                            ticker_match = re.search(r"\(([A-Z]{1,5})\)", (row[2] or ""))
-                            rows.append({
-                                "page":   page_num + 1,
-                                "asset":  (row[2] or "").strip().replace("\n", " "),
-                                "tx":     (row[3] or "").strip(),
-                                "date":   (row[4] or "").strip(),
-                                "amount": (row[6] or "").strip().replace("\n", " "),
-                                "ticker": ticker_match.group(1) if ticker_match else "—",
-                            })
+                            asset  = (row[2] or "").strip().replace("\n", " ")
+                            tx     = (row[3] or "").strip()
+                            date   = (row[4] or "").strip()
+                            amount = (row[6] or "").strip().replace("\n", " ")
+                        elif row[0] and all(c is None for c in row[1:]):
+                            parsed = parse_merged_row(row[0])
+                            if not parsed:
+                                continue
+                            asset, tx, date, amount = parsed
+                        else:
+                            continue
+
+                        ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset)
+                        rows.append({
+                            "page":   page_num + 1,
+                            "asset":  asset,
+                            "tx":     tx,
+                            "date":   date,
+                            "amount": amount,
+                            "ticker": ticker_match.group(1) if ticker_match else "—",
+                        })
     except Exception as e:
         print(f"  ERROR reading {pdf_path.name}: {e}")
     return rows
