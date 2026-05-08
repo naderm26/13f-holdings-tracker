@@ -1,0 +1,80 @@
+[
+  {
+    "id": "nancy_pelosi",
+    "slug": "nancy-pelosi-trades",
+    "name": "Nancy Pelosi",
+    "last_name": "Pelosi",
+    "first_name": "Nancy",
+    "party": "Democrat",
+    "state": "CA",
+    "district": "CA-11",
+    "chamber": "House",
+    "title": "House Minority Leader",
+    "photo": "images/congress/nancy_pelosi.jpg"
+  },
+  {
+    "id": "marjorie_taylor_greene",
+    "slug": "marjorie-taylor-greene-trades",
+    "name": "Marjorie Taylor Greene",
+    "last_name": "Greene",
+    "first_name": "Marjorie",
+    "party": "Republican",
+    "state": "GA",
+    "district": "GA-14",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/marjorie_taylor_greene.jpg"
+  },
+  {
+    "id": "josh_gottheimer",
+    "slug": "josh-gottheimer-trades",
+    "name": "Josh Gottheimer",
+    "last_name": "Gottheimer",
+    "first_name": "Josh",
+    "party": "Democrat",
+    "state": "NJ",
+    "district": "NJ-5",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/josh_gottheimer.jpg"
+  },
+  {
+    "id": "tommy_tuberville",
+    "slug": "tommy-tuberville-trades",
+    "name": "Tommy Tuberville",
+    "last_name": "Tuberville",
+    "first_name": "Tommy",
+    "party": "Republican",
+    "state": "AL",
+    "district": "AL",
+    "chamber": "Senate",
+    "title": "U.S. Senator",
+    "photo": "images/congress/tommy_tuberville.jpg"
+  },
+  {
+    "id": "dan_crenshaw",
+    "slug": "dan-crenshaw-trades",
+    "name": "Dan Crenshaw",
+    "last_name": "Crenshaw",
+    "first_name": "Dan",
+    "party": "Republican",
+    "state": "TX",
+    "district": "TX-2",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/dan_crenshaw.jpg"
+  },
+  {
+    "id": "michael_mccaul",
+    "slug": "michael-mccaul-trades",
+    "name": "Michael McCaul",
+    "last_name": "McCaul",
+    "first_name": "Michael",
+    "party": "Republican",
+    "state": "TX",
+    "district": "TX-10",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/michael_mccaul.jpg"
+  }
+]
