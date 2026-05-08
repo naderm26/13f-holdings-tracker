@@ -30,5 +30,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/congress/ || true
-          git diff --cached --quiet || (git pull --rebase && git commit -m "Update congressional trading data" && git push)
+          git add data/congress/
+          git stash --include-untracked || true
+          git pull --rebase
+          git stash pop || true
+          git add data/congress/
+          git diff --cached --quiet || git commit -m "Update congressional trading data"
+          git push
