@@ -285,7 +285,14 @@
   }
 
   function filteredTrades() {
-    return activeYear === "All" ? allTrades : allTrades.filter(t => t.filing_year === activeYear);
+    const base = activeYear === "All" ? allTrades : allTrades.filter(t => t.filing_year === activeYear);
+    return base.filter(t => {
+      // Remove exchange trades
+      if ((t.transaction || "").toLowerCase() === "exchange") return false;
+      // Remove trades with no amount or amount below $1,000
+      if (!t.amount_mid || t.amount_mid < 1000) return false;
+      return true;
+    });
   }
 
   // ── Transaction label normalisation ──────────────────────────────
