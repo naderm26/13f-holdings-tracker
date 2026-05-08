@@ -12,12 +12,36 @@
 </script>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nancy Pelosi Stock Trades — Congressional Trading | 13FAI</title>
-  <meta name="description" content="Track Nancy Pelosi's stock trades filed under the STOCK Act. View all purchases, sales, and options activity sourced directly from House PTR filings on SEC records."/>
+  <title>Nancy Pelosi Stock Trades 2024–2026 | Congressional Trading | 13FAI</title>
+  <meta name="description" content="Track every stock trade Nancy Pelosi has filed under the STOCK Act — purchases, sales, and options from 2024 to 2026. Sourced directly from House Periodic Transaction Reports (PTRs)."/>
+  <meta name="keywords" content="Nancy Pelosi stock trades, Pelosi stock portfolio, congressional stock trading, STOCK Act disclosures, House PTR filings, Pelosi investments 2024 2025 2026"/>
   <meta property="og:title" content="Nancy Pelosi Stock Trades — Congressional Trading | 13FAI"/>
-  <meta property="og:description" content="Track Nancy Pelosi's stock trades filed under the STOCK Act. View all purchases, sales, and options activity sourced directly from House PTR filings."/>
-  <meta property="og:type" content="website"/>
-  <link rel="canonical" href="https://13fai.com/congress.html"/>
+  <meta property="og:description" content="Every stock trade Nancy Pelosi has disclosed under the STOCK Act, sourced directly from House PTR filings. Purchases, sales, and options from 2024–2026."/>
+  <meta property="og:type" content="profile"/>
+  <meta property="og:url" content="https://13fai.com/nancy-pelosi-trades.html"/>
+  <meta name="twitter:card" content="summary"/>
+  <meta name="twitter:title" content="Nancy Pelosi Stock Trades | 13FAI"/>
+  <meta name="twitter:description" content="Every stock trade Nancy Pelosi has disclosed under the STOCK Act. Purchases, sales, and options from 2024–2026."/>
+  <link rel="canonical" href="https://13fai.com/nancy-pelosi-trades.html"/>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "name": "Nancy Pelosi Stock Trades",
+    "description": "Congressional stock trade disclosures filed by Nancy Pelosi under the STOCK Act, sourced from House Periodic Transaction Reports.",
+    "url": "https://13fai.com/nancy-pelosi-trades.html",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "Nancy Pelosi",
+      "jobTitle": "U.S. Representative",
+      "description": "U.S. Representative for California's 11th congressional district and House Minority Leader.",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "U.S. House of Representatives"
+      }
+    }
+  }
+  </script>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -44,7 +68,6 @@
     main { padding: 1.5rem 1.25rem 4rem; max-width: 1100px; margin: 0 auto; }
     @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
 
-    /* Identity block — mirrors fund.html */
     .fund-identity { margin-bottom: 0.6rem; }
     .fund-name-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.4rem; }
     .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
@@ -53,17 +76,11 @@
     .fund-stats .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
     .fund-stats .stat-value { font-size: 1.1rem; font-weight: 500; margin-top: 0.1rem; }
 
-    /* Year filter buttons — same as quarter-selector */
     .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .q-btn {
-      font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem;
-      border: 1px solid var(--border); border-radius: 4px; background: var(--surface);
-      color: var(--muted); cursor: pointer; transition: all 0.15s;
-    }
+    .q-btn { font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; }
     .q-btn:hover { border-color: var(--accent); color: var(--accent); }
     .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-    /* Insights */
     .insights-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 0; margin-bottom: 1.25rem; }
     .insights { font-size: 0.875rem; line-height: 1.75; color: var(--text); }
     .insights ul { list-style: none; margin: 0; padding: 0; }
@@ -74,12 +91,11 @@
     .ins-ticker { color: #2563eb; font-weight: 600; font-family: var(--mono); font-size: 0.82rem; text-decoration: none; }
     .ins-ticker:hover { text-decoration: underline; }
 
-    /* Table */
     .table-wrap { overflow-x: auto; }
     table { width: 100%; min-width: 680px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
-    th.col-asset { text-align: left; width: 30%; }
+    th.col-asset { text-align: left; width: 35%; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
     td.col-asset { text-align: left; white-space: normal; }
@@ -91,24 +107,18 @@
     tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
     tr.total-row td.col-asset { font-family: var(--sans); font-size: 0.875rem; }
 
-    /* Transaction type badges */
-    .tx-badge { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.2rem 0.5rem; border-radius: 3px; display: inline-block; }
-    .tx-purchase { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
-    .tx-sale     { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
-    .tx-exchange { color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
+    .tx-badge { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.2rem 0.5rem; border-radius: 3px; display: inline-block; white-space: nowrap; }
+    .tx-initiated  { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
+    .tx-bought     { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
+    .tx-trimmed    { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
+    .tx-exited     { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
+    .tx-exchange   { color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
 
-    /* Amount range */
-    .amount-bar-wrap { display: flex; align-items: center; gap: 0.5rem; justify-content: center; }
-    .amount-label { font-family: var(--mono); font-size: 0.78rem; white-space: nowrap; }
-
-    /* Avatar */
     .fund-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.85rem; font-weight: 500; color: #fff; flex-shrink: 0; border: 1px solid var(--border); overflow: hidden; }
     .fund-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
 
-    /* Source note */
     .footnote { margin-top: 0.75rem; font-family: var(--mono); font-size: 0.68rem; color: var(--muted); line-height: 1.8; }
 
-    /* Search */
     .search-wrap { position: relative; }
     #search { font-family: var(--sans); font-size: 0.875rem; padding: 0.6rem 1rem 0.6rem 2.25rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 200px; outline: none; transition: border 0.15s; }
     #search:focus { border-color: var(--accent); background: var(--surface); }
@@ -177,13 +187,13 @@
       <div style="display:flex; align-items:center; gap:0.9rem;">
         <div class="fund-avatar">
           <img src="images/pelosi.jpg" alt="Nancy Pelosi"
-               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+               onerror="this.style.display='none'; this.parentElement.querySelector('span').style.display='flex';"
                style="display:block;"/>
           <span style="display:none; align-items:center; justify-content:center; width:100%; height:100%;">NP</span>
         </div>
         <div>
           <h1 class="section-label">Nancy Pelosi</h1>
-          <div style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;">U.S. Representative · CA-11 · House Minority Leader</div>
+          <div style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;">U.S. Representative · CA-11 · House Minority Leader · Democrat</div>
         </div>
       </div>
       <div class="fund-stats">
@@ -192,12 +202,11 @@
           <div class="stat-value" style="color:var(--accent)" id="stat-count">—</div>
         </div>
         <div>
-          <div class="stat-label">Date Range</div>
+          <div class="stat-label">Period</div>
           <div class="stat-value" id="stat-range" style="font-size:0.9rem;">—</div>
         </div>
       </div>
     </div>
-    <div class="period-line" id="period-line">Stock trades disclosed under the STOCK Act · Sourced from House PTR filings</div>
     <div class="quarter-selector" id="year-selector"></div>
   </div>
 
@@ -208,9 +217,9 @@
   <div id="table-container"><div style="color:var(--muted); font-family:var(--mono); font-size:0.85rem;">Loading trades...</div></div>
 
   <div class="footnote">
-    * Amount ranges are as reported in the PTR filing. The House STOCK Act requires disclosure within 45 days of the transaction.
-    Trades are sourced directly from <a href="https://disclosures-clerk.house.gov/" target="_blank" rel="noopener" style="color:var(--accent);">disclosures-clerk.house.gov</a>.
-    Options purchases and sales are included. For informational purposes only — not investment advice.
+    * Amount ranges are as reported in the PTR filing. The STOCK Act requires disclosure within 45 days of the transaction.
+    Data sourced from <a href="https://disclosures-clerk.house.gov/" target="_blank" rel="noopener" style="color:var(--accent);">disclosures-clerk.house.gov</a>.
+    Options activity is included. For informational purposes only — not investment advice.
   </div>
 </main>
 
@@ -221,11 +230,28 @@
 <script>
   const PAGES = "";
 
-  // ── Load data ──────────────────────────────────────────────────
   let allTrades = [];
   let activeYear = "All";
-  let sortCol = 0; // 0=date, 1=asset, 2=tx, 3=amount
+  let sortCol = 0;
   let sortAsc = false;
+
+  // Track which tickers each member has purchased before, to distinguish "Initiated" vs "Bought More"
+  // We determine this by looking at all trades chronologically
+  function buildInitiatedSet(trades) {
+    // Sort all trades by date ascending
+    const sorted = [...trades].sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+    const seen = new Set();
+    const initiated = new Set(); // doc_id + ticker combos that are "first ever purchase"
+    for (const t of sorted) {
+      if (!t.ticker) continue;
+      const isBuy = t.transaction === "Purchase";
+      if (isBuy && !seen.has(t.ticker)) {
+        initiated.add(t.doc_id + "_" + t.ticker + "_" + t.date);
+        seen.add(t.ticker);
+      }
+    }
+    return initiated;
+  }
 
   fetch(`${PAGES}/pelosi_trades.json`)
     .then(r => r.json())
@@ -239,14 +265,11 @@
     });
 
   function init() {
-    // Build year list
     const years = [...new Set(allTrades.map(t => t.filing_year))].sort().reverse();
     const allYears = ["All", ...years];
-
     document.getElementById("year-selector").innerHTML = allYears.map(y =>
       `<button class="q-btn${y === activeYear ? " active" : ""}" onclick="setYear('${y}')">${y === "All" ? "All Years" : y}</button>`
     ).join("");
-
     renderTable();
   }
 
@@ -264,76 +287,105 @@
     return allTrades.filter(t => t.filing_year === activeYear);
   }
 
-  // ── Insights ────────────────────────────────────────────────────
+  // ── Normalise transaction label ──────────────────────────────────
+  function normaliseTx(raw, isInitiated) {
+    if (!raw) return { label: "—", cls: "tx-exchange" };
+    const t = raw.toLowerCase();
+    if (t === "purchase") {
+      return isInitiated
+        ? { label: "Initiated Position", cls: "tx-initiated" }
+        : { label: "Bought More",        cls: "tx-bought" };
+    }
+    if (t.includes("s (partial)") || t === "s (partial)") return { label: "Trimmed",  cls: "tx-trimmed" };
+    if (t.includes("s (full)")    || t === "s (full)")    return { label: "Exited",    cls: "tx-exited"  };
+    if (t === "sale" || t === "s")                         return { label: "Exited",    cls: "tx-exited"  };
+    if (t === "exchange")                                  return { label: "Exchange",  cls: "tx-exchange" };
+    // Fallback — capitalise raw
+    return { label: raw, cls: "tx-exchange" };
+  }
+
+  // ── Insights ─────────────────────────────────────────────────────
   function renderInsights(trades) {
     const el = document.getElementById("insights");
-    if (!el) return;
+    if (!el || trades.length === 0) { if (el) el.innerHTML = ""; return; }
 
+    const initiated = buildInitiatedSet(allTrades); // use all trades for initiated detection
     const sentences = [];
+
+    // Tracked period
+    const allDates = allTrades.map(t => t.date).filter(Boolean).sort();
+    const trackedFrom = allDates[0];
+    const trackedTo   = allDates[allDates.length - 1];
+    const trackedPeriod = trackedFrom === trackedTo
+      ? trackedFrom
+      : `${trackedFrom} – ${trackedTo}`;
+
+    // Period label for this view
+    const periodLabel = activeYear === "All"
+      ? `from ${trackedFrom} to ${trackedTo}`
+      : `in ${activeYear}`;
+
     const purchases = trades.filter(t => t.transaction === "Purchase");
-    const sales     = trades.filter(t => t.transaction.toLowerCase().includes("sale") || t.transaction.toLowerCase().includes("s ("));
-
-    // Most traded tickers
-    const tickerCounts = {};
-    trades.forEach(t => {
-      if (t.ticker) tickerCounts[t.ticker] = (tickerCounts[t.ticker] || 0) + 1;
+    const sales     = trades.filter(t => {
+      const t2 = (t.transaction || "").toLowerCase();
+      return t2.includes("sale") || t2 === "s" || t2.includes("s (");
     });
-    const topTickers = Object.entries(tickerCounts).sort((a,b) => b[1]-a[1]).slice(0,3);
 
-    const yearLabel = activeYear === "All" ? "across all tracked years" : `in ${activeYear}`;
-
-    // S1 — summary
-    if (trades.length > 0) {
-      sentences.push(
-        `Pelosi filed <b>${trades.length}</b> transaction${trades.length !== 1 ? "s" : ""} ${yearLabel} — ` +
-        `<span class="ins-green">${purchases.length} purchase${purchases.length !== 1 ? "s" : ""}</span> and ` +
-        `<span class="ins-red">${sales.length} sale${sales.length !== 1 ? "s" : ""}</span>.`
-      );
-    }
+    // S1 — summary with tracked period
+    sentences.push(
+      `Pelosi filed <b>${trades.length}</b> transaction${trades.length !== 1 ? "s" : ""} ${periodLabel} — ` +
+      `<span class="ins-green">${purchases.length} purchase${purchases.length !== 1 ? "s" : ""}</span> and ` +
+      `<span class="ins-red">${sales.length} sale${sales.length !== 1 ? "s" : ""}</span>.`
+    );
 
     // S2 — most active tickers
+    const tickerCounts = {};
+    trades.forEach(t => { if (t.ticker) tickerCounts[t.ticker] = (tickerCounts[t.ticker] || 0) + 1; });
+    const topTickers = Object.entries(tickerCounts).sort((a,b) => b[1]-a[1]).slice(0,3);
     if (topTickers.length > 0) {
       const links = topTickers.map(([ticker, count]) =>
         `<a class="ins-ticker" href="stocks/${ticker}-hedge-fund-ownership.html">${ticker}</a> (${count} trade${count !== 1 ? "s" : ""})`
       ).join(", ");
-      sentences.push(`Most active positions: ${links}.`);
+      sentences.push(`Most traded: ${links}.`);
     }
 
-    // S3 — largest single trade by amount_mid
+    // S3 — most recent trade
+    const sorted = [...trades].sort((a,b) => (b.date || "").localeCompare(a.date || ""));
+    if (sorted.length > 0) {
+      const latest = sorted[0];
+      const tx = normaliseTx(latest.transaction, initiated.has(latest.doc_id + "_" + latest.ticker + "_" + latest.date));
+      const ticker = latest.ticker
+        ? `<a class="ins-ticker" href="stocks/${latest.ticker}-hedge-fund-ownership.html">${latest.ticker}</a>`
+        : latest.asset.replace(/\s*\[.*?\]/g, "").trim().split("(")[0].trim();
+      sentences.push(
+        `Most recent trade: <span class="${tx.cls === "tx-initiated" || tx.cls === "tx-bought" ? "ins-green" : "ins-red"}">${tx.label}</span> ${ticker} on ${latest.date} (${latest.amount_range}).`
+      );
+    }
+
+    // S4 — largest trade
     const withAmount = trades.filter(t => t.amount_mid && t.amount_mid < 1e12);
     if (withAmount.length > 0) {
       const largest = withAmount.reduce((a, b) => a.amount_mid > b.amount_mid ? a : b);
       const isBuy = largest.transaction === "Purchase";
       const cls = isBuy ? "ins-green" : "ins-red";
+      const tx = normaliseTx(largest.transaction, initiated.has(largest.doc_id + "_" + largest.ticker + "_" + largest.date));
       const ticker = largest.ticker
         ? `<a class="ins-ticker" href="stocks/${largest.ticker}-hedge-fund-ownership.html">${largest.ticker}</a>`
-        : largest.asset.split("(")[0].trim();
+        : largest.asset.replace(/\s*\[.*?\]/g, "").trim().split("(")[0].trim();
       sentences.push(
-        `Largest reported trade: <span class="${cls}">${largest.transaction}</span> of ${ticker} ` +
-        `(${largest.amount_range}) on ${largest.date}.`
+        `Largest reported trade: <span class="${cls}">${tx.label}</span> ${ticker} (${largest.amount_range}) on ${largest.date}.`
       );
     }
 
     el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
   }
 
-  // ── Format helpers ──────────────────────────────────────────────
-  function fmtAmount(trade) {
-    if (!trade.amount_range) return "—";
-    // Clean up the range string
-    return trade.amount_range.replace(/\n/g, " ").trim();
-  }
-
-  function txBadge(tx) {
-    if (!tx) return "—";
-    const t = tx.toLowerCase();
-    if (t === "purchase") return `<span class="tx-badge tx-purchase">Purchase</span>`;
-    if (t.includes("sale")) return `<span class="tx-badge tx-sale">${tx}</span>`;
-    return `<span class="tx-badge tx-exchange">${tx}</span>`;
+  // ── Helpers ───────────────────────────────────────────────────────
+  function fmtAmount(t) {
+    return (t.amount_range || "—").replace(/\n/g, " ").trim();
   }
 
   function cleanAssetName(asset) {
-    // Remove [ST], [OP], [OT] tags and tidy up
     return asset.replace(/\s*\[(ST|OP|OT|MF|DC)\]\s*/g, "").trim();
   }
 
@@ -344,7 +396,6 @@
     return "";
   }
 
-  // ── Sort ────────────────────────────────────────────────────────
   function sort(col) {
     if (sortCol === col) sortAsc = !sortAsc;
     else { sortCol = col; sortAsc = false; }
@@ -356,18 +407,16 @@
     return sortAsc ? " ↑" : " ↓";
   }
 
-  // ── Render ──────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────
   function renderTable() {
     const trades = filteredTrades();
+    const initiated = buildInitiatedSet(allTrades);
 
-    // Update stats
-    const count = trades.length;
-    document.getElementById("stat-count").textContent = count;
-
+    // Stats
+    document.getElementById("stat-count").textContent = trades.length;
     if (trades.length > 0) {
       const dates = trades.map(t => t.date).filter(Boolean).sort();
-      const oldest = dates[0];
-      const newest = dates[dates.length - 1];
+      const oldest = dates[0], newest = dates[dates.length - 1];
       document.getElementById("stat-range").textContent =
         oldest === newest ? oldest : `${oldest} – ${newest}`;
     } else {
@@ -385,28 +434,26 @@
     // Sort
     const sorted = [...trades].sort((a, b) => {
       let av, bv;
-      if (sortCol === 0) { av = a.date || ""; bv = b.date || ""; }
+      if      (sortCol === 0) { av = a.date || "";  bv = b.date || ""; }
       else if (sortCol === 1) { av = (a.asset || "").toLowerCase(); bv = (b.asset || "").toLowerCase(); }
       else if (sortCol === 2) { av = a.transaction || ""; bv = b.transaction || ""; }
-      else if (sortCol === 3) { av = a.amount_mid || 0; bv = b.amount_mid || 0; }
+      else if (sortCol === 3) { av = a.amount_mid || 0;   bv = b.amount_mid || 0; }
       if (av < bv) return sortAsc ? -1 : 1;
       if (av > bv) return sortAsc ? 1 : -1;
       return 0;
     });
 
-    const rowsHtml = sorted.map((t, i) => {
-      const clean  = cleanAssetName(t.asset);
-      const atype  = assetType(t.asset);
-      const ticker = t.ticker;
-      const stockHref = ticker
-        ? `stocks/${ticker}-hedge-fund-ownership.html`
-        : null;
+    const rowsHtml = sorted.map(t => {
+      const clean   = cleanAssetName(t.asset);
+      const atype   = assetType(t.asset);
+      const ticker  = t.ticker;
+      const stockHref = ticker ? `stocks/${ticker}-hedge-fund-ownership.html` : null;
+      const isInit  = initiated.has(t.doc_id + "_" + t.ticker + "_" + t.date);
+      const tx      = normaliseTx(t.transaction, isInit);
 
       const assetCell = `
         <div class="company-name">
-          ${stockHref
-            ? `<a href="${stockHref}" style="color:var(--text);text-decoration:none;">${clean}</a>`
-            : clean}
+          ${stockHref ? `<a href="${stockHref}" style="color:var(--text);text-decoration:none;">${clean}</a>` : clean}
         </div>
         ${ticker
           ? `<div class="ticker-tag"><a href="${stockHref}" style="color:#2563eb;text-decoration:none;">${ticker}</a>${atype ? ` · <span style="color:var(--muted)">${atype}</span>` : ""}</div>`
@@ -416,16 +463,27 @@
       return `
         <tr>
           <td class="col-asset">${assetCell}</td>
-          <td class="num">${txBadge(t.transaction)}</td>
+          <td class="num"><span class="tx-badge ${tx.cls}">${tx.label}</span></td>
           <td class="num">${t.date || "—"}</td>
           <td class="num">${fmtAmount(t)}</td>
           <td class="num" style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${t.filing_year || "—"}</td>
         </tr>`;
     }).join("");
 
+    // Period label for table title
+    const allDates = allTrades.map(t => t.date).filter(Boolean).sort();
+    let tableTitle;
+    if (activeYear === "All") {
+      const from = allDates[0];
+      const to   = allDates[allDates.length - 1];
+      tableTitle = `Nancy Pelosi's stock trades — ${from} to ${to}`;
+    } else {
+      tableTitle = `Nancy Pelosi's stock trades — ${activeYear}`;
+    }
+
     // Total row
     const purchases = trades.filter(t => t.transaction === "Purchase").length;
-    const sales     = trades.filter(t => t.transaction.toLowerCase().includes("sale") || t.transaction.toLowerCase().includes("s (")).length;
+    const sales     = trades.filter(t => { const t2 = (t.transaction||"").toLowerCase(); return t2.includes("sale") || t2 === "s" || t2.includes("s ("); }).length;
 
     const totalRow = `
       <tr class="total-row">
@@ -437,15 +495,13 @@
       </tr>`;
 
     document.getElementById("table-container").innerHTML = `
-      <div class="period-line" style="margin-bottom:0.5rem">
-        Nancy Pelosi's stock trades${activeYear !== "All" ? ` — ${activeYear}` : " — all years"}
-      </div>
+      <div class="period-line" style="margin-bottom:0.5rem">${tableTitle}</div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th class="col-asset" onclick="sort(1)">Asset${arrow(1)}</th>
-              <th onclick="sort(2)">Transaction${arrow(2)}</th>
+              <th onclick="sort(2)">Action${arrow(2)}</th>
               <th onclick="sort(0)">Trade Date${arrow(0)}</th>
               <th onclick="sort(3)">Amount Range *${arrow(3)}</th>
               <th>Filing Year</th>
@@ -456,7 +512,7 @@
       </div>`;
   }
 
-  // ── Search ──────────────────────────────────────────────────────
+  // ── Search ────────────────────────────────────────────────────────
   let allFundsForSearch = [];
   let stockIndexForSearch = {};
   fetch(`${PAGES}/funds.json`).then(r => r.json()).then(d => { allFundsForSearch = d; }).catch(() => {});
@@ -468,28 +524,16 @@
   searchInput.addEventListener("input", () => {
     const q = searchInput.value.trim().toLowerCase();
     if (!q) { searchResults.classList.remove("visible"); return; }
-
-    const fundMatches = allFundsForSearch
-      .filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
-      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}">
-        <span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
-
+    const fundMatches = allFundsForSearch.filter(f => f.name.toLowerCase().includes(q)).slice(0,4)
+      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}"><span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
     const stockMatches = [];
     for (const [key, stock] of Object.entries(stockIndexForSearch)) {
       if (stockMatches.length >= 4) break;
-      if ((stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
-          (stock.name && stock.name.toLowerCase().includes(q))) {
-        stockMatches.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
-          <span class="search-result-num">Stock</span>
-          <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
-          </a>`);
-      }
+      if ((stock.ticker && stock.ticker.toLowerCase().includes(q)) || (stock.name && stock.name.toLowerCase().includes(q)))
+        stockMatches.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}"><span class="search-result-num">Stock</span><span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span></a>`);
     }
-
     const all = [...fundMatches, ...stockMatches];
-    searchResults.innerHTML = all.length
-      ? all.join("")
-      : `<div style="padding:0.75rem 1rem;font-size:0.875rem;color:var(--muted);">No results found</div>`;
+    searchResults.innerHTML = all.length ? all.join("") : `<div style="padding:0.75rem 1rem;font-size:0.875rem;color:var(--muted);">No results found</div>`;
     searchResults.classList.add("visible");
   });
 
