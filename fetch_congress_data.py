@@ -1,6 +1,6 @@
 """
-fetch_pelosi_trades.py
-Scrapes Nancy Pelosi's Periodic Transaction Reports (PTRs) from the
+fetch_congress_data.py
+Scrapes congress' Periodic Transaction Reports (PTRs) from the
 US House of Representatives financial disclosure system.
 
 Usage:
