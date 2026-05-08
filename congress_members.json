@@ -39,29 +39,42 @@
     "photo": "images/congress/josh_gottheimer.jpg"
   },
   {
-    "id": "dan_crenshaw",
-    "slug": "dan-crenshaw-trades",
-    "name": "Dan Crenshaw",
-    "last_name": "Crenshaw",
-    "first_name": "Daniel",
+    "id": "brian_mast",
+    "slug": "brian-mast-trades",
+    "name": "Brian Mast",
+    "last_name": "Mast",
+    "first_name": "Brian",
     "party": "Republican",
-    "state": "TX",
-    "district": "TX-2",
+    "state": "FL",
+    "district": "FL-21",
     "chamber": "House",
     "title": "U.S. Representative",
-    "photo": "images/congress/dan_crenshaw.jpg"
+    "photo": "images/congress/brian_mast.jpg"
   },
   {
-    "id": "michael_mccaul",
-    "slug": "michael-mccaul-trades",
-    "name": "Michael McCaul",
-    "last_name": "McCaul",
-    "first_name": "Michael",
-    "party": "Republican",
-    "state": "TX",
-    "district": "TX-10",
+    "id": "ro_khanna",
+    "slug": "ro-khanna-trades",
+    "name": "Ro Khanna",
+    "last_name": "Khanna",
+    "first_name": "Ro",
+    "party": "Democrat",
+    "state": "CA",
+    "district": "CA-17",
     "chamber": "House",
     "title": "U.S. Representative",
-    "photo": "images/congress/michael_mccaul.jpg"
+    "photo": "images/congress/ro_khanna.jpg"
+  },
+  {
+    "id": "austin_scott",
+    "slug": "austin-scott-trades",
+    "name": "Austin Scott",
+    "last_name": "Scott",
+    "first_name": "Austin",
+    "party": "Republican",
+    "state": "GA",
+    "district": "GA-8",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/austin_scott.jpg"
   }
 ]
