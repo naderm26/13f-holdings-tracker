@@ -54,7 +54,6 @@ AMOUNT_MIDPOINTS = {
 # ── Search ───────────────────────────────────────────────────────────────────
 
 def search_filings(session, year):
-    """POST the search form and return list of PTR filing dicts."""
     payload = {
         "LastName":    LAST_NAME,
         "FilingYear":  year,
@@ -69,43 +68,38 @@ def search_filings(session, year):
     soup = BeautifulSoup(r.text, "html.parser")
 
     filings = []
-    # Table columns: Name (with link) | Office | Filing Year | Filing (type)
     for row in soup.find_all("tr", role="row"):
         cells = row.find_all("td")
         if len(cells) < 4:
             continue
 
-        filing_type = cells[3].get_text(strip=True)  # e.g. "PTR Original"
+        filing_type = cells[3].get_text(strip=True)
         if "PTR" not in filing_type.upper():
             continue
 
-        # Link is inside the first cell
         a = cells[0].find("a", href=True)
         if not a:
             continue
 
-        href = a["href"]  # e.g. "public_disc/ptr-pdfs/2024/20024542.pdf"
-        # Extract year and doc_id — href has no leading slash
+        href = a["href"]
         m = re.search(r"ptr-pdfs/(\d{4})/(\d+)\.pdf", href)
         if not m:
             continue
 
         pdf_year = m.group(1)
         doc_id   = m.group(2)
-        url      = BASE + "/" + href  # add leading slash
-
-        filing_year = cells[2].get_text(strip=True)
+        url      = BASE + "/" + href
 
         filings.append({
             "year":        pdf_year,
             "doc_id":      doc_id,
-            "filing_date": filing_year,  # only year available from search; PDF has exact date
+            "filing_date": cells[2].get_text(strip=True),
             "filing_type": filing_type,
             "url":         url,
         })
         print(f"    Found: {filing_type} {pdf_year} doc {doc_id}")
 
-    print(f"    Total PTR filings found: {len(filings)}")
+    print(f"    Total PTR filings: {len(filings)}")
     return filings
 
 
@@ -144,6 +138,31 @@ def parse_amount(raw):
     return int(digits) if digits else None
 
 
+def is_data_row(row):
+    """
+    A valid data row has:
+    - cell[2] (asset) non-empty
+    - cell[3] (tx type) is a single letter like P, S, E
+    - cell[4] (date) looks like MM/DD/YYYY
+    - cell[6] (amount) contains a dollar sign
+    All cells must be present (no None merging into first cell).
+    """
+    if len(row) < 7:
+        return False
+    # If most cells after index 0 are None, it's a merged/description row
+    if row[1] is None and row[2] is None:
+        return False
+    asset    = (row[2] or "").strip()
+    tx_type  = (row[3] or "").strip()
+    date     = (row[4] or "").strip()
+    amount   = (row[6] or "").strip()
+    if not asset or not tx_type or not date:
+        return False
+    if not re.match(r"\d{2}/\d{2}/\d{4}", date):
+        return False
+    return True
+
+
 def parse_pdf(pdf_path, filing_meta):
     trades = []
     try:
@@ -152,56 +171,38 @@ def parse_pdf(pdf_path, filing_meta):
                 tables = page.extract_tables()
                 for table in tables:
                     for row in table:
-                        if not row or len(row) < 5:
+                        if not row:
                             continue
-                        first_cell = (row[0] or "").strip().lower()
-                        if first_cell in ("sp*", "asset name", "owner", ""):
+                        # Skip header row
+                        if (row[0] or "").strip() == "ID":
                             continue
-                        joined = " ".join(str(c or "") for c in row)
-                        if "Clerk of the House" in joined or "PERIODIC" in joined.upper():
-                            continue
-
-                        asset_name  = (row[1] if len(row) > 1 else "") or ""
-                        tx_type_raw = (row[3] if len(row) > 3 else "") or ""
-                        date_raw    = (row[4] if len(row) > 4 else "") or ""
-                        amount_raw  = (row[6] if len(row) > 6 else "") or ""
-                        description = (row[8] if len(row) > 8 else "") or ""
-
-                        asset_name  = asset_name.strip().replace("\n", " ")
-                        tx_type_raw = tx_type_raw.strip()
-                        date_raw    = date_raw.strip()
-
-                        tx_upper = tx_type_raw.upper()
-                        if not any(t in tx_upper for t in ("PURCHASE", "SALE", "EXCHANGE", "RECEIPT")):
+                        if not is_data_row(row):
                             continue
 
+                        asset_name  = (row[2] or "").strip().replace("\n", " ")
+                        tx_type_raw = (row[3] or "").strip()
+                        date_raw    = (row[4] or "").strip()
+                        amount_raw  = (row[6] or "").strip().replace("\n", " ")
+
+                        # Extract ticker from asset name e.g. "Apple Inc. (AAPL)"
                         ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_name)
                         ticker = ticker_match.group(1) if ticker_match else None
 
-                        if "PURCHASE" in tx_upper:
-                            tx_type = "Purchase"
-                        elif "SALE (FULL)" in tx_upper:
-                            tx_type = "Sale (Full)"
-                        elif "SALE (PARTIAL)" in tx_upper:
-                            tx_type = "Sale (Partial)"
-                        elif "SALE" in tx_upper:
-                            tx_type = "Sale"
-                        elif "EXCHANGE" in tx_upper:
-                            tx_type = "Exchange"
-                        else:
-                            tx_type = tx_type_raw
+                        # Normalise transaction type
+                        # P = Purchase, S = Sale, E = Exchange
+                        tx_map = {"P": "Purchase", "S": "Sale", "E": "Exchange"}
+                        tx_type = tx_map.get(tx_type_raw.upper(), tx_type_raw)
 
                         trades.append({
                             "member":       f"{FIRST_NAME} {LAST_NAME}",
-                            "filing_date":  filing_meta["filing_date"],
+                            "filing_year":  filing_meta["filing_date"],
                             "doc_id":       filing_meta["doc_id"],
                             "asset":        asset_name,
                             "ticker":       ticker,
                             "transaction":  tx_type,
                             "date":         date_raw,
-                            "amount_range": amount_raw.strip(),
+                            "amount_range": amount_raw,
                             "amount_mid":   parse_amount(amount_raw),
-                            "description":  description.strip().replace("\n", " "),
                         })
     except Exception as e:
         print(f"  PDF parse error: {e}")
@@ -223,7 +224,6 @@ def main():
             print(f"  Search failed for {year}: {e}")
         time.sleep(1)
 
-    # Always write output file so git commit doesn't fail
     if not all_filings:
         print("\nNo filings found.")
         with open(OUTPUT_FILE, "w") as f:
@@ -246,15 +246,15 @@ def main():
         json.dump(all_trades, f, indent=2)
 
     print(f"\nDone. {len(all_trades)} total trades -> {OUTPUT_FILE}")
-    print(f"\n{'Date':<12} {'Ticker':<8} {'Transaction':<18} {'Amount Range':<30} {'Asset'}")
-    print("-" * 100)
+    print(f"\n{'Date':<12} {'Ticker':<8} {'Transaction':<12} {'Amount Range':<30} {'Asset'}")
+    print("-" * 95)
     for t in all_trades[:30]:
         print(
             f"{t['date']:<12} "
             f"{(t['ticker'] or '-'):<8} "
-            f"{t['transaction']:<18} "
+            f"{t['transaction']:<12} "
             f"{t['amount_range']:<30} "
-            f"{t['asset'][:45]}"
+            f"{t['asset'][:40]}"
         )
     if len(all_trades) > 30:
         print(f"  ... and {len(all_trades) - 30} more in {OUTPUT_FILE}")
