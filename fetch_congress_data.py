@@ -5,16 +5,17 @@ congress_members.json from the House financial disclosure system.
 
 Usage:
     pip install pdfplumber requests beautifulsoup4
-    python fetch_congress_data.py
+    python fetch_congress_data.py            # fetches and deletes PDFs after
+    python fetch_congress_data.py --keep-pdfs  # keeps PDFs in _ptr_cache/ for debugging
 
 Output:
     data/congress/{member_id}.json   — one file per member
-PDFs are deleted after parsing to keep the repo lean.
 """
 
 import json
 import re
 import shutil
+import sys
 import time
 from pathlib import Path
 
@@ -27,6 +28,7 @@ MEMBERS_FILE = "congress_members.json"
 OUTPUT_DIR   = Path("data/congress")
 PDF_CACHE    = Path("_ptr_cache")
 YEARS        = ["2023", "2024", "2025", "2026"]
+KEEP_PDFS    = "--keep-pdfs" in sys.argv
 
 BASE       = "https://disclosures-clerk.house.gov"
 SEARCH_URL = BASE + "/FinancialDisclosure/ViewMemberSearchResult"
@@ -56,7 +58,6 @@ AMOUNT_MIDPOINTS = {
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def toISO(date_str):
-    """Convert MM/DD/YYYY to YYYY-MM-DD for correct sorting."""
     if not date_str:
         return ""
     parts = date_str.split("/")
@@ -78,7 +79,6 @@ def parse_amount(raw):
 
 
 def clean_asset_name(asset):
-    """Strip type tags, ticker, and stock class suffixes — return company name only."""
     s = asset.replace("\n", " ")
     s = re.sub(r"\s*\[(ST|OP|OT|MF|DC)\]\s*", "", s).strip()
     s = re.sub(r"\s*\([A-Z]{1,5}\)\s*$", "", s).strip()
@@ -95,7 +95,6 @@ def asset_type(asset):
 
 
 def is_valid_trade(tx, amount_mid):
-    """Filter out exchanges and sub-$1000 trades."""
     if not tx:
         return False
     if tx.lower() == "exchange":
@@ -179,6 +178,7 @@ def is_data_row(row):
 
 def parse_pdf(pdf_path, filing_meta, member_name):
     trades = []
+    skipped = []
     try:
         with pdfplumber.open(pdf_path) as pdf:
             for page in pdf.pages:
@@ -191,26 +191,31 @@ def parse_pdf(pdf_path, filing_meta, member_name):
                         if not is_data_row(row):
                             continue
 
-                        asset_raw   = (row[2] or "").strip().replace("\n", " ")
-                        tx_raw      = (row[3] or "").strip()
-                        date_raw    = (row[4] or "").strip()
-                        amount_raw  = (row[6] or "").strip().replace("\n", " ")
-                        amount_mid  = parse_amount(amount_raw)
+                        asset_raw  = (row[2] or "").strip().replace("\n", " ")
+                        tx_raw     = (row[3] or "").strip()
+                        date_raw   = (row[4] or "").strip()
+                        amount_raw = (row[6] or "").strip().replace("\n", " ")
+                        amount_mid = parse_amount(amount_raw)
 
                         if not is_valid_trade(tx_raw, amount_mid):
+                            skipped.append({
+                                "asset": asset_raw,
+                                "tx":    tx_raw,
+                                "date":  date_raw,
+                                "amount": amount_raw,
+                                "reason": "exchange" if tx_raw.lower() == "exchange" else "below_threshold"
+                            })
                             continue
 
-                        # Extract ticker
                         ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_raw)
                         ticker = ticker_match.group(1) if ticker_match else None
 
-                        # Normalise tx type
                         tx_map = {
-                            "P":          "Purchase",
-                            "S":          "Sale",
+                            "P":           "Purchase",
+                            "S":           "Sale",
                             "S (PARTIAL)": "S (partial)",
-                            "S (FULL)":   "S (full)",
-                            "E":          "Exchange",
+                            "S (FULL)":    "S (full)",
+                            "E":           "Exchange",
                         }
                         tx = tx_map.get(tx_raw.upper(), tx_raw)
 
@@ -230,7 +235,7 @@ def parse_pdf(pdf_path, filing_meta, member_name):
                         })
     except Exception as e:
         print(f"    PDF parse error {pdf_path}: {e}")
-    return trades
+    return trades, skipped
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -242,19 +247,21 @@ def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     session = requests.Session()
 
+    if KEEP_PDFS:
+        print("-- keep-pdfs mode: PDFs will NOT be deleted after parsing --\n")
+
     for member in members:
         print(f"\n{'='*60}")
         print(f"Processing: {member['name']}")
         print(f"{'='*60}")
 
-        all_trades = []
+        all_trades  = []
+        all_skipped = []
 
         for year in YEARS:
             print(f"  Searching {year}...")
             try:
                 filings = search_filings(session, member["last_name"], year)
-                # Filter to this specific member by first name if multiple results
-                # (e.g. multiple people with same last name)
                 print(f"    Found {len(filings)} PTR filing(s)")
             except Exception as e:
                 print(f"    Search failed: {e}")
@@ -265,34 +272,36 @@ def main():
                 pdf_path = download_pdf(filing, session)
                 if not pdf_path:
                     continue
-                trades = parse_pdf(pdf_path, filing, member["name"])
-                print(f"    Parsed {len(trades)} trade(s) from doc {filing['doc_id']}")
+                trades, skipped = parse_pdf(pdf_path, filing, member["name"])
+                print(f"    Doc {filing['doc_id']}: {len(trades)} trade(s) parsed, {len(skipped)} skipped")
                 all_trades.extend(trades)
+                all_skipped.extend(skipped)
 
-        # Sort by date descending (most recent first)
         all_trades.sort(key=lambda t: t.get("date_iso") or "", reverse=True)
 
-        # Write per-member JSON
         out_path = OUTPUT_DIR / f"{member['id']}.json"
         with open(out_path, "w") as f:
             json.dump({
-                "id":     member["id"],
-                "name":   member["name"],
-                "slug":   member["slug"],
-                "party":  member["party"],
-                "state":  member["state"],
+                "id":       member["id"],
+                "name":     member["name"],
+                "slug":     member["slug"],
+                "party":    member["party"],
+                "state":    member["state"],
                 "district": member["district"],
                 "chamber":  member["chamber"],
                 "title":    member["title"],
                 "trades":   all_trades,
+                "skipped":  all_skipped,
             }, f, indent=2)
 
-        print(f"  Written {len(all_trades)} trades -> {out_path}")
+        print(f"  Total: {len(all_trades)} trades, {len(all_skipped)} skipped -> {out_path}")
 
-    # Delete PDF cache to keep repo lean
-    if PDF_CACHE.exists():
-        shutil.rmtree(PDF_CACHE)
-        print(f"\nDeleted PDF cache: {PDF_CACHE}")
+    if not KEEP_PDFS:
+        if PDF_CACHE.exists():
+            shutil.rmtree(PDF_CACHE)
+            print(f"\nDeleted PDF cache: {PDF_CACHE}")
+    else:
+        print(f"\nPDFs kept in {PDF_CACHE}/ for debugging")
 
     print("\nDone.")
 
