@@ -236,6 +236,12 @@ def parse_pdf(pdf_path, filing_meta, member_name):
                                 continue
                             asset_raw, tx_raw, date_raw, amount_raw = parsed
                             amount_mid = parse_amount(amount_raw)
+                            # Extract ticker from the ORIGINAL raw text before cleanup stripped it
+                            _ticker_match = re.search(r'\(([A-Z]{1,5})\)', re.sub(r'\x00+', '', row[0]))
+                            if _ticker_match:
+                                ticker = _ticker_match.group(1)
+                            else:
+                                ticker = None
 
                         else:
                             continue
@@ -250,8 +256,11 @@ def parse_pdf(pdf_path, filing_meta, member_name):
                             })
                             continue
 
-                        ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_raw)
-                        ticker = ticker_match.group(1) if ticker_match else None
+                        # For normal rows, extract ticker from asset_raw
+                        # For merged rows, ticker was already set from original raw text above
+                        if is_data_row(row):
+                            ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_raw)
+                            ticker = ticker_match.group(1) if ticker_match else None
 
                         tx_map = {
                             "P":           "Purchase",
