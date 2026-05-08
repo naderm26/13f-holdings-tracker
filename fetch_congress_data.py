@@ -66,40 +66,46 @@ def search_filings(session, year):
     r = session.post(SEARCH_URL, data=payload, headers=HEADERS, timeout=20)
     r.raise_for_status()
 
-    # DEBUG — print first 2000 chars so we can see what the server returns
-    print("  --- DEBUG RESPONSE START ---")
-    print(r.text[:2000])
-    print("  --- DEBUG RESPONSE END ---")
-
     soup = BeautifulSoup(r.text, "html.parser")
-    title = soup.find("title")
-    print(f"    Page: {title.text.strip() if title else '(no title)'}")
 
     filings = []
-    for a in soup.find_all("a", href=re.compile(r"/ptr-pdfs/\d+/\d+\.pdf")):
-        href = a["href"]
-        m = re.search(r"/ptr-pdfs/(\d{4})/(\d+)\.pdf", href)
+    # Table columns: Name (with link) | Office | Filing Year | Filing (type)
+    for row in soup.find_all("tr", role="row"):
+        cells = row.find_all("td")
+        if len(cells) < 4:
+            continue
+
+        filing_type = cells[3].get_text(strip=True)  # e.g. "PTR Original"
+        if "PTR" not in filing_type.upper():
+            continue
+
+        # Link is inside the first cell
+        a = cells[0].find("a", href=True)
+        if not a:
+            continue
+
+        href = a["href"]  # e.g. "public_disc/ptr-pdfs/2024/20024542.pdf"
+        # Extract year and doc_id — href has no leading slash
+        m = re.search(r"ptr-pdfs/(\d{4})/(\d+)\.pdf", href)
         if not m:
             continue
-        pdf_year, doc_id = m.group(1), m.group(2)
 
-        row = a.find_parent("tr")
-        cells = row.find_all("td") if row else []
-        filing_date = cells[2].get_text(strip=True) if len(cells) > 2 else ""
-        filing_type = cells[1].get_text(strip=True) if len(cells) > 1 else ""
+        pdf_year = m.group(1)
+        doc_id   = m.group(2)
+        url      = BASE + "/" + href  # add leading slash
 
-        if filing_type and "PTR" not in filing_type.upper() and "Periodic" not in filing_type:
-            continue
+        filing_year = cells[2].get_text(strip=True)
 
         filings.append({
             "year":        pdf_year,
             "doc_id":      doc_id,
-            "filing_date": filing_date,
+            "filing_date": filing_year,  # only year available from search; PDF has exact date
             "filing_type": filing_type,
-            "url":         BASE + href,
+            "url":         url,
         })
+        print(f"    Found: {filing_type} {pdf_year} doc {doc_id}")
 
-    print(f"    Found {len(filings)} PTR filing(s)")
+    print(f"    Total PTR filings found: {len(filings)}")
     return filings
 
 
