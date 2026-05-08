@@ -95,22 +95,26 @@ def inspect_pdf(pdf_path):
                             tx     = (row[3] or "").strip()
                             date   = (row[4] or "").strip()
                             amount = (row[6] or "").strip().replace("\n", " ")
+                            ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset)
+                            ticker = ticker_match.group(1) if ticker_match else "—"
                         elif row[0] and all(c is None for c in row[1:]):
                             parsed = parse_merged_row(row[0])
                             if not parsed:
                                 continue
                             asset, tx, date, amount = parsed
+                            # Extract ticker from original raw text before cleanup stripped it
+                            _tm = re.search(r"\(([A-Z]{1,5})\)", re.sub(r"\x00+", "", row[0]))
+                            ticker = _tm.group(1) if _tm else "—"
                         else:
                             continue
 
-                        ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset)
                         rows.append({
                             "page":   page_num + 1,
                             "asset":  asset,
                             "tx":     tx,
                             "date":   date,
                             "amount": amount,
-                            "ticker": ticker_match.group(1) if ticker_match else "—",
+                            "ticker": ticker,
                         })
     except Exception as e:
         print(f"  ERROR reading {pdf_path.name}: {e}")
