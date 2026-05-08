@@ -92,10 +92,10 @@
     .ins-ticker:hover { text-decoration: underline; }
 
     .table-wrap { overflow-x: auto; }
-    table { width: 100%; min-width: 680px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+    table { width: 100%; min-width: 600px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
     thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
     th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
-    th.col-asset { text-align: left; width: 35%; }
+    th.col-asset { text-align: left; width: 38%; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
     td.col-asset { text-align: left; white-space: normal; }
@@ -108,11 +108,11 @@
     tr.total-row td.col-asset { font-family: var(--sans); font-size: 0.875rem; }
 
     .tx-badge { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.2rem 0.5rem; border-radius: 3px; display: inline-block; white-space: nowrap; }
-    .tx-initiated  { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
-    .tx-bought     { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
-    .tx-trimmed    { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
-    .tx-exited     { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
-    .tx-exchange   { color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
+    .tx-initiated { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
+    .tx-bought    { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
+    .tx-trimmed   { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
+    .tx-exited    { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
+    .tx-exchange  { color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
 
     .fund-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.85rem; font-weight: 500; color: #fff; flex-shrink: 0; border: 1px solid var(--border); overflow: hidden; }
     .fund-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
@@ -232,21 +232,27 @@
 
   let allTrades = [];
   let activeYear = "All";
-  let sortCol = 0;
-  let sortAsc = false;
+  let sortCol = 0;   // 0 = trade date, 1 = asset, 2 = action, 3 = amount
+  let sortAsc = false; // default: most recent first
 
-  // Track which tickers each member has purchased before, to distinguish "Initiated" vs "Bought More"
-  // We determine this by looking at all trades chronologically
+  // Convert MM/DD/YYYY → YYYY-MM-DD for correct chronological sorting
+  function toISO(dateStr) {
+    if (!dateStr) return "";
+    const [m, d, y] = dateStr.split("/");
+    if (!y) return dateStr;
+    return `${y}-${m.padStart(2,"0")}-${d.padStart(2,"0")}`;
+  }
+
+  // Determine which purchases are "Initiated Position" vs "Bought More"
+  // by walking all trades chronologically and noting the first purchase of each ticker
   function buildInitiatedSet(trades) {
-    // Sort all trades by date ascending
-    const sorted = [...trades].sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+    const sorted = [...trades].sort((a, b) => toISO(a.date).localeCompare(toISO(b.date)));
     const seen = new Set();
-    const initiated = new Set(); // doc_id + ticker combos that are "first ever purchase"
+    const initiated = new Set();
     for (const t of sorted) {
-      if (!t.ticker) continue;
-      const isBuy = t.transaction === "Purchase";
-      if (isBuy && !seen.has(t.ticker)) {
-        initiated.add(t.doc_id + "_" + t.ticker + "_" + t.date);
+      if (!t.ticker || t.transaction !== "Purchase") continue;
+      if (!seen.has(t.ticker)) {
+        initiated.add(`${t.doc_id}_${t.ticker}_${t.date}`);
         seen.add(t.ticker);
       }
     }
@@ -255,10 +261,7 @@
 
   fetch(`${PAGES}/pelosi_trades.json`)
     .then(r => r.json())
-    .then(data => {
-      allTrades = data;
-      init();
-    })
+    .then(data => { allTrades = data; init(); })
     .catch(e => {
       document.getElementById("table-container").innerHTML =
         `<div style="color:var(--red);font-family:var(--mono);font-size:0.85rem;">Failed to load trade data: ${e.message}</div>`;
@@ -266,61 +269,52 @@
 
   function init() {
     const years = [...new Set(allTrades.map(t => t.filing_year))].sort().reverse();
-    const allYears = ["All", ...years];
-    document.getElementById("year-selector").innerHTML = allYears.map(y =>
-      `<button class="q-btn${y === activeYear ? " active" : ""}" onclick="setYear('${y}')">${y === "All" ? "All Years" : y}</button>`
-    ).join("");
+    document.getElementById("year-selector").innerHTML =
+      ["All", ...years].map(y =>
+        `<button class="q-btn${y === activeYear ? " active" : ""}" onclick="setYear('${y}')">${y === "All" ? "All Years" : y}</button>`
+      ).join("");
     renderTable();
   }
 
   function setYear(y) {
     activeYear = y;
     document.querySelectorAll(".q-btn").forEach(b => {
-      const label = b.textContent === "All Years" ? "All" : b.textContent;
-      b.classList.toggle("active", label === y);
+      b.classList.toggle("active", (b.textContent === "All Years" ? "All" : b.textContent) === y);
     });
     renderTable();
   }
 
   function filteredTrades() {
-    if (activeYear === "All") return allTrades;
-    return allTrades.filter(t => t.filing_year === activeYear);
+    return activeYear === "All" ? allTrades : allTrades.filter(t => t.filing_year === activeYear);
   }
 
-  // ── Normalise transaction label ──────────────────────────────────
+  // ── Transaction label normalisation ──────────────────────────────
   function normaliseTx(raw, isInitiated) {
     if (!raw) return { label: "—", cls: "tx-exchange" };
     const t = raw.toLowerCase();
-    if (t === "purchase") {
-      return isInitiated
-        ? { label: "Initiated Position", cls: "tx-initiated" }
-        : { label: "Bought More",        cls: "tx-bought" };
-    }
-    if (t.includes("s (partial)") || t === "s (partial)") return { label: "Trimmed",  cls: "tx-trimmed" };
-    if (t.includes("s (full)")    || t === "s (full)")    return { label: "Exited",    cls: "tx-exited"  };
+    if (t === "purchase")
+      return isInitiated ? { label: "Initiated Position", cls: "tx-initiated" }
+                         : { label: "Bought More",        cls: "tx-bought" };
+    if (t === "s (partial)" || t.includes("s (partial)")) return { label: "Trimmed",  cls: "tx-trimmed" };
+    if (t === "s (full)"    || t.includes("s (full)"))    return { label: "Exited",    cls: "tx-exited"  };
     if (t === "sale" || t === "s")                         return { label: "Exited",    cls: "tx-exited"  };
     if (t === "exchange")                                  return { label: "Exchange",  cls: "tx-exchange" };
-    // Fallback — capitalise raw
     return { label: raw, cls: "tx-exchange" };
   }
 
-  // ── Insights ─────────────────────────────────────────────────────
+  // ── Insights ──────────────────────────────────────────────────────
   function renderInsights(trades) {
     const el = document.getElementById("insights");
     if (!el || trades.length === 0) { if (el) el.innerHTML = ""; return; }
 
-    const initiated = buildInitiatedSet(allTrades); // use all trades for initiated detection
+    const initiated = buildInitiatedSet(allTrades);
     const sentences = [];
 
-    // Tracked period
-    const allDates = allTrades.map(t => t.date).filter(Boolean).sort();
-    const trackedFrom = allDates[0];
-    const trackedTo   = allDates[allDates.length - 1];
-    const trackedPeriod = trackedFrom === trackedTo
-      ? trackedFrom
-      : `${trackedFrom} – ${trackedTo}`;
+    // Tracked period (always from full dataset)
+    const allDates = allTrades.map(t => toISO(t.date)).filter(Boolean).sort();
+    const trackedFrom = allTrades.find(t => toISO(t.date) === allDates[0])?.date;
+    const trackedTo   = allTrades.find(t => toISO(t.date) === allDates[allDates.length - 1])?.date;
 
-    // Period label for this view
     const periodLabel = activeYear === "All"
       ? `from ${trackedFrom} to ${trackedTo}`
       : `in ${activeYear}`;
@@ -331,7 +325,7 @@
       return t2.includes("sale") || t2 === "s" || t2.includes("s (");
     });
 
-    // S1 — summary with tracked period
+    // S1 — summary
     sentences.push(
       `Pelosi filed <b>${trades.length}</b> transaction${trades.length !== 1 ? "s" : ""} ${periodLabel} — ` +
       `<span class="ins-green">${purchases.length} purchase${purchases.length !== 1 ? "s" : ""}</span> and ` +
@@ -350,30 +344,32 @@
     }
 
     // S3 — most recent trade
-    const sorted = [...trades].sort((a,b) => (b.date || "").localeCompare(a.date || ""));
-    if (sorted.length > 0) {
-      const latest = sorted[0];
-      const tx = normaliseTx(latest.transaction, initiated.has(latest.doc_id + "_" + latest.ticker + "_" + latest.date));
+    const byDate = [...trades].sort((a,b) => toISO(b.date).localeCompare(toISO(a.date)));
+    if (byDate.length > 0) {
+      const latest = byDate[0];
+      const isInit = initiated.has(`${latest.doc_id}_${latest.ticker}_${latest.date}`);
+      const tx = normaliseTx(latest.transaction, isInit);
+      const isBuy = tx.cls === "tx-initiated" || tx.cls === "tx-bought";
       const ticker = latest.ticker
         ? `<a class="ins-ticker" href="stocks/${latest.ticker}-hedge-fund-ownership.html">${latest.ticker}</a>`
-        : latest.asset.replace(/\s*\[.*?\]/g, "").trim().split("(")[0].trim();
+        : latest.asset.replace(/\s*\[.*?\]/g, "").split("(")[0].trim();
       sentences.push(
-        `Most recent trade: <span class="${tx.cls === "tx-initiated" || tx.cls === "tx-bought" ? "ins-green" : "ins-red"}">${tx.label}</span> ${ticker} on ${latest.date} (${latest.amount_range}).`
+        `Most recent trade: <span class="${isBuy ? "ins-green" : "ins-red"}">${tx.label}</span> ${ticker} on ${latest.date} (${latest.amount_range}).`
       );
     }
 
-    // S4 — largest trade
+    // S4 — largest trade by amount_mid (exclude bad values)
     const withAmount = trades.filter(t => t.amount_mid && t.amount_mid < 1e12);
     if (withAmount.length > 0) {
       const largest = withAmount.reduce((a, b) => a.amount_mid > b.amount_mid ? a : b);
-      const isBuy = largest.transaction === "Purchase";
-      const cls = isBuy ? "ins-green" : "ins-red";
-      const tx = normaliseTx(largest.transaction, initiated.has(largest.doc_id + "_" + largest.ticker + "_" + largest.date));
-      const ticker = largest.ticker
+      const isInit  = initiated.has(`${largest.doc_id}_${largest.ticker}_${largest.date}`);
+      const tx      = normaliseTx(largest.transaction, isInit);
+      const isBuy   = tx.cls === "tx-initiated" || tx.cls === "tx-bought";
+      const ticker  = largest.ticker
         ? `<a class="ins-ticker" href="stocks/${largest.ticker}-hedge-fund-ownership.html">${largest.ticker}</a>`
-        : largest.asset.replace(/\s*\[.*?\]/g, "").trim().split("(")[0].trim();
+        : largest.asset.replace(/\s*\[.*?\]/g, "").split("(")[0].trim();
       sentences.push(
-        `Largest reported trade: <span class="${cls}">${tx.label}</span> ${ticker} (${largest.amount_range}) on ${largest.date}.`
+        `Largest reported trade: <span class="${isBuy ? "ins-green" : "ins-red"}">${tx.label}</span> ${ticker} (${largest.amount_range}) on ${largest.date}.`
       );
     }
 
@@ -381,27 +377,24 @@
   }
 
   // ── Helpers ───────────────────────────────────────────────────────
-  function fmtAmount(t) {
-    return (t.amount_range || "—").replace(/\n/g, " ").trim();
-  }
-
   function cleanAssetName(asset) {
     return asset.replace(/\s*\[(ST|OP|OT|MF|DC)\]\s*/g, "").trim();
   }
-
   function assetType(asset) {
     if (asset.includes("[OP]")) return "Option";
     if (asset.includes("[OT]")) return "Other";
     if (asset.includes("[MF]")) return "Fund";
     return "";
   }
+  function fmtAmount(t) {
+    return (t.amount_range || "—").replace(/\n/g, " ").trim();
+  }
 
   function sort(col) {
     if (sortCol === col) sortAsc = !sortAsc;
-    else { sortCol = col; sortAsc = false; }
+    else { sortCol = col; sortAsc = col !== 0; } // date col defaults desc, others asc
     renderTable();
   }
-
   function arrow(col) {
     if (sortCol !== col) return "";
     return sortAsc ? " ↑" : " ↓";
@@ -409,14 +402,15 @@
 
   // ── Render ────────────────────────────────────────────────────────
   function renderTable() {
-    const trades = filteredTrades();
+    const trades    = filteredTrades();
     const initiated = buildInitiatedSet(allTrades);
 
     // Stats
     document.getElementById("stat-count").textContent = trades.length;
     if (trades.length > 0) {
-      const dates = trades.map(t => t.date).filter(Boolean).sort();
-      const oldest = dates[0], newest = dates[dates.length - 1];
+      const dates  = trades.map(t => toISO(t.date)).filter(Boolean).sort();
+      const oldest = trades.find(t => toISO(t.date) === dates[0])?.date;
+      const newest = trades.find(t => toISO(t.date) === dates[dates.length - 1])?.date;
       document.getElementById("stat-range").textContent =
         oldest === newest ? oldest : `${oldest} – ${newest}`;
     } else {
@@ -431,25 +425,25 @@
       return;
     }
 
-    // Sort
+    // Sort — use ISO date for correct chronological comparison
     const sorted = [...trades].sort((a, b) => {
       let av, bv;
-      if      (sortCol === 0) { av = a.date || "";  bv = b.date || ""; }
+      if      (sortCol === 0) { av = toISO(a.date);               bv = toISO(b.date); }
       else if (sortCol === 1) { av = (a.asset || "").toLowerCase(); bv = (b.asset || "").toLowerCase(); }
-      else if (sortCol === 2) { av = a.transaction || ""; bv = b.transaction || ""; }
-      else if (sortCol === 3) { av = a.amount_mid || 0;   bv = b.amount_mid || 0; }
+      else if (sortCol === 2) { av = a.transaction || "";           bv = b.transaction || ""; }
+      else if (sortCol === 3) { av = a.amount_mid || 0;             bv = b.amount_mid || 0; }
       if (av < bv) return sortAsc ? -1 : 1;
       if (av > bv) return sortAsc ? 1 : -1;
       return 0;
     });
 
     const rowsHtml = sorted.map(t => {
-      const clean   = cleanAssetName(t.asset);
-      const atype   = assetType(t.asset);
-      const ticker  = t.ticker;
+      const clean     = cleanAssetName(t.asset);
+      const atype     = assetType(t.asset);
+      const ticker    = t.ticker;
       const stockHref = ticker ? `stocks/${ticker}-hedge-fund-ownership.html` : null;
-      const isInit  = initiated.has(t.doc_id + "_" + t.ticker + "_" + t.date);
-      const tx      = normaliseTx(t.transaction, isInit);
+      const isInit    = initiated.has(`${t.doc_id}_${t.ticker}_${t.date}`);
+      const tx        = normaliseTx(t.transaction, isInit);
 
       const assetCell = `
         <div class="company-name">
@@ -466,22 +460,17 @@
           <td class="num"><span class="tx-badge ${tx.cls}">${tx.label}</span></td>
           <td class="num">${t.date || "—"}</td>
           <td class="num">${fmtAmount(t)}</td>
-          <td class="num" style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${t.filing_year || "—"}</td>
         </tr>`;
     }).join("");
 
-    // Period label for table title
-    const allDates = allTrades.map(t => t.date).filter(Boolean).sort();
-    let tableTitle;
-    if (activeYear === "All") {
-      const from = allDates[0];
-      const to   = allDates[allDates.length - 1];
-      tableTitle = `Nancy Pelosi's stock trades — ${from} to ${to}`;
-    } else {
-      tableTitle = `Nancy Pelosi's stock trades — ${activeYear}`;
-    }
+    // Table title — show exact date range
+    const allDates  = allTrades.map(t => toISO(t.date)).filter(Boolean).sort();
+    const fromDate  = allTrades.find(t => toISO(t.date) === allDates[0])?.date;
+    const toDate    = allTrades.find(t => toISO(t.date) === allDates[allDates.length - 1])?.date;
+    const tableTitle = activeYear === "All"
+      ? `Nancy Pelosi's stock trades — ${fromDate} to ${toDate}`
+      : `Nancy Pelosi's stock trades — ${activeYear}`;
 
-    // Total row
     const purchases = trades.filter(t => t.transaction === "Purchase").length;
     const sales     = trades.filter(t => { const t2 = (t.transaction||"").toLowerCase(); return t2.includes("sale") || t2 === "s" || t2.includes("s ("); }).length;
 
@@ -489,7 +478,6 @@
       <tr class="total-row">
         <td class="col-asset">Total · ${purchases} purchase${purchases !== 1 ? "s" : ""}, ${sales} sale${sales !== 1 ? "s" : ""}</td>
         <td class="num">${trades.length}</td>
-        <td class="num">—</td>
         <td class="num">—</td>
         <td class="num">—</td>
       </tr>`;
@@ -504,7 +492,6 @@
               <th onclick="sort(2)">Action${arrow(2)}</th>
               <th onclick="sort(0)">Trade Date${arrow(0)}</th>
               <th onclick="sort(3)">Amount Range *${arrow(3)}</th>
-              <th>Filing Year</th>
             </tr>
           </thead>
           <tbody>${rowsHtml}${totalRow}</tbody>
