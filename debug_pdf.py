@@ -1,14 +1,12 @@
 """
 debug_pdf.py
-Inspects all PDFs in _ptr_cache/ and prints the raw table structure
-for each one, grouped by member. Run after fetch_congress_data.py --keep-pdfs.
-
-Also cross-checks parsed trades in data/congress/*.json against
-the raw PDF content to flag any potential missed rows.
+Inspects all PDFs in _ptr_cache/ and cross-checks against parsed JSON.
+Run after fetch_congress_data.py --keep-pdfs
 
 Usage:
     python debug_pdf.py              # inspect all cached PDFs
-    python debug_pdf.py pelosi       # inspect only PDFs for a specific member
+    python debug_pdf.py pelosi       # filter by member name
+    python debug_pdf.py 20029138     # deep-dive a specific doc ID
 """
 
 import json
@@ -18,8 +16,8 @@ from pathlib import Path
 
 import pdfplumber
 
-PDF_CACHE  = Path("_ptr_cache")
-DATA_DIR   = Path("data/congress")
+PDF_CACHE    = Path("_ptr_cache")
+DATA_DIR     = Path("data/congress")
 MEMBERS_FILE = "congress_members.json"
 
 FILTER = sys.argv[1].lower() if len(sys.argv) > 1 else None
@@ -34,29 +32,53 @@ def is_data_row(row):
     return bool(re.match(r"\d{2}/\d{2}/\d{4}", date))
 
 
+def deep_dive(pdf_path):
+    """Print every raw row from every table in the PDF — for debugging a specific doc."""
+    print(f"\n{'='*70}")
+    print(f"DEEP DIVE: {pdf_path.name}")
+    print(f"{'='*70}")
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            for page_num, page in enumerate(pdf.pages):
+                print(f"\n--- PAGE {page_num + 1} ---")
+                text = page.extract_text() or ""
+                if text:
+                    print("RAW TEXT (first 800 chars):")
+                    print(text[:800])
+
+                tables = page.extract_tables()
+                print(f"\nTables found: {len(tables)}")
+                for t_idx, table in enumerate(tables):
+                    print(f"\n  Table {t_idx + 1} ({len(table)} rows):")
+                    for r_idx, row in enumerate(table):
+                        is_data = is_data_row(row)
+                        marker  = "DATA" if is_data else "    "
+                        print(f"    [{marker}] Row {r_idx:02d}: {row}")
+    except Exception as e:
+        print(f"ERROR: {e}")
+
+
 def inspect_pdf(pdf_path):
-    """Return all table rows that look like trade data."""
+    """Return all rows that look like trade data."""
     rows = []
     try:
         with pdfplumber.open(pdf_path) as pdf:
             for page_num, page in enumerate(pdf.pages):
-                tables = page.extract_tables()
-                for t_idx, table in enumerate(tables):
+                for t_idx, table in enumerate(page.extract_tables()):
                     for r_idx, row in enumerate(table):
                         if not row:
                             continue
                         if (row[0] or "").strip() == "ID":
                             continue
                         if is_data_row(row):
+                            ticker_match = re.search(r"\(([A-Z]{1,5})\)", (row[2] or ""))
                             rows.append({
-                                "page":    page_num + 1,
-                                "table":   t_idx + 1,
-                                "row_idx": r_idx,
-                                "raw":     row,
-                                "asset":   (row[2] or "").strip().replace("\n", " "),
-                                "tx":      (row[3] or "").strip(),
-                                "date":    (row[4] or "").strip(),
-                                "amount":  (row[6] or "").strip().replace("\n", " "),
+                                "page":   page_num + 1,
+                                "asset":  (row[2] or "").strip().replace("\n", " "),
+                                "tx":     (row[3] or "").strip(),
+                                "date":   (row[4] or "").strip(),
+                                "amount": (row[6] or "").strip().replace("\n", " "),
+                                "ticker": ticker_match.group(1) if ticker_match else "—",
                             })
     except Exception as e:
         print(f"  ERROR reading {pdf_path.name}: {e}")
@@ -69,14 +91,7 @@ def main():
         print("Run: python fetch_congress_data.py --keep-pdfs")
         return
 
-    # Load members config to map doc IDs to members
-    try:
-        with open(MEMBERS_FILE) as f:
-            members = {m["id"]: m for m in json.load(f)}
-    except FileNotFoundError:
-        members = {}
-
-    # Load existing parsed data to cross-check
+    # Load parsed data for cross-checking
     parsed_by_doc = {}
     for json_path in DATA_DIR.glob("*.json"):
         try:
@@ -86,35 +101,48 @@ def main():
                 doc_id = trade.get("doc_id")
                 if doc_id:
                     parsed_by_doc.setdefault(doc_id, []).append(trade)
-            for skipped in data.get("skipped", []):
-                pass  # just noting they exist
         except Exception:
             pass
 
     pdfs = sorted(PDF_CACHE.glob("*.pdf"))
     if not pdfs:
         print(f"No PDFs found in {PDF_CACHE}/")
-        print("Run: python fetch_congress_data.py --keep-pdfs")
+        return
+
+    # If filter looks like a doc ID, do a deep dive on that specific PDF
+    if FILTER and re.match(r"^\d{7,9}$", FILTER):
+        pdf_path = PDF_CACHE / f"{FILTER}.pdf"
+        if pdf_path.exists():
+            deep_dive(pdf_path)
+            parsed = parsed_by_doc.get(FILTER, [])
+            print(f"\nParsed trades for this doc: {len(parsed)}")
+            for t in parsed:
+                print(f"  {t['date']}  {t.get('ticker','—')}  {t['transaction']}  {t['amount_range']}")
+        else:
+            print(f"PDF not found: {pdf_path}")
         return
 
     print(f"Found {len(pdfs)} PDF(s) in {PDF_CACHE}/\n")
 
-    total_raw   = 0
+    total_raw    = 0
     total_parsed = 0
     issues       = []
 
     for pdf_path in pdfs:
         doc_id = pdf_path.stem
 
-        # Apply member filter if specified
-        if FILTER and FILTER not in doc_id.lower():
-            # Try to match against member name via parsed data
-            matched_member = None
+        # Skip old-format doc IDs
+        if doc_id.startswith("8") or doc_id.startswith("9"):
+            continue
+
+        # Apply name filter
+        if FILTER:
+            matched = False
             if doc_id in parsed_by_doc:
                 member_name = (parsed_by_doc[doc_id][0].get("member") or "").lower()
-                if FILTER not in member_name:
-                    continue
-            else:
+                if FILTER in member_name:
+                    matched = True
+            if not matched:
                 continue
 
         raw_rows    = inspect_pdf(pdf_path)
@@ -123,32 +151,29 @@ def main():
         total_raw    += len(raw_rows)
         total_parsed += len(parsed_rows)
 
+        if len(raw_rows) == 0 and len(parsed_rows) == 0:
+            continue  # silent skip for genuinely empty docs
+
         print(f"{'─'*60}")
-        print(f"Doc {doc_id}  ({len(raw_rows)} raw data rows, {len(parsed_rows)} parsed trades)")
+        member = parsed_rows[0].get("member", "?") if parsed_rows else "?"
+        print(f"Doc {doc_id}  [{member}]  ({len(raw_rows)} raw, {len(parsed_rows)} parsed)")
         print(f"{'─'*60}")
 
-        if not raw_rows:
-            print("  No data rows found in PDF — possible column layout mismatch")
-            issues.append(f"Doc {doc_id}: 0 raw rows extracted")
-            continue
-
-        # Print each raw row
         for row in raw_rows:
-            ticker_match = re.search(r"\(([A-Z]{1,5})\)", row["asset"])
-            ticker = ticker_match.group(1) if ticker_match else "—"
             parsed_match = any(
-                t.get("doc_id") == doc_id and t.get("date") == row["date"] and t.get("ticker") == ticker
+                t.get("doc_id") == doc_id and
+                t.get("date")   == row["date"] and
+                t.get("ticker") == row["ticker"]
                 for t in parsed_rows
             )
             status = "✓" if parsed_match else "✗ MISSING"
-            print(f"  {status}  {row['date']:<12} {ticker:<8} {row['tx']:<14} {row['amount']:<30}  {row['asset'][:50]}")
+            print(f"  {status}  {row['date']:<12} {row['ticker']:<8} {row['tx']:<16} {row['amount']:<30}  {row['asset'][:45]}")
 
-        # Flag discrepancy
         if len(raw_rows) != len(parsed_rows):
             diff = len(raw_rows) - len(parsed_rows)
-            msg = f"Doc {doc_id}: {len(raw_rows)} raw rows but only {len(parsed_rows)} parsed ({diff} missing)"
+            msg  = f"Doc {doc_id} [{member}]: {len(raw_rows)} raw but {len(parsed_rows)} parsed ({diff} missing)"
             issues.append(msg)
-            print(f"\n  ⚠ {msg}")
+            print(f"\n  ⚠  {msg}")
 
         print()
 
@@ -156,19 +181,18 @@ def main():
     print(f"{'='*60}")
     print(f"SUMMARY")
     print(f"{'='*60}")
-    print(f"Total PDFs inspected : {len(pdfs)}")
     print(f"Total raw data rows  : {total_raw}")
     print(f"Total parsed trades  : {total_parsed}")
     print(f"Discrepancies        : {len(issues)}")
 
     if issues:
-        print("\nIssues found:")
+        print("\nIssues:")
         for issue in issues:
-            print(f"  ⚠ {issue}")
-        print("\nTo investigate a specific doc, run:")
-        print("  python debug_pdf.py <doc_id_or_member_name>")
+            print(f"  ⚠  {issue}")
+        print("\nTo deep-dive a specific doc:")
+        print("  python debug_pdf.py <doc_id>")
     else:
-        print("\nAll rows accounted for — no missing trades detected.")
+        print("\nAll rows accounted for.")
 
 
 if __name__ == "__main__":
