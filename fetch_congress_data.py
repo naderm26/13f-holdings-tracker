@@ -1,36 +1,35 @@
 """
 fetch_congress_data.py
-Scrapes congress' Periodic Transaction Reports (PTRs) from the
-US House of Representatives financial disclosure system.
+Fetches Nancy Pelosi's Periodic Transaction Reports (PTRs) from the
+House financial disclosure system by POSTing to the ASPX search form,
+then downloading and parsing each PDF.
 
 Usage:
     pip install pdfplumber requests
-    python fetch_pelosi_trades.py
+    python fetch_congress_data.py
 
 Output:
-    pelosi_trades.json  — structured list of all trades found
+    pelosi_trades.json
 """
 
 import json
 import re
-import sys
 import time
 from pathlib import Path
-from xml.etree import ElementTree as ET
 
 import pdfplumber
 import requests
 
-# ── Config ─────────────────────────────────────────────────────────────────
+# ── Config ──────────────────────────────────────────────────────────────────
 LAST_NAME   = "Pelosi"
 FIRST_NAME  = "Nancy"
-YEARS       = [2024, 2025, 2026]   # years to fetch
+YEARS       = ["2024", "2025", "2026"]
 OUTPUT_FILE = "pelosi_trades.json"
-PDF_CACHE   = Path("_ptr_cache")    # local cache folder so we don't re-download
+PDF_CACHE   = Path("_ptr_cache")
 
-BASE_URL    = "https://disclosures-clerk.house.gov"
-XML_URL     = BASE_URL + "/public_disc/financial-pdfs/{year}/FD.xml"
-PDF_URL     = BASE_URL + "/public_disc/ptr-pdfs/{year}/{doc_id}.pdf"
+BASE        = "https://disclosures-clerk.house.gov"
+SEARCH_URL  = BASE + "/FinancialDisclosure/ViewMemberSearchResult"
+PDF_URL     = BASE + "/public_disc/ptr-pdfs/{year}/{doc_id}.pdf"
 
 HEADERS = {
     "User-Agent": (
@@ -39,131 +38,144 @@ HEADERS = {
         "Chrome/124.0.0.0 Safari/537.36"
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Referer": "https://disclosures-clerk.house.gov/",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Referer": BASE + "/FinancialDisclosure",
 }
 
-# Amount range midpoints (USD) — House uses these standard buckets
 AMOUNT_MIDPOINTS = {
-    "$1,001 - $15,000":       8000,
-    "$15,001 - $50,000":     32500,
-    "$50,001 - $100,000":    75000,
-    "$100,001 - $250,000":  175000,
-    "$250,001 - $500,000":  375000,
-    "$500,001 - $1,000,000": 750000,
+    "$1,001 - $15,000":           8000,
+    "$15,001 - $50,000":         32500,
+    "$50,001 - $100,000":        75000,
+    "$100,001 - $250,000":      175000,
+    "$250,001 - $500,000":      375000,
+    "$500,001 - $1,000,000":    750000,
     "$1,000,001 - $5,000,000": 3000000,
-    "Over $5,000,000":       5000000,
+    "Over $5,000,000":         5000000,
 }
 
-# ── Helpers ────────────────────────────────────────────────────────────────
+# ── Helpers ──────────────────────────────────────────────────────────────────
 
-def fetch(url, binary=False):
-    """Fetch URL with retries."""
-    for attempt in range(3):
-        try:
-            r = requests.get(url, headers=HEADERS, timeout=20)
-            r.raise_for_status()
-            return r.content if binary else r.text
-        except requests.RequestException as e:
-            print(f"  Attempt {attempt+1} failed: {e}")
-            time.sleep(2 ** attempt)
-    return None
+def get_session():
+    """Return a requests.Session with cookies from the disclosure homepage."""
+    s = requests.Session()
+    s.headers.update(HEADERS)
+    r = s.get(BASE + "/FinancialDisclosure", timeout=15)
+    r.raise_for_status()
+    return s, r.text
 
 
-def get_filing_ids(year):
+def extract_viewstate(html):
+    """Pull ASP.NET hidden form fields needed to POST."""
+    fields = {}
+    for name in ["__VIEWSTATE", "__VIEWSTATEGENERATOR", "__EVENTVALIDATION"]:
+        m = re.search(rf'id="{re.escape(name)}"[^>]*value="([^"]*)"', html)
+        if m:
+            fields[name] = m.group(1)
+    return fields
+
+
+def search_filings(session, home_html, year):
     """
-    Parse the annual FD XML index and return PTR filing metadata
-    for the target member.
+    POST to the ASPX search form and return list of
+    {doc_id, filing_date, filing_type} dicts for PTR filings.
     """
-    url = XML_URL.format(year=year)
-    print(f"Fetching index for {year}: {url}")
-    xml_text = fetch(url)
-    if not xml_text:
-        print(f"  Could not fetch index for {year}")
+    vs = extract_viewstate(home_html)
+    if not vs.get("__VIEWSTATE"):
+        print(f"  Could not extract ViewState for {year}")
         return []
 
-    try:
-        root = ET.fromstring(xml_text)
-    except ET.ParseError as e:
-        print(f"  XML parse error for {year}: {e}")
-        return []
+    payload = {
+        "__VIEWSTATE":          vs.get("__VIEWSTATE", ""),
+        "__VIEWSTATEGENERATOR": vs.get("__VIEWSTATEGENERATOR", ""),
+        "__EVENTVALIDATION":    vs.get("__EVENTVALIDATION", ""),
+        "LastName":             LAST_NAME,
+        "FilingYear":           year,
+        "State":                "",
+        "District":             "",
+        "btnSearch":            "Search",
+    }
+
+    r = session.post(
+        BASE + "/FinancialDisclosure/ViewMemberSearchResult",
+        data=payload,
+        headers={**HEADERS, "Content-Type": "application/x-www-form-urlencoded"},
+        timeout=15,
+    )
+    r.raise_for_status()
 
     filings = []
-    # The XML structure: <FinancialDisclosure> → <Member> elements
-    # Each <Member> has: <Last>, <First>, <FilingType>, <DocID>, <Year>, <FilingDate>
-    for member in root.findall(".//Member"):
-        last  = (member.findtext("Last")  or "").strip().upper()
-        first = (member.findtext("First") or "").strip().upper()
-        ftype = (member.findtext("FilingType") or "").strip()
-
-        if last != LAST_NAME.upper():
-            continue
-        if FIRST_NAME and FIRST_NAME.upper() not in first:
-            continue
-        if ftype != "P":   # "P" = Periodic Transaction Report
+    # Parse the result table — rows look like:
+    # <tr><td>Pelosi, Nancy</td><td>PTR</td><td>01/17/2025</td>
+    #     <td><a href="/public_disc/ptr-pdfs/2025/20026590.pdf">View</a></td></tr>
+    rows = re.findall(r"<tr[^>]*>(.*?)</tr>", r.text, re.DOTALL)
+    for row in rows:
+        cells = re.findall(r"<td[^>]*>(.*?)</td>", row, re.DOTALL)
+        if len(cells) < 3:
             continue
 
-        doc_id      = (member.findtext("DocID") or "").strip()
-        filing_date = (member.findtext("FilingDate") or "").strip()
-        office      = (member.findtext("StateDst") or "").strip()
+        # Strip HTML tags from cells
+        def strip(s):
+            return re.sub(r"<[^>]+>", "", s).strip()
 
-        if doc_id:
-            filings.append({
-                "year":        year,
-                "doc_id":      doc_id,
-                "filing_date": filing_date,
-                "office":      office,
-            })
+        name_cell    = strip(cells[0])
+        type_cell    = strip(cells[1]) if len(cells) > 1 else ""
+        date_cell    = strip(cells[2]) if len(cells) > 2 else ""
 
-    print(f"  Found {len(filings)} PTR filing(s) for {LAST_NAME} in {year}")
+        # Only PTRs
+        if "PTR" not in type_cell.upper() and "Periodic" not in type_cell:
+            continue
+
+        # Extract doc ID from the PDF link href
+        link_match = re.search(r"/(\d+)\.pdf", row)
+        if not link_match:
+            continue
+
+        doc_id = link_match.group(1)
+
+        filings.append({
+            "year":        year,
+            "doc_id":      doc_id,
+            "filing_date": date_cell,
+            "filing_type": type_cell,
+        })
+
     return filings
 
 
-def download_pdf(year, doc_id):
-    """Download PDF to cache, return local path."""
+def download_pdf(year, doc_id, session):
     PDF_CACHE.mkdir(exist_ok=True)
     path = PDF_CACHE / f"{doc_id}.pdf"
     if path.exists():
-        print(f"  Using cached PDF: {path}")
+        print(f"  Cached: {path}")
         return path
 
     url = PDF_URL.format(year=year, doc_id=doc_id)
     print(f"  Downloading: {url}")
-    data = fetch(url, binary=True)
-    if not data:
-        print(f"  Failed to download {doc_id}")
+    try:
+        r = session.get(url, timeout=20)
+        r.raise_for_status()
+        path.write_bytes(r.content)
+        print(f"  Saved {len(r.content):,} bytes")
+        time.sleep(1)
+        return path
+    except Exception as e:
+        print(f"  Download failed: {e}")
         return None
-
-    path.write_bytes(data)
-    print(f"  Saved: {path} ({len(data):,} bytes)")
-    time.sleep(1)  # be polite
-    return path
 
 
 def parse_amount(raw):
-    """Convert amount range string to midpoint integer."""
     if not raw:
         return None
     raw = raw.strip()
     for label, mid in AMOUNT_MIDPOINTS.items():
         if label.lower() in raw.lower():
             return mid
-    # Try to parse a plain number
     digits = re.sub(r"[^\d]", "", raw)
     return int(digits) if digits else None
 
 
 def parse_pdf(pdf_path, filing_meta):
-    """
-    Extract transaction rows from a House PTR PDF.
-
-    The PDF table typically has columns:
-      SP* | Asset Name | Asset Type | Transaction Type | Date | Notify Date |
-      Amount | Cap Gains | Description
-
-    We extract: asset name, ticker (if in name), transaction type, date, amount.
-    """
     trades = []
-
     try:
         with pdfplumber.open(pdf_path) as pdf:
             for page in pdf.pages:
@@ -172,39 +184,30 @@ def parse_pdf(pdf_path, filing_meta):
                     for row in table:
                         if not row or len(row) < 5:
                             continue
-
-                        # Skip header rows
                         first_cell = (row[0] or "").strip().lower()
                         if first_cell in ("sp*", "asset name", "owner", ""):
                             continue
-                        # Skip rows that look like page headers/footers
                         joined = " ".join(str(c or "") for c in row)
                         if "Clerk of the House" in joined or "PERIODIC" in joined.upper():
                             continue
 
-                        # Columns vary slightly by form version — try to detect
-                        # by looking for a date-shaped cell
-                        # Typical order: [SP, Asset, AssetType, TxType, Date, NotifyDate, Amount, CapGains, Description]
-                        asset_name    = (row[1] if len(row) > 1 else "") or ""
-                        tx_type_raw   = (row[3] if len(row) > 3 else "") or ""
-                        date_raw      = (row[4] if len(row) > 4 else "") or ""
-                        amount_raw    = (row[6] if len(row) > 6 else "") or ""
-                        description   = (row[8] if len(row) > 8 else "") or ""
+                        asset_name  = (row[1] if len(row) > 1 else "") or ""
+                        tx_type_raw = (row[3] if len(row) > 3 else "") or ""
+                        date_raw    = (row[4] if len(row) > 4 else "") or ""
+                        amount_raw  = (row[6] if len(row) > 6 else "") or ""
+                        description = (row[8] if len(row) > 8 else "") or ""
 
                         asset_name  = asset_name.strip().replace("\n", " ")
                         tx_type_raw = tx_type_raw.strip()
                         date_raw    = date_raw.strip()
 
-                        # Skip rows without a recognisable transaction type
                         tx_type_norm = tx_type_raw.upper()
                         if not any(t in tx_type_norm for t in ("PURCHASE", "SALE", "EXCHANGE", "RECEIPT")):
                             continue
 
-                        # Extract ticker from asset name — often in parentheses: "Apple Inc. (AAPL)"
                         ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_name)
                         ticker = ticker_match.group(1) if ticker_match else None
 
-                        # Normalise transaction type
                         if "PURCHASE" in tx_type_norm:
                             tx_type = "Purchase"
                         elif "SALE (FULL)" in tx_type_norm:
@@ -218,7 +221,7 @@ def parse_pdf(pdf_path, filing_meta):
                         else:
                             tx_type = tx_type_raw
 
-                        trade = {
+                        trades.append({
                             "member":       f"{FIRST_NAME} {LAST_NAME}",
                             "filing_date":  filing_meta["filing_date"],
                             "doc_id":       filing_meta["doc_id"],
@@ -229,39 +232,54 @@ def parse_pdf(pdf_path, filing_meta):
                             "amount_range": amount_raw.strip(),
                             "amount_mid":   parse_amount(amount_raw),
                             "description":  description.strip().replace("\n", " "),
-                        }
-                        trades.append(trade)
-
+                        })
     except Exception as e:
-        print(f"  PDF parse error for {pdf_path}: {e}")
+        print(f"  PDF parse error: {e}")
 
     return trades
 
 
-# ── Main ───────────────────────────────────────────────────────────────────
+# ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    all_trades = []
+    print("Starting session...")
+    try:
+        session, home_html = get_session()
+    except Exception as e:
+        print(f"Failed to connect to House disclosure site: {e}")
+        return
 
+    all_filings = []
     for year in YEARS:
-        filings = get_filing_ids(year)
-        for filing in filings:
-            pdf_path = download_pdf(filing["year"], filing["doc_id"])
-            if not pdf_path:
-                continue
-            trades = parse_pdf(pdf_path, filing)
-            print(f"  Parsed {len(trades)} trade(s) from doc {filing['doc_id']}")
-            all_trades.extend(trades)
+        print(f"\nSearching {year}...")
+        try:
+            filings = search_filings(session, home_html, year)
+            print(f"  Found {len(filings)} PTR filing(s)")
+            all_filings.extend(filings)
+        except Exception as e:
+            print(f"  Search failed for {year}: {e}")
 
-    # Sort by date descending
+    if not all_filings:
+        print("\nNo filings found. The search form structure may have changed.")
+        print("Check https://disclosures-clerk.house.gov/FinancialDisclosure manually.")
+        return
+
+    all_trades = []
+    for filing in all_filings:
+        print(f"\nProcessing doc {filing['doc_id']} ({filing['filing_date']})...")
+        pdf_path = download_pdf(filing["year"], filing["doc_id"], session)
+        if not pdf_path:
+            continue
+        trades = parse_pdf(pdf_path, filing)
+        print(f"  Parsed {len(trades)} trade(s)")
+        all_trades.extend(trades)
+
     all_trades.sort(key=lambda t: t.get("date") or "", reverse=True)
 
     with open(OUTPUT_FILE, "w") as f:
         json.dump(all_trades, f, indent=2)
 
-    print(f"\nDone. {len(all_trades)} total trades written to {OUTPUT_FILE}")
-
-    # Print a quick summary table
+    print(f"\nDone. {len(all_trades)} total trades → {OUTPUT_FILE}")
     print(f"\n{'Date':<12} {'Ticker':<8} {'Transaction':<18} {'Amount Range':<30} {'Asset'}")
     print("-" * 100)
     for t in all_trades[:30]:
