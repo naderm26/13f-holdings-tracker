@@ -181,6 +181,24 @@ def is_data_row(row):
     return True
 
 
+def parse_merged_row(text):
+    """
+    Some rows get merged into a single cell by pdfplumber, e.g.:
+    'Nike, Inc. (NKE) [ST] P 04/08/2025 04/09/2025 $1,001 - $15,000'
+    Extract fields using regex on the raw text.
+    Returns (asset, tx, date, amount) or None if no match.
+    """
+    text = text.replace("\n", " ").strip()
+    # Match: ...asset... TX_CODE MM/DD/YYYY MM/DD/YYYY $amount
+    m = re.search(
+        r"^(.+?)\s+([PSE](?:\s*\((?:partial|full)\))?)\s+(\d{2}/\d{2}/\d{4})\s+\d{2}/\d{2}/\d{4}\s+(\$[\d,\s\-]+(?:,\d{3})*(?:\s*-\s*\$[\d,\s]+)?)\s*$",
+        text, re.IGNORECASE
+    )
+    if not m:
+        return None
+    return m.group(1).strip(), m.group(2).strip(), m.group(3).strip(), m.group(4).strip()
+
+
 def parse_pdf(pdf_path, filing_meta, member_name):
     trades = []
     skipped = []
@@ -193,14 +211,25 @@ def parse_pdf(pdf_path, filing_meta, member_name):
                             continue
                         if (row[0] or "").strip() == "ID":
                             continue
-                        if not is_data_row(row):
-                            continue
 
-                        asset_raw  = (row[2] or "").strip().replace("\n", " ")
-                        tx_raw     = (row[3] or "").strip()
-                        date_raw   = (row[4] or "").strip()
-                        amount_raw = (row[6] or "").strip().replace("\n", " ")
-                        amount_mid = parse_amount(amount_raw)
+                        # ── Normal well-structured row ────────────────────
+                        if is_data_row(row):
+                            asset_raw  = (row[2] or "").strip().replace("\n", " ")
+                            tx_raw     = (row[3] or "").strip()
+                            date_raw   = (row[4] or "").strip()
+                            amount_raw = (row[6] or "").strip().replace("\n", " ")
+                            amount_mid = parse_amount(amount_raw)
+
+                        # ── Merged single-cell row fallback ───────────────
+                        elif row[0] and all(c is None for c in row[1:]):
+                            parsed = parse_merged_row(row[0])
+                            if not parsed:
+                                continue
+                            asset_raw, tx_raw, date_raw, amount_raw = parsed
+                            amount_mid = parse_amount(amount_raw)
+
+                        else:
+                            continue
 
                         if not is_valid_trade(tx_raw, amount_mid):
                             skipped.append({
