@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2TBN6R2JZC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2TBN6R2JZC');
+</script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nancy Pelosi Stock Trades — Congressional Trading | 13FAI</title>
+  <meta name="description" content="Track Nancy Pelosi's stock trades filed under the STOCK Act. View all purchases, sales, and options activity sourced directly from House PTR filings on SEC records."/>
+  <meta property="og:title" content="Nancy Pelosi Stock Trades — Congressional Trading | 13FAI"/>
+  <meta property="og:description" content="Track Nancy Pelosi's stock trades filed under the STOCK Act. View all purchases, sales, and options activity sourced directly from House PTR filings."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/congress.html"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1100px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+
+    /* Identity block — mirrors fund.html */
+    .fund-identity { margin-bottom: 0.6rem; }
+    .fund-name-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.4rem; }
+    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+    .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .fund-stats { display: flex; gap: 2rem; font-family: var(--mono); flex-shrink: 0; }
+    .fund-stats .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+    .fund-stats .stat-value { font-size: 1.1rem; font-weight: 500; margin-top: 0.1rem; }
+
+    /* Year filter buttons — same as quarter-selector */
+    .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .q-btn {
+      font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 4px; background: var(--surface);
+      color: var(--muted); cursor: pointer; transition: all 0.15s;
+    }
+    .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    /* Insights */
+    .insights-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 0; margin-bottom: 1.25rem; }
+    .insights { font-size: 0.875rem; line-height: 1.75; color: var(--text); }
+    .insights ul { list-style: none; margin: 0; padding: 0; }
+    .insights li { position: relative; padding-left: 1rem; padding-top: 0.15rem; padding-bottom: 0.15rem; }
+    .insights li::before { content: "•"; position: absolute; left: 0; color: var(--muted); font-size: 0.75rem; top: 0.22rem; }
+    .ins-green { color: var(--green); font-weight: 500; }
+    .ins-red   { color: var(--red);   font-weight: 500; }
+    .ins-ticker { color: #2563eb; font-weight: 600; font-family: var(--mono); font-size: 0.82rem; text-decoration: none; }
+    .ins-ticker:hover { text-decoration: underline; }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; min-width: 680px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
+    th.col-asset { text-align: left; width: 30%; }
+    th:hover { color: var(--text); }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
+    td.col-asset { text-align: left; white-space: normal; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    .company-name { font-weight: 500; color: var(--text); white-space: normal; }
+    .ticker-tag { font-family: var(--mono); font-size: 0.75rem; color: #2563eb; margin-top: 0.15rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
+    tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
+    tr.total-row td.col-asset { font-family: var(--sans); font-size: 0.875rem; }
+
+    /* Transaction type badges */
+    .tx-badge { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.04em; padding: 0.2rem 0.5rem; border-radius: 3px; display: inline-block; }
+    .tx-purchase { color: var(--green); background: #f0faf2; border: 1px solid #c3e6cb; }
+    .tx-sale     { color: var(--red);   background: #fff5f5; border: 1px solid #f5c6cb; }
+    .tx-exchange { color: var(--muted); background: var(--surface); border: 1px solid var(--border); }
+
+    /* Amount range */
+    .amount-bar-wrap { display: flex; align-items: center; gap: 0.5rem; justify-content: center; }
+    .amount-label { font-family: var(--mono); font-size: 0.78rem; white-space: nowrap; }
+
+    /* Avatar */
+    .fund-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-size: 0.85rem; font-weight: 500; color: #fff; flex-shrink: 0; border: 1px solid var(--border); overflow: hidden; }
+    .fund-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+    /* Source note */
+    .footnote { margin-top: 0.75rem; font-family: var(--mono); font-size: 0.68rem; color: var(--muted); line-height: 1.8; }
+
+    /* Search */
+    .search-wrap { position: relative; }
+    #search { font-family: var(--sans); font-size: 0.875rem; padding: 0.6rem 1rem 0.6rem 2.25rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 200px; outline: none; transition: border 0.15s; }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    @media (min-width: 700px) { #search { width: 280px; } }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 2rem; }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link active" href="congress.html">Congressional Trades</a>
+        <a class="nav-link" href="insider-activity.html">Insider Trading</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link active" href="congress.html">Congressional Trades</a>
+      <a class="nav-link" href="insider-activity.html">Insider Trading</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="fund-identity">
+    <div class="fund-name-row">
+      <div style="display:flex; align-items:center; gap:0.9rem;">
+        <div class="fund-avatar">
+          <img src="images/pelosi.jpg" alt="Nancy Pelosi"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+               style="display:block;"/>
+          <span style="display:none; align-items:center; justify-content:center; width:100%; height:100%;">NP</span>
+        </div>
+        <div>
+          <h1 class="section-label">Nancy Pelosi</h1>
+          <div style="font-family:var(--mono); font-size:0.78rem; color:var(--muted); margin-top:0.2rem;">U.S. Representative · CA-11 · House Minority Leader</div>
+        </div>
+      </div>
+      <div class="fund-stats">
+        <div>
+          <div class="stat-label">Trades Shown</div>
+          <div class="stat-value" style="color:var(--accent)" id="stat-count">—</div>
+        </div>
+        <div>
+          <div class="stat-label">Date Range</div>
+          <div class="stat-value" id="stat-range" style="font-size:0.9rem;">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="period-line" id="period-line">Stock trades disclosed under the STOCK Act · Sourced from House PTR filings</div>
+    <div class="quarter-selector" id="year-selector"></div>
+  </div>
+
+  <div class="insights-wrap">
+    <div class="insights" id="insights"></div>
+  </div>
+
+  <div id="table-container"><div style="color:var(--muted); font-family:var(--mono); font-size:0.85rem;">Loading trades...</div></div>
+
+  <div class="footnote">
+    * Amount ranges are as reported in the PTR filing. The House STOCK Act requires disclosure within 45 days of the transaction.
+    Trades are sourced directly from <a href="https://disclosures-clerk.house.gov/" target="_blank" rel="noopener" style="color:var(--accent);">disclosures-clerk.house.gov</a>.
+    Options purchases and sales are included. For informational purposes only — not investment advice.
+  </div>
+</main>
+
+<footer>
+  For informational purposes only · Not investment advice · <a href="disclaimer.html">Full Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "";
+
+  // ── Load data ──────────────────────────────────────────────────
+  let allTrades = [];
+  let activeYear = "All";
+  let sortCol = 0; // 0=date, 1=asset, 2=tx, 3=amount
+  let sortAsc = false;
+
+  fetch(`${PAGES}/pelosi_trades.json`)
+    .then(r => r.json())
+    .then(data => {
+      allTrades = data;
+      init();
+    })
+    .catch(e => {
+      document.getElementById("table-container").innerHTML =
+        `<div style="color:var(--red);font-family:var(--mono);font-size:0.85rem;">Failed to load trade data: ${e.message}</div>`;
+    });
+
+  function init() {
+    // Build year list
+    const years = [...new Set(allTrades.map(t => t.filing_year))].sort().reverse();
+    const allYears = ["All", ...years];
+
+    document.getElementById("year-selector").innerHTML = allYears.map(y =>
+      `<button class="q-btn${y === activeYear ? " active" : ""}" onclick="setYear('${y}')">${y === "All" ? "All Years" : y}</button>`
+    ).join("");
+
+    renderTable();
+  }
+
+  function setYear(y) {
+    activeYear = y;
+    document.querySelectorAll(".q-btn").forEach(b => {
+      const label = b.textContent === "All Years" ? "All" : b.textContent;
+      b.classList.toggle("active", label === y);
+    });
+    renderTable();
+  }
+
+  function filteredTrades() {
+    if (activeYear === "All") return allTrades;
+    return allTrades.filter(t => t.filing_year === activeYear);
+  }
+
+  // ── Insights ────────────────────────────────────────────────────
+  function renderInsights(trades) {
+    const el = document.getElementById("insights");
+    if (!el) return;
+
+    const sentences = [];
+    const purchases = trades.filter(t => t.transaction === "Purchase");
+    const sales     = trades.filter(t => t.transaction.toLowerCase().includes("sale") || t.transaction.toLowerCase().includes("s ("));
+
+    // Most traded tickers
+    const tickerCounts = {};
+    trades.forEach(t => {
+      if (t.ticker) tickerCounts[t.ticker] = (tickerCounts[t.ticker] || 0) + 1;
+    });
+    const topTickers = Object.entries(tickerCounts).sort((a,b) => b[1]-a[1]).slice(0,3);
+
+    const yearLabel = activeYear === "All" ? "across all tracked years" : `in ${activeYear}`;
+
+    // S1 — summary
+    if (trades.length > 0) {
+      sentences.push(
+        `Pelosi filed <b>${trades.length}</b> transaction${trades.length !== 1 ? "s" : ""} ${yearLabel} — ` +
+        `<span class="ins-green">${purchases.length} purchase${purchases.length !== 1 ? "s" : ""}</span> and ` +
+        `<span class="ins-red">${sales.length} sale${sales.length !== 1 ? "s" : ""}</span>.`
+      );
+    }
+
+    // S2 — most active tickers
+    if (topTickers.length > 0) {
+      const links = topTickers.map(([ticker, count]) =>
+        `<a class="ins-ticker" href="stocks/${ticker}-hedge-fund-ownership.html">${ticker}</a> (${count} trade${count !== 1 ? "s" : ""})`
+      ).join(", ");
+      sentences.push(`Most active positions: ${links}.`);
+    }
+
+    // S3 — largest single trade by amount_mid
+    const withAmount = trades.filter(t => t.amount_mid && t.amount_mid < 1e12);
+    if (withAmount.length > 0) {
+      const largest = withAmount.reduce((a, b) => a.amount_mid > b.amount_mid ? a : b);
+      const isBuy = largest.transaction === "Purchase";
+      const cls = isBuy ? "ins-green" : "ins-red";
+      const ticker = largest.ticker
+        ? `<a class="ins-ticker" href="stocks/${largest.ticker}-hedge-fund-ownership.html">${largest.ticker}</a>`
+        : largest.asset.split("(")[0].trim();
+      sentences.push(
+        `Largest reported trade: <span class="${cls}">${largest.transaction}</span> of ${ticker} ` +
+        `(${largest.amount_range}) on ${largest.date}.`
+      );
+    }
+
+    el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
+  }
+
+  // ── Format helpers ──────────────────────────────────────────────
+  function fmtAmount(trade) {
+    if (!trade.amount_range) return "—";
+    // Clean up the range string
+    return trade.amount_range.replace(/\n/g, " ").trim();
+  }
+
+  function txBadge(tx) {
+    if (!tx) return "—";
+    const t = tx.toLowerCase();
+    if (t === "purchase") return `<span class="tx-badge tx-purchase">Purchase</span>`;
+    if (t.includes("sale")) return `<span class="tx-badge tx-sale">${tx}</span>`;
+    return `<span class="tx-badge tx-exchange">${tx}</span>`;
+  }
+
+  function cleanAssetName(asset) {
+    // Remove [ST], [OP], [OT] tags and tidy up
+    return asset.replace(/\s*\[(ST|OP|OT|MF|DC)\]\s*/g, "").trim();
+  }
+
+  function assetType(asset) {
+    if (asset.includes("[OP]")) return "Option";
+    if (asset.includes("[OT]")) return "Other";
+    if (asset.includes("[MF]")) return "Fund";
+    return "";
+  }
+
+  // ── Sort ────────────────────────────────────────────────────────
+  function sort(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = false; }
+    renderTable();
+  }
+
+  function arrow(col) {
+    if (sortCol !== col) return "";
+    return sortAsc ? " ↑" : " ↓";
+  }
+
+  // ── Render ──────────────────────────────────────────────────────
+  function renderTable() {
+    const trades = filteredTrades();
+
+    // Update stats
+    const count = trades.length;
+    document.getElementById("stat-count").textContent = count;
+
+    if (trades.length > 0) {
+      const dates = trades.map(t => t.date).filter(Boolean).sort();
+      const oldest = dates[0];
+      const newest = dates[dates.length - 1];
+      document.getElementById("stat-range").textContent =
+        oldest === newest ? oldest : `${oldest} – ${newest}`;
+    } else {
+      document.getElementById("stat-range").textContent = "—";
+    }
+
+    renderInsights(trades);
+
+    if (trades.length === 0) {
+      document.getElementById("table-container").innerHTML =
+        `<div style="color:var(--muted);font-family:var(--mono);font-size:0.85rem;padding:1rem 0;">No trades found for this period.</div>`;
+      return;
+    }
+
+    // Sort
+    const sorted = [...trades].sort((a, b) => {
+      let av, bv;
+      if (sortCol === 0) { av = a.date || ""; bv = b.date || ""; }
+      else if (sortCol === 1) { av = (a.asset || "").toLowerCase(); bv = (b.asset || "").toLowerCase(); }
+      else if (sortCol === 2) { av = a.transaction || ""; bv = b.transaction || ""; }
+      else if (sortCol === 3) { av = a.amount_mid || 0; bv = b.amount_mid || 0; }
+      if (av < bv) return sortAsc ? -1 : 1;
+      if (av > bv) return sortAsc ? 1 : -1;
+      return 0;
+    });
+
+    const rowsHtml = sorted.map((t, i) => {
+      const clean  = cleanAssetName(t.asset);
+      const atype  = assetType(t.asset);
+      const ticker = t.ticker;
+      const stockHref = ticker
+        ? `stocks/${ticker}-hedge-fund-ownership.html`
+        : null;
+
+      const assetCell = `
+        <div class="company-name">
+          ${stockHref
+            ? `<a href="${stockHref}" style="color:var(--text);text-decoration:none;">${clean}</a>`
+            : clean}
+        </div>
+        ${ticker
+          ? `<div class="ticker-tag"><a href="${stockHref}" style="color:#2563eb;text-decoration:none;">${ticker}</a>${atype ? ` · <span style="color:var(--muted)">${atype}</span>` : ""}</div>`
+          : (atype ? `<div class="ticker-tag" style="color:var(--muted)">${atype}</div>` : "")}
+      `;
+
+      return `
+        <tr>
+          <td class="col-asset">${assetCell}</td>
+          <td class="num">${txBadge(t.transaction)}</td>
+          <td class="num">${t.date || "—"}</td>
+          <td class="num">${fmtAmount(t)}</td>
+          <td class="num" style="font-family:var(--mono);font-size:0.72rem;color:var(--muted)">${t.filing_year || "—"}</td>
+        </tr>`;
+    }).join("");
+
+    // Total row
+    const purchases = trades.filter(t => t.transaction === "Purchase").length;
+    const sales     = trades.filter(t => t.transaction.toLowerCase().includes("sale") || t.transaction.toLowerCase().includes("s (")).length;
+
+    const totalRow = `
+      <tr class="total-row">
+        <td class="col-asset">Total · ${purchases} purchase${purchases !== 1 ? "s" : ""}, ${sales} sale${sales !== 1 ? "s" : ""}</td>
+        <td class="num">${trades.length}</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+      </tr>`;
+
+    document.getElementById("table-container").innerHTML = `
+      <div class="period-line" style="margin-bottom:0.5rem">
+        Nancy Pelosi's stock trades${activeYear !== "All" ? ` — ${activeYear}` : " — all years"}
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="col-asset" onclick="sort(1)">Asset${arrow(1)}</th>
+              <th onclick="sort(2)">Transaction${arrow(2)}</th>
+              <th onclick="sort(0)">Trade Date${arrow(0)}</th>
+              <th onclick="sort(3)">Amount Range *${arrow(3)}</th>
+              <th>Filing Year</th>
+            </tr>
+          </thead>
+          <tbody>${rowsHtml}${totalRow}</tbody>
+        </table>
+      </div>`;
+  }
+
+  // ── Search ──────────────────────────────────────────────────────
+  let allFundsForSearch = [];
+  let stockIndexForSearch = {};
+  fetch(`${PAGES}/funds.json`).then(r => r.json()).then(d => { allFundsForSearch = d; }).catch(() => {});
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d.stocks || d; }).catch(() => {});
+
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove("visible"); return; }
+
+    const fundMatches = allFundsForSearch
+      .filter(f => f.name.toLowerCase().includes(q)).slice(0, 4)
+      .map(f => `<a class="search-result-item" href="fund.html?fund=${f.id}">
+        <span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
+
+    const stockMatches = [];
+    for (const [key, stock] of Object.entries(stockIndexForSearch)) {
+      if (stockMatches.length >= 4) break;
+      if ((stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
+          (stock.name && stock.name.toLowerCase().includes(q))) {
+        stockMatches.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}">
+          <span class="search-result-num">Stock</span>
+          <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
+          </a>`);
+      }
+    }
+
+    const all = [...fundMatches, ...stockMatches];
+    searchResults.innerHTML = all.length
+      ? all.join("")
+      : `<div style="padding:0.75rem 1rem;font-size:0.875rem;color:var(--muted);">No results found</div>`;
+    searchResults.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target))
+      searchResults.classList.remove("visible");
+  });
+</script>
+</body>
+</html>
