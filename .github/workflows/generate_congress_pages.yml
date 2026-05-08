@@ -1,0 +1,33 @@
+name: Generate Congressional Trade Pages
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'data/congress/**.json'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate pages
+        run: python generate_congress_pages.py
+
+      - name: Commit pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add *-trades.html || true
+          git diff --cached --quiet || git commit -m "Regenerate congressional trade pages"
+          git push
