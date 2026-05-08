@@ -60,9 +60,16 @@ def deep_dive(pdf_path):
 
 def parse_merged_row(text):
     """Same fallback parser as fetch_congress_data.py."""
-    text = text.replace("\n", " ").strip()
+    text = re.sub(r'\x00+', '', text)
+    text = re.sub(r'\s*\[(?:ST|OP|OT|MF|DC|GS)\]', '', text)
+    text = re.sub(r'F\s+S\s*:.*$', '', text, flags=re.DOTALL)
+    text = re.sub(r'\n', ' ', text).strip()
+    text = re.sub(r'\s{2,}', ' ', text)
+    text = re.sub(r'\s+(?:Class\s+[A-Z]\s+)?(?:Common\s+Stock\s+)?\([A-Z]{1,5}\)\s*$', '', text).strip()
+    text = re.sub(r'\s+(?:Registry\s+)?(?:Common\s+)?(?:Ordinary\s+)?(?:Shares?|Stock)\s*$', '', text, flags=re.IGNORECASE).strip()
+    text = re.sub(r'\s+\([A-Z]{1,5}\)\s*$', '', text).strip()
     m = re.search(
-        r"^(.+?)\s+([PSE](?:\s*\((?:partial|full)\))?)\s+(\d{2}/\d{2}/\d{4})\s+\d{2}/\d{2}/\d{4}\s+(\$[\d,\s\-]+(?:,\d{3})*(?:\s*-\s*\$[\d,\s]+)?)\s*$",
+        r'^(.+?)\s+(P|S(?:\s*\((?:partial|full)\))?|E)\s+(\d{2}/\d{2}/\d{4})\s+\d{2}/\d{2}/\d{4}\s+(\$[\d,]+\s*-\s*\$[\d,]+|\$[\d,]+)\s*$',
         text, re.IGNORECASE
     )
     if not m:
