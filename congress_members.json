@@ -39,17 +39,17 @@
     "photo": "images/congress/josh_gottheimer.jpg"
   },
   {
-    "id": "brian_mast",
-    "slug": "brian-mast-trades",
-    "name": "Brian Mast",
-    "last_name": "Mast",
-    "first_name": "Brian",
+    "id": "michael_mccaul",
+    "slug": "michael-mccaul-trades",
+    "name": "Michael McCaul",
+    "last_name": "McCaul",
+    "first_name": "Michael",
     "party": "Republican",
-    "state": "FL",
-    "district": "FL-21",
+    "state": "TX",
+    "district": "TX-10",
     "chamber": "House",
     "title": "U.S. Representative",
-    "photo": "images/congress/brian_mast.jpg"
+    "photo": "images/congress/michael_mccaul.jpg"
   },
   {
     "id": "ro_khanna",
@@ -63,6 +63,19 @@
     "chamber": "House",
     "title": "U.S. Representative",
     "photo": "images/congress/ro_khanna.jpg"
+  },
+  {
+    "id": "jefferson_shreve",
+    "slug": "jefferson-shreve-trades",
+    "name": "Jefferson Shreve",
+    "last_name": "Shreve",
+    "first_name": "Jefferson",
+    "party": "Republican",
+    "state": "IN",
+    "district": "IN-5",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/jefferson_shreve.jpg"
   },
   {
     "id": "austin_scott",
