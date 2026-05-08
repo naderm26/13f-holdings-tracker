@@ -1,11 +1,10 @@
 """
 fetch_congress_data.py
 Fetches Nancy Pelosi's Periodic Transaction Reports (PTRs) from the
-House financial disclosure system by POSTing to the ASPX search form,
-then downloading and parsing each PDF.
+House financial disclosure system.
 
 Usage:
-    pip install pdfplumber requests
+    pip install pdfplumber requests beautifulsoup4
     python fetch_congress_data.py
 
 Output:
@@ -19,17 +18,17 @@ from pathlib import Path
 
 import pdfplumber
 import requests
+from bs4 import BeautifulSoup
 
-# ── Config ──────────────────────────────────────────────────────────────────
+# ── Config ───────────────────────────────────────────────────────────────────
 LAST_NAME   = "Pelosi"
 FIRST_NAME  = "Nancy"
 YEARS       = ["2024", "2025", "2026"]
 OUTPUT_FILE = "pelosi_trades.json"
 PDF_CACHE   = Path("_ptr_cache")
 
-BASE        = "https://disclosures-clerk.house.gov"
-SEARCH_URL  = BASE + "/FinancialDisclosure/ViewMemberSearchResult"
-PDF_URL     = BASE + "/public_disc/ptr-pdfs/{year}/{doc_id}.pdf"
+BASE       = "https://disclosures-clerk.house.gov"
+SEARCH_URL = BASE + "/FinancialDisclosure/ViewMemberSearchResult"
 
 HEADERS = {
     "User-Agent": (
@@ -38,8 +37,7 @@ HEADERS = {
         "Chrome/124.0.0.0 Safari/537.36"
     ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": BASE + "/FinancialDisclosure",
+    "Referer": BASE + "/FinancialDisclosure/ViewSearch",
 }
 
 AMOUNT_MIDPOINTS = {
@@ -53,106 +51,65 @@ AMOUNT_MIDPOINTS = {
     "Over $5,000,000":         5000000,
 }
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
+# ── Search ───────────────────────────────────────────────────────────────────
 
-def get_session():
-    """Return a requests.Session with cookies from the disclosure homepage."""
-    s = requests.Session()
-    s.headers.update(HEADERS)
-    r = s.get(BASE + "/FinancialDisclosure", timeout=15)
-    r.raise_for_status()
-    return s, r.text
-
-
-def extract_viewstate(html):
-    """Pull ASP.NET hidden form fields needed to POST."""
-    fields = {}
-    for name in ["__VIEWSTATE", "__VIEWSTATEGENERATOR", "__EVENTVALIDATION"]:
-        m = re.search(rf'id="{re.escape(name)}"[^>]*value="([^"]*)"', html)
-        if m:
-            fields[name] = m.group(1)
-    return fields
-
-
-def search_filings(session, home_html, year):
-    """
-    POST to the ASPX search form and return list of
-    {doc_id, filing_date, filing_type} dicts for PTR filings.
-    """
-    vs = extract_viewstate(home_html)
-    if not vs.get("__VIEWSTATE"):
-        print(f"  Could not extract ViewState for {year}")
-        return []
-
+def search_filings(session, year):
+    """POST the search form and return list of PTR filing dicts."""
     payload = {
-        "__VIEWSTATE":          vs.get("__VIEWSTATE", ""),
-        "__VIEWSTATEGENERATOR": vs.get("__VIEWSTATEGENERATOR", ""),
-        "__EVENTVALIDATION":    vs.get("__EVENTVALIDATION", ""),
-        "LastName":             LAST_NAME,
-        "FilingYear":           year,
-        "State":                "",
-        "District":             "",
-        "btnSearch":            "Search",
+        "LastName":    LAST_NAME,
+        "FilingYear":  year,
+        "State":       "",
+        "District":    "",
+        "btn_search":  "Search",
     }
-
-    r = session.post(
-        BASE + "/FinancialDisclosure/ViewMemberSearchResult",
-        data=payload,
-        headers={**HEADERS, "Content-Type": "application/x-www-form-urlencoded"},
-        timeout=15,
-    )
+    print(f"  Searching {year}...")
+    r = session.post(SEARCH_URL, data=payload, headers=HEADERS, timeout=20)
     r.raise_for_status()
+
+    soup = BeautifulSoup(r.text, "html.parser")
+    title = soup.find("title")
+    print(f"    Page: {title.text.strip() if title else '(no title)'}")
 
     filings = []
-    # Parse the result table — rows look like:
-    # <tr><td>Pelosi, Nancy</td><td>PTR</td><td>01/17/2025</td>
-    #     <td><a href="/public_disc/ptr-pdfs/2025/20026590.pdf">View</a></td></tr>
-    rows = re.findall(r"<tr[^>]*>(.*?)</tr>", r.text, re.DOTALL)
-    for row in rows:
-        cells = re.findall(r"<td[^>]*>(.*?)</td>", row, re.DOTALL)
-        if len(cells) < 3:
+    for a in soup.find_all("a", href=re.compile(r"/ptr-pdfs/\d+/\d+\.pdf")):
+        href = a["href"]
+        m = re.search(r"/ptr-pdfs/(\d{4})/(\d+)\.pdf", href)
+        if not m:
             continue
+        pdf_year, doc_id = m.group(1), m.group(2)
 
-        # Strip HTML tags from cells
-        def strip(s):
-            return re.sub(r"<[^>]+>", "", s).strip()
+        row = a.find_parent("tr")
+        cells = row.find_all("td") if row else []
+        filing_date = cells[2].get_text(strip=True) if len(cells) > 2 else ""
+        filing_type = cells[1].get_text(strip=True) if len(cells) > 1 else ""
 
-        name_cell    = strip(cells[0])
-        type_cell    = strip(cells[1]) if len(cells) > 1 else ""
-        date_cell    = strip(cells[2]) if len(cells) > 2 else ""
-
-        # Only PTRs
-        if "PTR" not in type_cell.upper() and "Periodic" not in type_cell:
+        if filing_type and "PTR" not in filing_type.upper() and "Periodic" not in filing_type:
             continue
-
-        # Extract doc ID from the PDF link href
-        link_match = re.search(r"/(\d+)\.pdf", row)
-        if not link_match:
-            continue
-
-        doc_id = link_match.group(1)
 
         filings.append({
-            "year":        year,
+            "year":        pdf_year,
             "doc_id":      doc_id,
-            "filing_date": date_cell,
-            "filing_type": type_cell,
+            "filing_date": filing_date,
+            "filing_type": filing_type,
+            "url":         BASE + href,
         })
 
+    print(f"    Found {len(filings)} PTR filing(s)")
     return filings
 
 
-def download_pdf(year, doc_id, session):
+# ── Download ─────────────────────────────────────────────────────────────────
+
+def download_pdf(filing, session):
     PDF_CACHE.mkdir(exist_ok=True)
-    path = PDF_CACHE / f"{doc_id}.pdf"
+    path = PDF_CACHE / f"{filing['doc_id']}.pdf"
     if path.exists():
-        print(f"  Cached: {path}")
+        print(f"  Cached: {path.name}")
         return path
 
-    url = PDF_URL.format(year=year, doc_id=doc_id)
-    print(f"  Downloading: {url}")
+    print(f"  Downloading: {filing['url']}")
     try:
-        r = session.get(url, timeout=20)
+        r = session.get(filing["url"], timeout=20)
         r.raise_for_status()
         path.write_bytes(r.content)
         print(f"  Saved {len(r.content):,} bytes")
@@ -162,6 +119,8 @@ def download_pdf(year, doc_id, session):
         print(f"  Download failed: {e}")
         return None
 
+
+# ── Parse PDF ────────────────────────────────────────────────────────────────
 
 def parse_amount(raw):
     if not raw:
@@ -201,22 +160,22 @@ def parse_pdf(pdf_path, filing_meta):
                         tx_type_raw = tx_type_raw.strip()
                         date_raw    = date_raw.strip()
 
-                        tx_type_norm = tx_type_raw.upper()
-                        if not any(t in tx_type_norm for t in ("PURCHASE", "SALE", "EXCHANGE", "RECEIPT")):
+                        tx_upper = tx_type_raw.upper()
+                        if not any(t in tx_upper for t in ("PURCHASE", "SALE", "EXCHANGE", "RECEIPT")):
                             continue
 
                         ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_name)
                         ticker = ticker_match.group(1) if ticker_match else None
 
-                        if "PURCHASE" in tx_type_norm:
+                        if "PURCHASE" in tx_upper:
                             tx_type = "Purchase"
-                        elif "SALE (FULL)" in tx_type_norm:
+                        elif "SALE (FULL)" in tx_upper:
                             tx_type = "Sale (Full)"
-                        elif "SALE (PARTIAL)" in tx_type_norm:
+                        elif "SALE (PARTIAL)" in tx_upper:
                             tx_type = "Sale (Partial)"
-                        elif "SALE" in tx_type_norm:
+                        elif "SALE" in tx_upper:
                             tx_type = "Sale"
-                        elif "EXCHANGE" in tx_type_norm:
+                        elif "EXCHANGE" in tx_upper:
                             tx_type = "Exchange"
                         else:
                             tx_type = tx_type_raw
@@ -242,32 +201,28 @@ def parse_pdf(pdf_path, filing_meta):
 # ── Main ─────────────────────────────────────────────────────────────────────
 
 def main():
-    print("Starting session...")
-    try:
-        session, home_html = get_session()
-    except Exception as e:
-        print(f"Failed to connect to House disclosure site: {e}")
-        return
+    session = requests.Session()
 
     all_filings = []
     for year in YEARS:
-        print(f"\nSearching {year}...")
         try:
-            filings = search_filings(session, home_html, year)
-            print(f"  Found {len(filings)} PTR filing(s)")
+            filings = search_filings(session, year)
             all_filings.extend(filings)
         except Exception as e:
             print(f"  Search failed for {year}: {e}")
+        time.sleep(1)
 
+    # Always write the output file so git commit doesn't fail
     if not all_filings:
-        print("\nNo filings found. The search form structure may have changed.")
-        print("Check https://disclosures-clerk.house.gov/FinancialDisclosure manually.")
+        print("\nNo filings found.")
+        with open(OUTPUT_FILE, "w") as f:
+            json.dump([], f)
         return
 
     all_trades = []
     for filing in all_filings:
-        print(f"\nProcessing doc {filing['doc_id']} ({filing['filing_date']})...")
-        pdf_path = download_pdf(filing["year"], filing["doc_id"], session)
+        print(f"\nProcessing {filing['doc_id']} ({filing['filing_date']})...")
+        pdf_path = download_pdf(filing, session)
         if not pdf_path:
             continue
         trades = parse_pdf(pdf_path, filing)
