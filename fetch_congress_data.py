@@ -183,15 +183,24 @@ def is_data_row(row):
 
 def parse_merged_row(text):
     """
-    Some rows get merged into a single cell by pdfplumber, e.g.:
-    'Nike, Inc. (NKE) [ST] P 04/08/2025 04/09/2025 $1,001 - $15,000'
-    Extract fields using regex on the raw text.
-    Returns (asset, tx, date, amount) or None if no match.
+    Some rows get merged into a single cell by pdfplumber when the PDF layout
+    wraps asset names or type tags across lines. Extract fields via regex.
+    Handles cases like:
+      'Nike, Inc. (NKE) [ST] P 04/08/2025 04/09/2025 $1,001 - $15,000'
+      'ASML Holding N.V. P 04/09/2025 04/10/2025 $1,001 - $15,000\nRegistry Shares (ASML) [ST]'
     """
-    text = text.replace("\n", " ").strip()
-    # Match: ...asset... TX_CODE MM/DD/YYYY MM/DD/YYYY $amount
+    text = re.sub(r'\x00+', '', text)
+    text = re.sub(r'\s*\[(?:ST|OP|OT|MF|DC|GS)\]', '', text)
+    text = re.sub(r'F\s+S\s*:.*$', '', text, flags=re.DOTALL)
+    text = re.sub(r'\n', ' ', text).strip()
+    text = re.sub(r'\s{2,}', ' ', text)
+    # Strip trailing wrapped text (ticker/class/shares) that landed after the amount
+    text = re.sub(r'\s+(?:Class\s+[A-Z]\s+)?(?:Common\s+Stock\s+)?\([A-Z]{1,5}\)\s*$', '', text).strip()
+    text = re.sub(r'\s+(?:Registry\s+)?(?:Common\s+)?(?:Ordinary\s+)?(?:Shares?|Stock)\s*$', '', text, flags=re.IGNORECASE).strip()
+    text = re.sub(r'\s+\([A-Z]{1,5}\)\s*$', '', text).strip()
+
     m = re.search(
-        r"^(.+?)\s+([PSE](?:\s*\((?:partial|full)\))?)\s+(\d{2}/\d{2}/\d{4})\s+\d{2}/\d{2}/\d{4}\s+(\$[\d,\s\-]+(?:,\d{3})*(?:\s*-\s*\$[\d,\s]+)?)\s*$",
+        r'^(.+?)\s+(P|S(?:\s*\((?:partial|full)\))?|E)\s+(\d{2}/\d{2}/\d{4})\s+\d{2}/\d{2}/\d{4}\s+(\$[\d,]+\s*-\s*\$[\d,]+|\$[\d,]+)\s*$',
         text, re.IGNORECASE
     )
     if not m:
