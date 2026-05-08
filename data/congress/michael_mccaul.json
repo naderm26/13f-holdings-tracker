@@ -7,5 +7,6 @@
   "district": "TX-10",
   "chamber": "House",
   "title": "U.S. Representative",
-  "trades": []
+  "trades": [],
+  "skipped": []
 }

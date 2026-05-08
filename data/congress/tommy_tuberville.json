@@ -7,5 +7,6 @@
   "district": "AL",
   "chamber": "Senate",
   "title": "U.S. Senator",
-  "trades": []
+  "trades": [],
+  "skipped": []
 }

@@ -2934,5 +2934,6 @@
       "amount_range": "$1,001 - $15,000",
       "amount_mid": 8000
     }
-  ]
+  ],
+  "skipped": []
 }
