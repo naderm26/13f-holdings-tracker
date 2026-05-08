@@ -1,18 +1,20 @@
 """
 fetch_congress_data.py
-Fetches Nancy Pelosi's Periodic Transaction Reports (PTRs) from the
-House financial disclosure system.
+Fetches Periodic Transaction Reports (PTRs) for all members listed in
+congress_members.json from the House financial disclosure system.
 
 Usage:
     pip install pdfplumber requests beautifulsoup4
     python fetch_congress_data.py
 
 Output:
-    pelosi_trades.json
+    data/congress/{member_id}.json   — one file per member
+PDFs are deleted after parsing to keep the repo lean.
 """
 
 import json
 import re
+import shutil
 import time
 from pathlib import Path
 
@@ -21,11 +23,10 @@ import requests
 from bs4 import BeautifulSoup
 
 # ── Config ───────────────────────────────────────────────────────────────────
-LAST_NAME   = "Pelosi"
-FIRST_NAME  = "Nancy"
-YEARS       = ["2024", "2025", "2026"]
-OUTPUT_FILE = "pelosi_trades.json"
-PDF_CACHE   = Path("_ptr_cache")
+MEMBERS_FILE = "congress_members.json"
+OUTPUT_DIR   = Path("data/congress")
+PDF_CACHE    = Path("_ptr_cache")
+YEARS        = ["2023", "2024", "2025", "2026"]
 
 BASE       = "https://disclosures-clerk.house.gov"
 SEARCH_URL = BASE + "/FinancialDisclosure/ViewMemberSearchResult"
@@ -48,84 +49,22 @@ AMOUNT_MIDPOINTS = {
     "$250,001 - $500,000":      375000,
     "$500,001 - $1,000,000":    750000,
     "$1,000,001 - $5,000,000": 3000000,
-    "Over $5,000,000":         5000000,
+    "$5,000,001 - $25,000,000": 15000000,
+    "Over $25,000,000":        25000000,
 }
 
-# ── Search ───────────────────────────────────────────────────────────────────
+# ── Helpers ───────────────────────────────────────────────────────────────────
 
-def search_filings(session, year):
-    payload = {
-        "LastName":    LAST_NAME,
-        "FilingYear":  year,
-        "State":       "",
-        "District":    "",
-        "btn_search":  "Search",
-    }
-    print(f"  Searching {year}...")
-    r = session.post(SEARCH_URL, data=payload, headers=HEADERS, timeout=20)
-    r.raise_for_status()
+def toISO(date_str):
+    """Convert MM/DD/YYYY to YYYY-MM-DD for correct sorting."""
+    if not date_str:
+        return ""
+    parts = date_str.split("/")
+    if len(parts) != 3:
+        return date_str
+    m, d, y = parts
+    return f"{y}-{m.zfill(2)}-{d.zfill(2)}"
 
-    soup = BeautifulSoup(r.text, "html.parser")
-
-    filings = []
-    for row in soup.find_all("tr", role="row"):
-        cells = row.find_all("td")
-        if len(cells) < 4:
-            continue
-
-        filing_type = cells[3].get_text(strip=True)
-        if "PTR" not in filing_type.upper():
-            continue
-
-        a = cells[0].find("a", href=True)
-        if not a:
-            continue
-
-        href = a["href"]
-        m = re.search(r"ptr-pdfs/(\d{4})/(\d+)\.pdf", href)
-        if not m:
-            continue
-
-        pdf_year = m.group(1)
-        doc_id   = m.group(2)
-        url      = BASE + "/" + href
-
-        filings.append({
-            "year":        pdf_year,
-            "doc_id":      doc_id,
-            "filing_date": cells[2].get_text(strip=True),
-            "filing_type": filing_type,
-            "url":         url,
-        })
-        print(f"    Found: {filing_type} {pdf_year} doc {doc_id}")
-
-    print(f"    Total PTR filings: {len(filings)}")
-    return filings
-
-
-# ── Download ─────────────────────────────────────────────────────────────────
-
-def download_pdf(filing, session):
-    PDF_CACHE.mkdir(exist_ok=True)
-    path = PDF_CACHE / f"{filing['doc_id']}.pdf"
-    if path.exists():
-        print(f"  Cached: {path.name}")
-        return path
-
-    print(f"  Downloading: {filing['url']}")
-    try:
-        r = session.get(filing["url"], timeout=20)
-        r.raise_for_status()
-        path.write_bytes(r.content)
-        print(f"  Saved {len(r.content):,} bytes")
-        time.sleep(1)
-        return path
-    except Exception as e:
-        print(f"  Download failed: {e}")
-        return None
-
-
-# ── Parse PDF ────────────────────────────────────────────────────────────────
 
 def parse_amount(raw):
     if not raw:
@@ -138,126 +77,224 @@ def parse_amount(raw):
     return int(digits) if digits else None
 
 
+def clean_asset_name(asset):
+    """Strip type tags, ticker, and stock class suffixes — return company name only."""
+    s = asset.replace("\n", " ")
+    s = re.sub(r"\s*\[(ST|OP|OT|MF|DC)\]\s*", "", s).strip()
+    s = re.sub(r"\s*\([A-Z]{1,5}\)\s*$", "", s).strip()
+    s = re.sub(r"\s*-\s*(Class [A-Z]\s+)?(Common Stock|Common|Ordinary Shares?|ADR|ADS).*$", "", s, flags=re.IGNORECASE).strip()
+    s = re.sub(r"[\s\-,]+$", "", s).strip()
+    return s
+
+
+def asset_type(asset):
+    if "[OP]" in asset: return "Option"
+    if "[OT]" in asset: return "Other"
+    if "[MF]" in asset: return "Fund"
+    return ""
+
+
+def is_valid_trade(tx, amount_mid):
+    """Filter out exchanges and sub-$1000 trades."""
+    if not tx:
+        return False
+    if tx.lower() == "exchange":
+        return False
+    if not amount_mid or amount_mid < 1000:
+        return False
+    return True
+
+
+# ── Search ────────────────────────────────────────────────────────────────────
+
+def search_filings(session, last_name, year):
+    payload = {
+        "LastName":   last_name,
+        "FilingYear": year,
+        "State":      "",
+        "District":   "",
+        "btn_search": "Search",
+    }
+    r = session.post(SEARCH_URL, data=payload, headers=HEADERS, timeout=20)
+    r.raise_for_status()
+
+    soup = BeautifulSoup(r.text, "html.parser")
+    filings = []
+
+    for row in soup.find_all("tr", role="row"):
+        cells = row.find_all("td")
+        if len(cells) < 4:
+            continue
+        filing_type = cells[3].get_text(strip=True)
+        if "PTR" not in filing_type.upper():
+            continue
+        a = cells[0].find("a", href=True)
+        if not a:
+            continue
+        href = a["href"]
+        m = re.search(r"ptr-pdfs/(\d{4})/(\d+)\.pdf", href)
+        if not m:
+            continue
+        filings.append({
+            "year":        m.group(1),
+            "doc_id":      m.group(2),
+            "filing_year": cells[2].get_text(strip=True),
+            "filing_type": filing_type,
+            "url":         BASE + "/" + href,
+        })
+
+    return filings
+
+
+# ── Download ──────────────────────────────────────────────────────────────────
+
+def download_pdf(filing, session):
+    PDF_CACHE.mkdir(exist_ok=True)
+    path = PDF_CACHE / f"{filing['doc_id']}.pdf"
+    if path.exists():
+        return path
+    try:
+        r = session.get(filing["url"], timeout=20)
+        r.raise_for_status()
+        path.write_bytes(r.content)
+        time.sleep(1)
+        return path
+    except Exception as e:
+        print(f"    Download failed {filing['doc_id']}: {e}")
+        return None
+
+
+# ── Parse PDF ─────────────────────────────────────────────────────────────────
+
 def is_data_row(row):
-    """
-    A valid data row has:
-    - cell[2] (asset) non-empty
-    - cell[3] (tx type) is a single letter like P, S, E
-    - cell[4] (date) looks like MM/DD/YYYY
-    - cell[6] (amount) contains a dollar sign
-    All cells must be present (no None merging into first cell).
-    """
     if len(row) < 7:
         return False
-    # If most cells after index 0 are None, it's a merged/description row
     if row[1] is None and row[2] is None:
         return False
-    asset    = (row[2] or "").strip()
-    tx_type  = (row[3] or "").strip()
-    date     = (row[4] or "").strip()
-    amount   = (row[6] or "").strip()
-    if not asset or not tx_type or not date:
-        return False
+    date = (row[4] or "").strip()
     if not re.match(r"\d{2}/\d{2}/\d{4}", date):
         return False
     return True
 
 
-def parse_pdf(pdf_path, filing_meta):
+def parse_pdf(pdf_path, filing_meta, member_name):
     trades = []
     try:
         with pdfplumber.open(pdf_path) as pdf:
             for page in pdf.pages:
-                tables = page.extract_tables()
-                for table in tables:
+                for table in page.extract_tables():
                     for row in table:
                         if not row:
                             continue
-                        # Skip header row
                         if (row[0] or "").strip() == "ID":
                             continue
                         if not is_data_row(row):
                             continue
 
-                        asset_name  = (row[2] or "").strip().replace("\n", " ")
-                        tx_type_raw = (row[3] or "").strip()
+                        asset_raw   = (row[2] or "").strip().replace("\n", " ")
+                        tx_raw      = (row[3] or "").strip()
                         date_raw    = (row[4] or "").strip()
                         amount_raw  = (row[6] or "").strip().replace("\n", " ")
+                        amount_mid  = parse_amount(amount_raw)
 
-                        # Extract ticker from asset name e.g. "Apple Inc. (AAPL)"
-                        ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_name)
+                        if not is_valid_trade(tx_raw, amount_mid):
+                            continue
+
+                        # Extract ticker
+                        ticker_match = re.search(r"\(([A-Z]{1,5})\)", asset_raw)
                         ticker = ticker_match.group(1) if ticker_match else None
 
-                        # Normalise transaction type
-                        # P = Purchase, S = Sale, E = Exchange
-                        tx_map = {"P": "Purchase", "S": "Sale", "E": "Exchange"}
-                        tx_type = tx_map.get(tx_type_raw.upper(), tx_type_raw)
+                        # Normalise tx type
+                        tx_map = {
+                            "P":          "Purchase",
+                            "S":          "Sale",
+                            "S (PARTIAL)": "S (partial)",
+                            "S (FULL)":   "S (full)",
+                            "E":          "Exchange",
+                        }
+                        tx = tx_map.get(tx_raw.upper(), tx_raw)
 
                         trades.append({
-                            "member":       f"{FIRST_NAME} {LAST_NAME}",
-                            "filing_year":  filing_meta["filing_date"],
+                            "member":       member_name,
+                            "filing_year":  filing_meta["filing_year"],
                             "doc_id":       filing_meta["doc_id"],
-                            "asset":        asset_name,
+                            "asset":        asset_raw,
+                            "asset_clean":  clean_asset_name(asset_raw),
+                            "asset_type":   asset_type(asset_raw),
                             "ticker":       ticker,
-                            "transaction":  tx_type,
+                            "transaction":  tx,
                             "date":         date_raw,
+                            "date_iso":     toISO(date_raw),
                             "amount_range": amount_raw,
-                            "amount_mid":   parse_amount(amount_raw),
+                            "amount_mid":   amount_mid,
                         })
     except Exception as e:
-        print(f"  PDF parse error: {e}")
-
+        print(f"    PDF parse error {pdf_path}: {e}")
     return trades
 
 
-# ── Main ─────────────────────────────────────────────────────────────────────
+# ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    with open(MEMBERS_FILE) as f:
+        members = json.load(f)
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     session = requests.Session()
 
-    all_filings = []
-    for year in YEARS:
-        try:
-            filings = search_filings(session, year)
-            all_filings.extend(filings)
-        except Exception as e:
-            print(f"  Search failed for {year}: {e}")
-        time.sleep(1)
+    for member in members:
+        print(f"\n{'='*60}")
+        print(f"Processing: {member['name']}")
+        print(f"{'='*60}")
 
-    if not all_filings:
-        print("\nNo filings found.")
-        with open(OUTPUT_FILE, "w") as f:
-            json.dump([], f)
-        return
+        all_trades = []
 
-    all_trades = []
-    for filing in all_filings:
-        print(f"\nProcessing {filing['doc_id']} ({filing['filing_date']})...")
-        pdf_path = download_pdf(filing, session)
-        if not pdf_path:
-            continue
-        trades = parse_pdf(pdf_path, filing)
-        print(f"  Parsed {len(trades)} trade(s)")
-        all_trades.extend(trades)
+        for year in YEARS:
+            print(f"  Searching {year}...")
+            try:
+                filings = search_filings(session, member["last_name"], year)
+                # Filter to this specific member by first name if multiple results
+                # (e.g. multiple people with same last name)
+                print(f"    Found {len(filings)} PTR filing(s)")
+            except Exception as e:
+                print(f"    Search failed: {e}")
+                filings = []
+            time.sleep(0.5)
 
-    all_trades.sort(key=lambda t: t.get("date") or "", reverse=True)
+            for filing in filings:
+                pdf_path = download_pdf(filing, session)
+                if not pdf_path:
+                    continue
+                trades = parse_pdf(pdf_path, filing, member["name"])
+                print(f"    Parsed {len(trades)} trade(s) from doc {filing['doc_id']}")
+                all_trades.extend(trades)
 
-    with open(OUTPUT_FILE, "w") as f:
-        json.dump(all_trades, f, indent=2)
+        # Sort by date descending (most recent first)
+        all_trades.sort(key=lambda t: t.get("date_iso") or "", reverse=True)
 
-    print(f"\nDone. {len(all_trades)} total trades -> {OUTPUT_FILE}")
-    print(f"\n{'Date':<12} {'Ticker':<8} {'Transaction':<12} {'Amount Range':<30} {'Asset'}")
-    print("-" * 95)
-    for t in all_trades[:30]:
-        print(
-            f"{t['date']:<12} "
-            f"{(t['ticker'] or '-'):<8} "
-            f"{t['transaction']:<12} "
-            f"{t['amount_range']:<30} "
-            f"{t['asset'][:40]}"
-        )
-    if len(all_trades) > 30:
-        print(f"  ... and {len(all_trades) - 30} more in {OUTPUT_FILE}")
+        # Write per-member JSON
+        out_path = OUTPUT_DIR / f"{member['id']}.json"
+        with open(out_path, "w") as f:
+            json.dump({
+                "id":     member["id"],
+                "name":   member["name"],
+                "slug":   member["slug"],
+                "party":  member["party"],
+                "state":  member["state"],
+                "district": member["district"],
+                "chamber":  member["chamber"],
+                "title":    member["title"],
+                "trades":   all_trades,
+            }, f, indent=2)
+
+        print(f"  Written {len(all_trades)} trades -> {out_path}")
+
+    # Delete PDF cache to keep repo lean
+    if PDF_CACHE.exists():
+        shutil.rmtree(PDF_CACHE)
+        print(f"\nDeleted PDF cache: {PDF_CACHE}")
+
+    print("\nDone.")
 
 
 if __name__ == "__main__":
