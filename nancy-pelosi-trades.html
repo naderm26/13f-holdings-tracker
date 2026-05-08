@@ -102,7 +102,7 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
     .company-name { font-weight: 500; color: var(--text); white-space: normal; }
-    .ticker-tag { font-family: var(--mono); font-size: 0.75rem; color: #2563eb; margin-top: 0.15rem; }
+    .cusip { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
     td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
     tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
     tr.total-row td.col-asset { font-family: var(--sans); font-size: 0.875rem; }
@@ -378,7 +378,15 @@
 
   // ── Helpers ───────────────────────────────────────────────────────
   function cleanAssetName(asset) {
-    return asset.replace(/\s*\[(ST|OP|OT|MF|DC)\]\s*/g, "").trim();
+    // Strip [ST], [OP] etc type tags
+    let s = asset.replace(/\s*\[(ST|OP|OT|MF|DC)\]\s*/g, "").trim();
+    // Strip ticker in parens at end: " (GOOGL)"
+    s = s.replace(/\s*\([A-Z]{1,5}\)\s*$/, "").trim();
+    // Strip " - Class A Common Stock", " - Common Stock", " - Common", etc.
+    s = s.replace(/\s*-\s*(Class [A-Z]\s+)?(Common Stock|Common|Ordinary Shares?|ADR|ADS|Inc\.?).*$/i, "").trim();
+    // Strip trailing " -" or " ,"
+    s = s.replace(/[\s\-,]+$/, "").trim();
+    return s;
   }
   function assetType(asset) {
     if (asset.includes("[OP]")) return "Option";
@@ -446,12 +454,12 @@
       const tx        = normaliseTx(t.transaction, isInit);
 
       const assetCell = `
-        <div class="company-name">
+        <div class="company-name" style="font-weight:500;color:var(--text);">
           ${stockHref ? `<a href="${stockHref}" style="color:var(--text);text-decoration:none;">${clean}</a>` : clean}
         </div>
         ${ticker
-          ? `<div class="ticker-tag"><a href="${stockHref}" style="color:#2563eb;text-decoration:none;">${ticker}</a>${atype ? ` · <span style="color:var(--muted)">${atype}</span>` : ""}</div>`
-          : (atype ? `<div class="ticker-tag" style="color:var(--muted)">${atype}</div>` : "")}
+          ? `<div class="cusip"><a href="${stockHref}" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.75rem;">${ticker}</a>${atype ? ` <span style="color:var(--muted);font-family:var(--mono);font-size:0.72rem;">· ${atype}</span>` : ""}</div>`
+          : (atype ? `<div class="cusip" style="color:var(--muted);">${atype}</div>` : "")}
       `;
 
       return `
