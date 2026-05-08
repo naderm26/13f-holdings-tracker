@@ -134,9 +134,14 @@ def search_filings(session, last_name, year):
         m = re.search(r"ptr-pdfs/(\d{4})/(\d+)\.pdf", href)
         if not m:
             continue
+        doc_id = m.group(2)
+        # Skip old scanned-PDF format — doc IDs starting with 8 or 9 are
+        # pre-eFD paper filings with no extractable table structure
+        if doc_id.startswith("8") or doc_id.startswith("9"):
+            continue
         filings.append({
             "year":        m.group(1),
-            "doc_id":      m.group(2),
+            "doc_id":      doc_id,
             "filing_year": cells[2].get_text(strip=True),
             "filing_type": filing_type,
             "url":         BASE + "/" + href,
