@@ -325,25 +325,7 @@
       return t2.includes("sale") || t2 === "s" || t2.includes("s (");
     });
 
-    // S1 — summary
-    sentences.push(
-      `Pelosi filed <b>${trades.length}</b> transaction${trades.length !== 1 ? "s" : ""} ${periodLabel} — ` +
-      `<span class="ins-green">${purchases.length} purchase${purchases.length !== 1 ? "s" : ""}</span> and ` +
-      `<span class="ins-red">${sales.length} sale${sales.length !== 1 ? "s" : ""}</span>.`
-    );
-
-    // S2 — most active tickers
-    const tickerCounts = {};
-    trades.forEach(t => { if (t.ticker) tickerCounts[t.ticker] = (tickerCounts[t.ticker] || 0) + 1; });
-    const topTickers = Object.entries(tickerCounts).sort((a,b) => b[1]-a[1]).slice(0,3);
-    if (topTickers.length > 0) {
-      const links = topTickers.map(([ticker, count]) =>
-        `<a class="ins-ticker" href="stocks/${ticker}-hedge-fund-ownership.html">${ticker}</a> (${count} trade${count !== 1 ? "s" : ""})`
-      ).join(", ");
-      sentences.push(`Most traded: ${links}.`);
-    }
-
-    // S3 — most recent trade
+    // S1 — most recent trade
     const byDate = [...trades].sort((a,b) => toISO(b.date).localeCompare(toISO(a.date)));
     if (byDate.length > 0) {
       const latest = byDate[0];
@@ -358,7 +340,18 @@
       );
     }
 
-    // S4 — largest trade by amount_mid (exclude bad values)
+    // S2 — most active tickers
+    const tickerCounts = {};
+    trades.forEach(t => { if (t.ticker) tickerCounts[t.ticker] = (tickerCounts[t.ticker] || 0) + 1; });
+    const topTickers = Object.entries(tickerCounts).sort((a,b) => b[1]-a[1]).slice(0,3);
+    if (topTickers.length > 0) {
+      const links = topTickers.map(([ticker, count]) =>
+        `<a class="ins-ticker" href="stocks/${ticker}-hedge-fund-ownership.html">${ticker}</a> (${count} trade${count !== 1 ? "s" : ""})`
+      ).join(", ");
+      sentences.push(`Most traded: ${links}.`);
+    }
+
+    // S3 — largest trade by amount_mid (exclude bad values)
     const withAmount = trades.filter(t => t.amount_mid && t.amount_mid < 1e12);
     if (withAmount.length > 0) {
       const largest = withAmount.reduce((a, b) => a.amount_mid > b.amount_mid ? a : b);
@@ -372,6 +365,13 @@
         `Largest reported trade: <span class="${isBuy ? "ins-green" : "ins-red"}">${tx.label}</span> ${ticker} (${largest.amount_range}) on ${largest.date}.`
       );
     }
+
+    // S4 — summary
+    sentences.push(
+      `Pelosi filed <b>${trades.length}</b> transaction${trades.length !== 1 ? "s" : ""} ${periodLabel} — ` +
+      `<span class="ins-green">${purchases.length} purchase${purchases.length !== 1 ? "s" : ""}</span> and ` +
+      `<span class="ins-red">${sales.length} sale${sales.length !== 1 ? "s" : ""}</span>.`
+    );
 
     el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
   }
