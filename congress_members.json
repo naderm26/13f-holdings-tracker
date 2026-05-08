@@ -39,24 +39,11 @@
     "photo": "images/congress/josh_gottheimer.jpg"
   },
   {
-    "id": "tommy_tuberville",
-    "slug": "tommy-tuberville-trades",
-    "name": "Tommy Tuberville",
-    "last_name": "Tuberville",
-    "first_name": "Tommy",
-    "party": "Republican",
-    "state": "AL",
-    "district": "AL",
-    "chamber": "Senate",
-    "title": "U.S. Senator",
-    "photo": "images/congress/tommy_tuberville.jpg"
-  },
-  {
     "id": "dan_crenshaw",
     "slug": "dan-crenshaw-trades",
     "name": "Dan Crenshaw",
     "last_name": "Crenshaw",
-    "first_name": "Dan",
+    "first_name": "Daniel",
     "party": "Republican",
     "state": "TX",
     "district": "TX-2",
