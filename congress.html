@@ -1,0 +1,250 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2TBN6R2JZC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2TBN6R2JZC');
+</script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Congressional Stock Trades Tracker | STOCK Act Disclosures | 13FAI</title>
+  <meta name="description" content="Track stock trades filed by members of Congress under the STOCK Act. See what Nancy Pelosi, Marjorie Taylor Greene, Tommy Tuberville, and other congressmembers are buying and selling."/>
+  <meta name="keywords" content="congressional stock trading, STOCK Act disclosures, Congress stock trades, Nancy Pelosi trades, Marjorie Taylor Greene trades, politician stock trades"/>
+  <meta property="og:title" content="Congressional Stock Trades Tracker | 13FAI"/>
+  <meta property="og:description" content="Track stock trades filed by members of Congress under the STOCK Act — purchases, sales, and options sourced directly from House PTR filings."/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://13fai.com/congress.html"/>
+  <link rel="canonical" href="https://13fai.com/congress.html"/>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "Congressional Stock Trades Tracker",
+    "description": "Track stock trades filed by members of Congress under the STOCK Act.",
+    "url": "https://13fai.com/congress.html"
+  }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1100px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+
+    h1 { font-size: 1.4rem; font-weight: 500; letter-spacing: 0.02em; margin-bottom: 0.4rem; }
+    .page-sub { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 2rem; }
+
+    /* Member grid */
+    .member-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .member-card {
+      display: flex; align-items: center; gap: 1rem;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 6px; padding: 1rem 1.25rem;
+      text-decoration: none; color: var(--text);
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .member-card:hover { border-color: var(--accent); background: var(--accent-light); }
+    .member-avatar {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--accent); display: flex; align-items: center;
+      justify-content: center; font-family: var(--mono); font-size: 0.85rem;
+      font-weight: 500; color: #fff; flex-shrink: 0;
+      border: 1px solid var(--border); overflow: hidden;
+    }
+    .member-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .member-info { min-width: 0; }
+    .member-name { font-weight: 500; font-size: 0.975rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .member-meta { font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-top: 0.2rem; }
+    .member-stats { font-family: var(--mono); font-size: 0.72rem; color: var(--accent); margin-top: 0.25rem; font-weight: 500; }
+    .party-tag { display: inline-block; font-family: var(--mono); font-size: 0.65rem; font-weight: 600; padding: 0.1rem 0.4rem; border-radius: 3px; margin-left: 0.4rem; }
+    .party-dem { color: #2563eb; background: #eff6ff; border: 1px solid #bfdbfe; }
+    .party-rep { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; }
+
+    /* Info callout */
+    .callout { background: var(--accent-light); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; padding: 0.85rem 1rem; margin-bottom: 2rem; font-size: 0.875rem; line-height: 1.7; }
+
+    /* Search */
+    .search-wrap { position: relative; }
+    #search { font-family: var(--sans); font-size: 0.875rem; padding: 0.6rem 1rem 0.6rem 2.25rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 200px; outline: none; transition: border 0.15s; }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    @media (min-width: 700px) { #search { width: 280px; } }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none; }
+    .search-results.visible { display: block; }
+    .search-result-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; text-decoration: none; color: var(--text); font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 2rem; }
+
+    footer { text-align: center; padding: 2rem; font-family: var(--mono); font-size: 0.7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 2rem; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="index.html">Funds</a>
+        <a class="nav-link" href="managers.html">Manager Bios</a>
+        <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link active" href="congress.html">Congressional Trades</a>
+        <a class="nav-link" href="insider-activity.html">Insider Trading</a>
+        <a class="nav-link" href="faq.html">FAQ</a>
+        <a class="nav-link" href="about.html">About</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="index.html">Funds</a>
+      <a class="nav-link" href="managers.html">Manager Bios</a>
+      <a class="nav-link" href="top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="filing-calendar.html">13F Filing Calendar</a>
+      <a class="nav-link active" href="congress.html">Congressional Trades</a>
+      <a class="nav-link" href="insider-activity.html">Insider Trading</a>
+      <a class="nav-link" href="faq.html">FAQ</a>
+      <a class="nav-link" href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <h1>Congressional Stock Trades</h1>
+  <p class="page-sub">STOCK Act disclosures · Sourced from House &amp; Senate Periodic Transaction Reports (PTRs)</p>
+
+  <div class="callout">
+    Members of Congress are required by the STOCK Act to disclose stock trades within 45 days of the transaction.
+    13FAI tracks the most-followed members and displays every disclosed purchase and sale sourced directly from
+    <a href="https://disclosures-clerk.house.gov/" target="_blank" rel="noopener" style="color:var(--accent);">disclosures-clerk.house.gov</a>.
+    These are individual trade disclosures, not portfolio snapshots — holdings are not reported in full.
+  </div>
+
+  <div class="member-grid" id="member-grid">
+    <div style="color:var(--muted);font-family:var(--mono);font-size:0.85rem;">Loading members...</div>
+  </div>
+</main>
+
+<footer>
+  For informational purposes only · Not investment advice · <a href="disclaimer.html">Full Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "";
+
+  // Load all member data files and render cards
+  fetch(`${PAGES}/congress_members.json`)
+    .then(r => r.json())
+    .then(members => {
+      // For each member try to load their data file to get trade count + latest trade date
+      const fetches = members.map(m =>
+        fetch(`${PAGES}/data/congress/${m.id}.json`)
+          .then(r => r.json())
+          .catch(() => null)
+      );
+      return Promise.all(fetches).then(dataFiles => ({ members, dataFiles }));
+    })
+    .then(({ members, dataFiles }) => {
+      const grid = document.getElementById("member-grid");
+      grid.innerHTML = members.map((m, i) => {
+        const data       = dataFiles[i];
+        const trades     = data?.trades || [];
+        const tradeCount = trades.length;
+        const latestDate = trades.length > 0 ? trades[0].date : null; // already sorted desc
+
+        const initials = m.name.split(" ").map(w => w[0]).slice(0,2).join("").toUpperCase();
+        const partyTag = m.party === "Democrat"
+          ? `<span class="party-tag party-dem">D</span>`
+          : `<span class="party-tag party-rep">R</span>`;
+        const statsLine = tradeCount > 0
+          ? `${tradeCount} trade${tradeCount !== 1 ? "s" : ""} tracked${latestDate ? ` · Latest: ${latestDate}` : ""}`
+          : "No trades found yet";
+
+        return `
+          <a class="member-card" href="${m.slug}.html">
+            <div class="member-avatar">
+              <img src="${m.photo}" alt="${m.name}"
+                   onerror="this.style.display='none'; this.parentElement.querySelector('span').style.display='flex';"
+                   style="display:block;"/>
+              <span style="display:none; align-items:center; justify-content:center; width:100%; height:100%;">${initials}</span>
+            </div>
+            <div class="member-info">
+              <div class="member-name">${m.name}${partyTag}</div>
+              <div class="member-meta">${m.title} · ${m.district}</div>
+              <div class="member-stats">${statsLine}</div>
+            </div>
+          </a>`;
+      }).join("");
+    })
+    .catch(e => {
+      document.getElementById("member-grid").innerHTML =
+        `<div style="color:var(--red);font-family:var(--mono);font-size:0.85rem;">Failed to load members: ${e.message}</div>`;
+    });
+
+  // Search
+  let allFundsForSearch = [], stockIndexForSearch = {};
+  fetch(`${PAGES}/funds.json`).then(r=>r.json()).then(d=>{allFundsForSearch=d;}).catch(()=>{});
+  fetch(`${PAGES}/stock_index.json`).then(r=>r.json()).then(d=>{stockIndexForSearch=d.stocks||d;}).catch(()=>{});
+  const searchInput=document.getElementById("search"), searchResults=document.getElementById("search-results");
+  searchInput.addEventListener("input",()=>{
+    const q=searchInput.value.trim().toLowerCase();
+    if(!q){searchResults.classList.remove("visible");return;}
+    const fm=allFundsForSearch.filter(f=>f.name.toLowerCase().includes(q)).slice(0,4)
+      .map(f=>`<a class="search-result-item" href="fund.html?fund=${f.id}"><span class="search-result-num">Fund</span><span>${f.name}</span></a>`);
+    const sm=[];
+    for(const[key,stock] of Object.entries(stockIndexForSearch)){
+      if(sm.length>=4)break;
+      if((stock.ticker&&stock.ticker.toLowerCase().includes(q))||(stock.name&&stock.name.toLowerCase().includes(q)))
+        sm.push(`<a class="search-result-item" href="stock.html?ticker=${encodeURIComponent(key)}"><span class="search-result-num">Stock</span><span>${stock.name}${stock.ticker?` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>`:""}</span></a>`);
+    }
+    const all=[...fm,...sm];
+    searchResults.innerHTML=all.length?all.join(""):`<div style="padding:0.75rem 1rem;font-size:0.875rem;color:var(--muted);">No results found</div>`;
+    searchResults.classList.add("visible");
+  });
+  document.addEventListener("click",e=>{
+    if(!searchInput.contains(e.target)&&!searchResults.contains(e.target))searchResults.classList.remove("visible");
+  });
+</script>
+</body>
+</html>
