@@ -39,32 +39,6 @@
     "photo": "images/congress/josh_gottheimer.jpg"
   },
   {
-    "id": "michael_mccaul",
-    "slug": "michael-mccaul-trades",
-    "name": "Michael McCaul",
-    "last_name": "McCaul",
-    "first_name": "Michael",
-    "party": "Republican",
-    "state": "TX",
-    "district": "TX-10",
-    "chamber": "House",
-    "title": "U.S. Representative",
-    "photo": "images/congress/michael_mccaul.jpg"
-  },
-  {
-    "id": "ro_khanna",
-    "slug": "ro-khanna-trades",
-    "name": "Ro Khanna",
-    "last_name": "Khanna",
-    "first_name": "Ro",
-    "party": "Democrat",
-    "state": "CA",
-    "district": "CA-17",
-    "chamber": "House",
-    "title": "U.S. Representative",
-    "photo": "images/congress/ro_khanna.jpg"
-  },
-  {
     "id": "jefferson_shreve",
     "slug": "jefferson-shreve-trades",
     "name": "Jefferson Shreve",
