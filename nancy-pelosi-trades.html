@@ -98,11 +98,11 @@
     th.col-asset { text-align: left; width: 38%; }
     th:hover { color: var(--text); }
     td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
-    td.col-asset { text-align: left; white-space: normal; }
+    td.col-asset { text-align: left; white-space: normal; max-width: 260px; }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: var(--accent-light); }
-    .company-name { font-weight: 500; color: var(--text); white-space: normal; }
-    .cusip { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+    .company-name { font-weight: 500; color: var(--text); white-space: normal; line-height: 1.3; }
+    .cusip { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: #2563eb; margin-top: 0.15rem; }
     td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
     tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
     tr.total-row td.col-asset { font-family: var(--sans); font-size: 0.875rem; }
@@ -458,7 +458,7 @@
           ${stockHref ? `<a href="${stockHref}" style="color:var(--text);text-decoration:none;">${clean}</a>` : clean}
         </div>
         ${ticker
-          ? `<div class="cusip"><a href="${stockHref}" style="color:#2563eb;text-decoration:none;font-family:var(--mono);font-size:0.75rem;">${ticker}</a>${atype ? ` <span style="color:var(--muted);font-family:var(--mono);font-size:0.72rem;">· ${atype}</span>` : ""}</div>`
+          ? `<div class="cusip"><a href="${stockHref}" style="color:#2563eb;text-decoration:none;">${ticker}</a>${atype ? ` <span style="color:var(--muted);font-family:var(--mono);font-size:0.72rem;">· ${atype}</span>` : ""}</div>`
           : (atype ? `<div class="cusip" style="color:var(--muted);">${atype}</div>` : "")}
       `;
 
