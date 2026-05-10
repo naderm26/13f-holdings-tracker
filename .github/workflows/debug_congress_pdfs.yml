@@ -27,11 +27,12 @@ jobs:
       - name: Run full debug inspection
         run: python debug_pdf.py
 
-      - name: Deep dive MTG doc 20030295 (possible ADP trade Nov 2025)
-        run: python debug_pdf.py 20030295
-
-      - name: Deep dive MTG doc 20030389 (possible ADP trade Nov 2025)
-        run: python debug_pdf.py 20030389
+      - name: Deep dive MTG November 2025 docs (ADP trade 11/12/2025)
+        run: |
+          python debug_pdf.py 20033314
+          python debug_pdf.py 20033360
+          python debug_pdf.py 20033428
+          python debug_pdf.py 20033462
 
       - name: Commit updated JSON
         run: |
