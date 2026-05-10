@@ -161,7 +161,7 @@ def download_pdf(filing, session):
         r = session.get(filing["url"], timeout=20)
         r.raise_for_status()
         path.write_bytes(r.content)
-        time.sleep(1)
+        time.sleep(0.5)
         return path
     except Exception as e:
         print(f"    Download failed {filing['doc_id']}: {e}")
