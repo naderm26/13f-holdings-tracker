@@ -341,7 +341,7 @@ def build_page(ticker, data):
   <div style="margin-top:0.75rem; font-family:var(--mono); font-size:0.68rem; color:var(--muted); line-height:1.8;">
     ‡ Only open market purchases (P) and sales (S) are shown. Awards, option exercises, and tax withholding transactions are excluded.<br/>
     * Price shown is value ÷ shares for same-day trades by the same insider. Not an actual single trade price.<br/>
-    † A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.
+    † "Unconfirmed" means the filing did not specify whether the transaction was part of a pre-scheduled 10b5-1 trading plan. "Yes" means it was explicitly disclosed as pre-scheduled.
   </div>
 </main>
 
@@ -427,7 +427,7 @@ function renderTx() {{
 
   // Update header arrows
   const ths = document.querySelectorAll("#tx-head th");
-  const labels = ["#", "Insider", "Type", "Shares", "Price", "Value", "Owned After", "Pre-scheduled", "Trade Date", "Filed"];
+  const labels = ["#", "Insider", "Type", "Shares", "Price *", "Value", "Owned After", "Pre-scheduled †", "Trade Date", "Filed"];
   ths.forEach((th, i) => {{
     if (i === 0) {{ th.textContent = "#"; return; }}
     th.textContent = labels[i] + arrow(i - 1);
@@ -456,7 +456,7 @@ function renderTx() {{
       <td class="num" style="color:${{valCls}}">${{fmtVal(t.value)}}</td>
       <td class="num">${{fmtShares(t.shares_after)}}</td>
       <td class="num" style="font-size:0.78rem">${{
-        t.plan === true ? '<span style="color:var(--muted)">Yes</span>' : '—'
+        t.plan === true ? '<span style="color:var(--muted)">Yes</span>' : '<span style="color:var(--muted);font-size:0.65rem">unconfirmed</span>'
       }}</td>
       <td class="num">${{fmtDate(t.date)}}</td>
       <td class="num" style="font-size:0.68rem;color:var(--muted)">${{fmtDate(t.filed)}}</td>
