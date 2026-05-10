@@ -63,6 +63,7 @@ def parse_merged_row(text):
     text = re.sub(r'\x00+', '', text)
     text = re.sub(r'\s*\[(?:ST|OP|OT|MF|DC|GS)\]', '', text)
     text = re.sub(r'F\s+S\s*:.*$', '', text, flags=re.DOTALL)
+    text = re.sub(r'S\s+O\s*:.*$', '', text, flags=re.DOTALL)  # strip 'S O: Marjorie IRA' etc
     text = re.sub(r'\n', ' ', text).strip()
     text = re.sub(r'\s{2,}', ' ', text)
     text = re.sub(r'\s+(?:Class\s+[A-Z]\s+)?(?:Common\s+Stock\s+)?\([A-Z]{1,5}\)\s*$', '', text).strip()
