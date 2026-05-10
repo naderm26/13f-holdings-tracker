@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -292,7 +293,7 @@ function renderTable() {
       <td class="${valCls}">${fmtVal(r.value)}</td>
       <td>${fmtShares(r.shares_after)}</td>
       <td style="font-size:0.78rem">${
-        r.plan === true ? '<span style="color:var(--muted)">Yes</span>' : '—'
+        r.plan === true ? '<span style="color:var(--muted)">Yes</span>' : '<span style="color:var(--muted);font-size:0.65rem">unconfirmed</span>'
       }</td>
       <td>${fmtDate(r.date)}</td>
       <td style="color:var(--muted);font-size:0.72rem">${fmtDate(r.filed)}</td>
@@ -325,7 +326,7 @@ function renderTable() {
       </table>
     </div>
     <div class="table-note">* Price shown is total value ÷ total shares for same-day trades by the same insider. Not an actual single trade price.</div>
-    <div class="table-note">† A dash "—" in the Pre-scheduled column does not indicate that the transaction was not pre-scheduled, but rather that the pre-scheduled status is unconfirmed.</div>`;
+    <div class="table-note">† "Unconfirmed" means the filing did not specify whether the transaction was part of a pre-scheduled 10b5-1 trading plan. "Yes" means it was explicitly disclosed as pre-scheduled.</div>`;
 }
 
 function renderAll() {
