@@ -66,6 +66,8 @@ def parse_merged_row(text):
     text = re.sub(r'S\s+O\s*:.*$', '', text, flags=re.DOTALL)  # strip 'S O: Marjorie IRA' etc
     text = re.sub(r'\n', ' ', text).strip()
     text = re.sub(r'\s{2,}', ' ', text)
+    # Fix split amount range e.g. "$15,001 - Common Stock (ADP) $50,000" → "$15,001 - $50,000"
+    text = re.sub(r'(\$[\d,]+\s*-)\s+.+?(\s+\$[\d,]+)', lambda m: m.group(1) + ' ' + m.group(2).strip(), text)
     text = re.sub(r'\s+(?:Class\s+[A-Z]\s+)?(?:Common\s+Stock\s+)?\([A-Z]{1,5}\)\s*$', '', text).strip()
     text = re.sub(r'\s+(?:Registry\s+)?(?:Common\s+)?(?:Ordinary\s+)?(?:Shares?|Stock)\s*$', '', text, flags=re.IGNORECASE).strip()
     text = re.sub(r'\s+\([A-Z]{1,5}\)\s*$', '', text).strip()
