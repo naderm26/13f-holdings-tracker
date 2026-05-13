@@ -65,19 +65,6 @@
     "photo": "images/congress/austin_scott.jpg"
   },
   {
-    "id": "mark_green",
-    "slug": "mark-green-trades",
-    "name": "Mark Green",
-    "last_name": "Green",
-    "first_name": "Mark",
-    "party": "Republican",
-    "state": "TN",
-    "district": "TN-7",
-    "chamber": "House",
-    "title": "U.S. Representative",
-    "photo": "images/congress/mark_green.jpg"
-  },
-  {
     "id": "david_rouzer",
     "slug": "david-rouzer-trades",
     "name": "David Rouzer",
@@ -141,5 +128,18 @@
     "chamber": "House",
     "title": "U.S. Representative",
     "photo": "images/congress/pete_sessions.jpg"
+  },
+  {
+    "id": "debbie_wasserman_schultz",
+    "slug": "debbie-wasserman-schultz-trades",
+    "name": "Debbie Wasserman Schultz",
+    "last_name": "Wasserman Schultz",
+    "first_name": "Debbie",
+    "party": "Democrat",
+    "state": "FL",
+    "district": "FL-25",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/debbie_wasserman_schultz.jpg"
   }
 ]
