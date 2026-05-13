@@ -65,6 +65,19 @@
     "photo": "images/congress/austin_scott.jpg"
   },
   {
+    "id": "mark_green",
+    "slug": "mark-green-trades",
+    "name": "Mark Green",
+    "last_name": "Green",
+    "first_name": "Mark",
+    "party": "Republican",
+    "state": "TN",
+    "district": "TN-7",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/mark_green.jpg"
+  },
+  {
     "id": "david_rouzer",
     "slug": "david-rouzer-trades",
     "name": "David Rouzer",
