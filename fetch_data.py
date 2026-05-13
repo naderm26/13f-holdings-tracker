@@ -63,6 +63,14 @@ def parse_xml_to_holdings(xml_text):
         value      = entry.findtext("{*}value", default="0").strip()
         discretion = entry.findtext("{*}investmentDiscretion", default="").strip()
         putcall    = entry.findtext("{*}putCall", default="").strip()
+
+        # Skip PRN (principal) positions — these are debt/notes reported in face value
+        # not shares, and would massively distort portfolio calculations
+        sh_type = entry.findtext(".//{*}sshPrnamtType", default="").strip().upper()
+        if sh_type == "PRN":
+            print(f"  Skipping PRN position: {company} ({cusip})")
+            continue
+
         if company or cusip:
             holdings.append({
                 "company":    company,
