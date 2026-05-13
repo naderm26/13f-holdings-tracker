@@ -310,8 +310,22 @@ def main():
         print(f"Processing: {member['name']}")
         print(f"{'='*60}")
 
-        all_trades  = []
-        all_skipped = []
+        # Load existing trades from JSON so we can skip already-processed docs
+        out_path = OUTPUT_DIR / f"{member['id']}.json"
+        if out_path.exists():
+            with open(out_path) as f:
+                existing = json.load(f)
+            existing_trades  = existing.get("trades", [])
+            existing_skipped = existing.get("skipped", [])
+            seen_doc_ids     = {t["doc_id"] for t in existing_trades}
+            seen_doc_ids    |= {t.get("doc_id") for t in existing_skipped if t.get("doc_id")}
+        else:
+            existing_trades  = []
+            existing_skipped = []
+            seen_doc_ids     = set()
+
+        new_trades  = []
+        new_skipped = []
 
         for year in YEARS:
             print(f"  Searching {year}...")
@@ -324,17 +338,23 @@ def main():
             time.sleep(0.5)
 
             for filing in filings:
+                if filing["doc_id"] in seen_doc_ids:
+                    print(f"    Doc {filing['doc_id']}: already processed, skipping")
+                    continue
                 pdf_path = download_pdf(filing, session)
                 if not pdf_path:
                     continue
                 trades, skipped = parse_pdf(pdf_path, filing, member["name"])
                 print(f"    Doc {filing['doc_id']}: {len(trades)} trade(s) parsed, {len(skipped)} skipped")
-                all_trades.extend(trades)
-                all_skipped.extend(skipped)
+                new_trades.extend(trades)
+                new_skipped.extend(skipped)
+
+        # Merge new trades with existing, re-sort
+        all_trades  = existing_trades + new_trades
+        all_skipped = existing_skipped + new_skipped
 
         all_trades.sort(key=lambda t: t.get("date_iso") or "", reverse=True)
 
-        out_path = OUTPUT_DIR / f"{member['id']}.json"
         with open(out_path, "w") as f:
             json.dump({
                 "id":       member["id"],
