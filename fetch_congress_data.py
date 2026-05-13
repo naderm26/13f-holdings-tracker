@@ -120,6 +120,16 @@ def search_filings(session, last_name, year):
     soup = BeautifulSoup(r.text, "html.parser")
     filings = []
 
+    # Collect all names returned by the search for debugging zero-result cases
+    all_names_found = []
+    for row in soup.find_all("tr", role="row"):
+        cells = row.find_all("td")
+        if len(cells) < 4:
+            continue
+        name_text = cells[0].get_text(strip=True)
+        if name_text and name_text not in all_names_found:
+            all_names_found.append(name_text)
+
     for row in soup.find_all("tr", role="row"):
         cells = row.find_all("td")
         if len(cells) < 4:
@@ -146,6 +156,9 @@ def search_filings(session, last_name, year):
             "filing_type": filing_type,
             "url":         BASE + "/" + href,
         })
+
+    if not filings and all_names_found:
+        print(f"    0 PTRs — names returned by search: {all_names_found[:5]}")
 
     return filings
 
