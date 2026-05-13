@@ -1,0 +1,69 @@
+{
+  "id": "terri_sewell",
+  "name": "Terri Sewell",
+  "slug": "terri-sewell-trades",
+  "party": "Democrat",
+  "state": "AL",
+  "district": "AL-7",
+  "chamber": "House",
+  "title": "U.S. Representative",
+  "trades": [
+    {
+      "member": "Terri Sewell",
+      "filing_year": "2026",
+      "doc_id": "20034384",
+      "asset": "GE HealthCare Technologies Inc. -",
+      "asset_clean": "GE HealthCare Technologies Inc.",
+      "asset_type": "",
+      "ticker": "GEHC",
+      "transaction": "Sale",
+      "date": "03/25/2026",
+      "date_iso": "2026-03-25",
+      "amount_range": "$1,001 - $15,000",
+      "amount_mid": 8000
+    },
+    {
+      "member": "Terri Sewell",
+      "filing_year": "2026",
+      "doc_id": "20034384",
+      "asset": "Tapestry, Inc. Common Stock (TPR) [ST]",
+      "asset_clean": "Tapestry, Inc. Common Stock",
+      "asset_type": "",
+      "ticker": "TPR",
+      "transaction": "Sale",
+      "date": "03/25/2026",
+      "date_iso": "2026-03-25",
+      "amount_range": "$15,001 - $50,000",
+      "amount_mid": 32500
+    },
+    {
+      "member": "Terri Sewell",
+      "filing_year": "2025",
+      "doc_id": "20030235",
+      "asset": "Apple Inc. - Common Stock (AAPL)",
+      "asset_clean": "Apple Inc.",
+      "asset_type": "",
+      "ticker": "AAPL",
+      "transaction": "Purchase",
+      "date": "04/10/2025",
+      "date_iso": "2025-04-10",
+      "amount_range": "$1,001 - $15,000",
+      "amount_mid": 8000
+    },
+    {
+      "member": "Terri Sewell",
+      "filing_year": "2025",
+      "doc_id": "20030235",
+      "asset": "NVIDIA Corporation - Common Stock (NVDA) [ST]",
+      "asset_clean": "NVIDIA Corporation",
+      "asset_type": "",
+      "ticker": "NVDA",
+      "transaction": "Purchase",
+      "date": "04/10/2025",
+      "date_iso": "2025-04-10",
+      "amount_range": "$1,001 - $15,000",
+      "amount_mid": 8000
+    }
+  ],
+  "skipped": []
+}
