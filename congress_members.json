@@ -91,32 +91,6 @@
     "photo": "images/congress/david_rouzer.jpg"
   },
   {
-    "id": "ro_khanna",
-    "slug": "ro-khanna-trades",
-    "name": "Ro Khanna",
-    "last_name": "Khanna",
-    "first_name": "Ro",
-    "party": "Democrat",
-    "state": "CA",
-    "district": "CA-17",
-    "chamber": "House",
-    "title": "U.S. Representative",
-    "photo": "images/congress/ro_khanna.jpg"
-  },
-  {
-    "id": "michael_mccaul",
-    "slug": "michael-mccaul-trades",
-    "name": "Michael McCaul",
-    "last_name": "McCaul",
-    "first_name": "Michael",
-    "party": "Republican",
-    "state": "TX",
-    "district": "TX-10",
-    "chamber": "House",
-    "title": "U.S. Representative",
-    "photo": "images/congress/michael_mccaul.jpg"
-  },
-  {
     "id": "terri_sewell",
     "slug": "terri-sewell-trades",
     "name": "Terri Sewell",
@@ -128,5 +102,44 @@
     "chamber": "House",
     "title": "U.S. Representative",
     "photo": "images/congress/terri_sewell.jpg"
+  },
+  {
+    "id": "susie_lee",
+    "slug": "susie-lee-trades",
+    "name": "Susie Lee",
+    "last_name": "Lee",
+    "first_name": "Susie",
+    "party": "Democrat",
+    "state": "NV",
+    "district": "NV-3",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/susie_lee.jpg"
+  },
+  {
+    "id": "daniel_goldman",
+    "slug": "daniel-goldman-trades",
+    "name": "Daniel Goldman",
+    "last_name": "Goldman",
+    "first_name": "Daniel",
+    "party": "Democrat",
+    "state": "NY",
+    "district": "NY-10",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/daniel_goldman.jpg"
+  },
+  {
+    "id": "pete_sessions",
+    "slug": "pete-sessions-trades",
+    "name": "Pete Sessions",
+    "last_name": "Sessions",
+    "first_name": "Pete",
+    "party": "Republican",
+    "state": "TX",
+    "district": "TX-17",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/pete_sessions.jpg"
   }
 ]
