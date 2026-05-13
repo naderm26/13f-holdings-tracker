@@ -91,29 +91,42 @@
     "photo": "images/congress/david_rouzer.jpg"
   },
   {
-    "id": "lois_frankel",
-    "slug": "lois-frankel-trades",
-    "name": "Lois Frankel",
-    "last_name": "Frankel",
-    "first_name": "Lois",
+    "id": "ro_khanna",
+    "slug": "ro-khanna-trades",
+    "name": "Ro Khanna",
+    "last_name": "Khanna",
+    "first_name": "Ro",
     "party": "Democrat",
-    "state": "FL",
-    "district": "FL-22",
+    "state": "CA",
+    "district": "CA-17",
     "chamber": "House",
     "title": "U.S. Representative",
-    "photo": "images/congress/lois_frankel.jpg"
+    "photo": "images/congress/ro_khanna.jpg"
   },
   {
-    "id": "brian_fitzpatrick",
-    "slug": "brian-fitzpatrick-trades",
-    "name": "Brian Fitzpatrick",
-    "last_name": "Fitzpatrick",
-    "first_name": "Brian",
+    "id": "michael_mccaul",
+    "slug": "michael-mccaul-trades",
+    "name": "Michael McCaul",
+    "last_name": "McCaul",
+    "first_name": "Michael",
     "party": "Republican",
-    "state": "PA",
-    "district": "PA-1",
+    "state": "TX",
+    "district": "TX-10",
     "chamber": "House",
     "title": "U.S. Representative",
-    "photo": "images/congress/brian_fitzpatrick.jpg"
+    "photo": "images/congress/michael_mccaul.jpg"
+  },
+  {
+    "id": "terri_sewell",
+    "slug": "terri-sewell-trades",
+    "name": "Terri Sewell",
+    "last_name": "Sewell",
+    "first_name": "Terri",
+    "party": "Democrat",
+    "state": "AL",
+    "district": "AL-7",
+    "chamber": "House",
+    "title": "U.S. Representative",
+    "photo": "images/congress/terri_sewell.jpg"
   }
 ]
