@@ -2,19 +2,23 @@ name: Generate Congressional Trade Pages
 
 on:
   workflow_dispatch:
-  push:
-    paths:
-      - 'data/congress/**.json'
+  workflow_run:
+    workflows: ["Fetch Congressional Trading Data"]
+    types: [completed]
 
 jobs:
   generate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
       contents: write
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Pull latest changes
+        run: git pull origin main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,6 +32,10 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add *-trades.html || true
+          git stash --include-untracked || true
+          git pull --rebase
+          git stash pop || true
           git add *-trades.html || true
           git diff --cached --quiet || git commit -m "Regenerate congressional trade pages"
           git push
