@@ -190,9 +190,14 @@
       const grid = document.getElementById("member-grid");
       // Sort by most recent trade date descending
       const paired = members.map((m, i) => ({ m, data: dataFiles[i] }));
+      const toISO = d => {
+        if (!d) return "";
+        const [m, day, y] = d.split("/");
+        return `${y}-${m.padStart(2,"0")}-${day.padStart(2,"0")}`;
+      };
       paired.sort((a, b) => {
-        const da = a.data?.trades?.[0]?.date || "";
-        const db = b.data?.trades?.[0]?.date || "";
+        const da = toISO(a.data?.trades?.[0]?.date);
+        const db = toISO(b.data?.trades?.[0]?.date);
         return db.localeCompare(da);
       });
       grid.innerHTML = paired.map(({ m, data }) => {
