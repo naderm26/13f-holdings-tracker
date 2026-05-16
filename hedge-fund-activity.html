@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -435,8 +436,8 @@ function quarterDeadline(q) {
       return `<th class="${cls}${isSorted?" sorted":""}"${i===0?' style="color:var(--muted)"':""} ${onclick}>${col.label}${arrow}</th>`;
     }).join("");
     const rowsHtml = sorted.map((r, i) => {
-      const chgQtr  = type==="new"?"NEW":type==="exit"?"EXITED":r.prevTotal1>0?(r.netShares1/r.prevTotal1)*100:null;
-      const chgYr   = type==="new"?"NEW":type==="exit"?"EXITED":r.prevTotal4>0?(r.netShares4/r.prevTotal4)*100:null;
+      const chgQtr  = type==="new"?"NEW":type==="exit"?"EXITED":r.prevTotal1>0?(r.netShares1/r.prevTotal1)*100:(r.anyPQ?"NEW":null);
+      const chgYr   = type==="new"?"NEW":type==="exit"?"EXITED":r.prevTotal4>0?(r.netShares4/r.prevTotal4)*100:(r.anyPYQ?"NEW":null);
       const chgCols = `<td class="num">${fmtChg(chgQtr)}</td><td class="num">${fmtChg(chgYr)}</td>`;
       const priceTd = `<td class="num" style="color:var(--muted)">${fmtPrice(r.totalShares, r.totalValue)}</td>`;
       let mid;
@@ -459,6 +460,7 @@ function quarterDeadline(q) {
   // ── Compute activity for a given quarter ──────────────────────
   function computeForQuarter(selectedQ) {
     const stockIndex  = stockIndexRaw.stocks || stockIndexRaw;
+    const fundTotals  = stockIndexRaw.fund_totals || {};
     const pQ  = prevQuarter(selectedQ);
     const pYQ = prevYrQ(selectedQ);
 
@@ -477,6 +479,7 @@ function quarterDeadline(q) {
         aggValueNow: 0, aggValuePrev: 0,
         totalValue: 0, totalShares: 0,
         totalFunds: 0,  // all funds holding in selectedQ
+        anyPQ: false, anyPYQ: false,  // did any fund file the prior quarters?
         funds: {}
       };
       const sd = perStockDelta[stockKey];
@@ -508,6 +511,10 @@ function quarterDeadline(q) {
         // chgQtr/chgYr — ALL funds (matches stock.html)
         if (prev1 && prev1.shares > 0) { sd.ns1 += sharesNow - prev1.shares; sd.pt1 += prev1.shares; }
         if (prev4 && prev4.shares > 0) { sd.ns4 += sharesNow - prev4.shares; sd.pt4 += prev4.shares; }
+
+        // Track whether any fund filed prior quarters (for NEW detection)
+        if (fundTotals[fid]?.[pQ])  sd.anyPQ  = true;
+        if (fundTotals[fid]?.[pYQ]) sd.anyPYQ = true;
 
         // Aggregate value now (current holders only, matches stock.html totalValue)
         if (sharesNow > 0) { sd.totalValue += valueNow; sd.totalShares += sharesNow; sd.totalFunds++; }
@@ -567,7 +574,8 @@ function quarterDeadline(q) {
         totalFunds: sd.totalFunds,
         netValue: Math.abs(netValueChange),
         netShares1: sd.ns1, prevTotal1: sd.pt1,
-        netShares4: sd.ns4, prevTotal4: sd.pt4
+        netShares4: sd.ns4, prevTotal4: sd.pt4,
+        anyPQ: sd.anyPQ, anyPYQ: sd.anyPYQ
       };
     }
 
