@@ -371,7 +371,7 @@
       const f = fundMap[fid];
       if (!f) return fid;
       const nm = f.name.match(/^(.+?)\s*\(/) ? f.name.match(/^(.+?)\s*\(/)[1].trim() : f.name;
-      return `<a class="ins-fund" href="${getFundUrl(fid, fund?.name)}">${nm}</a>`;
+      return `<a class="ins-fund" href="${getFundUrl(fid, f?.name)}">${nm}</a>`;
     };
 
     // S1: Concentration
