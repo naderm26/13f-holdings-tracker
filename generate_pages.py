@@ -25,6 +25,32 @@ TICKERS_FILE = SCRIPT_DIR / "cusip_to_ticker.json"
 
 PAGES_BASE = ""  # Custom domain — no base path needed
 
+# ── Fund page URL helper — mirrors generate_fund_pages.py slug logic ──────────
+
+FUND_SLUG_OVERRIDES = {
+    "pershing":              "pershing-square-13f-holdings",
+    "greenlight":            "greenlight-capital-13f-holdings",
+    "longleaf":              "longleaf-partners-13f-holdings",
+    "sequoia":               "sequoia-fund-13f-holdings",
+    "ariel_focus":           "ariel-investments-13f-holdings",
+    "mairs_power":           "mairs-and-power-13f-holdings",
+    "rv_capital":            "rv-capital-13f-holdings",
+    "tci":                   "tci-fund-13f-holdings",
+    "daily_journal":         "daily-journal-13f-holdings",
+    "situational_awareness": "situational-awareness-13f-holdings",
+}
+
+def get_fund_url(fund_id, fund_name):
+    """Return the static fund page URL for a given fund_id."""
+    if fund_id in FUND_SLUG_OVERRIDES:
+        slug = FUND_SLUG_OVERRIDES[fund_id]
+    else:
+        m = re.match(r"^(.+?)\s*\(", fund_name)
+        name = m.group(1).strip() if m else fund_name
+        slug = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-") + "-13f-holdings"
+    return f"funds/{slug}.html"
+
+
 # ── Helpers ──────────────────────────────────────────────────────────────────
 
 def fmt_val(v):
@@ -222,6 +248,8 @@ def render_page(manager, live, all_managers):
       <div class="strip-stat"><div class="s-label">Net Worth</div><div class="s-value">{net_worth}</div></div>
     </div>"""
 
+    fund_url = get_fund_url(fund_id, manager.get("name", ""))
+
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -396,7 +424,7 @@ def render_page(manager, live, all_managers):
       <div class="cta-stat"><div class="label">Positions</div><div class="value">{pos_val}</div></div>
       <div class="cta-stat"><div class="label">Latest Filing</div><div class="value">{filed_val}</div></div>
     </div>
-    <a href="{PAGES_BASE}/fund.html?fund={fund_id}" class="cta-btn">View Full Portfolio →</a>
+    <a href="{fund_url}" class="cta-btn">View Full Portfolio →</a>
   </div>
 
 {stats_html}
@@ -434,7 +462,7 @@ def render_page(manager, live, all_managers):
 {holdings_html}
       </div>
       <div class="holdings-footer">
-        <a href="{PAGES_BASE}/fund.html?fund={fund_id}">View all positions and full portfolio breakdown →</a>
+        <a href="{fund_url}">View all positions and full portfolio breakdown →</a>
       </div>
     </div>
   </div>
