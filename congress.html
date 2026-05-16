@@ -153,10 +153,10 @@
 
 <main>
   <h1>Congressional Stock Trades</h1>
-  <p class="page-sub">STOCK Act disclosures · Sourced from House &amp; Senate Periodic Transaction Reports (PTRs)</p>
+  <p class="page-sub">STOCK Act disclosures · Sourced from House &amp; Senate Periodic Transaction Reports (PTRs) · <span id="last-updated"></span></p>
 
   <div class="callout">
-    Members of Congress are required by the STOCK Act to disclose stock trades within 45 days of the transaction.
+    Members of Congress are required by the STOCK Act to disclose stock trades within 30 days of the transaction.
     13FAI tracks the most-followed members and displays every disclosed purchase and sale sourced directly from
     <a href="https://disclosures-clerk.house.gov/" target="_blank" rel="noopener" style="color:var(--accent);">disclosures-clerk.house.gov</a>.
     These are individual trade disclosures, not portfolio snapshots — holdings are not reported in full.
@@ -200,6 +200,13 @@
         const db = toISO(b.data?.trades?.[0]?.date);
         return db.localeCompare(da);
       });
+      // Show most recent trade date across all members
+      const allDates = paired.map(p => p.data?.trades?.[0]?.date).filter(Boolean);
+      if (allDates.length > 0) {
+        const mostRecent = allDates.reduce((best, d) => toISO(d) > toISO(best) ? d : best, allDates[0]);
+        const el = document.getElementById("last-updated");
+        if (el) el.textContent = "Last trade: " + mostRecent;
+      }
       grid.innerHTML = paired.map(({ m, data }) => {
         const trades     = data?.trades || [];
         const tradeCount = trades.length;
