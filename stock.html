@@ -272,6 +272,26 @@
 
 <script>
   const PAGES = "";
+
+  const FUND_SLUG_OVERRIDES = {
+    pershing:              'pershing-square-13f-holdings',
+    greenlight:            'greenlight-capital-13f-holdings',
+    longleaf:              'longleaf-partners-13f-holdings',
+    sequoia:               'sequoia-fund-13f-holdings',
+    ariel_focus:           'ariel-investments-13f-holdings',
+    mairs_power:           'mairs-and-power-13f-holdings',
+    rv_capital:            'rv-capital-13f-holdings',
+    tci:                   'tci-fund-13f-holdings',
+    daily_journal:         'daily-journal-13f-holdings',
+    situational_awareness: 'situational-awareness-13f-holdings',
+  };
+  function getFundUrl(fid, fundName) {
+    if (FUND_SLUG_OVERRIDES[fid]) return `funds/${FUND_SLUG_OVERRIDES[fid]}.html`;
+    const m = (fundName || '').match(/^(.+?)\s*\(/);
+    const name = m ? m[1].trim() : (fundName || fid);
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return `funds/${slug}-13f-holdings.html`;
+  }
   const params = new URLSearchParams(window.location.search);
   const key    = params.get("ticker") || params.get("cusip") || "";
   let sortCol  = 1;
@@ -351,7 +371,7 @@
       const f = fundMap[fid];
       if (!f) return fid;
       const nm = f.name.match(/^(.+?)\s*\(/) ? f.name.match(/^(.+?)\s*\(/)[1].trim() : f.name;
-      return `<a class="ins-fund" href="fund.html?fund=${fid}">${nm}</a>`;
+      return `<a class="ins-fund" href="${getFundUrl(fid, fund?.name)}">${nm}</a>`;
     };
 
     // S1: Concentration
@@ -585,7 +605,7 @@
       const putcallHtml = putcall ? `<span class="putcall ${putcall.toLowerCase()}">${putcall.toUpperCase()}</span>` : `<span class="chg na">—</span>`;
       return `<tr>
         <td class="col-num num" style="color:var(--muted);font-size:0.72rem">${i + 1}</td>
-        <td class="col-fund"><a class="fund-link" href="fund.html?fund=${fid}">
+        <td class="col-fund"><a class="fund-link" href="${getFundUrl(fid, fund?.name)}">
           <div class="fund-name-cell">${fundOnly}</div>
           ${managerHtml}
         </a></td>
@@ -611,7 +631,7 @@
         : "";
       return `<tr class="exited">
         <td class="col-num num" style="font-size:0.72rem">—</td>
-        <td class="col-fund"><a class="fund-link" href="fund.html?fund=${fid}">
+        <td class="col-fund"><a class="fund-link" href="${getFundUrl(fid, fund?.name)}">
           <div class="fund-name-cell">${fundOnly}</div>
           ${exitMgrHtml}
         </a></td>
