@@ -14,7 +14,7 @@ Output:
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import shutil
 import sys
 import time
@@ -379,7 +379,7 @@ def main():
                 "district":     member["district"],
                 "chamber":      member["chamber"],
                 "title":        member["title"],
-                "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "last_updated": (datetime.now(timezone.utc) - timedelta(hours=5)).strftime("%Y-%m-%d"),
                 "trades":       all_trades,
                 "skipped":      all_skipped,
             }, f, indent=2)
