@@ -62,8 +62,9 @@ sorted_index = dict(
            reverse=True)
 )
 
+today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 with open("insider_index.json", "w") as f:
-    json.dump(sorted_index, f)
+    json.dump({"last_updated": today, "stocks": sorted_index}, f)
 
 total_buys  = sum(v["buys_90d"]  for v in sorted_index.values())
 total_sells = sum(v["sells_90d"] for v in sorted_index.values())
