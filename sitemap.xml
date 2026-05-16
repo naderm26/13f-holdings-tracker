@@ -588,4 +588,19 @@
   <url><loc>https://13fai.com/stocks/WBA-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/WELL-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
   <url><loc>https://13fai.com/stocks/WYNN-hedge-fund-ownership.html</loc><changefreq>quarterly</changefreq><priority>0.8</priority></url>
+  <!-- Congressional trading pages -->
+  <url><loc>https://13fai.com/congress.html</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://13fai.com/nancy-pelosi-trades.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/marjorie-taylor-greene-trades.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/josh-gottheimer-trades.html</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://13fai.com/jefferson-shreve-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/austin-scott-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/mark-green-trades.html</loc><changefreq>monthly</changefreq><priority>0.6</priority></url>
+  <url><loc>https://13fai.com/david-rouzer-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/terri-sewell-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/susie-lee-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/daniel-goldman-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/pete-sessions-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://13fai.com/debbie-wasserman-schultz-trades.html</loc><changefreq>weekly</changefreq><priority>0.7</priority></url>
+
 </urlset>
