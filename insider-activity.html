@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -159,7 +160,7 @@
 
 <main>
   <h1>Insider Trading Activity</h1>
-  <p class="page-sub">Open market purchases and sales by corporate officers, directors, and 10% owners. Source: SEC Form 4 filings, last 90 days.</p>
+  <p class="page-sub">Open market purchases and sales by corporate officers, directors, and 10% owners. Source: SEC Form 4 filings, last 90 days. · <span id="last-updated"></span></p>
 
   <!-- Hero search -->
   <div class="search-hero">
@@ -382,7 +383,9 @@ document.addEventListener("click", e => {
 fetch(`${PAGES}/insider_index.json`)
   .then(r => r.json())
   .then(data => {
-    indexData = data;
+    indexData = data.stocks || data;
+    const el = document.getElementById("last-updated");
+    if (el && data.last_updated) el.textContent = "Last updated: " + data.last_updated;
     renderAll();
   })
   .catch(e => {
