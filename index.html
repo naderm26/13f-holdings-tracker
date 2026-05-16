@@ -3,6 +3,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,9 +153,9 @@
   </div>
   <div class="sort-bar">
     <span class="sort-label">Sort by:</span>
-    <button class="sort-btn active" id="sort-date" onclick="setSort('date')">Recently Filed</button>
+    <button class="sort-btn" id="sort-date" onclick="setSort('date')">Recently Filed</button>
     <button class="sort-btn" id="sort-name" onclick="setSort('name')">Fund Name</button>
-    <button class="sort-btn" id="sort-popular" onclick="setSort('popular')">Popular</button>
+    <button class="sort-btn active" id="sort-popular" onclick="setSort('popular')">Popular</button>
   </div>
   <ul class="fund-list scrollable" id="list-all">
     <li><div class="loading">Loading...</div></li>
@@ -176,7 +177,7 @@
   let allFunds   = [];
   let stockIndex = {};
   let filedDates = {};  // fund.id → "YYYY-MM-DD"
-  let currentSort = "date";  // default sort
+  let currentSort = "popular";  // default sort
 
   function fmtDate(dateStr) {
     if (!dateStr) return "";
