@@ -62,7 +62,7 @@ sorted_index = dict(
            reverse=True)
 )
 
-today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+today = (datetime.now(timezone.utc) - timedelta(hours=5)).strftime("%Y-%m-%d")
 with open("insider_index.json", "w") as f:
     json.dump({"last_updated": today, "stocks": sorted_index}, f)
 
