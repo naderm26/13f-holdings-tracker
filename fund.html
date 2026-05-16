@@ -10,6 +10,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -238,6 +239,28 @@
 
 <script>
   const PAGES = "";
+
+  // Static fund page slug map — mirrors generate_fund_pages.py slug logic
+  const FUND_SLUG_OVERRIDES = {
+    pershing:              'pershing-square-13f-holdings',
+    greenlight:            'greenlight-capital-13f-holdings',
+    longleaf:              'longleaf-partners-13f-holdings',
+    sequoia:               'sequoia-fund-13f-holdings',
+    ariel_focus:           'ariel-investments-13f-holdings',
+    mairs_power:           'mairs-and-power-13f-holdings',
+    rv_capital:            'rv-capital-13f-holdings',
+    tci:                   'tci-fund-13f-holdings',
+    daily_journal:         'daily-journal-13f-holdings',
+    situational_awareness: 'situational-awareness-13f-holdings',
+  };
+
+  function getFundSlug(fid, fundName) {
+    if (FUND_SLUG_OVERRIDES[fid]) return FUND_SLUG_OVERRIDES[fid];
+    const m = fundName.match(/^(.+?)\s*\(/);
+    const name = m ? m[1].trim() : fundName;
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return slug + '-13f-holdings';
+  }
 
   const params = new URLSearchParams(window.location.search);
   const fundId = params.get("fund") || "pershing";
@@ -755,9 +778,11 @@
     document.querySelector('meta[name="description"]').setAttribute("content", desc);
     document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
     document.querySelector('meta[property="og:description"]').setAttribute("content", desc);
-    // Canonical URL
+    // Canonical URL — points to static fund page
     const canonicalEl = document.getElementById("canonical-url");
-    if (canonicalEl) canonicalEl.setAttribute("href", `https://13fai.com/fund.html?fund=${fundId}`);
+    const fundSlug = getFundSlug(fundId, FUND_CONFIG.name);
+    const staticUrl = `https://13fai.com/funds/${fundSlug}.html`;
+    if (canonicalEl) canonicalEl.setAttribute("href", staticUrl);
     // JSON-LD
     const jsonLdEl = document.getElementById("json-ld");
     if (jsonLdEl) jsonLdEl.textContent = JSON.stringify({
@@ -765,7 +790,7 @@
       "@type": "Dataset",
       "name": `${fundOnly} 13F Holdings ${qShort}`,
       "description": desc,
-      "url": `https://13fai.com/fund.html?fund=${fundId}`,
+      "url": staticUrl,
       "creator": { "@type": "Organization", "name": "13FAI", "url": "https://13fai.com" },
       "about": { "@type": "Person", "name": managerOnly }
     });
