@@ -153,9 +153,9 @@
   </div>
   <div class="sort-bar">
     <span class="sort-label">Sort by:</span>
-    <button class="sort-btn" id="sort-date" onclick="setSort('date')">Recently Filed</button>
+    <button class="sort-btn active" id="sort-date" onclick="setSort('date')">Recently Filed</button>
     <button class="sort-btn" id="sort-name" onclick="setSort('name')">Fund Name</button>
-    <button class="sort-btn active" id="sort-popular" onclick="setSort('popular')">Popular</button>
+    <button class="sort-btn" id="sort-popular" onclick="setSort('popular')">Popular</button>
   </div>
   <ul class="fund-list scrollable" id="list-all">
     <li><div class="loading">Loading...</div></li>
@@ -174,10 +174,31 @@
     "baupost", "third_point", "greenlight", "thiel_macro", "tci"
   ]);
 
+
+  const FUND_SLUG_OVERRIDES = {
+    pershing:              'pershing-square-13f-holdings',
+    greenlight:            'greenlight-capital-13f-holdings',
+    longleaf:              'longleaf-partners-13f-holdings',
+    sequoia:               'sequoia-fund-13f-holdings',
+    ariel_focus:           'ariel-investments-13f-holdings',
+    mairs_power:           'mairs-and-power-13f-holdings',
+    rv_capital:            'rv-capital-13f-holdings',
+    tci:                   'tci-fund-13f-holdings',
+    daily_journal:         'daily-journal-13f-holdings',
+    situational_awareness: 'situational-awareness-13f-holdings',
+  };
+  function getFundUrl(f) {
+    const override = FUND_SLUG_OVERRIDES[f.id];
+    if (override) return `funds/${override}.html`;
+    const m = f.name.match(/^(.+?)\s*\(/);
+    const name = m ? m[1].trim() : f.name;
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/, '');
+    return `funds/${slug}-13f-holdings.html`;
+  }
   let allFunds   = [];
   let stockIndex = {};
   let filedDates = {};  // fund.id → "YYYY-MM-DD"
-  let currentSort = "popular";  // default sort
+  let currentSort = "date";  // default sort
 
   function fmtDate(dateStr) {
     if (!dateStr) return "";
@@ -189,7 +210,7 @@
   function fundItem(f, rank, isPopular) {
     const popularTag = isPopular ? '<span class="popular-tag">Popular</span>' : '';
     return '<li>' +
-      '<a href="fund.html?fund=' + f.id + '">' +
+      '<a href="' + getFundUrl(f) + '">' +
         '<span class="rank">' + rank + '.</span>' +
         '<span class="fund-info">' +
           '<span class="fund-name">' + f.name +
@@ -287,7 +308,7 @@
       .filter(function(f) { return f.name.toLowerCase().includes(ql); })
       .slice(0, 5)
       .map(function(f) {
-        return '<a class="hero-result-item" href="fund.html?fund=' + f.id + '">' +
+        return '<a class="hero-result-item" href="' + getFundUrl(f) + '">' +
           '<span class="hero-result-tag">Fund</span>' +
           '<span>' + f.name + '</span>' +
         '</a>';
