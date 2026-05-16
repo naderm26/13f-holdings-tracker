@@ -14,6 +14,7 @@ Output:
 
 import json
 import re
+from datetime import datetime, timezone
 import shutil
 import sys
 import time
@@ -370,16 +371,17 @@ def main():
 
         with open(out_path, "w") as f:
             json.dump({
-                "id":       member["id"],
-                "name":     member["name"],
-                "slug":     member["slug"],
-                "party":    member["party"],
-                "state":    member["state"],
-                "district": member["district"],
-                "chamber":  member["chamber"],
-                "title":    member["title"],
-                "trades":   all_trades,
-                "skipped":  all_skipped,
+                "id":           member["id"],
+                "name":         member["name"],
+                "slug":         member["slug"],
+                "party":        member["party"],
+                "state":        member["state"],
+                "district":     member["district"],
+                "chamber":      member["chamber"],
+                "title":        member["title"],
+                "last_updated": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+                "trades":       all_trades,
+                "skipped":      all_skipped,
             }, f, indent=2)
 
         print(f"  Total: {len(all_trades)} trades, {len(all_skipped)} skipped -> {out_path}")
