@@ -10,6 +10,8 @@
 
 
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -47,7 +49,10 @@
     "name": "Valley Forge Capital Management"
   }
 }</script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"></noscript>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -255,6 +260,28 @@
 
 <script>
   const PAGES = "..";
+
+  // Static fund page slug map — mirrors generate_fund_pages.py slug logic
+  const FUND_SLUG_OVERRIDES = {
+    pershing:              'pershing-square-13f-holdings',
+    greenlight:            'greenlight-capital-13f-holdings',
+    longleaf:              'longleaf-partners-13f-holdings',
+    sequoia:               'sequoia-fund-13f-holdings',
+    ariel_focus:           'ariel-investments-13f-holdings',
+    mairs_power:           'mairs-and-power-13f-holdings',
+    rv_capital:            'rv-capital-13f-holdings',
+    tci:                   'tci-fund-13f-holdings',
+    daily_journal:         'daily-journal-13f-holdings',
+    situational_awareness: 'situational-awareness-13f-holdings',
+  };
+
+  function getFundSlug(fid, fundName) {
+    if (FUND_SLUG_OVERRIDES[fid]) return FUND_SLUG_OVERRIDES[fid];
+    const m = fundName.match(/^(.+?)\s*\(/);
+    const name = m ? m[1].trim() : fundName;
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return slug + '-13f-holdings';
+  }
 
   const fundId = "valley_forge";
 
@@ -771,9 +798,11 @@
     document.querySelector('meta[name="description"]').setAttribute("content", desc);
     document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
     document.querySelector('meta[property="og:description"]').setAttribute("content", desc);
-    // Canonical URL
+    // Canonical URL — points to static fund page
     const canonicalEl = document.getElementById("canonical-url");
-    if (canonicalEl) canonicalEl.setAttribute("href", "https://13fai.com/funds/valley-forge-capital-management-13f-holdings.html");
+    const fundSlug = getFundSlug(fundId, FUND_CONFIG.name);
+    const staticUrl = `https://13fai.com/funds/${fundSlug}.html`;
+    if (canonicalEl) canonicalEl.setAttribute("href", staticUrl);
     // JSON-LD
     const jsonLdEl = document.getElementById("json-ld");
     if (jsonLdEl) jsonLdEl.textContent = JSON.stringify({
@@ -781,7 +810,1048 @@
       "@type": "Dataset",
       "name": `${fundOnly} 13F Holdings ${qShort}`,
       "description": desc,
-      "url": `https://13fai.com/fund.html?fund=${fundId}`,
+      "url": staticUrl,
+      "creator": { "@type": "Organization", "name": "13FAI", "url": "https://13fai.com" },
+      "about": { "@type": "Person", "name": managerOnly }
+    });
+
+    const sorted = [...rows].sort((a, b) => {
+      let av, bv;
+      const mult_ = mult;
+      if (sortCol === 0)      { av = a.company.toLowerCase(); bv = b.company.toLowerCase(); }
+      else if (sortCol === 1) { av = a.value * mult_; bv = b.value * mult_; }
+      else if (sortCol === 2) { av = a.shares; bv = b.shares; }
+      else if (sortCol === 3) { av = tv > 0 ? (a.value * mult_) / tv : 0; bv = tv > 0 ? (b.value * mult_) / tv : 0; }
+      else if (sortCol === 4) {
+        const ca = getChange(a.shares, prev1, a.cusip, a.company);
+        const cb = getChange(b.shares, prev1, b.cusip, b.company);
+        av = typeof ca === 'number' ? ca : (ca === "NEW" ? 1e9 : (ca === "EXITED" ? -1e9 : 0));
+        bv = typeof cb === 'number' ? cb : (cb === "NEW" ? 1e9 : (cb === "EXITED" ? -1e9 : 0));
+      }
+      else if (sortCol === 5) {
+        const ca = getChange(a.shares, prev4, a.cusip, a.company);
+        const cb = getChange(b.shares, prev4, b.cusip, b.company);
+        av = typeof ca === 'number' ? ca : (ca === "NEW" ? 1e9 : (ca === "EXITED" ? -1e9 : 0));
+        bv = typeof cb === 'number' ? cb : (cb === "NEW" ? 1e9 : (cb === "EXITED" ? -1e9 : 0));
+      }
+      else if (sortCol === 6) { av = a.shares > 0 ? (a.value * mult_) / a.shares : 0; bv = b.shares > 0 ? (b.value * mult_) / b.shares : 0; }
+      else                   { av = 0; bv = 0; }
+      return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+    });
+
+    function arrow(i) { return sortCol === i ? (sortAsc ? " ↑" : " ↓") : ""; }
+
+    const rowsHtml = sorted.map((r, i) => {
+      const adjValue  = r.value * mult;
+      // Options excluded from weight/AUM — show — for their portfolio weight
+      const pctRaw    = (!isOption(r) && tv > 0) ? (adjValue / tv) * 100 : 0;
+      const pct       = isOption(r) ? "—" : (pctRaw === 0 ? "—" : pctRaw.toFixed(2) + "%");
+      const repPrice  = r.shares > 0 ? adjValue / r.shares : 0;
+      const repPriceStr = repPrice > 0 ? "$" + repPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
+      const valueStr  = adjValue >= 1e9
+        ? "$" + (adjValue / 1e9).toFixed(2) + "B"
+        : adjValue >= 1e6
+          ? "$" + (adjValue / 1e6).toFixed(1) + "M"
+          : "$" + adjValue.toLocaleString("en-US", { maximumFractionDigits: 0 });
+      const chg1      = getChange(r.shares, prev1, r.cusip, r.company);
+      const chg4      = getChange(r.shares, prev4, r.cusip, r.company);
+      const putcallHtml = r.putcall
+        ? `<span class="putcall ${r.putcall.toLowerCase()}">${r.putcall.toUpperCase()}</span>`
+        : `<span class="chg na">—</span>`;
+
+      // Market data
+      const ticker    = tickerMap[r.cusip] || null;
+      const priceData = ticker ? priceMap[ticker] : null;
+      const lastPrice = priceData ? priceData.price : null;
+      const lastPriceStr = lastPrice ? "$" + lastPrice.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "—";
+      const tickerHtml = ticker ? `<div style="color:#2563eb; font-weight:600; font-size:0.78rem; margin-top:0.1rem">${ticker}</div>` : "";
+
+      let priceDiffHtml = `<span class="chg na">—</span>`;
+      if (lastPrice && repPrice > 0) {
+        const diff = ((lastPrice - repPrice) / repPrice) * 100;
+        const sign = diff >= 0 ? "+" : "";
+        const cls  = diff >= 0 ? "pos" : "neg";
+        priceDiffHtml = `<span class="chg ${cls}">${sign}${diff.toFixed(2)}%</span>`;
+      }
+
+      return `
+        <tr>
+          <td class="col-num num" style="color:var(--muted); font-size:0.72rem">${i + 1}</td>
+          <td class="col-company">
+            <a href="../stock.html?ticker=${ticker || r.cusip}" style="text-decoration:none; color:inherit">
+              <div class="company-name">${r.company}</div>
+              ${tickerHtml}
+            </a>
+          </td>
+          <td class="col-data num">${pct}</td>
+          <td class="col-data num">${fmtShares(r.shares)}</td>
+          <td class="col-data num">${fmtChg(chg1)}</td>
+          <td class="col-data num">${fmtChg(chg4)}</td>
+          <td class="col-data num">${valueStr}</td>
+          <td class="col-data num">${repPriceStr}</td>
+          <td class="col-data num">${putcallHtml}</td>
+        </tr>`;
+    }).join("");
+
+    // Exited positions — in prev1 but not in current quarter
+    const exitedHtml = prev1 ? prev1
+      .filter(p => !rows.find(r => r.cusip === p.cusip || r.company === p.company))
+      .map(p => `
+        <tr class="exited">
+          <td class="col-num num" style="color:var(--muted); font-size:0.72rem">—</td>
+          <td class="col-company"><a href="../stock.html?cusip=${p.cusip}" style="text-decoration:none; color:inherit"><div class="company-name">${p.company}</div></a></td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num"><span class="chg exited">EXITED</span></td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num">—</td>
+          <td class="col-data num right">—</td>
+        </tr>`).join("") : "";
+
+    // ── Total row — equity only ───────────────────────────────────
+    const totalShares = equityRows.reduce((s, r) => s + r.shares, 0);
+
+    const totalValueStr = tv >= 1e9
+      ? "$" + (tv / 1e9).toFixed(1) + "B"
+      : tv >= 1e6
+        ? "$" + (tv / 1e6).toFixed(1) + "M"
+        : "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
+
+    const totalRow = `
+      <tr class="total-row">
+        <td class="col-num num">${equityRows.length}</td>
+        <td class="col-company">Total (excl. options)</td>
+        <td class="col-data num">100%</td>
+        <td class="col-data num">${fmtSharesTotal(totalShares)}</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">${totalValueStr}</td>
+        <td class="col-data num">—</td>
+        <td class="col-data num">—</td>
+      </tr>`;
+
+    document.getElementById("table-container").innerHTML = `
+      <div class="period-line" style="margin-bottom:0.5rem">${fundOnly}'s portfolio breakdown and changes</div>
+      <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-num" style="color:var(--muted)">#</th>
+            <th class="col-company" onclick="sort(0)">Company${arrow(0)}</th>
+            <th class="col-data num" onclick="sort(3)">% of Portfolio †${arrow(3)}</th>
+            <th class="col-data num" onclick="sort(2)">Shares †${arrow(2)}</th>
+            <th class="col-data num" onclick="sort(4)">Shares vs Prior Quarter †${arrow(4)}</th>
+            <th class="col-data num" onclick="sort(5)">Shares vs Prior Year †${arrow(5)}</th>
+            <th class="col-data num" onclick="sort(1)">Value †${arrow(1)}</th>
+            <th class="col-data num" onclick="sort(6)">Reported Price *${arrow(6)}</th>
+            <th class="col-data num">Option</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}${exitedHtml}${totalRow}</tbody>
+      </table>
+      </div>`;
+    document.getElementById("table-footnote").style.display = "block";
+
+    // ── Internal links — top holdings ────────────────────────────
+    // Show top 5 equity positions as linked tags for SEO internal linking
+    const topHoldings = equityRows
+      .filter(r => !isOption(r))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 8);
+
+    if (topHoldings.length > 0) {
+      const links = topHoldings.map(r => {
+        const ticker = tickerMap[r.cusip] || null;
+        const href   = ticker
+          ? `../stocks/${ticker}-hedge-fund-ownership.html`
+          : `stock.html?ticker=${r.cusip}`;
+        const label  = ticker || r.company;
+        return `<a href="${href}" style="font-family:var(--mono);font-size:0.72rem;color:#2563eb;text-decoration:none;padding:0.25rem 0.6rem;border:1px solid #dbeafe;border-radius:4px;background:#eff6ff;white-space:nowrap;">${label}</a>`;
+      }).join("");
+
+      const existing = document.getElementById("top-holdings-links");
+      if (existing) existing.remove();
+
+      const el = document.createElement("div");
+      el.id = "top-holdings-links";
+      el.style.cssText = "margin-top:1rem;display:flex;flex-wrap:wrap;gap:0.4rem;align-items:center;";
+      el.innerHTML = `<span style="font-family:var(--mono);font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-right:0.25rem;">Top Holdings:</span>${links}`;
+      document.getElementById("table-container").appendChild(el);
+    }
+  }
+
+  function sort(col) {
+    if (sortCol === col) sortAsc = !sortAsc;
+    else { sortCol = col; sortAsc = false; }
+    renderTable();
+  }
+
+
+
+  // ── Search ─────────────────────────────────────────────────────
+  let allFundsForSearch = [];
+  let stockIndexForSearch = {};
+  fetch(`${PAGES}/funds.json`).then(r => r.text()).then(t => { allFundsForSearch = JSON.parse(t); }).catch(() => {});
+  fetch(`${PAGES}/stock_index.json`).then(r => r.json()).then(d => { stockIndexForSearch = d.stocks || d; }).catch(() => {});
+
+  const searchInput   = document.getElementById("search");
+  const searchResults = document.getElementById("search-results");
+
+  searchInput.addEventListener("input", () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { searchResults.classList.remove("visible"); return; }
+
+    const fundMatches = allFundsForSearch
+      .filter(f => f.name.toLowerCase().includes(q))
+      .slice(0, 4)
+      .map(f => `
+        <a class="search-result-item" href="../fund.html?fund=${f.id}">
+          <span class="search-result-num">Fund</span>
+          <span>${f.name}</span>
+        </a>`);
+
+    const stockMatches = [];
+    for (const [key, stock] of Object.entries(stockIndexForSearch)) {
+      if (stockMatches.length >= 4) break;
+      if (
+        (stock.ticker && stock.ticker.toLowerCase().includes(q)) ||
+        (stock.name && stock.name.toLowerCase().includes(q))
+      ) {
+        stockMatches.push(`
+          <a class="search-result-item" href="../stock.html?ticker=${encodeURIComponent(key)}">
+            <span class="search-result-num">Stock</span>
+            <span>${stock.name}${stock.ticker ? ` <span style="color:#2563eb;font-weight:600">${stock.ticker}</span>` : ""}</span>
+          </a>`);
+      }
+    }
+
+    const all = [...fundMatches, ...stockMatches];
+    if (all.length === 0) {
+      searchResults.innerHTML = `<div class="no-results">No results found</div>`;
+    } else {
+      searchResults.innerHTML = all.join("");
+    }
+    searchResults.classList.add("visible");
+  });
+
+  document.addEventListener("click", e => {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.classList.remove("visible");
+    }
+  });
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2TBN6R2JZC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2TBN6R2JZC');
+</script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Valley Forge Capital Management 13F Holdings | Valley Forge Capital Management Portfolio | 13FAI</title>
+  <meta name="description" content="Track Valley Forge Capital Management's 13F SEC filings and portfolio holdings. See what Valley Forge Capital Management is buying and selling, position changes, and quarterly portfolio breakdown."/>
+  <meta property="og:title" content="Valley Forge Capital Management 13F Holdings | Valley Forge Capital Management Portfolio | 13FAI"/>
+  <meta property="og:description" content="Track Valley Forge Capital Management's 13F SEC filings and portfolio holdings. See what Valley Forge Capital Management is buying and selling, position changes, and quarterly portfolio breakdown."/>
+  <meta property="og:type" content="website"/>
+  <link rel="canonical" href="https://13fai.com/funds/valley-forge-capital-management-13f-holdings.html" id="canonical-url"/>
+  <script type="application/ld+json" id="json-ld">{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Valley Forge Capital Management 13F Holdings",
+  "description": "Track Valley Forge Capital Management's 13F SEC filings and portfolio holdings. See what Valley Forge Capital Management is buying and selling, position changes, and quarterly portfolio breakdown.",
+  "url": "https://13fai.com/funds/valley-forge-capital-management-13f-holdings.html",
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "isAccessibleForFree": true,
+  "creator": {
+    "@type": "Organization",
+    "name": "13FAI",
+    "url": "https://13fai.com"
+  },
+  "about": {
+    "@type": "Person",
+    "name": "Valley Forge Capital Management"
+  }
+}</script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --surface: #f0f0f0; --border: #dedede;
+      --text: #1a1917; --muted: #8a8780; --accent: #2d5a3d;
+      --accent-light: #eef4f0; --green: #2d6a3f; --red: #b91c1c;
+      --mono: 'DM Mono', monospace; --sans: 'DM Sans', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; }
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1rem 1.25rem; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; }
+    .brand { display: flex; flex-direction: column; gap: 0.1rem; }
+    .brand-name { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; color: var(--text); line-height: 1; }
+    .brand-sub { font-family: var(--mono); font-size: 0.62rem; color: var(--muted); letter-spacing: 0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 0.25rem; flex-wrap: wrap; }
+    .nav-link { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); text-decoration: none; padding: 0.35rem 0.6rem; border-radius: 4px; transition: color 0.15s, background 0.15s; white-space: nowrap; }
+    .nav-link:hover { color: var(--accent); background: var(--accent-light); }
+    .nav-link.active { color: var(--accent); font-weight: 500; }
+    .header-nav-row { margin-top: 0.6rem; border-top: 1px solid var(--border); padding-top: 0.6rem; }
+    @media (min-width: 700px) { header { padding: 1.5rem 3rem; } .header-nav-row { display: none; } .desktop-nav { display: flex !important; } }
+    @media (max-width: 699px) { .desktop-nav { display: none !important; } }
+    main { padding: 1.5rem 1.25rem 4rem; max-width: 1200px; margin: 0 auto; }
+    @media (min-width: 700px) { main { padding: 2.5rem 3rem; } }
+    .section-label { font-size: 1.4rem; letter-spacing: 0.02em; color: var(--text); font-weight: 500; margin-bottom: 0.4rem; }
+    .period-line { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-bottom: 0.75rem; }
+    .quarter-selector { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .q-btn {
+      font-family: var(--mono); font-size: 0.72rem; padding: 0.35rem 0.75rem;
+      border: 1px solid var(--border); border-radius: 4px; background: var(--surface);
+      color: var(--muted); cursor: pointer; transition: all 0.15s;
+    }
+    .q-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .q-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    thead tr { background: var(--bg); border-bottom: 1px solid var(--border); }
+    th { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; color: var(--muted); padding: 0.75rem 0.6rem; text-align: center; cursor: pointer; user-select: none; white-space: normal; line-height: 1.4; }
+    th.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    th.col-company { text-align: left; width: 22%; }
+    th.col-data { width: 9%; text-align: center; }
+    table { width: 100%; min-width: 700px; border-collapse: collapse; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow-x: auto; display: block; }
+    th:hover { color: var(--text); }
+    td { padding: 0.85rem 0.6rem; font-size: 0.875rem; border-bottom: 1px solid var(--border); vertical-align: middle; white-space: nowrap; text-align: center; }
+    td.col-num { width: 2.5rem; min-width: 2.5rem; max-width: 2.5rem; }
+    td.col-company { text-align: left; white-space: normal; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--accent-light); }
+    .company-name { font-weight: 500; color: var(--text); white-space: normal; }
+    .cusip { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); margin-top: 0.15rem; }
+    td.num { font-family: var(--mono); font-size: 0.82rem; padding: 0.85rem 0.6rem; text-align: center; }
+    .chg { font-family: var(--mono); font-size: 0.82rem; font-weight: 500; }
+    .chg.pos { color: var(--green); }
+    .chg.neg { color: var(--red); }
+    .chg.new { color: var(--green); font-size: 0.72rem; letter-spacing: 0.05em; }
+    .chg.exited { color: var(--red); font-size: 0.72rem; letter-spacing: 0.05em; }
+    .chg.na { color: var(--muted); }
+    .putcall { font-family: var(--mono); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; }
+    .putcall.put  { color: var(--red); }
+    .putcall.call { color: var(--green); }
+    tr.exited td { color: var(--muted); background: #f0ede8; }
+    tr.total-row td { background: var(--bg); border-top: 2px solid var(--border); font-family: var(--mono); font-size: 0.82rem; }
+    tr.total-row td.col-company { font-family: var(--sans); font-size: 0.875rem; }
+    /* ── Fund identity block ── */
+    .fund-identity { margin-bottom: 0.6rem; }
+    .fund-identity .section-label { margin-bottom: 0.3rem; }
+    /* ── Insights block ── */
+    .insights-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 0.9rem 0; margin-bottom: 1.25rem; }
+    .insights { font-size: 0.875rem; line-height: 1.75; color: var(--text); }
+    .insights ul { list-style: none; margin: 0; padding: 0; }
+    .insights li { position: relative; padding-left: 1rem; margin: 0; padding-top: 0.15rem; padding-bottom: 0.15rem; }
+    .insights li::before { content: "•"; position: absolute; left: 0; color: var(--muted); font-size: 0.75rem; top: 0.22rem; }
+    .ins-green { color: var(--green); font-weight: 500; }
+    .ins-red   { color: var(--red); font-weight: 500; }
+    /* ── Search (back in header) ── */
+    .search-wrap { position: relative; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 200px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    #search::placeholder { color: var(--muted); }
+    /* ── Fund name row with inline stats ── */
+    .fund-name-row { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.4rem; }
+    .fund-stats { display: flex; gap: 2rem; font-family: var(--mono); flex-shrink: 0; }
+    .fund-stats .stat-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); font-weight: 500; }
+    .fund-stats .stat-value { font-size: 1.1rem; font-weight: 500; margin-top: 0.1rem; }
+    /* ── Ticker link in insights ── */
+    .ins-ticker { color: #2563eb; font-weight: 600; font-family: var(--mono); font-size: 0.82rem; text-decoration: none; }
+    .ins-ticker:hover { text-decoration: underline; }
+    #search {
+      font-family: var(--sans); font-size: 0.875rem;
+      padding: 0.6rem 1rem 0.6rem 2.25rem;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--bg); color: var(--text);
+      width: 200px; outline: none; transition: border 0.15s;
+    }
+    #search:focus { border-color: var(--accent); background: var(--surface); }
+    @media (min-width: 700px) { #search { width: 300px; } }
+    #search::placeholder { color: var(--muted); }
+    .search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+    .search-results {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; overflow: hidden; z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08); display: none;
+    }
+    .search-results.visible { display: block; }
+    .search-result-item {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; text-decoration: none; color: var(--text);
+      font-size: 0.875rem; border-bottom: 1px solid var(--border); transition: background 0.1s;
+    }
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: var(--accent-light); }
+    .search-result-num { font-family: var(--mono); font-size: 0.7rem; color: var(--muted); min-width: 1.5rem; }
+    .no-results { padding: 0.75rem 1rem; font-size: 0.875rem; color: var(--muted); }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-top">
+    <div style="display:flex; align-items:center; gap:1.75rem;">
+      <div class="brand">
+        <a class="brand-name" href="../index.html">13FAI</a>
+        <span class="brand-sub">ai-powered hedge fund tracker</span>
+      </div>
+      <nav class="nav-links desktop-nav">
+        <a class="nav-link" href="../index.html">Funds</a>
+        <a class="nav-link" href="../managers.html">Manager Bios</a>
+        <a class="nav-link" href="../top-holdings.html">Top Holdings</a>
+        <a class="nav-link" href="../hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+        <a class="nav-link" href="../portfolio-overlap.html">Fund Comparison</a>
+        <a class="nav-link" href="../filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="../congress.html">Congressional Trades</a>
+        <a class="nav-link" href="../insider-activity.html">Insider Trading</a>
+        <a class="nav-link" href="../faq.html">FAQ</a>
+        <a class="nav-link" href="../about.html">About</a>
+      </nav>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">⌕</span>
+      <input type="text" id="search" placeholder="Search funds, managers or stocks..." autocomplete="off"/>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+  <div class="header-nav-row">
+    <nav class="nav-links">
+      <a class="nav-link" href="../index.html">Funds</a>
+      <a class="nav-link" href="../managers.html">Manager Bios</a>
+      <a class="nav-link" href="../top-holdings.html">Top Holdings</a>
+      <a class="nav-link" href="../hedge-fund-activity.html">Consensus Buys &amp; Sells</a>
+      <a class="nav-link" href="../portfolio-overlap.html">Fund Comparison</a>
+      <a class="nav-link" href="../filing-calendar.html">13F Filing Calendar</a>
+        <a class="nav-link" href="../congress.html">Congressional Trades</a>
+      <a class="nav-link" href="../insider-activity.html">Insider Trading</a>
+      <a class="nav-link" href="../faq.html">FAQ</a>
+      <a class="nav-link" href="../about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="fund-identity">
+    <div class="fund-name-row">
+      <div style="display:flex;align-items:center;gap:0.9rem;">
+        <div id="fund-avatar" style="width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:0.85rem;font-weight:500;color:#fff;flex-shrink:0;border:1px solid var(--border);overflow:hidden;">
+          <img id="fund-avatar-img" src="" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:none;"/>
+          <span id="fund-avatar-initials"></span>
+        </div>
+        <div>
+          <h1 class="section-label" id="fund-name" style="font-size:1.4rem;font-weight:500;letter-spacing:0.02em;margin:0">Loading...</h1>
+          <div id="fund-manager" style="font-family:var(--mono); font-size:0.78rem; margin-top:0.2rem;"></div>
+        </div>
+      </div>
+      <div class="fund-stats">
+        <div>
+          <div class="stat-label">Long Stock Value †</div>
+          <div class="stat-value" style="color:var(--accent)" id="total-value">—</div>
+          <div id="total-value-chg" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.15rem;"></div>
+          <div id="total-value-chg-yr" style="font-family:var(--mono); font-size:0.75rem; font-weight:600; margin-top:0.1rem;"></div>
+        </div>
+        <div>
+          <div class="stat-label">Positions</div>
+          <div class="stat-value" id="total-positions">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="period-line" id="period" style="margin-top:0.35rem; margin-bottom:0.5rem"></div>
+    <div class="quarter-selector" id="quarter-selector"></div>
+  </div>
+  <div class="insights-wrap">
+    <div class="insights" id="insights"></div>
+  </div>
+  <div id="table-container"><div class="loading">Fetching holdings data...</div></div>
+  <div id="table-footnote" style="display:none; margin-top:0.75rem; font-family:'DM Mono',monospace; font-size:0.68rem; color:#8a8780; line-height:1.8;">
+    * Reported price is not an actual purchase or sale price. It is the price as of the last portfolio date.<br/>
+    † Long stock value, share counts, and period-over-period changes exclude options positions (PUT/CALL), which are shown in the Option column for reference only.
+  </div>
+</main>
+
+<footer style="text-align:center; padding:2rem; font-family:'DM Mono',monospace; font-size:0.7rem; color:#8a8780; border-top:1px solid #e8e6e1; margin-top:2rem;">
+  For informational purposes only · Not investment advice · <a href="../disclaimer.html">Full Disclaimer</a>
+</footer>
+
+<script>
+  const PAGES = "..";
+
+  // Static fund page slug map — mirrors generate_fund_pages.py slug logic
+  const FUND_SLUG_OVERRIDES = {
+    pershing:              'pershing-square-13f-holdings',
+    greenlight:            'greenlight-capital-13f-holdings',
+    longleaf:              'longleaf-partners-13f-holdings',
+    sequoia:               'sequoia-fund-13f-holdings',
+    ariel_focus:           'ariel-investments-13f-holdings',
+    mairs_power:           'mairs-and-power-13f-holdings',
+    rv_capital:            'rv-capital-13f-holdings',
+    tci:                   'tci-fund-13f-holdings',
+    daily_journal:         'daily-journal-13f-holdings',
+    situational_awareness: 'situational-awareness-13f-holdings',
+  };
+
+  function getFundSlug(fid, fundName) {
+    if (FUND_SLUG_OVERRIDES[fid]) return FUND_SLUG_OVERRIDES[fid];
+    const m = fundName.match(/^(.+?)\s*\(/);
+    const name = m ? m[1].trim() : fundName;
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return slug + '-13f-holdings';
+  }
+
+  const fundId = "valley_forge";
+
+  let FUND_CONFIG   = null;
+  let allQuarters   = [];
+  let showQuarters  = [];
+  let csvCache      = {};  // label -> holdings array (populated from per-fund JSON)
+  let metaCache     = {};  // label -> {filed, period}
+  let tickerMap     = {};
+  let priceMap      = {};
+  let activeQ       = null;
+  let sortCol       = 3;
+  let sortAsc       = false;
+
+  // ── Bootstrap — single fetch for per-fund JSON ────────────────
+  Promise.all([
+    fetch(`${PAGES}/funds.json`).then(r => r.text()).then(JSON.parse),
+    fetch(`${PAGES}/cusip_to_ticker.json`).then(r => r.text()).then(JSON.parse).catch(() => ({})),
+    fetch(`${PAGES}/prices.json`).then(r => r.text()).then(JSON.parse).catch(() => ({})),
+    fetch(`${PAGES}/data/${fundId}.json`).then(r => r.json())
+  ]).then(([funds, tickers, prices, fundJson]) => {
+      tickerMap = tickers;
+      priceMap  = prices;
+      const f = funds.find(x => x.id === fundId);
+      if (!f) {
+        document.getElementById("table-container").innerHTML =
+          `<div class="error">Fund "${fundId}" not found in funds.json</div>`;
+        return;
+      }
+      FUND_CONFIG = f;
+
+      const nameMatch   = f.name.match(/^(.+?)\s*\((.+?)\)$/);
+      const fundOnly    = nameMatch ? nameMatch[1].trim() : f.name;
+      const managerOnly = nameMatch ? nameMatch[2].trim() : f.name;
+      FUND_CONFIG._fundOnly    = fundOnly;
+      FUND_CONFIG._managerOnly = managerOnly;
+
+      // Show fund name as H1, manager name as subtitle (link to bio page if available)
+      document.getElementById("fund-name").textContent = fundOnly;
+      const bioSlug = f.bio_slug || null;
+      const managerEl = document.getElementById("fund-manager");
+      const avatarEl  = document.getElementById("fund-avatar");
+
+      // Special case: Berkshire has two managers (Abel + Buffett)
+      if (fundId === "berkshire") {
+        managerEl.innerHTML =
+          `<a href="../greg-abel-portfolio.html" style="color:#2563eb;text-decoration:none;font-size:0.95rem;font-family:var(--mono);">Greg Abel (see Bio)</a>` +
+          `<br><a href="../warren-buffett-portfolio.html" style="color:#2563eb;text-decoration:none;font-size:0.95rem;font-family:var(--mono);">Warren Buffett (see Bio)</a>`;
+        const avatarImg      = document.getElementById("fund-avatar-img");
+        const avatarInitials = document.getElementById("fund-avatar-initials");
+        avatarInitials.textContent = "BH";
+        avatarImg.alt = "Berkshire Hathaway";
+        avatarImg.src = `${PAGES}/images/berkshire_abel.jpg`;
+        avatarImg.onload  = () => { avatarImg.style.display = "block"; avatarInitials.style.display = "none"; };
+        avatarImg.onerror = () => { avatarImg.style.display = "none";  avatarInitials.style.display = ""; };
+      } else if (bioSlug) {
+        managerEl.innerHTML = `<a href="../${bioSlug}.html" style="color:#2563eb !important;text-decoration:none;font-size:0.95rem;font-family:var(--mono);">${managerOnly} (see Bio)</a>`;
+        // Avatar — load image, fallback to initials
+        const avatarImg      = document.getElementById("fund-avatar-img");
+        const avatarInitials = document.getElementById("fund-avatar-initials");
+        const initials = fundOnly.split(/\s+/).slice(0, 2).map(w => w[0]).join("").toUpperCase();
+        avatarInitials.textContent = initials;
+        avatarImg.alt = fundOnly;
+        avatarImg.src = `${PAGES}/images/${fundId}.jpg`;
+        avatarImg.onload  = () => { avatarImg.style.display = "block"; avatarInitials.style.display = "none"; };
+        avatarImg.onerror = () => { avatarImg.style.display = "none";  avatarInitials.style.display = ""; };
+      } else {
+        managerEl.style.color = 'var(--muted)';
+        managerEl.style.fontSize = '0.95rem';
+        managerEl.textContent = managerOnly;
+        // No bio — hide avatar entirely
+        if (avatarEl) avatarEl.style.display = 'none';
+      }
+
+      // Title set here as fallback; renderTable will update with quarter
+      document.title = `${fundOnly} 13F Holdings | ${managerOnly} Portfolio`;
+
+      // Populate caches from per-fund JSON — no further fetches needed
+      const quarters = fundJson.quarters || {};
+      allQuarters = Object.keys(quarters).sort().reverse();
+      for (const [label, qdata] of Object.entries(quarters)) {
+        csvCache[label]  = (qdata.holdings || []).filter(r => r.cusip || r.company);
+        metaCache[label] = { filed: qdata.filed || "", period: qdata.period || "" };
+      }
+
+      if (allQuarters.length === 0) {
+        document.getElementById("table-container").innerHTML =
+          `<div class="error">No data found. Run the workflow to fetch holdings.</div>`;
+        return;
+      }
+
+      showQuarters = allQuarters.slice(0, 4);
+      activeQ      = showQuarters[0];
+
+      document.getElementById("quarter-selector").innerHTML = showQuarters.map(q => {
+        const m = q.match(/^(\d{4})Q(\d)$/);
+        const label = m ? `Q${m[2]} ${m[1]}` : q;
+        return `<button class="q-btn${q === activeQ ? " active" : ""}" onclick="switchQuarter('${q}')">${label}</button>`;
+      }).join("");
+
+      renderTable();
+    })
+    .catch(e => {
+      document.getElementById("table-container").innerHTML =
+        `<div class="error">Failed to load fund data: ${e.message}</div>`;
+    });
+
+  // ── Quarter switcher — all data already loaded, just re-render ──
+  function switchQuarter(q) {
+    activeQ = q;
+    document.querySelectorAll(".q-btn").forEach(b =>
+      b.classList.toggle("active", b.textContent === q)
+    );
+    renderTable();
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function fmtDate(dateStr) {
+    if (!dateStr) return "";
+    const [year, month, day] = dateStr.split("-");
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return `${months[parseInt(month)-1]} ${parseInt(day)}, ${year}`;
+  }
+
+  function quarterToDate(q) {
+    const [year, qn] = q.split("Q");
+    const ends = { "1": "Mar 31", "2": "Jun 30", "3": "Sep 30", "4": "Dec 31" };
+    return `${ends[qn]}, ${year}`;
+  }
+
+  function getChange(currentShares, oldRows, cusip, company) {
+    if (!oldRows) return null;
+    let old = cusip ? oldRows.find(r => r.cusip === cusip) : null;
+    if (!old) old = oldRows.find(r => r.company === company);
+    if (!old)   return "NEW";
+    if (currentShares === 0) return "EXITED";
+    return ((currentShares - old.shares) / old.shares) * 100;
+  }
+
+  function fmtChg(val) {
+    if (val === null)        return `<span class="chg na">—</span>`;
+    if (val === "NEW")       return `<span class="chg new">NEW</span>`;
+    if (val === "EXITED")    return `<span class="chg exited">EXITED</span>`;
+    if (Math.abs(val) < 0.005) return `<span class="chg na">—</span>`;
+    const sign = val >= 0 ? "+" : "";
+    const cls  = val >= 0 ? "pos" : "neg";
+    return `<span class="chg ${cls}">${sign}${val.toFixed(2)}%</span>`;
+  }
+
+  function fmtShares(n) {
+    if (!n || n === 0) return "—";
+    let scaled, suffix;
+    if (n >= 1e6)      { scaled = n / 1e6; suffix = "M"; }
+    else if (n >= 1e3) { scaled = n / 1e3; suffix = "K"; }
+    else               { return n.toString(); }
+    const mag = Math.floor(Math.log10(Math.abs(scaled)));
+    const factor = Math.pow(10, 2 - mag);
+    const rounded = Math.round(scaled * factor) / factor;
+    const str = rounded % 1 === 0 ? rounded.toString() : rounded.toPrecision(3).replace(/\.?0+$/, "");
+    return str + suffix;
+  }
+
+  // Total row shares: always 1 decimal place
+  function fmtSharesTotal(n) {
+    if (!n || n === 0) return "—";
+    if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
+    if (n >= 1e3) return (n / 1e3).toFixed(1) + "K";
+    return n.toString();
+  }
+
+  // ── Smart insights ────────────────────────────────────────────
+  function renderInsights(rows, prev1, mult, tv, activeQ) {
+    const el = document.getElementById("insights");
+    if (!el) return;
+
+    const fullName  = FUND_CONFIG.name || "";
+    // First word of fund name (everything before first space or parenthesis)
+    const shortName = fullName.split(/[\s(]/)[0] || fullName;
+
+    const [qYear, qNum] = activeQ.split("Q");
+    const qLabel = `Q${qNum} ${qYear}`;
+
+    // Ticker link — ticker only, fallback to company name
+    const stockLink = r => {
+      const t = tickerMap[r.cusip] || null;
+      const display = t || r.company;
+      const href = t
+        ? `stock.html?ticker=${encodeURIComponent(t)}`
+        : `stock.html?cusip=${encodeURIComponent(r.cusip)}`;
+      return `<a class="ins-ticker" href="${href}">${display}</a>`;
+    };
+    const stockLinkFromCusip = (cusip, company) => {
+      const t = tickerMap[cusip] || null;
+      const display = t || company;
+      const href = t
+        ? `stock.html?ticker=${encodeURIComponent(t)}`
+        : `stock.html?cusip=${encodeURIComponent(cusip)}`;
+      return `<a class="ins-ticker" href="${href}">${display}</a>`;
+    };
+
+    // Smart rounding: whole number unless that rounds to 0, then 1 decimal
+    const smartRound = v => {
+      const r = Math.round(v);
+      if (r === 0 && Math.abs(v) >= 0.05) return v.toFixed(1);
+      return r.toString();
+    };
+    const pct  = (val, total) => {
+      if (total <= 0) return "0.0";
+      const p = (val * mult / total) * 100;
+      return smartRound(p);
+    };
+    // Option tag — appended directly after ticker link
+    const optTag = pc => {
+      if (!pc) return "";
+      const cls = pc.toLowerCase() === "put" ? "ins-red" : "ins-green";
+      return ` <span class="${cls}">${pc.toUpperCase()}</span>`;
+    };
+    const prev1tv = prev1 ? prev1.reduce((s, r) => s + r.value, 0) * mult : 0;
+
+    const active   = rows.filter(r => r.shares > 0);
+    const byWeight = [...active].sort((a, b) => (b.value * mult) - (a.value * mult));
+
+    const sentences = [];
+
+    // ── 1. Concentration / top positions ─────────────────────────
+    if (byWeight.length >= 3) {
+      const w = r => tv > 0 ? (r.value * mult / tv) * 100 : 0;
+      const top3  = byWeight.slice(0, 3);
+      const top5  = byWeight.slice(0, Math.min(5, byWeight.length));
+      const top3w = top3.reduce((s, r) => s + w(r), 0);
+      const top5w = top5.reduce((s, r) => s + w(r), 0);
+
+      // Determine tier — either top3 or top5 can trigger the higher tier
+      let tier;
+      if      (top3w >= 50 || top5w >= 65) tier = "highly concentrated";
+      else if (top3w >= 35 || top5w >= 50) tier = "moderately concentrated";
+      else if (top3w >= 25 || top5w >= 35) tier = "moderately diversified";
+      else                                  tier = "highly diversified";
+
+      const fmt3  = top3.map(r => `${stockLink(r)}${optTag(r.putcall)} (<b>${smartRound(w(r))}%</b>)`);
+      const pos3  = `${fmt3[0]}, ${fmt3[1]}, and ${fmt3[2]}`;
+      const t3str = `<b>${smartRound(top3w)}%</b>`;
+      const t5str = byWeight.length >= 5 ? ` Top 5 holdings total <b>${smartRound(top5w)}%</b>.` : "";
+      sentences.push(`${shortName} is ${tier} with its largest investments in ${pos3}, totaling ${t3str}.${t5str}`);
+    }
+
+    if (prev1) {
+      // ── 2. New positions — weight >= 1%, sorted by current weight, top 5 ──
+      const newPos = active
+        .filter(r => {
+          const isNew = !prev1.find(p =>
+            (r.cusip && p.cusip === r.cusip && (p.putcall || "") === (r.putcall || "")) ||
+            ((!r.cusip || !p.cusip) && p.company === r.company && (p.putcall || "") === (r.putcall || ""))
+          );
+          return isNew && parseFloat(pct(r.value, tv)) >= 1;
+        })
+        .sort((a, b) => (b.value * mult) - (a.value * mult))
+        .slice(0, 5);
+
+      if (newPos.length === 0) {
+        sentences.push(`${shortName} made no new investments in ${qLabel}.`);
+      } else {
+        const repPrice = r => r.shares > 0
+          ? "$" + (r.value * mult / r.shares).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : null;
+
+        // rank = 1-based position by portfolio weight across all current holdings
+        const rank = r => byWeight.findIndex(x => (x.cusip && x.cusip === r.cusip) || x.company === r.company) + 1;
+
+        // Build metadata for each new position
+        const enriched = newPos.map(r => {
+          const w        = parseFloat(pct(r.value, tv));
+          const isSig    = w > 3;
+          const rk       = rank(r);
+          const rankNote = rk >= 1 && rk <= 5  ? ", now a top 5 holding"
+                         : rk >= 6 && rk <= 10 ? ", now a top 10 holding"
+                         : "";
+          // rank note goes INSIDE the parenthesis after the %
+          const inner = `<b>${pct(r.value, tv)}%</b>${rankNote}`;
+          return { r, isSig, inner };
+        });
+
+        const sigList    = enriched.filter(x => x.isSig);
+        const nonSigList = enriched.filter(x => !x.isSig);
+
+        // Helper: join an array of strings with commas and "and"
+        const joinList = arr => arr.length === 1 ? arr[0]
+          : arr.slice(0, -1).join(", ") + " and " + arr[arr.length - 1];
+
+        if (newPos.length === 1) {
+          // Single position
+          const { r, isSig, inner } = enriched[0];
+          const p       = repPrice(r);
+          const priceStr = p ? `, reported price * was <b>${p}</b>` : "";
+          const sigWord  = isSig ? "a significant new position" : "a new stake";
+          sentences.push(`${shortName} initiated ${sigWord} in ${stockLink(r)}${optTag(r.putcall)} (${inner})${priceStr}.`);
+        } else if (sigList.length === 0) {
+          // None significant
+          const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          sentences.push(`${shortName} opened new stakes in ${joinList(strs)} in ${qLabel}.`);
+        } else if (nonSigList.length === 0) {
+          // All significant
+          const strs = enriched.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          sentences.push(`${shortName} initiated significant new positions in ${joinList(strs)} in ${qLabel}.`);
+        } else {
+          // Mixed — group sig together, non-sig together
+          const sigStrs    = sigList.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          const nonSigStrs = nonSigList.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (${x.inner})`);
+          const sigPhrase    = sigList.length === 1
+            ? `a significant new position in ${sigStrs[0]}`
+            : `significant new positions in ${joinList(sigStrs)}`;
+          const nonSigPhrase = nonSigList.length === 1
+            ? `a new stake in ${nonSigStrs[0]}`
+            : `new stakes in ${joinList(nonSigStrs)}`;
+          sentences.push(`${shortName} initiated ${sigPhrase} and ${nonSigPhrase} in ${qLabel}.`);
+        }
+      }
+
+      // Tier helpers — shared by increases and decreases
+      const incTier = sp => {
+        if (sp > 100) return 0;       // aggressive
+        if (sp >= 50) return 1;       // substantial
+        if (sp >= 20) return 2;       // meaningful
+        if (sp >= 5)  return 3;       // incremental
+        return -1;                    // omit
+      };
+      const incLabel = tier => ["aggressively added to its position in", "substantially added to its stake in", "meaningfully increased its position in", "bought more"][tier];
+      const decLabel = tier => ["aggressively reduced its position in", "substantially reduced its position in", "meaningfully reduced its position in", "trimmed"][tier];
+
+      // Helper: join list with commas and "and"
+      const joinList2 = arr => arr.length === 1 ? arr[0]
+        : arr.slice(0, -1).join(", ") + " and " + arr[arr.length - 1];
+
+      // ── 3. Increases — detect: shares_now > shares_prev, omit if sharePct < 5%
+      //    rank: abs(share_change) × price_at_filing, limit 5
+      //    group by tier in one sentence ──────────────────────────
+      const increases = active.map(r => {
+        const old = prev1.find(p =>
+          (r.cusip && p.cusip === r.cusip && (p.putcall || "") === (r.putcall || "")) ||
+          ((!r.cusip || !p.cusip) && p.company === r.company && (p.putcall || "") === (r.putcall || ""))
+        );
+        if (!old || old.shares <= 0 || r.shares <= old.shares) return null;
+        const sharePct     = (r.shares - old.shares) / old.shares * 100;
+        const tier         = incTier(sharePct);
+        if (tier === -1) return null;
+        const priceNow     = r.shares > 0 ? (r.value * mult) / r.shares : 0;
+        const dollarImpact = (r.shares - old.shares) * priceNow;
+        return { r, sharePct: parseFloat(smartRound(sharePct)), tier, dollarImpact };
+      }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 5);
+
+      if (increases.length > 0) {
+        // Group by tier (preserving dollar-impact rank within each tier)
+        const tierGroups = [0, 1, 2, 3].map(t => increases.filter(x => x.tier === t));
+        const phrases = tierGroups
+          .filter(g => g.length > 0)
+          .map(g => {
+            const label = incLabel(g[0].tier);
+            const tickers = joinList2(g.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (<span class="ins-green"><b>+${x.sharePct}%</b></span>)`));
+            return `${label} ${tickers}`;
+          });
+        sentences.push(`${shortName} ${joinList2(phrases)} vs the prior quarter.`);
+      }
+
+      // ── 4. Decreases — detect: shares_now < shares_prev, omit if abs(sharePct) < 5%
+      //    rank: abs(share_change) × price_at_filing, limit 5
+      //    group by tier in one sentence ──────────────────────────
+      const trims = active.map(r => {
+        const old = prev1.find(p =>
+          (r.cusip && p.cusip === r.cusip && (p.putcall || "") === (r.putcall || "")) ||
+          ((!r.cusip || !p.cusip) && p.company === r.company && (p.putcall || "") === (r.putcall || ""))
+        );
+        if (!old || old.shares <= 0 || r.shares >= old.shares) return null;
+        const sharePct     = (r.shares - old.shares) / old.shares * 100; // negative
+        const tier         = incTier(Math.abs(sharePct));
+        if (tier === -1) return null;
+        const priceNow     = r.shares > 0 ? (r.value * mult) / r.shares : 0;
+        const dollarImpact = (old.shares - r.shares) * priceNow;
+        return { r, sharePct: parseFloat(smartRound(sharePct)), tier, dollarImpact };
+      }).filter(Boolean).sort((a, b) => b.dollarImpact - a.dollarImpact).slice(0, 5);
+
+      if (trims.length > 0) {
+        const tierGroups = [0, 1, 2, 3].map(t => trims.filter(x => x.tier === t));
+        const phrases = tierGroups
+          .filter(g => g.length > 0)
+          .map(g => {
+            const label = decLabel(g[0].tier);
+            const tickers = joinList2(g.map(x => `${stockLink(x.r)}${optTag(x.r.putcall)} (<span class="ins-red"><b>${x.sharePct}%</b></span>)`));
+            return `${label} ${tickers}`;
+          });
+        sentences.push(`${shortName} ${joinList2(phrases)} vs the prior quarter.`);
+      }
+
+      // ── 5. Exits — sorted by prior quarter weight, top 2
+      //    display: prior quarter weight%
+      //    omit if prior quarter weight < 1%
+      //    format: "notable exit was / notable exits were" ──────────
+      const exits = prev1
+        .filter(p => {
+          const isMissing = !active.find(r =>
+            (p.cusip && r.cusip === p.cusip && (r.putcall || "") === (p.putcall || "")) ||
+            ((!p.cusip || !r.cusip) && r.company === p.company && (r.putcall || "") === (p.putcall || ""))
+          );
+          return isMissing && p.shares > 0 && parseFloat(pct(p.value, prev1tv)) >= 1;
+        })
+        .sort((a, b) => (b.value * mult) - (a.value * mult));
+
+      if (exits.length === 0) {
+        sentences.push(`${shortName} had no exits in ${qLabel}.`);
+      } else {
+        const fmt = p => `${stockLinkFromCusip(p.cusip, p.company)}${optTag(p.putcall)} (<span class="ins-red"><b>${pct(p.value, prev1tv)}%</b></span>)`;
+        const exitStr = joinList2(exits.map(fmt));
+        if (exits.length === 1) {
+          sentences.push(`${shortName} exited ${exitStr} in ${qLabel}.`);
+        } else {
+          sentences.push(`${shortName} exited ${exitStr} in ${qLabel}.`);
+        }
+      }
+
+    } else {
+      sentences.push(`No prior quarter data available to compare for ${qLabel}.`);
+    }
+
+    el.innerHTML = `<ul>${sentences.map(s => `<li>${s}</li>`).join("")}</ul>`;
+  }
+
+  // ── Group rows by CUSIP (fall back to company name) ───────────
+  function groupByCompany(rows) {
+    const map = new Map();
+    for (const r of rows) {
+      // Key by cusip+putcall so equity and option rows stay separate
+      const key = (r.cusip || r.company) + "|" + (r.putcall || "");
+      if (map.has(key)) {
+        const g = map.get(key);
+        g.shares += r.shares;
+        g.value  += r.value;
+      } else {
+        map.set(key, { ...r });
+      }
+    }
+    return Array.from(map.values()).filter(r => r.shares > 0);
+  }
+
+  function isOption(r) {
+    return r.putcall && (r.putcall.toUpperCase() === "PUT" || r.putcall.toUpperCase() === "CALL");
+  }
+
+  // ── Render ────────────────────────────────────────────────────
+  function renderTable() {
+    const mult  = (FUND_CONFIG && FUND_CONFIG.value_multiplier) ? FUND_CONFIG.value_multiplier : 1;
+    const rows  = groupByCompany(csvCache[activeQ] || []);
+    // Equity-only rows for AUM and weight calculations (exclude PUT/CALL)
+    const equityRows = rows.filter(r => !isOption(r));
+    const idx   = allQuarters.indexOf(activeQ);
+    const prev1 = idx + 1 < allQuarters.length ? groupByCompany(csvCache[allQuarters[idx + 1]] || []) : null;
+    const prev1Equity = prev1 ? prev1.filter(r => !isOption(r)) : null;
+    // Prior year: find the quarter exactly 1 year back (same Q, year-1)
+    const [activeYear, activeQn] = activeQ.split("Q");
+    const prevYearLabel = (parseInt(activeYear) - 1) + "Q" + activeQn;
+    const prev4 = allQuarters.includes(prevYearLabel) ? groupByCompany(csvCache[prevYearLabel] || []) : null;
+    const prev4Equity = prev4 ? prev4.filter(r => !isOption(r)) : null;
+
+    // Long stock value uses equity-only rows (excludes options)
+    const tv = equityRows.reduce((s, r) => s + r.value, 0) * mult;
+
+    renderInsights(equityRows, prev1Equity, mult, tv, activeQ);
+
+    document.getElementById("total-value").textContent =
+      tv >= 1e9
+        ? "$" + (tv / 1e9).toFixed(2) + "B"
+        : "$" + tv.toLocaleString("en-US", { maximumFractionDigits: 0 });
+    document.getElementById("total-positions").textContent = equityRows.length;
+
+    // Portfolio value % change vs prior quarter
+    const tvChgEl   = document.getElementById("total-value-chg");
+    const tvChgYrEl = document.getElementById("total-value-chg-yr");
+    if (prev1Equity && prev1Equity.length > 0) {
+      const tv1 = prev1Equity.reduce((s, r) => s + r.value, 0) * mult;
+      if (tv1 > 0) {
+        const chg = Math.round(((tv - tv1) / tv1) * 100);
+        const sign = chg >= 0 ? "+" : "";
+        const color = chg >= 0 ? "var(--green)" : "var(--red)";
+        tvChgEl.innerHTML = `<span style="color:${color}; cursor:default; margin-left:0.75rem" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">${sign}${chg}% QoQ</span>`;
+      } else {
+        tvChgEl.textContent = "";
+      }
+    } else {
+      tvChgEl.innerHTML = `<span style="color:var(--muted); cursor:default; margin-left:0.75rem" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">— QoQ</span>`;
+    }
+    if (prev4Equity && prev4Equity.length > 0) {
+      const tv4 = prev4Equity.reduce((s, r) => s + r.value, 0) * mult;
+      if (tv4 > 0) {
+        const chgYr = Math.round(((tv - tv4) / tv4) * 100);
+        const signYr = chgYr >= 0 ? "+" : "";
+        const colorYr = chgYr >= 0 ? "var(--green)" : "var(--red)";
+        tvChgYrEl.innerHTML = `<span style="color:${colorYr}; cursor:default; margin-left:0.75rem" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">${signYr}${chgYr}% YoY</span>`;
+      } else {
+        tvChgYrEl.textContent = "";
+      }
+    } else {
+      tvChgYrEl.innerHTML = `<span style="color:var(--muted); cursor:default; margin-left:0.75rem" title="Change in reported 13F holdings value vs prior quarter and year. Includes market movement and position changes.">— YoY</span>`;
+    }
+    const meta = metaCache[activeQ];
+    const filedStr = meta ? ` <span style="font-weight:400">(Filed ${fmtDate(meta.filed)})</span>` : "";
+    document.getElementById("period").innerHTML =
+      `Holdings as of ${quarterToDate(activeQ)}${filedStr}`;
+
+    // SEO meta tags
+    const fundOnly    = FUND_CONFIG._fundOnly    || FUND_CONFIG.name;
+    const managerOnly = FUND_CONFIG._managerOnly || FUND_CONFIG.name;
+    const qLabel      = activeQ.replace("Q", " Q");
+    const qShort      = `Q${activeQ.split("Q")[1]} ${activeQ.split("Q")[0]}`; // "Q4 2025"
+    document.title = `${fundOnly} 13F Holdings ${qShort} | ${managerOnly} Portfolio`;
+    const desc = `Track ${managerOnly}'s 13F holdings for ${qShort}. See what ${fundOnly} is buying and selling, position changes, and portfolio breakdown.`;
+    document.querySelector('meta[name="description"]').setAttribute("content", desc);
+    document.querySelector('meta[property="og:title"]').setAttribute("content", document.title);
+    document.querySelector('meta[property="og:description"]').setAttribute("content", desc);
+    // Canonical URL — points to static fund page
+    const canonicalEl = document.getElementById("canonical-url");
+    const fundSlug = getFundSlug(fundId, FUND_CONFIG.name);
+    const staticUrl = `https://13fai.com/funds/${fundSlug}.html`;
+    if (canonicalEl) canonicalEl.setAttribute("href", staticUrl);
+    // JSON-LD
+    const jsonLdEl = document.getElementById("json-ld");
+    if (jsonLdEl) jsonLdEl.textContent = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Dataset",
+      "name": `${fundOnly} 13F Holdings ${qShort}`,
+      "description": desc,
+      "url": staticUrl,
       "creator": { "@type": "Organization", "name": "13FAI", "url": "https://13fai.com" },
       "about": { "@type": "Person", "name": managerOnly }
     });
