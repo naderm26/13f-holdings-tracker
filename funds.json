@@ -18,6 +18,12 @@
     "bio_slug": "ako-capital-portfolio"
   },
   {
+    "id": "altimeter",
+    "name": "Altimeter Capital (Brad Gerstner)",
+    "cik": "0001541617",
+    "bio_slug": "brad-gerstner-portfolio"
+  },
+  {
     "id": "altarock",
     "name": "AltaRock Partners",
     "cik": "0001631014"
@@ -344,7 +350,7 @@
     "cik": "0002045724",
     "value_multiplier": 1,
     "bio_slug": "leopold-aschenbrenner-portfolio"
-  },  
+  },
   {
     "id": "sound_shore",
     "name": "Sound Shore Management (Harry Burn)",
