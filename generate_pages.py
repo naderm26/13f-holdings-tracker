@@ -248,7 +248,7 @@ def render_page(manager, live, all_managers):
       <div class="strip-stat"><div class="s-label">Net Worth</div><div class="s-value">{net_worth}</div></div>
     </div>"""
 
-    fund_url = get_fund_url(fund_id, manager.get("name", ""))
+    fund_url = get_fund_url(fund_id, fund_name)
 
     return f"""<!DOCTYPE html>
 <html lang="en">
