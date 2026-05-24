@@ -321,6 +321,47 @@
     ]
   },
   {
+    "manager_name": "Brad Gerstner",
+    "slug": "brad-gerstner-portfolio",
+    "fund_id": "altimeter",
+    "fund_name": "Altimeter Capital",
+    "fund_founded": 2008,
+    "style": "Growth / AI",
+    "typical_positions": "10\u201320",
+    "net_worth": "$3B+",
+    "initials": "BG",
+    "role": "Founder & CEO",
+    "tags": [
+      "Technology",
+      "Growth Investing",
+      "AI Infrastructure",
+      "Activist"
+    ],
+    "primary_tag": "Technology",
+    "bio": [
+      "Brad Gerstner is the founder and CEO of Altimeter Capital, a Boston-based technology-focused hedge fund and venture capital firm he founded in 2008. Gerstner is one of Silicon Valley's most prominent technology investors, known for combining public market investing with early-stage venture bets in the same companies \u2014 a strategy that gives Altimeter an information edge across the full lifecycle of technology businesses.",
+      "Gerstner gained widespread attention for his early and large bet on Snowflake, which became one of the most successful technology IPOs in history. He has been a vocal advocate for AI infrastructure investment and was an early backer of companies at the intersection of cloud computing and artificial intelligence. In 2022 he published an open letter to Meta's board calling for significant cost cuts and refocused investment, months before Mark Zuckerberg announced his 'Year of Efficiency' \u2014 a move widely credited with helping catalyze Meta's dramatic turnaround."
+    ],
+    "philosophy_quote": "We invest at the intersection of technology and culture change \u2014 backing founders who are building the defining companies of the next decade.",
+    "notable_trades": [
+      {
+        "badge": "WIN",
+        "title": "Snowflake IPO (2020)",
+        "desc": "Altimeter was one of the largest investors in Snowflake's 2020 IPO, holding both public and private stakes. The position generated exceptional returns as Snowflake became the largest software IPO in history at the time."
+      },
+      {
+        "badge": "WIN",
+        "title": "Meta Open Letter (2022)",
+        "desc": "Gerstner published a widely-read open letter urging Meta to cut headcount by 20% and refocus on core products. Meta subsequently announced sweeping layoffs and its stock tripled from its lows over the following year."
+      },
+      {
+        "badge": "CURRENT",
+        "title": "AI Infrastructure Thesis",
+        "desc": "Altimeter has built concentrated positions around the AI infrastructure buildout, including hyperscalers and enabling software platforms, reflecting Gerstner's conviction that AI represents a multi-decade investment cycle."
+      }
+    ]
+  },
+  {
     "manager_name": "David Tepper",
     "slug": "david-tepper-portfolio",
     "fund_id": "appaloosa",
@@ -1392,41 +1433,45 @@
     ]
   },
   {
-  "fund_id": "situational_awareness",
-  "manager_name": "Leopold Aschenbrenner",
-  "slug": "leopold-aschenbrenner-portfolio",
-  "fund_name": "Situational Awareness LP",
-  "fund_founded": 2024,
-  "role": "Founder & CIO",
-  "style": "AI-Focused",
-  "tags": ["AI-Focused", "Global Macro", "Long/Short Equity"],
-  "primary_tag": "AI-Focused",
-  "net_worth": "N/A",
-  "initials": "LA",
-  "photo": "",
-  "typical_positions": 10,
-  "bio": [
-    "Leopold Aschenbrenner founded Situational Awareness LP in 2024 after being fired from OpenAI's Superalignment team over an alleged information leak, which he disputes. A Columbia University valedictorian at age 19, he published a widely-read 165-page essay titled 'Situational Awareness: The Decade Ahead' predicting AGI by 2027, which became the intellectual foundation for the fund.",
-    "Backed by Patrick and John Collison (Stripe), Nat Friedman, and Daniel Gross, the fund grew from $383 million to over $5 billion in US equity exposure in under a year. The fund posted +47% returns in the first half of 2025, betting heavily on AI infrastructure including semiconductors, power generation, data centers, and Bitcoin miners."
-  ],
-  "philosophy_quote": "You can see the future first in San Francisco. Everyone is now talking about AI, but few have the faintest glimmer of what is about to hit them.",
-  "notable_trades": [
-    {
-      "badge": "CURRENT",
-      "title": "Core Scientific (CORZ)",
-      "desc": "Built a 5.8% ownership stake in the Bitcoin miner and data center operator, betting on rising demand for high-performance computing infrastructure."
-    },
-    {
-      "badge": "CURRENT",
-      "title": "AI Infrastructure Concentration",
-      "desc": "Over 80% of portfolio concentrated in AI enablers — semiconductors, power generation, data centers, and Bitcoin miners."
-    },
-    {
-      "badge": "WIN",
-      "title": "First Half 2025",
-      "desc": "+47% net of fees in H1 2025 vs S&P 500 +6%, driven by concentrated bets on AI infrastructure during a strong AI capex cycle."
-    }
-  ],
-  "co_manager_slug": ""
-}
+    "fund_id": "situational_awareness",
+    "manager_name": "Leopold Aschenbrenner",
+    "slug": "leopold-aschenbrenner-portfolio",
+    "fund_name": "Situational Awareness LP",
+    "fund_founded": 2024,
+    "role": "Founder & CIO",
+    "style": "AI-Focused",
+    "tags": [
+      "AI-Focused",
+      "Global Macro",
+      "Long/Short Equity"
+    ],
+    "primary_tag": "AI-Focused",
+    "net_worth": "N/A",
+    "initials": "LA",
+    "photo": "",
+    "typical_positions": 10,
+    "bio": [
+      "Leopold Aschenbrenner founded Situational Awareness LP in 2024 after being fired from OpenAI's Superalignment team over an alleged information leak, which he disputes. A Columbia University valedictorian at age 19, he published a widely-read 165-page essay titled 'Situational Awareness: The Decade Ahead' predicting AGI by 2027, which became the intellectual foundation for the fund.",
+      "Backed by Patrick and John Collison (Stripe), Nat Friedman, and Daniel Gross, the fund grew from $383 million to over $5 billion in US equity exposure in under a year. The fund posted +47% returns in the first half of 2025, betting heavily on AI infrastructure including semiconductors, power generation, data centers, and Bitcoin miners."
+    ],
+    "philosophy_quote": "You can see the future first in San Francisco. Everyone is now talking about AI, but few have the faintest glimmer of what is about to hit them.",
+    "notable_trades": [
+      {
+        "badge": "CURRENT",
+        "title": "Core Scientific (CORZ)",
+        "desc": "Built a 5.8% ownership stake in the Bitcoin miner and data center operator, betting on rising demand for high-performance computing infrastructure."
+      },
+      {
+        "badge": "CURRENT",
+        "title": "AI Infrastructure Concentration",
+        "desc": "Over 80% of portfolio concentrated in AI enablers \u2014 semiconductors, power generation, data centers, and Bitcoin miners."
+      },
+      {
+        "badge": "WIN",
+        "title": "First Half 2025",
+        "desc": "+47% net of fees in H1 2025 vs S&P 500 +6%, driven by concentrated bets on AI infrastructure during a strong AI capex cycle."
+      }
+    ],
+    "co_manager_slug": ""
+  }
 ]
