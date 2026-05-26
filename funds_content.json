@@ -362,6 +362,47 @@
     ]
   },
   {
+    "manager_name": "Gavin Baker",
+    "slug": "gavin-baker-portfolio",
+    "fund_id": "atreides",
+    "fund_name": "Atreides Management",
+    "fund_founded": 2019,
+    "style": "Growth / Tech",
+    "typical_positions": "30\u201360",
+    "net_worth": "$1B+",
+    "initials": "GB",
+    "role": "Founder & CIO",
+    "tags": [
+      "Technology",
+      "Growth Investing",
+      "Semiconductors",
+      "Software"
+    ],
+    "primary_tag": "Technology",
+    "bio": [
+      "Gavin Baker is the founder and CIO of Atreides Management, a Boston-based technology-focused hedge fund he launched in 2019. Before founding Atreides, Baker spent over a decade at Fidelity Investments managing the Fidelity OTC Portfolio, one of Fidelity's flagship growth funds, where he compiled an exceptional long-term track record investing in technology and consumer growth companies.",
+      "Baker is known as one of the most respected technology investors in the hedge fund world, with deep expertise in semiconductors, software, and internet businesses. He is a frequent and thoughtful commentator on technology sector dynamics and is widely followed by institutional investors. Atreides manages several billion dollars and has been an active investor in high-growth technology companies across public and private markets."
+    ],
+    "philosophy_quote": "The best technology investments are in companies that are simultaneously disrupting large markets and building durable competitive advantages.",
+    "notable_trades": [
+      {
+        "badge": "WIN",
+        "title": "Semiconductor Supercycle (2020\u20132021)",
+        "desc": "Atreides built significant positions in semiconductor companies ahead of the global chip shortage, generating strong returns as the sector experienced unprecedented demand across data centers, automotive, and consumer electronics."
+      },
+      {
+        "badge": "CURRENT",
+        "title": "AI Infrastructure Buildout",
+        "desc": "Atreides has been an active investor in AI-enabling infrastructure, including data center, networking, and semiconductor companies positioned to benefit from the acceleration of AI workloads globally."
+      },
+      {
+        "badge": "WIN",
+        "title": "Fidelity OTC Track Record",
+        "desc": "Before founding Atreides, Baker managed Fidelity's OTC Portfolio for over a decade, consistently outperforming the Nasdaq composite and establishing his reputation as one of the premier technology growth investors of his generation."
+      }
+    ]
+  },
+  {
     "manager_name": "David Tepper",
     "slug": "david-tepper-portfolio",
     "fund_id": "appaloosa",
