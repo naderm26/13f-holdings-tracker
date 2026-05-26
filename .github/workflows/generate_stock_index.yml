@@ -39,4 +39,5 @@ jobs:
           git add stock_index.json
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "chore: regenerate stock_index.json"
+          git pull --rebase origin main
           git push
