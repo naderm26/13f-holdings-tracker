@@ -46,6 +46,12 @@
     "cik": "0001063296"
   },
   {
+    "id": "atreides",
+    "name": "Atreides Management (Gavin Baker)",
+    "cik": "0001777813",
+    "bio_slug": "gavin-baker-portfolio"
+  },
+  {
     "id": "baupost",
     "name": "Baupost Group (Seth Klarman)",
     "cik": "0001061768",
