@@ -7,8 +7,22 @@
   "district": "IN-5",
   "chamber": "House",
   "title": "U.S. Representative",
-  "last_updated": "2026-06-05",
+  "last_updated": "2026-06-09",
   "trades": [
+    {
+      "member": "Jefferson Shreve",
+      "filing_year": "2026",
+      "doc_id": "20034653",
+      "asset": "Morgan Stanley 37-Month One-time Callable Note INDU/SPX - May 2026 [CS]",
+      "asset_clean": "Morgan Stanley 37-Month One-time Callable Note INDU/SPX - May 2026 [CS]",
+      "asset_type": "",
+      "ticker": null,
+      "transaction": "Purchase",
+      "date": "05/20/2026",
+      "date_iso": "2026-05-20",
+      "amount_range": "$1,000,001 - $5,000,000",
+      "amount_mid": 3000000
+    },
     {
       "member": "Jefferson Shreve",
       "filing_year": "2026",

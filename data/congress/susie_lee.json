@@ -7,8 +7,22 @@
   "district": "NV-3",
   "chamber": "House",
   "title": "U.S. Representative",
-  "last_updated": "2026-06-05",
+  "last_updated": "2026-06-09",
   "trades": [
+    {
+      "member": "Susie Lee",
+      "filing_year": "2026",
+      "doc_id": "20034552",
+      "asset": "Full House Resorts, Inc. - Common",
+      "asset_clean": "Full House Resorts, Inc.",
+      "asset_type": "",
+      "ticker": "FLL",
+      "transaction": "S (partial)",
+      "date": "04/21/2026",
+      "date_iso": "2026-04-21",
+      "amount_range": "$1,001 - $15,000",
+      "amount_mid": 8000
+    },
     {
       "member": "Susie Lee",
       "filing_year": "2025",
