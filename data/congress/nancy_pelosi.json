@@ -7,8 +7,36 @@
   "district": "CA-11",
   "chamber": "House",
   "title": "House Minority Leader",
-  "last_updated": "2026-06-23",
+  "last_updated": "2026-06-24",
   "trades": [
+    {
+      "member": "Nancy Pelosi",
+      "filing_year": "2026",
+      "doc_id": "20034836",
+      "asset": "SP Intel Corporation - Common Stock",
+      "asset_clean": "SP Intel Corporation",
+      "asset_type": "",
+      "ticker": "INTC",
+      "transaction": "Purchase",
+      "date": "05/29/2026",
+      "date_iso": "2026-05-29",
+      "amount_range": "$1,000,001 - $5,000,000",
+      "amount_mid": 3000000
+    },
+    {
+      "member": "Nancy Pelosi",
+      "filing_year": "2026",
+      "doc_id": "20034836",
+      "asset": "Uber Technologies, Inc. Common Stock (UBER) [OP]",
+      "asset_clean": "Uber Technologies, Inc. Common Stock",
+      "asset_type": "Option",
+      "ticker": "UBER",
+      "transaction": "Purchase",
+      "date": "05/29/2026",
+      "date_iso": "2026-05-29",
+      "amount_range": "$500,001 - $1,000,000",
+      "amount_mid": 750000
+    },
     {
       "member": "Nancy Pelosi",
       "filing_year": "2026",
