@@ -7,8 +7,36 @@
   "district": "TX-17",
   "chamber": "House",
   "title": "U.S. Representative",
-  "last_updated": "2026-09-18",
+  "last_updated": "2026-09-22",
   "trades": [
+    {
+      "member": "Pete Sessions",
+      "filing_year": "2026",
+      "doc_id": "20035480",
+      "asset": "AbbVie Inc. Common Stock (ABBV)",
+      "asset_clean": "AbbVie Inc. Common Stock",
+      "asset_type": "",
+      "ticker": "ABBV",
+      "transaction": "Sale",
+      "date": "09/14/2026",
+      "date_iso": "2026-09-14",
+      "amount_range": "$15,001 - $50,000",
+      "amount_mid": 32500
+    },
+    {
+      "member": "Pete Sessions",
+      "filing_year": "2026",
+      "doc_id": "20035480",
+      "asset": "Alphabet Inc. - Class A Common Stock (GOOGL) [ST]",
+      "asset_clean": "Alphabet Inc.",
+      "asset_type": "",
+      "ticker": "GOOGL",
+      "transaction": "Sale",
+      "date": "09/14/2026",
+      "date_iso": "2026-09-14",
+      "amount_range": "$15,001 - $50,000",
+      "amount_mid": 32500
+    },
     {
       "member": "Pete Sessions",
       "filing_year": "2026",
