@@ -7,8 +7,22 @@
   "district": "CA-11",
   "chamber": "House",
   "title": "House Minority Leader",
-  "last_updated": "2026-10-02",
+  "last_updated": "2026-10-06",
   "trades": [
+    {
+      "member": "Nancy Pelosi",
+      "filing_year": "2026",
+      "doc_id": "20035553",
+      "asset": "SP REOF XXX, LLC [AB]",
+      "asset_clean": "SP REOF XXX, LLC [AB]",
+      "asset_type": "",
+      "ticker": null,
+      "transaction": "Purchase",
+      "date": "09/08/2026",
+      "date_iso": "2026-09-08",
+      "amount_range": "$500,001 - $1,000,000",
+      "amount_mid": 750000
+    },
     {
       "member": "Nancy Pelosi",
       "filing_year": "2026",
