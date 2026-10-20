@@ -7,8 +7,36 @@
   "district": "NV-3",
   "chamber": "House",
   "title": "U.S. Representative",
-  "last_updated": "2026-10-16",
+  "last_updated": "2026-10-20",
   "trades": [
+    {
+      "member": "Susie Lee",
+      "filing_year": "2026",
+      "doc_id": "20035490",
+      "asset": "NOKIA A SHS (NOKBF) [ST]",
+      "asset_clean": "NOKIA A SHS",
+      "asset_type": "",
+      "ticker": "NOKBF",
+      "transaction": "Purchase",
+      "date": "09/18/2026",
+      "date_iso": "2026-09-18",
+      "amount_range": "$15,001 - $50,000",
+      "amount_mid": 32500
+    },
+    {
+      "member": "Susie Lee",
+      "filing_year": "2026",
+      "doc_id": "20035490",
+      "asset": "SP Bank of America Corporation",
+      "asset_clean": "SP Bank of America Corporation",
+      "asset_type": "",
+      "ticker": "BAC",
+      "transaction": "Sale",
+      "date": "08/24/2026",
+      "date_iso": "2026-08-24",
+      "amount_range": "$50,001 - $100,000",
+      "amount_mid": 75000
+    },
     {
       "member": "Susie Lee",
       "filing_year": "2026",
