@@ -7,8 +7,22 @@
   "district": "AL-7",
   "chamber": "House",
   "title": "U.S. Representative",
-  "last_updated": "2026-11-17",
+  "last_updated": "2026-11-20",
   "trades": [
+    {
+      "member": "Terri Sewell",
+      "filing_year": "2026",
+      "doc_id": "20036864",
+      "asset": "Tapestry, Inc. Common Stock (TPR)",
+      "asset_clean": "Tapestry, Inc. Common Stock",
+      "asset_type": "",
+      "ticker": "TPR",
+      "transaction": "Sale",
+      "date": "11/05/2026",
+      "date_iso": "2026-11-05",
+      "amount_range": "$1,001 - $15,000",
+      "amount_mid": 8000
+    },
     {
       "member": "Terri Sewell",
       "filing_year": "2026",
